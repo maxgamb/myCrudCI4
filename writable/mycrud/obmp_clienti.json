@@ -1,0 +1,446 @@
+{
+    "table": "obmp_clienti",
+    "primaryKey": "obm_cliente_id",
+    "architecture": "standard",
+    "fields": {
+        "obm_cliente_id": {
+            "name": "obm_cliente_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": true,
+            "autoIncrement": true,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Obm Cliente Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "obm_cliente_first_name": {
+            "name": "obm_cliente_first_name",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Obm Cliente First Name",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "obm_cliente_last_name": {
+            "name": "obm_cliente_last_name",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Obm Cliente Last Name",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "obm_cliente_email": {
+            "name": "obm_cliente_email",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "email",
+            "label": "Obm Cliente Email",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "obm_cliente_city": {
+            "name": "obm_cliente_city",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Obm Cliente City",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "obm_cliente_country": {
+            "name": "obm_cliente_country",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Obm Cliente Country",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "lingua": {
+            "name": "lingua",
+            "type": "varchar",
+            "columnType": "varchar(10)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "10",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Lingua",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "10"
+                }
+            }
+        },
+        "obm_cliente_phone": {
+            "name": "obm_cliente_phone",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Obm Cliente Phone",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "obm_cliente_newsletter": {
+            "name": "obm_cliente_newsletter",
+            "type": "char",
+            "columnType": "char(1)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "1",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Obm Cliente Newsletter",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "1"
+                }
+            }
+        },
+        "obm_cliente_pass": {
+            "name": "obm_cliente_pass",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Obm Cliente Pass",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "obm_cliente_data_insert": {
+            "name": "obm_cliente_data_insert",
+            "type": "datetime",
+            "columnType": "datetime",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "datetime-local",
+            "label": "Obm Cliente Data Insert",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "obm_cliente_data_record": {
+            "name": "obm_cliente_data_record",
+            "type": "timestamp",
+            "columnType": "timestamp",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "datetime-local",
+            "label": "Obm Cliente Data Record",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "obm_cliente_cc_type": {
+            "name": "obm_cliente_cc_type",
+            "type": "varchar",
+            "columnType": "varchar(10)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "10",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Obm Cliente Cc Type",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "10"
+                }
+            }
+        },
+        "obm_cliente_cc_number": {
+            "name": "obm_cliente_cc_number",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Obm Cliente Cc Number",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "obm_cliente_holder": {
+            "name": "obm_cliente_holder",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Obm Cliente Holder",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "obm_cliente_cc_expire": {
+            "name": "obm_cliente_cc_expire",
+            "type": "varchar",
+            "columnType": "varchar(10)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "10",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Obm Cliente Cc Expire",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "10"
+                }
+            }
+        },
+        "obm_cliente_cc_security": {
+            "name": "obm_cliente_cc_security",
+            "type": "varchar",
+            "columnType": "varchar(10)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "10",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Obm Cliente Cc Security",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "10"
+                }
+            }
+        }
+    },
+    "order": [
+        "obm_cliente_id",
+        "obm_cliente_first_name",
+        "obm_cliente_last_name",
+        "obm_cliente_email",
+        "obm_cliente_city",
+        "obm_cliente_country",
+        "lingua",
+        "obm_cliente_phone",
+        "obm_cliente_newsletter",
+        "obm_cliente_pass",
+        "obm_cliente_data_insert",
+        "obm_cliente_data_record",
+        "obm_cliente_cc_type",
+        "obm_cliente_cc_number",
+        "obm_cliente_holder",
+        "obm_cliente_cc_expire",
+        "obm_cliente_cc_security"
+    ],
+    "relations": {
+        "belongsTo": [],
+        "hasMany": [
+            {
+                "type": "hasMany",
+                "childTable": "ref_obmp_booking",
+                "childField": "obm_cliente_id",
+                "parentField": "obm_cliente_id"
+            }
+        ],
+        "manyToMany": []
+    },
+    "features": {
+        "entity": true,
+        "service": true,
+        "api": false,
+        "datatable": true,
+        "relations": true,
+        "softDeletes": false,
+        "timestamps": true,
+        "exportButtons": true
+    },
+    "softDelete": {
+        "available": false,
+        "field": "deleted_at"
+    },
+    "classes": {
+        "entity": "ObmpClientusEntity",
+        "model": "ObmpClientusModel",
+        "service": "ObmpClientusService",
+        "controller": "ObmpClientusController",
+        "api": "ObmpClientusApiController",
+        "rules": "ObmpClientusRules"
+    },
+    "dataStyle": "object"
+}

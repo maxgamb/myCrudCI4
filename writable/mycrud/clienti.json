@@ -1,0 +1,1453 @@
+{
+    "table": "clienti",
+    "primaryKey": "clienti_id",
+    "architecture": "full",
+    "fields": {
+        "clienti_id": {
+            "name": "clienti_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": true,
+            "autoIncrement": true,
+            "unique": false,
+            "foreignKey": {
+                "type": "belongsTo",
+                "field": "clienti_id",
+                "parentTable": "refer_clienti",
+                "parentKey": "clienti_id",
+                "displayField": "clienti_id",
+                "alias": "refer_clienti_clienti_id"
+            },
+            "inputType": "select",
+            "label": "Clienti Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "preno_id": {
+            "name": "preno_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Preno Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "hotel_id": {
+            "name": "hotel_id",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": true,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Hotel Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "camera_id": {
+            "name": "camera_id",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": true,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Camera Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "camera_numero": {
+            "name": "camera_numero",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": true,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Camera Numero",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "camara_tipologia": {
+            "name": "camara_tipologia",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "0",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Camara Tipologia",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "clienti_nome": {
+            "name": "clienti_nome",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Clienti Nome",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "clienti_cogno": {
+            "name": "clienti_cogno",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Clienti Cogno",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_nato_a": {
+            "name": "cliente_nato_a",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Nato A",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_nato_il": {
+            "name": "cliente_nato_il",
+            "type": "varchar",
+            "columnType": "varchar(12)",
+            "nullable": false,
+            "default": "0000-00-00",
+            "maxLength": "12",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Nato Il",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "12"
+                }
+            }
+        },
+        "cliente_nazione": {
+            "name": "cliente_nazione",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Nazione",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_provincia": {
+            "name": "cliente_provincia",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Provincia",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_residenza": {
+            "name": "cliente_residenza",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Residenza",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_cocumento_tipo": {
+            "name": "cliente_cocumento_tipo",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Cocumento Tipo",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_cocumento_numero": {
+            "name": "cliente_cocumento_numero",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Cocumento Numero",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_cocumento_rilasciato_il": {
+            "name": "cliente_cocumento_rilasciato_il",
+            "type": "varchar",
+            "columnType": "varchar(12)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "12",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Cocumento Rilasciato Il",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "12"
+                }
+            }
+        },
+        "cliente_sesso": {
+            "name": "cliente_sesso",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Sesso",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "clienti_nome1": {
+            "name": "clienti_nome1",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Clienti Nome1",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "clienti_nome2": {
+            "name": "clienti_nome2",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Clienti Nome2",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "clienti_nome3": {
+            "name": "clienti_nome3",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Clienti Nome3",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "clienti_nome4": {
+            "name": "clienti_nome4",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Clienti Nome4",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "clienti_cogno1": {
+            "name": "clienti_cogno1",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Clienti Cogno1",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "clienti_cogno2": {
+            "name": "clienti_cogno2",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Clienti Cogno2",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "clienti_cogno3": {
+            "name": "clienti_cogno3",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Clienti Cogno3",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "clienti_cogno4": {
+            "name": "clienti_cogno4",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Clienti Cogno4",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_nato_a1": {
+            "name": "cliente_nato_a1",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Nato A1",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_nato_a2": {
+            "name": "cliente_nato_a2",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Nato A2",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_nato_a3": {
+            "name": "cliente_nato_a3",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Nato A3",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_nato_a4": {
+            "name": "cliente_nato_a4",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Nato A4",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_nato_il1": {
+            "name": "cliente_nato_il1",
+            "type": "varchar",
+            "columnType": "varchar(12)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "12",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Nato Il1",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "12"
+                }
+            }
+        },
+        "cliente_nato_il2": {
+            "name": "cliente_nato_il2",
+            "type": "varchar",
+            "columnType": "varchar(12)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "12",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Nato Il2",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "12"
+                }
+            }
+        },
+        "cliente_nato_il3": {
+            "name": "cliente_nato_il3",
+            "type": "varchar",
+            "columnType": "varchar(12)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "12",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Nato Il3",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "12"
+                }
+            }
+        },
+        "cliente_nato_il4": {
+            "name": "cliente_nato_il4",
+            "type": "varchar",
+            "columnType": "varchar(12)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "12",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Nato Il4",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "12"
+                }
+            }
+        },
+        "cliente_sesso1": {
+            "name": "cliente_sesso1",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Sesso1",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_sesso2": {
+            "name": "cliente_sesso2",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Sesso2",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_sesso3": {
+            "name": "cliente_sesso3",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Sesso3",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_sesso4": {
+            "name": "cliente_sesso4",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Sesso4",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_nazione1": {
+            "name": "cliente_nazione1",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Nazione1",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_nazione2": {
+            "name": "cliente_nazione2",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Nazione2",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_nazione3": {
+            "name": "cliente_nazione3",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Nazione3",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_nazione4": {
+            "name": "cliente_nazione4",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Nazione4",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_provincia1": {
+            "name": "cliente_provincia1",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Provincia1",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_provincia2": {
+            "name": "cliente_provincia2",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Provincia2",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_provincia3": {
+            "name": "cliente_provincia3",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Provincia3",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cliente_provincia4": {
+            "name": "cliente_provincia4",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Cliente Provincia4",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "clienti_cc_tip": {
+            "name": "clienti_cc_tip",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Clienti Cc Tip",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "clienti_cc_n": {
+            "name": "clienti_cc_n",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Clienti Cc N",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "clienti_cc_scad": {
+            "name": "clienti_cc_scad",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Clienti Cc Scad",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "clienti_tel": {
+            "name": "clienti_tel",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Clienti Tel",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "clienti_fax": {
+            "name": "clienti_fax",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Clienti Fax",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "clienti_email": {
+            "name": "clienti_email",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "email",
+            "label": "Clienti Email",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "clienti_note": {
+            "name": "clienti_note",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Clienti Note",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "privacy": {
+            "name": "privacy",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Privacy",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "marketing": {
+            "name": "marketing",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Marketing",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "lingua": {
+            "name": "lingua",
+            "type": "varchar",
+            "columnType": "varchar(10)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "10",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Lingua",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "10"
+                }
+            }
+        },
+        "password": {
+            "name": "password",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "password",
+            "label": "Password",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "clienti_data_record": {
+            "name": "clienti_data_record",
+            "type": "timestamp",
+            "columnType": "timestamp",
+            "nullable": false,
+            "default": "CURRENT_TIMESTAMP",
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "datetime-local",
+            "label": "Clienti Data Record",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "clienti_utente_id": {
+            "name": "clienti_utente_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Clienti Utente Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        }
+    },
+    "order": [
+        "clienti_id",
+        "preno_id",
+        "hotel_id",
+        "camera_id",
+        "camera_numero",
+        "camara_tipologia",
+        "clienti_nome",
+        "clienti_cogno",
+        "cliente_nato_a",
+        "cliente_nato_il",
+        "cliente_nazione",
+        "cliente_provincia",
+        "cliente_residenza",
+        "cliente_cocumento_tipo",
+        "cliente_cocumento_numero",
+        "cliente_cocumento_rilasciato_il",
+        "cliente_sesso",
+        "clienti_nome1",
+        "clienti_nome2",
+        "clienti_nome3",
+        "clienti_nome4",
+        "clienti_cogno1",
+        "clienti_cogno2",
+        "clienti_cogno3",
+        "clienti_cogno4",
+        "cliente_nato_a1",
+        "cliente_nato_a2",
+        "cliente_nato_a3",
+        "cliente_nato_a4",
+        "cliente_nato_il1",
+        "cliente_nato_il2",
+        "cliente_nato_il3",
+        "cliente_nato_il4",
+        "cliente_sesso1",
+        "cliente_sesso2",
+        "cliente_sesso3",
+        "cliente_sesso4",
+        "cliente_nazione1",
+        "cliente_nazione2",
+        "cliente_nazione3",
+        "cliente_nazione4",
+        "cliente_provincia1",
+        "cliente_provincia2",
+        "cliente_provincia3",
+        "cliente_provincia4",
+        "clienti_cc_tip",
+        "clienti_cc_n",
+        "clienti_cc_scad",
+        "clienti_tel",
+        "clienti_fax",
+        "clienti_email",
+        "clienti_note",
+        "privacy",
+        "marketing",
+        "lingua",
+        "password",
+        "clienti_data_record",
+        "clienti_utente_id"
+    ],
+    "relations": {
+        "belongsTo": {
+            "clienti_id": {
+                "type": "belongsTo",
+                "field": "clienti_id",
+                "parentTable": "refer_clienti",
+                "parentKey": "clienti_id",
+                "displayField": "clienti_id",
+                "alias": "refer_clienti_clienti_id"
+            }
+        },
+        "hasMany": [
+            {
+                "type": "hasMany",
+                "childTable": "punti_spesi",
+                "childField": "cliente_id",
+                "parentField": "clienti_id"
+            }
+        ],
+        "manyToMany": [
+            {
+                "type": "manyToMany",
+                "pivotTable": "punti_spesi",
+                "ownPivotField": "cliente_id",
+                "ownParentField": "clienti_id",
+                "relatedTable": "conti",
+                "relatedPivotField": "conto_id",
+                "relatedKey": "conto_id",
+                "displayField": "hotel_id"
+            }
+        ]
+    },
+    "features": {
+        "entity": true,
+        "service": true,
+        "api": true,
+        "datatable": true,
+        "relations": true,
+        "softDeletes": false,
+        "timestamps": true,
+        "exportButtons": true
+    },
+    "softDelete": {
+        "available": false,
+        "field": "deleted_at"
+    },
+    "classes": {
+        "entity": "ClientusEntity",
+        "model": "ClientusModel",
+        "service": "ClientusService",
+        "controller": "ClientusController",
+        "api": "ClientusApiController",
+        "rules": "ClientusRules"
+    },
+    "dataStyle": "object"
+}

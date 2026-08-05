@@ -1,0 +1,261 @@
+{
+    "table": "doc_file",
+    "primaryKey": "doc_files_id",
+    "architecture": "standard",
+    "fields": {
+        "doc_files_id": {
+            "name": "doc_files_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": true,
+            "autoIncrement": true,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Doc Files Id",
+            "languageKey": "Fields.doc_files_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "hotel_id": {
+            "name": "hotel_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": {
+                "type": "belongsTo",
+                "field": "hotel_id",
+                "parentTable": "hotels",
+                "parentKey": "hotel_id",
+                "displayField": "nome_hotel",
+                "alias": "hotels_nome_hotel"
+            },
+            "inputType": "select",
+            "label": "",
+            "defaultLabel": "Hotel Id",
+            "languageKey": "Fields.hotel_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "doc_dipar_id": {
+            "name": "doc_dipar_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Doc Dipar Id",
+            "languageKey": "Fields.doc_dipar_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "doc_protocollo": {
+            "name": "doc_protocollo",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Doc Protocollo",
+            "languageKey": "Fields.doc_protocollo",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "doc_url_file": {
+            "name": "doc_url_file",
+            "type": "varchar",
+            "columnType": "varchar(255)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "255",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "url",
+            "label": "",
+            "defaultLabel": "Doc Url File",
+            "languageKey": "Fields.doc_url_file",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "255"
+                }
+            }
+        },
+        "doc_note": {
+            "name": "doc_note",
+            "type": "varchar",
+            "columnType": "varchar(255)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "255",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Doc Note",
+            "languageKey": "Fields.doc_note",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "255"
+                }
+            }
+        },
+        "doc_utente_id": {
+            "name": "doc_utente_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Doc Utente Id",
+            "languageKey": "Fields.doc_utente_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "doc_data_record": {
+            "name": "doc_data_record",
+            "type": "timestamp",
+            "columnType": "timestamp",
+            "nullable": false,
+            "default": "CURRENT_TIMESTAMP",
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "datetime-local",
+            "label": "",
+            "defaultLabel": "Doc Data Record",
+            "languageKey": "Fields.doc_data_record",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        }
+    },
+    "order": [
+        "doc_files_id",
+        "hotel_id",
+        "doc_dipar_id",
+        "doc_protocollo",
+        "doc_url_file",
+        "doc_note",
+        "doc_utente_id",
+        "doc_data_record"
+    ],
+    "relations": {
+        "belongsTo": {
+            "hotel_id": {
+                "type": "belongsTo",
+                "field": "hotel_id",
+                "parentTable": "hotels",
+                "parentKey": "hotel_id",
+                "displayField": "nome_hotel",
+                "alias": "hotels_nome_hotel"
+            }
+        },
+        "hasMany": [],
+        "manyToMany": []
+    },
+    "features": {
+        "entity": true,
+        "service": true,
+        "api": false,
+        "datatable": true,
+        "relations": true,
+        "softDeletes": false,
+        "timestamps": true,
+        "exportButtons": true
+    },
+    "softDelete": {
+        "available": false,
+        "field": "deleted_at"
+    },
+    "classes": {
+        "entity": "DocFileEntity",
+        "model": "DocFileModel",
+        "service": "DocFileService",
+        "controller": "DocFileController",
+        "api": "DocFileApiController",
+        "rules": "DocFileRules"
+    },
+    "dataStyle": "object"
+}

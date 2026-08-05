@@ -1,0 +1,163 @@
+{
+    "table": "black_list",
+    "primaryKey": "black_list_id",
+    "architecture": "standard",
+    "fields": {
+        "black_list_id": {
+            "name": "black_list_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": true,
+            "autoIncrement": true,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Black List Id",
+            "languageKey": "Fields.black_list_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "hotel_id": {
+            "name": "hotel_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Hotel Id",
+            "languageKey": "Fields.hotel_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "clienti_id": {
+            "name": "clienti_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Clienti Id",
+            "languageKey": "Fields.clienti_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "black_list_stato": {
+            "name": "black_list_stato",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Black List Stato",
+            "languageKey": "Fields.black_list_stato",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "black_list_data": {
+            "name": "black_list_data",
+            "type": "timestamp",
+            "columnType": "timestamp",
+            "nullable": false,
+            "default": "CURRENT_TIMESTAMP",
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "datetime-local",
+            "label": "",
+            "defaultLabel": "Black List Data",
+            "languageKey": "Fields.black_list_data",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        }
+    },
+    "order": [
+        "black_list_id",
+        "hotel_id",
+        "clienti_id",
+        "black_list_stato",
+        "black_list_data"
+    ],
+    "relations": {
+        "belongsTo": [],
+        "hasMany": [],
+        "manyToMany": []
+    },
+    "features": {
+        "entity": true,
+        "service": true,
+        "api": false,
+        "datatable": true,
+        "relations": true,
+        "softDeletes": false,
+        "timestamps": true,
+        "exportButtons": true
+    },
+    "softDelete": {
+        "available": false,
+        "field": "deleted_at"
+    },
+    "classes": {
+        "entity": "BlackListEntity",
+        "model": "BlackListModel",
+        "service": "BlackListService",
+        "controller": "BlackListController",
+        "api": "BlackListApiController",
+        "rules": "BlackListRules"
+    },
+    "dataStyle": "object"
+}

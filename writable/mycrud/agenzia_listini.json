@@ -1,0 +1,175 @@
+{
+    "table": "agenzia_listini",
+    "primaryKey": "agenzia_listini_id",
+    "architecture": "standard",
+    "fields": {
+        "agenzia_listini_id": {
+            "name": "agenzia_listini_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": true,
+            "autoIncrement": true,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "textarea",
+            "label": "Agenzia Listini Id",
+            "width": 4,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "hotel_id": {
+            "name": "hotel_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "select",
+            "label": "Hotel Id",
+            "width": 4,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "agenzia_listini_nome": {
+            "name": "agenzia_listini_nome",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Listini Nome",
+            "width": 4,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "agenzia_listini_note": {
+            "name": "agenzia_listini_note",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Listini Note",
+            "width": 4,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "agenzia_listini_datarecord": {
+            "name": "agenzia_listini_datarecord",
+            "type": "timestamp",
+            "columnType": "timestamp",
+            "nullable": false,
+            "default": "CURRENT_TIMESTAMP",
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "datetime-local",
+            "label": "Agenzia Listini Datarecord",
+            "width": 12,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        }
+    },
+    "order": [
+        "agenzia_listini_id",
+        "hotel_id",
+        "agenzia_listini_nome",
+        "agenzia_listini_note",
+        "agenzia_listini_datarecord"
+    ],
+    "relations": {
+        "belongsTo": [],
+        "hasMany": [
+            {
+                "type": "hasMany",
+                "childTable": "agenzia_prezzi",
+                "childField": "agenzia_prezzi_id",
+                "parentField": "agenzia_listini_id"
+            },
+            {
+                "type": "hasMany",
+                "childTable": "ref_agenzia_listini",
+                "childField": "agenzia_listini_id",
+                "parentField": "agenzia_listini_id"
+            }
+        ],
+        "manyToMany": [
+            {
+                "type": "manyToMany",
+                "pivotTable": "ref_agenzia_listini",
+                "ownPivotField": "agenzia_listini_id",
+                "ownParentField": "agenzia_listini_id",
+                "relatedTable": "agenzie",
+                "relatedPivotField": "agenzia_id",
+                "relatedKey": "agenzia_id",
+                "displayField": "hotel_id"
+            }
+        ]
+    },
+    "features": {
+        "entity": true,
+        "service": true,
+        "api": false,
+        "datatable": true,
+        "relations": true,
+        "softDeletes": false,
+        "timestamps": true,
+        "exportButtons": true
+    },
+    "softDelete": {
+        "available": false,
+        "field": "deleted_at"
+    },
+    "classes": {
+        "entity": "AgenziaListiniEntity",
+        "model": "AgenziaListiniModel",
+        "service": "AgenziaListiniService",
+        "controller": "AgenziaListiniController",
+        "api": "AgenziaListiniApiController",
+        "rules": "AgenziaListiniRules"
+    },
+    "dataStyle": "object"
+}

@@ -1,0 +1,285 @@
+{
+    "table": "comuni",
+    "primaryKey": "Comuni_Codice",
+    "architecture": "standard",
+    "fields": {
+        "Comuni_Codice": {
+            "name": "Comuni_Codice",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": true,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Comuni Codice",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "Comuni_Nome": {
+            "name": "Comuni_Nome",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Comuni Nome",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "Comuni_Prov": {
+            "name": "Comuni_Prov",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Comuni Prov",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "Comuni_CAP": {
+            "name": "Comuni_CAP",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Comuni CAP",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "Comuni_Prefisso": {
+            "name": "Comuni_Prefisso",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Comuni Prefisso",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "Comuni_ColExcel": {
+            "name": "Comuni_ColExcel",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Comuni ColExcel",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "Comuni_Nazione": {
+            "name": "Comuni_Nazione",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Comuni Nazione",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "Comuni_Lingua": {
+            "name": "Comuni_Lingua",
+            "type": "varchar",
+            "columnType": "varchar(4)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "4",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Comuni Lingua",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "4"
+                }
+            }
+        },
+        "nazione_iso2": {
+            "name": "nazione_iso2",
+            "type": "varchar",
+            "columnType": "varchar(5)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "5",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Nazione Iso2",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "5"
+                }
+            }
+        },
+        "nazione_iso3": {
+            "name": "nazione_iso3",
+            "type": "varchar",
+            "columnType": "varchar(5)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "5",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Nazione Iso3",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "5"
+                }
+            }
+        }
+    },
+    "order": [
+        "Comuni_Codice",
+        "Comuni_Nome",
+        "Comuni_Prov",
+        "Comuni_CAP",
+        "Comuni_Prefisso",
+        "Comuni_ColExcel",
+        "Comuni_Nazione",
+        "Comuni_Lingua",
+        "nazione_iso2",
+        "nazione_iso3"
+    ],
+    "relations": {
+        "belongsTo": [],
+        "hasMany": [],
+        "manyToMany": []
+    },
+    "features": {
+        "entity": true,
+        "service": true,
+        "api": false,
+        "datatable": true,
+        "relations": true,
+        "softDeletes": false,
+        "timestamps": true,
+        "exportButtons": true
+    },
+    "softDelete": {
+        "available": false,
+        "field": "deleted_at"
+    },
+    "classes": {
+        "entity": "ComuniEntity",
+        "model": "ComuniModel",
+        "service": "ComuniService",
+        "controller": "ComuniController",
+        "api": "ComuniApiController",
+        "rules": "ComuniRules"
+    },
+    "dataStyle": "object"
+}

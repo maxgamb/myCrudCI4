@@ -1,0 +1,98 @@
+{
+    "table": "chain_list",
+    "primaryKey": "ChainCodeID",
+    "architecture": "full",
+    "fields": {
+        "ChainCodeID": {
+            "name": "ChainCodeID",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": true,
+            "autoIncrement": true,
+            "foreignKey": null,
+            "inputType": "tel",
+            "label": "ChainCodeID",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "ChainName": {
+            "name": "ChainName",
+            "type": "varchar",
+            "columnType": "varchar(30)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "30",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "ChainName",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "30"
+                }
+            }
+        },
+        "TimeStamp": {
+            "name": "TimeStamp",
+            "type": "timestamp",
+            "columnType": "timestamp",
+            "nullable": true,
+            "default": "CURRENT_TIMESTAMP",
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "foreignKey": null,
+            "inputType": "datetime-local",
+            "label": "TimeStamp",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        }
+    },
+    "order": [
+        "ChainName",
+        "ChainCodeID",
+        "TimeStamp"
+    ],
+    "relations": {
+        "belongsTo": [],
+        "hasMany": [],
+        "manyToMany": []
+    },
+    "features": {
+        "entity": true,
+        "service": true,
+        "api": true,
+        "datatable": true,
+        "relations": true,
+        "softDeletes": true,
+        "timestamps": true,
+        "exportButtons": true
+    },
+    "classes": {
+        "entity": "ChainListEntity",
+        "model": "ChainListModel",
+        "service": "ChainListService",
+        "controller": "ChainListController",
+        "api": "ChainListApiController",
+        "rules": "ChainListRules"
+    },
+    "dataStyle": "object"
+}

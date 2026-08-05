@@ -1,0 +1,141 @@
+{
+    "table": "app_ip",
+    "primaryKey": "app_ip_id",
+    "architecture": "standard",
+    "fields": {
+        "app_ip_id": {
+            "name": "app_ip_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": true,
+            "autoIncrement": true,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "App Ip Id",
+            "languageKey": "Fields.app_ip_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "ip_aderss": {
+            "name": "ip_aderss",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Ip Aderss",
+            "languageKey": "Fields.ip_aderss",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "Livello": {
+            "name": "Livello",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Livello",
+            "languageKey": "Fields.Livello",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "data": {
+            "name": "data",
+            "type": "timestamp",
+            "columnType": "timestamp",
+            "nullable": false,
+            "default": "CURRENT_TIMESTAMP",
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "datetime-local",
+            "label": "",
+            "defaultLabel": "Data",
+            "languageKey": "Fields.data",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        }
+    },
+    "order": [
+        "app_ip_id",
+        "ip_aderss",
+        "Livello",
+        "data"
+    ],
+    "relations": {
+        "belongsTo": [],
+        "hasMany": [],
+        "manyToMany": []
+    },
+    "features": {
+        "entity": true,
+        "service": true,
+        "api": false,
+        "datatable": true,
+        "relations": true,
+        "softDeletes": false,
+        "timestamps": true,
+        "exportButtons": true
+    },
+    "softDelete": {
+        "available": false,
+        "field": "deleted_at"
+    },
+    "classes": {
+        "entity": "AppIpEntity",
+        "model": "AppIpModel",
+        "service": "AppIpService",
+        "controller": "AppIpController",
+        "api": "AppIpApiController",
+        "rules": "AppIpRules"
+    },
+    "dataStyle": "object"
+}

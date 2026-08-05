@@ -1,0 +1,411 @@
+{
+    "table": "camere",
+    "primaryKey": "camera_id",
+    "architecture": "standard",
+    "fields": {
+        "camera_id": {
+            "name": "camera_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": true,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Camera Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "hotel_id": {
+            "name": "hotel_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Hotel Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "numero_camera": {
+            "name": "numero_camera",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Numero Camera",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "tipologia_camera": {
+            "name": "tipologia_camera",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Tipologia Camera",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "tipologia_id": {
+            "name": "tipologia_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": {
+                "type": "belongsTo",
+                "field": "tipologia_id",
+                "parentTable": "tipologia_camera",
+                "parentKey": "tipologia_id",
+                "displayField": "nome_tipologia",
+                "alias": "tipologia_camera_nome_tipologia"
+            },
+            "inputType": "select",
+            "label": "Tipologia Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "camere_max_pax": {
+            "name": "camere_max_pax",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Camere Max Pax",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "camere_metri_quadri": {
+            "name": "camere_metri_quadri",
+            "type": "decimal",
+            "columnType": "decimal(10,2)",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "2",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Camere Metri Quadri",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "camere_vista": {
+            "name": "camere_vista",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Camere Vista",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "camere_piano": {
+            "name": "camere_piano",
+            "type": "decimal",
+            "columnType": "decimal(3,0)",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "3",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Camere Piano",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "camere_bagno": {
+            "name": "camere_bagno",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Camere Bagno",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "camere_edificio": {
+            "name": "camere_edificio",
+            "type": "char",
+            "columnType": "char(3)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "3",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Camere Edificio",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "3"
+                }
+            }
+        },
+        "review_tot": {
+            "name": "review_tot",
+            "type": "decimal",
+            "columnType": "decimal(6,2)",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "6",
+            "numericScale": "2",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Review Tot",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "camere_data_record": {
+            "name": "camere_data_record",
+            "type": "timestamp",
+            "columnType": "timestamp",
+            "nullable": false,
+            "default": "CURRENT_TIMESTAMP",
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "datetime-local",
+            "label": "Camere Data Record",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "camere_utente_id": {
+            "name": "camere_utente_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Camere Utente Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        }
+    },
+    "order": [
+        "camera_id",
+        "hotel_id",
+        "numero_camera",
+        "tipologia_camera",
+        "tipologia_id",
+        "camere_max_pax",
+        "camere_metri_quadri",
+        "camere_vista",
+        "camere_piano",
+        "camere_bagno",
+        "camere_edificio",
+        "review_tot",
+        "camere_data_record",
+        "camere_utente_id"
+    ],
+    "relations": {
+        "belongsTo": {
+            "tipologia_id": {
+                "type": "belongsTo",
+                "field": "tipologia_id",
+                "parentTable": "tipologia_camera",
+                "parentKey": "tipologia_id",
+                "displayField": "nome_tipologia",
+                "alias": "tipologia_camera_nome_tipologia"
+            }
+        },
+        "hasMany": [
+            {
+                "type": "hasMany",
+                "childTable": "conti",
+                "childField": "camera_id",
+                "parentField": "camera_id"
+            },
+            {
+                "type": "hasMany",
+                "childTable": "foglio_giorno",
+                "childField": "camera_id",
+                "parentField": "camera_id"
+            },
+            {
+                "type": "hasMany",
+                "childTable": "guasti",
+                "childField": "camera_id",
+                "parentField": "camera_id"
+            }
+        ],
+        "manyToMany": [
+            {
+                "type": "manyToMany",
+                "pivotTable": "conti",
+                "ownPivotField": "camera_id",
+                "ownParentField": "camera_id",
+                "relatedTable": "foglio_giorno",
+                "relatedPivotField": "foglio_id",
+                "relatedKey": "foglio_id",
+                "displayField": "hotel_id"
+            },
+            {
+                "type": "manyToMany",
+                "pivotTable": "guasti",
+                "ownPivotField": "camera_id",
+                "ownParentField": "camera_id",
+                "relatedTable": "hotels",
+                "relatedPivotField": "hotel_id",
+                "relatedKey": "hotel_id",
+                "displayField": "nome_hotel"
+            }
+        ]
+    },
+    "features": {
+        "entity": true,
+        "service": true,
+        "api": false,
+        "datatable": true,
+        "relations": true,
+        "softDeletes": false,
+        "timestamps": true,
+        "exportButtons": true
+    },
+    "softDelete": {
+        "available": false,
+        "field": "deleted_at"
+    },
+    "classes": {
+        "entity": "CamereEntity",
+        "model": "CamereModel",
+        "service": "CamereService",
+        "controller": "CamereController",
+        "api": "CamereApiController",
+        "rules": "CamereRules"
+    },
+    "dataStyle": "object"
+}

@@ -1,0 +1,1567 @@
+{
+    "table": "agenda",
+    "primaryKey": "preno_id",
+    "architecture": "basic",
+    "fields": {
+        "preno_id": {
+            "name": "preno_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": true,
+            "autoIncrement": true,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "hidden",
+            "label": "Preno Id",
+            "defaultLabel": "Preno Id",
+            "languageKey": "Fields.preno_id",
+            "width": 12,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "hotel_id": {
+            "name": "hotel_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "hidden",
+            "label": "Hotel Id",
+            "defaultLabel": "Hotel Id",
+            "languageKey": "Fields.hotel_id",
+            "width": 12,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "preno_in_data": {
+            "name": "preno_in_data",
+            "type": "datetime",
+            "columnType": "datetime",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "hidden",
+            "label": "Preno In Data",
+            "defaultLabel": "Preno In Data",
+            "languageKey": "Fields.preno_in_data",
+            "width": 12,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "preno_importo": {
+            "name": "preno_importo",
+            "type": "decimal",
+            "columnType": "decimal(10,2)",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "2",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Preno Importo",
+            "defaultLabel": "Preno Importo",
+            "languageKey": "Fields.preno_importo",
+            "width": 12,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "preno_impoto_mod": {
+            "name": "preno_impoto_mod",
+            "type": "decimal",
+            "columnType": "decimal(10,2)",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "2",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "hidden",
+            "label": "Preno Impoto Mod",
+            "defaultLabel": "Preno Impoto Mod",
+            "languageKey": "Fields.preno_impoto_mod",
+            "width": 12,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "preno_dal": {
+            "name": "preno_dal",
+            "type": "date",
+            "columnType": "date",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "date",
+            "label": "Preno Dal",
+            "defaultLabel": "Preno Dal",
+            "languageKey": "Fields.preno_dal",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "preno_al": {
+            "name": "preno_al",
+            "type": "date",
+            "columnType": "date",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "date",
+            "label": "Preno Al",
+            "defaultLabel": "Preno Al",
+            "languageKey": "Fields.preno_al",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "preno_n_notti": {
+            "name": "preno_n_notti",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": false,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "hidden",
+            "label": "Preno N Notti",
+            "defaultLabel": "Preno N Notti",
+            "languageKey": "Fields.preno_n_notti",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "preno_arr_ore": {
+            "name": "preno_arr_ore",
+            "type": "varchar",
+            "columnType": "varchar(20)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "20",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "select",
+            "label": "Preno Arr Ore",
+            "defaultLabel": "Preno Arr Ore",
+            "languageKey": "Fields.preno_arr_ore",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "20"
+                }
+            }
+        },
+        "preno_trattamento": {
+            "name": "preno_trattamento",
+            "type": "char",
+            "columnType": "char(3)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "3",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "select",
+            "label": "Preno Trattamento",
+            "defaultLabel": "Preno Trattamento",
+            "languageKey": "Fields.preno_trattamento",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "3"
+                }
+            }
+        },
+        "t1": {
+            "name": "t1",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": false,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "select",
+            "label": "T1",
+            "defaultLabel": "T1",
+            "languageKey": "Fields.t1",
+            "width": 2,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "q1": {
+            "name": "q1",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Q1",
+            "defaultLabel": "Q1",
+            "languageKey": "Fields.q1",
+            "width": 2,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "p1": {
+            "name": "p1",
+            "type": "decimal",
+            "columnType": "decimal(10,2)",
+            "nullable": false,
+            "default": "0.00",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "2",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "P1",
+            "defaultLabel": "P1",
+            "languageKey": "Fields.p1",
+            "width": 2,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "t2": {
+            "name": "t2",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": true,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "select",
+            "label": "T2",
+            "defaultLabel": "T2",
+            "languageKey": "Fields.t2",
+            "width": 2,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "q2": {
+            "name": "q2",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": true,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Q2",
+            "defaultLabel": "Q2",
+            "languageKey": "Fields.q2",
+            "width": 2,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "p2": {
+            "name": "p2",
+            "type": "decimal",
+            "columnType": "decimal(10,2)",
+            "nullable": true,
+            "default": "0.00",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "2",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "P2",
+            "defaultLabel": "P2",
+            "languageKey": "Fields.p2",
+            "width": 2,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "t3": {
+            "name": "t3",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": true,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "select",
+            "label": "T3",
+            "defaultLabel": "T3",
+            "languageKey": "Fields.t3",
+            "width": 2,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "q3": {
+            "name": "q3",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": true,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Q3",
+            "defaultLabel": "Q3",
+            "languageKey": "Fields.q3",
+            "width": 2,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "p3": {
+            "name": "p3",
+            "type": "decimal",
+            "columnType": "decimal(10,2)",
+            "nullable": true,
+            "default": "0.00",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "2",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "P3",
+            "defaultLabel": "P3",
+            "languageKey": "Fields.p3",
+            "width": 2,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "t4": {
+            "name": "t4",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": true,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "select",
+            "label": "T4",
+            "defaultLabel": "T4",
+            "languageKey": "Fields.t4",
+            "width": 2,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "q4": {
+            "name": "q4",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": true,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Q4",
+            "defaultLabel": "Q4",
+            "languageKey": "Fields.q4",
+            "width": 2,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "p4": {
+            "name": "p4",
+            "type": "decimal",
+            "columnType": "decimal(10,2)",
+            "nullable": true,
+            "default": "0.00",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "2",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "P4",
+            "defaultLabel": "P4",
+            "languageKey": "Fields.p4",
+            "width": 2,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "t5": {
+            "name": "t5",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": true,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "select",
+            "label": "T5",
+            "defaultLabel": "T5",
+            "languageKey": "Fields.t5",
+            "width": 2,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "q5": {
+            "name": "q5",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": true,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Q5",
+            "defaultLabel": "Q5",
+            "languageKey": "Fields.q5",
+            "width": 2,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "p5": {
+            "name": "p5",
+            "type": "decimal",
+            "columnType": "decimal(10,2)",
+            "nullable": true,
+            "default": "0.00",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "2",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "P5",
+            "defaultLabel": "P5",
+            "languageKey": "Fields.p5",
+            "width": 2,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "t6": {
+            "name": "t6",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": true,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "select",
+            "label": "T6",
+            "defaultLabel": "T6",
+            "languageKey": "Fields.t6",
+            "width": 2,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "q6": {
+            "name": "q6",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": true,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Q6",
+            "defaultLabel": "Q6",
+            "languageKey": "Fields.q6",
+            "width": 2,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "p6": {
+            "name": "p6",
+            "type": "decimal",
+            "columnType": "decimal(10,2)",
+            "nullable": true,
+            "default": "0.00",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "2",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "P6",
+            "defaultLabel": "P6",
+            "languageKey": "Fields.p6",
+            "width": 2,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "preno_nome": {
+            "name": "preno_nome",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Preno Nome",
+            "defaultLabel": "Preno Nome",
+            "languageKey": "Fields.preno_nome",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "preno_cogno": {
+            "name": "preno_cogno",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Preno Cogno",
+            "defaultLabel": "Preno Cogno",
+            "languageKey": "Fields.preno_cogno",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "preno_agenzia": {
+            "name": "preno_agenzia",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": {
+                "type": "belongsTo",
+                "field": "preno_agenzia",
+                "parentTable": "agenzie",
+                "parentKey": "agenzia_id",
+                "displayField": "hotel_id",
+                "alias": "agenzie_hotel_id"
+            },
+            "inputType": "select",
+            "label": "Preno Agenzia",
+            "defaultLabel": "Preno Agenzia",
+            "languageKey": "Fields.preno_agenzia",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "voucher_id": {
+            "name": "voucher_id",
+            "type": "varchar",
+            "columnType": "varchar(50)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "50",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Voucher Id",
+            "defaultLabel": "Voucher Id",
+            "languageKey": "Fields.voucher_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "50"
+                }
+            }
+        },
+        "ota_voucher": {
+            "name": "ota_voucher",
+            "type": "varchar",
+            "columnType": "varchar(50)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "50",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Ota Voucher",
+            "defaultLabel": "Ota Voucher",
+            "languageKey": "Fields.ota_voucher",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "50"
+                }
+            }
+        },
+        "allotment_id": {
+            "name": "allotment_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "hidden",
+            "label": "Allotment Id",
+            "defaultLabel": "Allotment Id",
+            "languageKey": "Fields.allotment_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "preno_cc_tip": {
+            "name": "preno_cc_tip",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "select",
+            "label": "Preno Cc Tip",
+            "defaultLabel": "Preno Cc Tip",
+            "languageKey": "Fields.preno_cc_tip",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "preno_cc_n": {
+            "name": "preno_cc_n",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Preno Cc N",
+            "defaultLabel": "Preno Cc N",
+            "languageKey": "Fields.preno_cc_n",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "preno_cc_scad": {
+            "name": "preno_cc_scad",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Preno Cc Scad",
+            "defaultLabel": "Preno Cc Scad",
+            "languageKey": "Fields.preno_cc_scad",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "preno_tel": {
+            "name": "preno_tel",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Preno Tel",
+            "defaultLabel": "Preno Tel",
+            "languageKey": "Fields.preno_tel",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "preno_fax": {
+            "name": "preno_fax",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Preno Fax",
+            "defaultLabel": "Preno Fax",
+            "languageKey": "Fields.preno_fax",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "preno_email": {
+            "name": "preno_email",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "email",
+            "label": "Preno Email",
+            "defaultLabel": "Preno Email",
+            "languageKey": "Fields.preno_email",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "preno_mercato": {
+            "name": "preno_mercato",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Preno Mercato",
+            "defaultLabel": "Preno Mercato",
+            "languageKey": "Fields.preno_mercato",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "nazione_iso2": {
+            "name": "nazione_iso2",
+            "type": "char",
+            "columnType": "char(5)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "5",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "select",
+            "label": "Nazione Iso2",
+            "defaultLabel": "Nazione Iso2",
+            "languageKey": "Fields.nazione_iso2",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "5"
+                }
+            }
+        },
+        "preno_note": {
+            "name": "preno_note",
+            "type": "longtext",
+            "columnType": "longtext",
+            "nullable": true,
+            "default": null,
+            "maxLength": "4294967295",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Preno Note",
+            "defaultLabel": "Preno Note",
+            "languageKey": "Fields.preno_note",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "4294967295"
+                }
+            }
+        },
+        "preno_doc_fax": {
+            "name": "preno_doc_fax",
+            "type": "char",
+            "columnType": "char(2)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "2",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "checkbox",
+            "label": "Preno Doc Fax",
+            "defaultLabel": "Preno Doc Fax",
+            "languageKey": "Fields.preno_doc_fax",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "2"
+                }
+            }
+        },
+        "preno_doc_email": {
+            "name": "preno_doc_email",
+            "type": "char",
+            "columnType": "char(2)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "2",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "checkbox",
+            "label": "Preno Doc Email",
+            "defaultLabel": "Preno Doc Email",
+            "languageKey": "Fields.preno_doc_email",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "2"
+                }
+            }
+        },
+        "preno_doc_form": {
+            "name": "preno_doc_form",
+            "type": "char",
+            "columnType": "char(2)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "2",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "checkbox",
+            "label": "Preno Doc Form",
+            "defaultLabel": "Preno Doc Form",
+            "languageKey": "Fields.preno_doc_form",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "2"
+                }
+            }
+        },
+        "preno_doc_mail": {
+            "name": "preno_doc_mail",
+            "type": "char",
+            "columnType": "char(2)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "2",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "checkbox",
+            "label": "Preno Doc Mail",
+            "defaultLabel": "Preno Doc Mail",
+            "languageKey": "Fields.preno_doc_mail",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "2"
+                }
+            }
+        },
+        "preno_doc_vaglia": {
+            "name": "preno_doc_vaglia",
+            "type": "char",
+            "columnType": "char(2)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "2",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "checkbox",
+            "label": "Preno Doc Vaglia",
+            "defaultLabel": "Preno Doc Vaglia",
+            "languageKey": "Fields.preno_doc_vaglia",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "2"
+                }
+            }
+        },
+        "preno_doc_woucher": {
+            "name": "preno_doc_woucher",
+            "type": "char",
+            "columnType": "char(2)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "2",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "checkbox",
+            "label": "Preno Doc Woucher",
+            "defaultLabel": "Preno Doc Woucher",
+            "languageKey": "Fields.preno_doc_woucher",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "2"
+                }
+            }
+        },
+        "preno_pag_modalita": {
+            "name": "preno_pag_modalita",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "select",
+            "label": "Preno Pag Modalita",
+            "defaultLabel": "Preno Pag Modalita",
+            "languageKey": "Fields.preno_pag_modalita",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "preno_caparra": {
+            "name": "preno_caparra",
+            "type": "decimal",
+            "columnType": "decimal(10,2)",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "2",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Preno Caparra",
+            "defaultLabel": "Preno Caparra",
+            "languageKey": "Fields.preno_caparra",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "preno_stato": {
+            "name": "preno_stato",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "radio",
+            "label": "Preno Stato",
+            "defaultLabel": "Preno Stato",
+            "languageKey": "Fields.preno_stato",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "data_opzione": {
+            "name": "data_opzione",
+            "type": "date",
+            "columnType": "date",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "date",
+            "label": "Data Opzione",
+            "defaultLabel": "Data Opzione",
+            "languageKey": "Fields.data_opzione",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "cancella_data_record": {
+            "name": "cancella_data_record",
+            "type": "datetime",
+            "columnType": "datetime",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "hidden",
+            "label": "Cancella Data Record",
+            "defaultLabel": "Cancella Data Record",
+            "languageKey": "Fields.cancella_data_record",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "cancella_user": {
+            "name": "cancella_user",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "hidden",
+            "label": "Cancella User",
+            "defaultLabel": "Cancella User",
+            "languageKey": "Fields.cancella_user",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "cancella_pass": {
+            "name": "cancella_pass",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "hidden",
+            "label": "Cancella Pass",
+            "defaultLabel": "Cancella Pass",
+            "languageKey": "Fields.cancella_pass",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "preno_data_record": {
+            "name": "preno_data_record",
+            "type": "timestamp",
+            "columnType": "timestamp",
+            "nullable": false,
+            "default": "CURRENT_TIMESTAMP",
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "hidden",
+            "label": "Preno Data Record",
+            "defaultLabel": "Preno Data Record",
+            "languageKey": "Fields.preno_data_record",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "agenda_utente_id": {
+            "name": "agenda_utente_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "hidden",
+            "label": "Agenda Utente Id",
+            "defaultLabel": "Agenda Utente Id",
+            "languageKey": "Fields.agenda_utente_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        }
+    },
+    "order": [
+        "preno_id",
+        "hotel_id",
+        "preno_in_data",
+        "preno_importo",
+        "preno_impoto_mod",
+        "preno_dal",
+        "preno_al",
+        "preno_nome",
+        "preno_cogno",
+        "preno_n_notti",
+        "preno_arr_ore",
+        "preno_trattamento",
+        "t1",
+        "t2",
+        "t3",
+        "t4",
+        "t5",
+        "t6",
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5",
+        "q6",
+        "p1",
+        "p2",
+        "p3",
+        "p4",
+        "p5",
+        "p6",
+        "preno_agenzia",
+        "voucher_id",
+        "ota_voucher",
+        "allotment_id",
+        "preno_cc_tip",
+        "preno_cc_n",
+        "preno_cc_scad",
+        "preno_tel",
+        "preno_fax",
+        "preno_email",
+        "preno_mercato",
+        "nazione_iso2",
+        "preno_note",
+        "preno_doc_fax",
+        "preno_doc_email",
+        "preno_doc_form",
+        "preno_doc_mail",
+        "preno_doc_vaglia",
+        "preno_doc_woucher",
+        "preno_pag_modalita",
+        "preno_caparra",
+        "preno_stato",
+        "data_opzione",
+        "cancella_data_record",
+        "cancella_user",
+        "cancella_pass",
+        "preno_data_record",
+        "agenda_utente_id"
+    ],
+    "relations": {
+        "belongsTo": {
+            "preno_agenzia": {
+                "type": "belongsTo",
+                "field": "preno_agenzia",
+                "parentTable": "agenzie",
+                "parentKey": "agenzia_id",
+                "displayField": "hotel_id",
+                "alias": "agenzie_hotel_id"
+            }
+        },
+        "hasMany": [
+            {
+                "type": "hasMany",
+                "childTable": "cassa",
+                "childField": "preno_id",
+                "parentField": "preno_id"
+            },
+            {
+                "type": "hasMany",
+                "childTable": "colori",
+                "childField": "col_preno_id",
+                "parentField": "preno_id"
+            },
+            {
+                "type": "hasMany",
+                "childTable": "foglio_giorno",
+                "childField": "preno_id",
+                "parentField": "preno_id"
+            },
+            {
+                "type": "hasMany",
+                "childTable": "modifica_agenda",
+                "childField": "mod_agenda_id",
+                "parentField": "preno_id"
+            },
+            {
+                "type": "hasMany",
+                "childTable": "ref_agenda_clienti",
+                "childField": "preno_id",
+                "parentField": "preno_id"
+            },
+            {
+                "type": "hasMany",
+                "childTable": "ref_agenzia_preno",
+                "childField": "preno_id",
+                "parentField": "preno_id"
+            },
+            {
+                "type": "hasMany",
+                "childTable": "ref_obmp_booking",
+                "childField": "preno_id",
+                "parentField": "preno_id"
+            }
+        ],
+        "manyToMany": [
+            {
+                "type": "manyToMany",
+                "pivotTable": "ref_agenzia_preno",
+                "ownPivotField": "preno_id",
+                "ownParentField": "preno_id",
+                "relatedTable": "agenzie",
+                "relatedPivotField": "agenzia_id",
+                "relatedKey": "agenzia_id",
+                "displayField": "hotel_id"
+            }
+        ]
+    },
+    "features": {
+        "entity": false,
+        "service": false,
+        "api": false,
+        "datatable": true,
+        "relations": true,
+        "softDeletes": false,
+        "timestamps": true,
+        "exportButtons": true
+    },
+    "softDelete": {
+        "available": false,
+        "field": "deleted_at"
+    },
+    "classes": {
+        "entity": "AgendaEntity",
+        "model": "AgendaModel",
+        "service": "AgendaService",
+        "controller": "AgendaController",
+        "api": "AgendaApiController",
+        "rules": "AgendaRules"
+    },
+    "dataStyle": "object"
+}

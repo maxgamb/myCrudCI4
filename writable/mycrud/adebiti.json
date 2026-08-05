@@ -1,0 +1,292 @@
+{
+    "table": "adebiti",
+    "primaryKey": "adebito_id",
+    "architecture": "full",
+    "fields": {
+        "adebito_id": {
+            "name": "adebito_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": true,
+            "autoIncrement": true,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Adebito Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "conto_id": {
+            "name": "conto_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": true,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Conto Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "hotel_id": {
+            "name": "hotel_id",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Hotel Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "prodotto_id": {
+            "name": "prodotto_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": {
+                "type": "belongsTo",
+                "field": "prodotto_id",
+                "parentTable": "prodotti",
+                "parentKey": "prodotto_id",
+                "displayField": "prodotti_lista_id",
+                "alias": "prodotti_prodotti_lista_id"
+            },
+            "inputType": "select",
+            "label": "Prodotto Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "descrizione": {
+            "name": "descrizione",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Descrizione",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "prezzo": {
+            "name": "prezzo",
+            "type": "decimal",
+            "columnType": "decimal(5,2)",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "2",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Prezzo",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "quantita": {
+            "name": "quantita",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Quantita",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "adebiti_data_record": {
+            "name": "adebiti_data_record",
+            "type": "timestamp",
+            "columnType": "timestamp",
+            "nullable": false,
+            "default": "CURRENT_TIMESTAMP",
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "datetime-local",
+            "label": "Adebiti Data Record",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "adebiti_utente_id": {
+            "name": "adebiti_utente_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Adebiti Utente Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "preno_id": {
+            "name": "preno_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Preno Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        }
+    },
+    "order": [
+        "adebito_id",
+        "conto_id",
+        "hotel_id",
+        "prodotto_id",
+        "descrizione",
+        "prezzo",
+        "quantita",
+        "adebiti_data_record",
+        "adebiti_utente_id",
+        "preno_id"
+    ],
+    "relations": {
+        "belongsTo": {
+            "prodotto_id": {
+                "type": "belongsTo",
+                "field": "prodotto_id",
+                "parentTable": "prodotti",
+                "parentKey": "prodotto_id",
+                "displayField": "prodotti_lista_id",
+                "alias": "prodotti_prodotti_lista_id"
+            }
+        },
+        "hasMany": [
+            {
+                "type": "hasMany",
+                "childTable": "conti_trasferisci",
+                "childField": "adebito_id",
+                "parentField": "adebito_id"
+            }
+        ],
+        "manyToMany": []
+    },
+    "features": {
+        "entity": true,
+        "service": true,
+        "api": true,
+        "datatable": true,
+        "relations": true,
+        "softDeletes": false,
+        "timestamps": true,
+        "exportButtons": true
+    },
+    "softDelete": {
+        "available": false,
+        "field": "deleted_at"
+    },
+    "classes": {
+        "entity": "AdebitusEntity",
+        "model": "AdebitusModel",
+        "service": "AdebitusService",
+        "controller": "AdebitusController",
+        "api": "AdebitusApiController",
+        "rules": "AdebitusRules"
+    },
+    "dataStyle": "object"
+}

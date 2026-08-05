@@ -1,0 +1,949 @@
+{
+    "table": "agenzie",
+    "primaryKey": "agenzia_id",
+    "architecture": "standard",
+    "fields": {
+        "agenzia_id": {
+            "name": "agenzia_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": true,
+            "autoIncrement": true,
+            "unique": true,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Agenzia Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "hotel_id": {
+            "name": "hotel_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Hotel Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "agenzia_tipologia": {
+            "name": "agenzia_tipologia",
+            "type": "varchar",
+            "columnType": "varchar(50)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "50",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Tipologia",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "50"
+                }
+            }
+        },
+        "agenzia_nome": {
+            "name": "agenzia_nome",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Nome",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "agenzia_via": {
+            "name": "agenzia_via",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Via",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "agenzia_citta": {
+            "name": "agenzia_citta",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Citta",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "agenzia_state": {
+            "name": "agenzia_state",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia State",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "agenzia_country": {
+            "name": "agenzia_country",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Country",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "agenzia_cap": {
+            "name": "agenzia_cap",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Cap",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "agenzia_tel": {
+            "name": "agenzia_tel",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Tel",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "agenzia_fax": {
+            "name": "agenzia_fax",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Fax",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "agenzia_email": {
+            "name": "agenzia_email",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "email",
+            "label": "Agenzia Email",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "agenzia_web": {
+            "name": "agenzia_web",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Web",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "agenzia_par_iva": {
+            "name": "agenzia_par_iva",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Par Iva",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "agenzia_par_cf": {
+            "name": "agenzia_par_cf",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Par Cf",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "agenzia_pec": {
+            "name": "agenzia_pec",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Pec",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "agenzia_sid": {
+            "name": "agenzia_sid",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Sid",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "agenzia_referente": {
+            "name": "agenzia_referente",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Referente",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "agenzia_banca_nome": {
+            "name": "agenzia_banca_nome",
+            "type": "varchar",
+            "columnType": "varchar(50)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "50",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Banca Nome",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "50"
+                }
+            }
+        },
+        "agenzia_banca_iban": {
+            "name": "agenzia_banca_iban",
+            "type": "varchar",
+            "columnType": "varchar(50)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "50",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Banca Iban",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "50"
+                }
+            }
+        },
+        "agenzia_banca_swift": {
+            "name": "agenzia_banca_swift",
+            "type": "varchar",
+            "columnType": "varchar(50)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "50",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Banca Swift",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "50"
+                }
+            }
+        },
+        "agenzia_banca_iata": {
+            "name": "agenzia_banca_iata",
+            "type": "varchar",
+            "columnType": "varchar(50)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "50",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Banca Iata",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "50"
+                }
+            }
+        },
+        "agenzia_cc_tipo": {
+            "name": "agenzia_cc_tipo",
+            "type": "varchar",
+            "columnType": "varchar(50)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "50",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Cc Tipo",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "50"
+                }
+            }
+        },
+        "agenzia_cc_nome": {
+            "name": "agenzia_cc_nome",
+            "type": "varchar",
+            "columnType": "varchar(50)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "50",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Cc Nome",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "50"
+                }
+            }
+        },
+        "agenzia_cc_numero": {
+            "name": "agenzia_cc_numero",
+            "type": "varchar",
+            "columnType": "varchar(50)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "50",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Cc Numero",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "50"
+                }
+            }
+        },
+        "agenzia_cc_scadenza": {
+            "name": "agenzia_cc_scadenza",
+            "type": "varchar",
+            "columnType": "varchar(50)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "50",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Cc Scadenza",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "50"
+                }
+            }
+        },
+        "agenzia_cc_cod_sicurezza": {
+            "name": "agenzia_cc_cod_sicurezza",
+            "type": "varchar",
+            "columnType": "varchar(50)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "50",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Cc Cod Sicurezza",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "50"
+                }
+            }
+        },
+        "agenzia_login": {
+            "name": "agenzia_login",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Login",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "agenzia_password": {
+            "name": "agenzia_password",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "password",
+            "label": "Agenzia Password",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "agenzia_ab_web": {
+            "name": "agenzia_ab_web",
+            "type": "char",
+            "columnType": "char(2)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "2",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Ab Web",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "2"
+                }
+            }
+        },
+        "agenzia_ab_affiliati": {
+            "name": "agenzia_ab_affiliati",
+            "type": "char",
+            "columnType": "char(2)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "2",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Ab Affiliati",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "2"
+                }
+            }
+        },
+        "agenzia_ad_vis": {
+            "name": "agenzia_ad_vis",
+            "type": "char",
+            "columnType": "char(2)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "2",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Ad Vis",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "2"
+                }
+            }
+        },
+        "agenzia_ab_sospeso": {
+            "name": "agenzia_ab_sospeso",
+            "type": "char",
+            "columnType": "char(2)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "2",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "Agenzia Ab Sospeso",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "2"
+                }
+            }
+        },
+        "agenzia_data_record": {
+            "name": "agenzia_data_record",
+            "type": "timestamp",
+            "columnType": "timestamp",
+            "nullable": false,
+            "default": "CURRENT_TIMESTAMP",
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "datetime-local",
+            "label": "Agenzia Data Record",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "agenzie_utente_id": {
+            "name": "agenzie_utente_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "Agenzie Utente Id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        }
+    },
+    "order": [
+        "agenzia_id",
+        "hotel_id",
+        "agenzia_tipologia",
+        "agenzia_nome",
+        "agenzia_via",
+        "agenzia_citta",
+        "agenzia_state",
+        "agenzia_country",
+        "agenzia_cap",
+        "agenzia_tel",
+        "agenzia_fax",
+        "agenzia_email",
+        "agenzia_web",
+        "agenzia_par_iva",
+        "agenzia_par_cf",
+        "agenzia_pec",
+        "agenzia_sid",
+        "agenzia_referente",
+        "agenzia_banca_nome",
+        "agenzia_banca_iban",
+        "agenzia_banca_swift",
+        "agenzia_banca_iata",
+        "agenzia_cc_tipo",
+        "agenzia_cc_nome",
+        "agenzia_cc_numero",
+        "agenzia_cc_scadenza",
+        "agenzia_cc_cod_sicurezza",
+        "agenzia_login",
+        "agenzia_password",
+        "agenzia_ab_web",
+        "agenzia_ab_affiliati",
+        "agenzia_ad_vis",
+        "agenzia_ab_sospeso",
+        "agenzia_data_record",
+        "agenzie_utente_id"
+    ],
+    "relations": {
+        "belongsTo": [],
+        "hasMany": [
+            {
+                "type": "hasMany",
+                "childTable": "agenda",
+                "childField": "preno_agenzia",
+                "parentField": "agenzia_id"
+            },
+            {
+                "type": "hasMany",
+                "childTable": "foglio_giorno",
+                "childField": "preno_agenzia",
+                "parentField": "agenzia_id"
+            },
+            {
+                "type": "hasMany",
+                "childTable": "obmp_cm",
+                "childField": "agenzia_id",
+                "parentField": "agenzia_id"
+            },
+            {
+                "type": "hasMany",
+                "childTable": "obmp_ref_event",
+                "childField": "agenzia_id",
+                "parentField": "agenzia_id"
+            },
+            {
+                "type": "hasMany",
+                "childTable": "pratiche",
+                "childField": "pratica_agenzia_id",
+                "parentField": "agenzia_id"
+            },
+            {
+                "type": "hasMany",
+                "childTable": "ref_agenzia_listini",
+                "childField": "agenzia_id",
+                "parentField": "agenzia_id"
+            },
+            {
+                "type": "hasMany",
+                "childTable": "ref_agenzia_preno",
+                "childField": "agenzia_id",
+                "parentField": "agenzia_id"
+            },
+            {
+                "type": "hasMany",
+                "childTable": "sospesi",
+                "childField": "sopeso_societa",
+                "parentField": "agenzia_id"
+            }
+        ],
+        "manyToMany": [
+            {
+                "type": "manyToMany",
+                "pivotTable": "ref_agenzia_listini",
+                "ownPivotField": "agenzia_id",
+                "ownParentField": "agenzia_id",
+                "relatedTable": "agenzia_listini",
+                "relatedPivotField": "agenzia_listini_id",
+                "relatedKey": "agenzia_listini_id",
+                "displayField": "hotel_id"
+            },
+            {
+                "type": "manyToMany",
+                "pivotTable": "ref_agenzia_preno",
+                "ownPivotField": "agenzia_id",
+                "ownParentField": "agenzia_id",
+                "relatedTable": "agenda",
+                "relatedPivotField": "preno_id",
+                "relatedKey": "preno_id",
+                "displayField": "hotel_id"
+            },
+            {
+                "type": "manyToMany",
+                "pivotTable": "sospesi",
+                "ownPivotField": "sopeso_societa",
+                "ownParentField": "agenzia_id",
+                "relatedTable": "pratiche",
+                "relatedPivotField": "sospeso_pratica_id",
+                "relatedKey": "pratica_id",
+                "displayField": "hotel_id"
+            }
+        ]
+    },
+    "features": {
+        "entity": true,
+        "service": true,
+        "api": false,
+        "datatable": true,
+        "relations": true,
+        "softDeletes": false,
+        "timestamps": true,
+        "exportButtons": true
+    },
+    "softDelete": {
+        "available": false,
+        "field": "deleted_at"
+    },
+    "classes": {
+        "entity": "AgenzieEntity",
+        "model": "AgenzieModel",
+        "service": "AgenzieService",
+        "controller": "AgenzieController",
+        "api": "AgenzieApiController",
+        "rules": "AgenzieRules"
+    },
+    "dataStyle": "object"
+}
