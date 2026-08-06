@@ -20,7 +20,27 @@ trait GeneratorTrait
         string $content,
         bool $force
     ): array {
-        $path = $this->generatedRoot() . ltrim($relativePath, DIRECTORY_SEPARATOR);
+        if (str_contains($relativePath, "\0")) {
+            throw new RuntimeException('Percorso di generazione non valido.');
+        }
+
+        $relativePath = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, trim($relativePath));
+        $relativePath = ltrim($relativePath, DIRECTORY_SEPARATOR);
+        $segments = explode(DIRECTORY_SEPARATOR, $relativePath);
+
+        if (
+            count($segments) < 2
+            || $segments[0] !== 'Generated'
+            || in_array('', $segments, true)
+            || in_array('.', $segments, true)
+            || in_array('..', $segments, true)
+        ) {
+            throw new RuntimeException(
+                'Scrittura bloccata: il percorso deve essere relativo ad app/Generated/.'
+            );
+        }
+
+        $path = $this->generatedRoot() . implode(DIRECTORY_SEPARATOR, $segments);
         $dir  = dirname($path);
 
         if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {

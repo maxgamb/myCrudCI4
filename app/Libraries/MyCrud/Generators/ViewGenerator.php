@@ -40,7 +40,7 @@ final class ViewGenerator
 
         if (!empty($config['features']['softDeletes'])) {
             $files['trash.php'] = $this->writeGenerated(
-                "Views/{$table}/trash.php",
+                "Generated/Views/{$table}/trash.php",
                 $this->trash->generate($config),
                 $force
             );

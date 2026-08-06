@@ -26,6 +26,7 @@ final class TemplateDiagnostics
             'views/edit.tpl',
             'views/form.tpl',
             'views/index.tpl',
+            'views/basic_index.tpl',
             'views/detail.tpl',
             'views/has_many_panel.tpl',
             'views/trash.tpl',

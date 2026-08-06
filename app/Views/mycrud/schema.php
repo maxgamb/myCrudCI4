@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/default') ?>
+<?= $this->extend('layouts/default_crud') ?>
 <?= $this->section('content') ?>
 <div class="container-fluid py-4">
 <h1 class="h3"><?= esc($title) ?></h1>

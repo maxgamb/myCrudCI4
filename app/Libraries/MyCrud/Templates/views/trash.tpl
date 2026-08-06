@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/default') ?>
+<?= $this->extend('layouts/default_app') ?>
 <?= $this->section('content') ?>
 
 <div class="container py-4">

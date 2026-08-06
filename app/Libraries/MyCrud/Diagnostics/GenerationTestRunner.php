@@ -49,7 +49,7 @@ final class GenerationTestRunner
         /** @var MyCrud $myCrud */
         $myCrud = config('MyCrud');
         $report->addMany(
-            (new GeneratedFileDiagnostics())->inspect($myCrud->generatedPath)
+            (new GeneratedFileDiagnostics())->inspect($myCrud->generatedStagingPath())
         );
 
         return $report;

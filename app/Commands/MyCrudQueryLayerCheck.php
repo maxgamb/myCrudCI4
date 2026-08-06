@@ -79,7 +79,7 @@ final class MyCrudQueryLayerCheck extends BaseCommand
 
     private function inspectGeneratedFiles(array $config, string $architecture): void
     {
-        $root = rtrim((string) config('MyCrud')->generatedPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $root = config('MyCrud')->generatedStagingPath();
         $controller = $root . 'Controllers/' . $config['classes']['controller'] . '.php';
         $model = $root . 'Models/' . $config['classes']['model'] . '.php';
         $route = $root . 'Routes/' . $config['table'] . '.php';

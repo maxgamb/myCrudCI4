@@ -107,7 +107,7 @@ final class GlobalGenerationService
     {
         /** @var MyCrud $settings */
         $settings = $this->settings ?? config('MyCrud');
-        $root = rtrim($settings->generatedPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $root = $settings->generatedStagingPath();
         $table = $config['table'];
         $classes = $config['classes'];
 

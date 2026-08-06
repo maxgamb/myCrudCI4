@@ -17,6 +17,8 @@ final class ProjectDiagnostics
             'CrudGeneratorService' => APPPATH . 'Libraries/MyCrud/Core/CrudGeneratorService.php',
             'ViewGenerator'        => APPPATH . 'Libraries/MyCrud/Generators/ViewGenerator.php',
             'TemplateEngine'       => APPPATH . 'Libraries/MyCrud/Template/TemplateEngine.php',
+            'Layout CRUD'          => APPPATH . 'Views/layouts/default_crud.php',
+            'Layout applicazione'  => APPPATH . 'Views/layouts/default_app.php',
         ];
 
         foreach ($requiredFiles as $name => $path) {
@@ -30,7 +32,7 @@ final class ProjectDiagnostics
 
         /** @var MyCrud $config */
         $config = config('MyCrud');
-        $generatedPath = rtrim($config->generatedPath, DIRECTORY_SEPARATOR);
+        $generatedPath = rtrim($config->generatedStagingPath(), DIRECTORY_SEPARATOR);
         $parent = dirname($generatedPath);
 
         $report->add(new DiagnosticResult(

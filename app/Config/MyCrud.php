@@ -6,14 +6,23 @@ use CodeIgniter\Config\BaseConfig;
 
 class MyCrud extends BaseConfig
 {
-    public string $version = '2.7.1';
+    public string $version = '2.7.3';
 
     /**
-     * I generatori producono classi con namespace App\\... e view risolte da
-     * CodeIgniter dentro APPPATH. Per questo il percorso operativo predefinito
-     * deve essere APPPATH e non una cartella di staging non autocaricata.
+     * Directory base usata dal writer. Ogni generatore deve passare un percorso
+     * relativo che inizi con Generated/, così nessun file viene scritto
+     * direttamente nelle cartelle operative di app/.
      */
     public string $generatedPath = APPPATH;
+
+    /** Percorso effettivo dell'area di staging sicura. */
+    public function generatedStagingPath(): string
+    {
+        return rtrim($this->generatedPath, DIRECTORY_SEPARATOR)
+            . DIRECTORY_SEPARATOR
+            . 'Generated'
+            . DIRECTORY_SEPARATOR;
+    }
 
     public string $defaultArchitecture = 'standard';
     public bool $safeWrite = true;

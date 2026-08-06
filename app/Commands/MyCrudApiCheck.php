@@ -32,7 +32,7 @@ final class MyCrudApiCheck extends BaseCommand
         $config['features']['service'] = true;
         $config['features']['api'] = true;
         $result = (new CrudGeneratorService())->generate($config, true);
-        $root = rtrim((string) config('MyCrud')->generatedPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $root = config('MyCrud')->generatedStagingPath();
         $checks = [
             $root . 'Controllers/Api/V1/' . $config['classes']['api'] . '.php',
             $root . 'API/Resources/' . preg_replace('/ApiController$/', 'Resource', $config['classes']['api']) . '.php',

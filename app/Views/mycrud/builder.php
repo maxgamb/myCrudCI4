@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/default') ?>
+<?= $this->extend('layouts/default_crud') ?>
 <?= $this->section('content') ?>
 
 
