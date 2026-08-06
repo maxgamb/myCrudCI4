@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/default') ?>
+<?= $this->extend('layouts/default_app') ?>
 <?= $this->section('content') ?>
 
 <?= view('{{VIEW_PATH}}/_form', [

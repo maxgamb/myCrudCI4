@@ -294,8 +294,8 @@ final class {$api} extends BaseApiController
 PHP;
 
         return [
-            'controller' => $this->writeGenerated("Controllers/Api/V1/{$api}.php", $controllerContent, $force),
-            'resource' => $this->writeGenerated("API/Resources/{$resource}.php", $resourceContent, $force),
+            'controller' => $this->writeGenerated("Generated/Controllers/Api/V1/{$api}.php", $controllerContent, $force),
+            'resource' => $this->writeGenerated("Generated/API/Resources/{$resource}.php", $resourceContent, $force),
         ];
     }
 }

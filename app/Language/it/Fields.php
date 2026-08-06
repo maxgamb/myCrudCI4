@@ -1,14 +1,3 @@
-
-myCrudGpt
-
-    Home
-    Generazione
-    Strumenti
-    Legacy
-
-Production
-Traduzioni Fields.php
-
 <?php
 
 return [

@@ -53,6 +53,6 @@ class {$class} extends Entity
 
 PHP;
 
-        return $this->writeGenerated("Entities/{$class}.php", $content, $force);
+        return $this->writeGenerated("Generated/Entities/{$class}.php", $content, $force);
     }
 }

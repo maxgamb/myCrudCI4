@@ -43,6 +43,6 @@ use CodeIgniter\Router\RouteCollection;
 {$apiRoutes}
 PHP;
 
-        return $this->writeGenerated("Routes/{$table}.php", $content, $force);
+        return $this->writeGenerated("Generated/Routes/{$table}.php", $content, $force);
     }
 }

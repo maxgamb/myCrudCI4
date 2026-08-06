@@ -84,7 +84,7 @@ components:
       properties:
 {$properties}
 YAML;
-        return $this->writeGenerated("OpenApi/{$table}.yaml", $content, $force);
+        return $this->writeGenerated("Generated/OpenApi/{$table}.yaml", $content, $force);
     }
 
     /** @return array{0:string,1:?string} */

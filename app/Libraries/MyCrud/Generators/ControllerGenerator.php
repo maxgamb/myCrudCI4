@@ -332,6 +332,6 @@ final class {$controller} extends BaseController
 
 PHP;
 
-        return $this->writeGenerated("Controllers/{$controller}.php", $content, $force);
+        return $this->writeGenerated("Generated/Controllers/{$controller}.php", $content, $force);
     }
 }

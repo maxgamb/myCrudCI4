@@ -31,11 +31,11 @@ final class ViewGenerator
         $formViews = $this->forms->generate($config);
 
         $files = [
-            '_form.php' => $this->writeGenerated("Views/{$table}/_form.php", $formViews['form'], $force),
-            'create.php' => $this->writeGenerated("Views/{$table}/create.php", $formViews['create'], $force),
-            'edit.php'   => $this->writeGenerated("Views/{$table}/edit.php", $formViews['edit'], $force),
-            'index.php'  => $this->writeGenerated("Views/{$table}/index.php", $this->index->generate($config), $force),
-            'view.php'   => $this->writeGenerated("Views/{$table}/view.php", $this->detail->generate($config), $force),
+            '_form.php' => $this->writeGenerated("Generated/Views/{$table}/_form.php", $formViews['form'], $force),
+            'create.php' => $this->writeGenerated("Generated/Views/{$table}/create.php", $formViews['create'], $force),
+            'edit.php'   => $this->writeGenerated("Generated/Views/{$table}/edit.php", $formViews['edit'], $force),
+            'index.php'  => $this->writeGenerated("Generated/Views/{$table}/index.php", $this->index->generate($config), $force),
+            'view.php'   => $this->writeGenerated("Generated/Views/{$table}/view.php", $this->detail->generate($config), $force),
         ];
 
         if (!empty($config['features']['softDeletes'])) {

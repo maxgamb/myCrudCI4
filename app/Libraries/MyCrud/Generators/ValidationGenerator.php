@@ -67,6 +67,6 @@ final class ValidationGenerator
             . "        }\n        return \$rules;\n    }\n\n"
             . "    public static function messages(): array\n    {\n        return [];\n    }\n}\n";
 
-        return $this->writeGenerated("Validation/{$class}.php", $content, $force);
+        return $this->writeGenerated("Generated/Validation/{$class}.php", $content, $force);
     }
 }

@@ -394,6 +394,6 @@ final class {$class} extends Model
 
 PHP;
 
-        return $this->writeGenerated("Models/{$class}.php", $content, $force);
+        return $this->writeGenerated("Generated/Models/{$class}.php", $content, $force);
     }
 }

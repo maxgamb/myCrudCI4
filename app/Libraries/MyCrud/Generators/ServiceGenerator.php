@@ -133,6 +133,6 @@ final class {$class}
 
 PHP;
 
-        return $this->writeGenerated("Services/{$class}.php", $content, $force);
+        return $this->writeGenerated("Generated/Services/{$class}.php", $content, $force);
     }
 }
