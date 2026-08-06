@@ -8,28 +8,7 @@ $routes->get('/', 'Home::index');
 
 /** @var RouteCollection $routes */
 
-$routes->group(
-    'mycrud',
-    ['namespace' => 'App\Controllers\MyCrud'],
-    static function (RouteCollection $routes): void {
-        $routes->get('/', 'BuilderController::index');
-
-        $routes->get('quick', 'AutoCrudController::index');
-        $routes->post('quick/generate', 'AutoCrudController::generateAll');
-        $routes->get('quick/report/(:segment)', 'AutoCrudController::report/$1');
-
-        $routes->get('builder', 'BuilderController::index');
-        $routes->get('builder/configure/(:segment)', 'BuilderController::configure/$1');
-        $routes->post('builder/save', 'BuilderController::save');
-        $routes->post('builder/generate', 'BuilderController::generate');
-
-        $routes->get('tools/routes', 'ToolsController::routes');
-        $routes->get('tools/fields', 'ToolsController::fields');
-        $routes->get('tools/schema', 'ToolsController::schema');
-        $routes->get('tools/schema/(:segment)', 'ToolsController::schema/$1');
-    }
-);
-
+require APPPATH . 'Config/MyCrudRoutes.php';
 
 $routes->group('adebiti', static function (RouteCollection $routes): void {
     $routes->get('/', 'AdebitusController::index');
@@ -1153,4 +1132,4 @@ $routes->group('wreh_suppliers', static function (RouteCollection $routes): void
     $routes->post('delete/(:segment)', 'WrehSupplierController::delete/$1');
 });
 
-require APPPATH . 'Config/MyCrudRoutes.php';
+
