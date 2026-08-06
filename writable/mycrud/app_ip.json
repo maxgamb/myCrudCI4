@@ -113,7 +113,11 @@
     "relations": {
         "belongsTo": [],
         "hasMany": [],
-        "manyToMany": []
+        "manyToMany": [],
+        "self": []
+    },
+    "relationsConfig": {
+        "hasMany": []
     },
     "features": {
         "entity": true,

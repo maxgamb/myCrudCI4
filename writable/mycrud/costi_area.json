@@ -1,0 +1,304 @@
+{
+    "table": "costi_area",
+    "primaryKey": "costi_area_id",
+    "architecture": "standard",
+    "fields": {
+        "costi_area_id": {
+            "name": "costi_area_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": true,
+            "autoIncrement": true,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Costi Area Id",
+            "languageKey": "Fields.costi_area_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": false,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
+            }
+        },
+        "costi_area_nome": {
+            "name": "costi_area_nome",
+            "type": "varchar",
+            "columnType": "varchar(225)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "225",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Costi Area Nome",
+            "languageKey": "Fields.costi_area_nome",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "225"
+                }
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": true,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
+            }
+        },
+        "costi_area": {
+            "name": "costi_area",
+            "type": "varchar",
+            "columnType": "varchar(45)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "45",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Costi Area",
+            "languageKey": "Fields.costi_area",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "45"
+                }
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": true,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
+            }
+        },
+        "utente_id": {
+            "name": "utente_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Utente Id",
+            "languageKey": "Fields.utente_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": true,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
+            }
+        },
+        "costi_area_data_record": {
+            "name": "costi_area_data_record",
+            "type": "timestamp",
+            "columnType": "timestamp",
+            "nullable": false,
+            "default": "CURRENT_TIMESTAMP",
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "datetime-local",
+            "label": "",
+            "defaultLabel": "Costi Area Data Record",
+            "languageKey": "Fields.costi_area_data_record",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": true,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
+            }
+        }
+    },
+    "order": [
+        "costi_area_id",
+        "costi_area_nome",
+        "costi_area",
+        "utente_id",
+        "costi_area_data_record"
+    ],
+    "relations": {
+        "belongsTo": [],
+        "hasMany": {
+            "costi_var__costi_area_id": {
+                "key": "costi_var__costi_area_id",
+                "type": "hasMany",
+                "childTable": "costi_var",
+                "childPrimaryKey": "costi_var_id",
+                "foreignKey": "costi_area_id",
+                "parentTable": "costi_area",
+                "parentKey": "costi_area_id",
+                "displayField": "costi_var_sub_1",
+                "columns": [
+                    "costi_var_id",
+                    "costi_var_sub_1",
+                    "costi_var_sub_2",
+                    "hotel_id",
+                    "costi_var_codice",
+                    "costi_var_nome"
+                ]
+            },
+            "wreh_products__costi_area_id": {
+                "key": "wreh_products__costi_area_id",
+                "type": "hasMany",
+                "childTable": "wreh_products",
+                "childPrimaryKey": "product_id",
+                "foreignKey": "costi_area_id",
+                "parentTable": "costi_area",
+                "parentKey": "costi_area_id",
+                "displayField": "name",
+                "columns": [
+                    "product_id",
+                    "name",
+                    "description",
+                    "price",
+                    "stock_quantity",
+                    "supplier_id"
+                ]
+            }
+        },
+        "manyToMany": {
+            "wreh_products__costi_area_id": {
+                "type": "manyToMany",
+                "pivotTable": "wreh_products",
+                "ownPivotField": "costi_area_id",
+                "ownParentField": "costi_area_id",
+                "relatedTable": "wreh_suppliers",
+                "relatedPivotField": "supplier_id",
+                "relatedKey": "supplier_id"
+            }
+        },
+        "self": []
+    },
+    "relationsConfig": {
+        "hasMany": {
+            "costi_var__costi_area_id": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Costi Var",
+                "icon": "bi-diagram-3",
+                "childTable": "costi_var",
+                "foreignKey": "costi_area_id",
+                "parentKey": "costi_area_id",
+                "primaryKey": "costi_var_id",
+                "columns": [
+                    "costi_var_id",
+                    "costi_var_sub_1",
+                    "costi_var_sub_2",
+                    "hotel_id",
+                    "costi_var_codice",
+                    "costi_var_nome"
+                ],
+                "displayField": "costi_var_sub_1",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
+            },
+            "wreh_products__costi_area_id": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Wreh Products",
+                "icon": "bi-diagram-3",
+                "childTable": "wreh_products",
+                "foreignKey": "costi_area_id",
+                "parentKey": "costi_area_id",
+                "primaryKey": "product_id",
+                "columns": [
+                    "product_id",
+                    "name",
+                    "description",
+                    "price",
+                    "stock_quantity",
+                    "supplier_id"
+                ],
+                "displayField": "name",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
+            }
+        }
+    },
+    "features": {
+        "entity": true,
+        "service": true,
+        "api": false,
+        "datatable": true,
+        "relations": true,
+        "softDeletes": false,
+        "timestamps": true,
+        "exportButtons": true
+    },
+    "softDelete": {
+        "available": false,
+        "field": "deleted_at"
+    },
+    "classes": {
+        "entity": "CostiAreaEntity",
+        "model": "CostiAreaModel",
+        "service": "CostiAreaService",
+        "controller": "CostiAreaController",
+        "api": "CostiAreaApiController",
+        "rules": "CostiAreaRules"
+    },
+    "dataStyle": "object"
+}

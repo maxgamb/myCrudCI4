@@ -17,7 +17,9 @@
             "unique": true,
             "foreignKey": null,
             "inputType": "number",
-            "label": "Agenzia Id",
+            "label": "",
+            "defaultLabel": "Agenzia Id",
+            "languageKey": "Fields.agenzia_id",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -38,10 +40,14 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "number",
-            "label": "Hotel Id",
+            "label": "",
+            "defaultLabel": "Hotel Id",
+            "languageKey": "Fields.hotel_id",
             "width": 6,
             "attributes": {
-                "boolean": [],
+                "boolean": [
+                    "required"
+                ],
                 "values": []
             }
         },
@@ -59,7 +65,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Tipologia",
+            "label": "",
+            "defaultLabel": "Agenzia Tipologia",
+            "languageKey": "Fields.agenzia_tipologia",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -82,10 +90,14 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Nome",
+            "label": "",
+            "defaultLabel": "Agenzia Nome",
+            "languageKey": "Fields.agenzia_nome",
             "width": 6,
             "attributes": {
-                "boolean": [],
+                "boolean": [
+                    "required"
+                ],
                 "values": {
                     "maxlength": "100"
                 }
@@ -105,7 +117,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Via",
+            "label": "",
+            "defaultLabel": "Agenzia Via",
+            "languageKey": "Fields.agenzia_via",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -128,7 +142,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Citta",
+            "label": "",
+            "defaultLabel": "Agenzia Citta",
+            "languageKey": "Fields.agenzia_citta",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -151,7 +167,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia State",
+            "label": "",
+            "defaultLabel": "Agenzia State",
+            "languageKey": "Fields.agenzia_state",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -174,7 +192,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Country",
+            "label": "",
+            "defaultLabel": "Agenzia Country",
+            "languageKey": "Fields.agenzia_country",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -197,7 +217,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Cap",
+            "label": "",
+            "defaultLabel": "Agenzia Cap",
+            "languageKey": "Fields.agenzia_cap",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -220,7 +242,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Tel",
+            "label": "",
+            "defaultLabel": "Agenzia Tel",
+            "languageKey": "Fields.agenzia_tel",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -243,7 +267,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Fax",
+            "label": "",
+            "defaultLabel": "Agenzia Fax",
+            "languageKey": "Fields.agenzia_fax",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -266,7 +292,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "email",
-            "label": "Agenzia Email",
+            "label": "",
+            "defaultLabel": "Agenzia Email",
+            "languageKey": "Fields.agenzia_email",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -289,7 +317,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Web",
+            "label": "",
+            "defaultLabel": "Agenzia Web",
+            "languageKey": "Fields.agenzia_web",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -312,7 +342,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Par Iva",
+            "label": "",
+            "defaultLabel": "Agenzia Par Iva",
+            "languageKey": "Fields.agenzia_par_iva",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -335,7 +367,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Par Cf",
+            "label": "",
+            "defaultLabel": "Agenzia Par Cf",
+            "languageKey": "Fields.agenzia_par_cf",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -358,7 +392,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Pec",
+            "label": "",
+            "defaultLabel": "Agenzia Pec",
+            "languageKey": "Fields.agenzia_pec",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -381,7 +417,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Sid",
+            "label": "",
+            "defaultLabel": "Agenzia Sid",
+            "languageKey": "Fields.agenzia_sid",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -404,7 +442,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Referente",
+            "label": "",
+            "defaultLabel": "Agenzia Referente",
+            "languageKey": "Fields.agenzia_referente",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -427,7 +467,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Banca Nome",
+            "label": "",
+            "defaultLabel": "Agenzia Banca Nome",
+            "languageKey": "Fields.agenzia_banca_nome",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -450,7 +492,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Banca Iban",
+            "label": "",
+            "defaultLabel": "Agenzia Banca Iban",
+            "languageKey": "Fields.agenzia_banca_iban",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -473,7 +517,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Banca Swift",
+            "label": "",
+            "defaultLabel": "Agenzia Banca Swift",
+            "languageKey": "Fields.agenzia_banca_swift",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -496,7 +542,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Banca Iata",
+            "label": "",
+            "defaultLabel": "Agenzia Banca Iata",
+            "languageKey": "Fields.agenzia_banca_iata",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -519,7 +567,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Cc Tipo",
+            "label": "",
+            "defaultLabel": "Agenzia Cc Tipo",
+            "languageKey": "Fields.agenzia_cc_tipo",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -542,7 +592,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Cc Nome",
+            "label": "",
+            "defaultLabel": "Agenzia Cc Nome",
+            "languageKey": "Fields.agenzia_cc_nome",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -565,7 +617,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Cc Numero",
+            "label": "",
+            "defaultLabel": "Agenzia Cc Numero",
+            "languageKey": "Fields.agenzia_cc_numero",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -588,7 +642,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Cc Scadenza",
+            "label": "",
+            "defaultLabel": "Agenzia Cc Scadenza",
+            "languageKey": "Fields.agenzia_cc_scadenza",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -611,7 +667,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Cc Cod Sicurezza",
+            "label": "",
+            "defaultLabel": "Agenzia Cc Cod Sicurezza",
+            "languageKey": "Fields.agenzia_cc_cod_sicurezza",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -634,7 +692,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Login",
+            "label": "",
+            "defaultLabel": "Agenzia Login",
+            "languageKey": "Fields.agenzia_login",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -657,7 +717,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "password",
-            "label": "Agenzia Password",
+            "label": "",
+            "defaultLabel": "Agenzia Password",
+            "languageKey": "Fields.agenzia_password",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -680,7 +742,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Ab Web",
+            "label": "",
+            "defaultLabel": "Agenzia Ab Web",
+            "languageKey": "Fields.agenzia_ab_web",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -703,7 +767,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Ab Affiliati",
+            "label": "",
+            "defaultLabel": "Agenzia Ab Affiliati",
+            "languageKey": "Fields.agenzia_ab_affiliati",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -726,7 +792,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Ad Vis",
+            "label": "",
+            "defaultLabel": "Agenzia Ad Vis",
+            "languageKey": "Fields.agenzia_ad_vis",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -749,7 +817,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Agenzia Ab Sospeso",
+            "label": "",
+            "defaultLabel": "Agenzia Ab Sospeso",
+            "languageKey": "Fields.agenzia_ab_sospeso",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -772,10 +842,14 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "datetime-local",
-            "label": "Agenzia Data Record",
+            "label": "",
+            "defaultLabel": "Agenzia Data Record",
+            "languageKey": "Fields.agenzia_data_record",
             "width": 6,
             "attributes": {
-                "boolean": [],
+                "boolean": [
+                    "required"
+                ],
                 "values": []
             }
         },
@@ -793,7 +867,9 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "number",
-            "label": "Agenzie Utente Id",
+            "label": "",
+            "defaultLabel": "Agenzie Utente Id",
+            "languageKey": "Fields.agenzie_utente_id",
             "width": 6,
             "attributes": {
                 "boolean": [],
@@ -840,88 +916,356 @@
     ],
     "relations": {
         "belongsTo": [],
-        "hasMany": [
-            {
+        "hasMany": {
+            "agenda__preno_agenzia": {
+                "key": "agenda__preno_agenzia",
                 "type": "hasMany",
                 "childTable": "agenda",
-                "childField": "preno_agenzia",
-                "parentField": "agenzia_id"
+                "childPrimaryKey": "preno_id",
+                "foreignKey": "preno_agenzia",
+                "parentTable": "agenzie",
+                "parentKey": "agenzia_id",
+                "displayField": "preno_arr_ore",
+                "columns": [
+                    "preno_id",
+                    "hotel_id",
+                    "preno_in_data",
+                    "preno_importo",
+                    "preno_impoto_mod",
+                    "preno_dal"
+                ]
             },
-            {
+            "foglio_giorno__preno_agenzia": {
+                "key": "foglio_giorno__preno_agenzia",
                 "type": "hasMany",
                 "childTable": "foglio_giorno",
-                "childField": "preno_agenzia",
-                "parentField": "agenzia_id"
+                "childPrimaryKey": "foglio_id",
+                "foreignKey": "preno_agenzia",
+                "parentTable": "agenzie",
+                "parentKey": "agenzia_id",
+                "displayField": "date_foglio",
+                "columns": [
+                    "foglio_id",
+                    "hotel_id",
+                    "conto_id",
+                    "camera_id",
+                    "preno_id",
+                    "tipologia_id"
+                ]
             },
-            {
+            "obmp_cm__agenzia_id": {
+                "key": "obmp_cm__agenzia_id",
                 "type": "hasMany",
                 "childTable": "obmp_cm",
-                "childField": "agenzia_id",
-                "parentField": "agenzia_id"
+                "childPrimaryKey": "obmp_cm_id",
+                "foreignKey": "agenzia_id",
+                "parentTable": "agenzie",
+                "parentKey": "agenzia_id",
+                "displayField": "obmp_cm_id_hotel_agenzia",
+                "columns": [
+                    "obmp_cm_id",
+                    "hotel_id",
+                    "obmp_cm_id_hotel_agenzia",
+                    "obmp_cm_attiva",
+                    "obmp_cm_agenzia_url",
+                    "obmp_cm_agenzia_user"
+                ]
             },
-            {
+            "obmp_ref_event__agenzia_id": {
+                "key": "obmp_ref_event__agenzia_id",
                 "type": "hasMany",
                 "childTable": "obmp_ref_event",
-                "childField": "agenzia_id",
-                "parentField": "agenzia_id"
+                "childPrimaryKey": "ref_event_id",
+                "foreignKey": "agenzia_id",
+                "parentTable": "agenzie",
+                "parentKey": "agenzia_id",
+                "displayField": "ref_event_nome",
+                "columns": [
+                    "ref_event_id",
+                    "ref_site_id",
+                    "hotel_id",
+                    "listino_nome_id",
+                    "ref_event_nome",
+                    "event_dal"
+                ]
             },
-            {
+            "pratiche__pratica_agenzia_id": {
+                "key": "pratiche__pratica_agenzia_id",
                 "type": "hasMany",
                 "childTable": "pratiche",
-                "childField": "pratica_agenzia_id",
-                "parentField": "agenzia_id"
+                "childPrimaryKey": "pratica_id",
+                "foreignKey": "pratica_agenzia_id",
+                "parentTable": "agenzie",
+                "parentKey": "agenzia_id",
+                "displayField": "pratica_nome",
+                "columns": [
+                    "pratica_id",
+                    "hotel_id",
+                    "pratica_nome",
+                    "pratica_1",
+                    "pratica_2",
+                    "pratica_note"
+                ]
             },
-            {
+            "ref_agenzia_listini__agenzia_id": {
+                "key": "ref_agenzia_listini__agenzia_id",
                 "type": "hasMany",
                 "childTable": "ref_agenzia_listini",
-                "childField": "agenzia_id",
-                "parentField": "agenzia_id"
+                "childPrimaryKey": "ref_agenzia_listini_id",
+                "foreignKey": "agenzia_id",
+                "parentTable": "agenzie",
+                "parentKey": "agenzia_id",
+                "displayField": "ref_agenzia_listini_id",
+                "columns": [
+                    "ref_agenzia_listini_id",
+                    "agenzia_listini_id",
+                    "hotel_id",
+                    "agenzia_limite_vendita",
+                    "agenzia_ab_limite_vendita",
+                    "agenzia_max_vendita"
+                ]
             },
-            {
+            "ref_agenzia_preno__agenzia_id": {
+                "key": "ref_agenzia_preno__agenzia_id",
                 "type": "hasMany",
                 "childTable": "ref_agenzia_preno",
-                "childField": "agenzia_id",
-                "parentField": "agenzia_id"
+                "childPrimaryKey": "ref_agenzia_preno",
+                "foreignKey": "agenzia_id",
+                "parentTable": "agenzie",
+                "parentKey": "agenzia_id",
+                "displayField": "ref_agenzia_preno",
+                "columns": [
+                    "ref_agenzia_preno",
+                    "preno_id",
+                    "ref_a_p_datarecord"
+                ]
             },
-            {
+            "sospesi__sopeso_societa": {
+                "key": "sospesi__sopeso_societa",
                 "type": "hasMany",
                 "childTable": "sospesi",
-                "childField": "sopeso_societa",
-                "parentField": "agenzia_id"
+                "childPrimaryKey": "sospeso_id",
+                "foreignKey": "sopeso_societa",
+                "parentTable": "agenzie",
+                "parentKey": "agenzia_id",
+                "displayField": "sospeso_id",
+                "columns": [
+                    "sospeso_id",
+                    "hotel_id",
+                    "pagamento_id",
+                    "cassa_id",
+                    "sospeso_data",
+                    "sospeso_conto_id"
+                ]
             }
-        ],
-        "manyToMany": [
-            {
+        },
+        "manyToMany": {
+            "ref_agenzia_listini__agenzia_id": {
                 "type": "manyToMany",
                 "pivotTable": "ref_agenzia_listini",
                 "ownPivotField": "agenzia_id",
                 "ownParentField": "agenzia_id",
                 "relatedTable": "agenzia_listini",
                 "relatedPivotField": "agenzia_listini_id",
-                "relatedKey": "agenzia_listini_id",
-                "displayField": "hotel_id"
+                "relatedKey": "agenzia_listini_id"
             },
-            {
+            "ref_agenzia_preno__agenzia_id": {
                 "type": "manyToMany",
                 "pivotTable": "ref_agenzia_preno",
                 "ownPivotField": "agenzia_id",
                 "ownParentField": "agenzia_id",
                 "relatedTable": "agenda",
                 "relatedPivotField": "preno_id",
-                "relatedKey": "preno_id",
-                "displayField": "hotel_id"
+                "relatedKey": "preno_id"
             },
-            {
+            "sospesi__sopeso_societa": {
                 "type": "manyToMany",
                 "pivotTable": "sospesi",
                 "ownPivotField": "sopeso_societa",
                 "ownParentField": "agenzia_id",
                 "relatedTable": "pratiche",
                 "relatedPivotField": "sospeso_pratica_id",
-                "relatedKey": "pratica_id",
-                "displayField": "hotel_id"
+                "relatedKey": "pratica_id"
             }
-        ]
+        },
+        "self": []
+    },
+    "relationsConfig": {
+        "hasMany": {
+            "agenda__preno_agenzia": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Agenda",
+                "icon": "bi-diagram-3",
+                "childTable": "agenda",
+                "foreignKey": "preno_agenzia",
+                "parentKey": "agenzia_id",
+                "primaryKey": "preno_id",
+                "columns": [
+                    "preno_id",
+                    "hotel_id",
+                    "preno_in_data",
+                    "preno_importo",
+                    "preno_impoto_mod",
+                    "preno_dal"
+                ],
+                "displayField": "preno_arr_ore",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
+            },
+            "foglio_giorno__preno_agenzia": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Foglio Giorno",
+                "icon": "bi-diagram-3",
+                "childTable": "foglio_giorno",
+                "foreignKey": "preno_agenzia",
+                "parentKey": "agenzia_id",
+                "primaryKey": "foglio_id",
+                "columns": [
+                    "foglio_id",
+                    "hotel_id",
+                    "conto_id",
+                    "camera_id",
+                    "preno_id",
+                    "tipologia_id"
+                ],
+                "displayField": "date_foglio",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
+            },
+            "obmp_cm__agenzia_id": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Obmp Cm",
+                "icon": "bi-diagram-3",
+                "childTable": "obmp_cm",
+                "foreignKey": "agenzia_id",
+                "parentKey": "agenzia_id",
+                "primaryKey": "obmp_cm_id",
+                "columns": [
+                    "obmp_cm_id",
+                    "hotel_id",
+                    "obmp_cm_id_hotel_agenzia",
+                    "obmp_cm_attiva",
+                    "obmp_cm_agenzia_url",
+                    "obmp_cm_agenzia_user"
+                ],
+                "displayField": "obmp_cm_id_hotel_agenzia",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
+            },
+            "obmp_ref_event__agenzia_id": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Obmp Ref Event",
+                "icon": "bi-diagram-3",
+                "childTable": "obmp_ref_event",
+                "foreignKey": "agenzia_id",
+                "parentKey": "agenzia_id",
+                "primaryKey": "ref_event_id",
+                "columns": [
+                    "ref_event_id",
+                    "ref_site_id",
+                    "hotel_id",
+                    "listino_nome_id",
+                    "ref_event_nome",
+                    "event_dal"
+                ],
+                "displayField": "ref_event_nome",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
+            },
+            "pratiche__pratica_agenzia_id": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Pratiche",
+                "icon": "bi-diagram-3",
+                "childTable": "pratiche",
+                "foreignKey": "pratica_agenzia_id",
+                "parentKey": "agenzia_id",
+                "primaryKey": "pratica_id",
+                "columns": [
+                    "pratica_id",
+                    "hotel_id",
+                    "pratica_nome",
+                    "pratica_1",
+                    "pratica_2",
+                    "pratica_note"
+                ],
+                "displayField": "pratica_nome",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
+            },
+            "ref_agenzia_listini__agenzia_id": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Ref Agenzia Listini",
+                "icon": "bi-diagram-3",
+                "childTable": "ref_agenzia_listini",
+                "foreignKey": "agenzia_id",
+                "parentKey": "agenzia_id",
+                "primaryKey": "ref_agenzia_listini_id",
+                "columns": [
+                    "ref_agenzia_listini_id",
+                    "agenzia_listini_id",
+                    "hotel_id",
+                    "agenzia_limite_vendita",
+                    "agenzia_ab_limite_vendita",
+                    "agenzia_max_vendita"
+                ],
+                "displayField": "ref_agenzia_listini_id",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
+            },
+            "ref_agenzia_preno__agenzia_id": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Ref Agenzia Preno",
+                "icon": "bi-diagram-3",
+                "childTable": "ref_agenzia_preno",
+                "foreignKey": "agenzia_id",
+                "parentKey": "agenzia_id",
+                "primaryKey": "ref_agenzia_preno",
+                "columns": [
+                    "ref_agenzia_preno",
+                    "preno_id",
+                    "ref_a_p_datarecord"
+                ],
+                "displayField": "ref_agenzia_preno",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
+            },
+            "sospesi__sopeso_societa": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Sospesi",
+                "icon": "bi-diagram-3",
+                "childTable": "sospesi",
+                "foreignKey": "sopeso_societa",
+                "parentKey": "agenzia_id",
+                "primaryKey": "sospeso_id",
+                "columns": [
+                    "sospeso_id",
+                    "hotel_id",
+                    "pagamento_id",
+                    "cassa_id",
+                    "sospeso_data",
+                    "sospeso_conto_id"
+                ],
+                "displayField": "sospeso_id",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
+            }
+        }
     },
     "features": {
         "entity": true,

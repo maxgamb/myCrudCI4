@@ -58,7 +58,7 @@ class {$api} extends BaseController
     {
         \$data = \$this->request->getJSON(true) ?: \$this->request->getPost();
 
-        if (!\$this->validateData(\$data, {$rules}::rules())) {
+        if (!\$this->validateData(\$data, {$rules}::createRules())) {
             return \$this->response
                 ->setStatusCode(422)
                 ->setJSON([
@@ -84,7 +84,7 @@ class {$api} extends BaseController
     {
         \$data = \$this->request->getJSON(true) ?: \$this->request->getRawInput();
 
-        if (!\$this->validateData(\$data, {$rules}::rules())) {
+        if (!\$this->validateData(\$data, {$rules}::updateRules(\$id))) {
             return \$this->response
                 ->setStatusCode(422)
                 ->setJSON([

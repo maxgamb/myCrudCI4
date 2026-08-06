@@ -60,9 +60,9 @@
                     <ul class="dropdown-menu">
                         <li>
                             <a class="dropdown-item"
-                               href="<?= site_url('mycrud') ?>">
-                                <i class="bi bi-lightning-charge"></i>
-                                Generazione automatica
+                               href="<?= site_url('mycrud/quick') ?>">
+                                <i class="bi bi-lightning-charge-fill"></i>
+                                Quick globale
                             </a>
                         </li>
 

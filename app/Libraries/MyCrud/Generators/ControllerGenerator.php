@@ -251,6 +251,23 @@ PHP;
         /*
          * Codice completo del Controller generato.
          */
+        $hasManyConfig = $config['relationsConfig']['hasMany'] ?? [];
+        $hasManyConfigCode = var_export($hasManyConfig, true);
+
+        $childrenLoadCode = $usesService
+            ? "\$children = \$this->service->loadHasMany(\$id, \$hasManyConfig);"
+            : "foreach (\$hasManyConfig as \$relationKey => \$relation) {
+"
+                . "            if (empty(\$relation['enabled'])) { continue; }
+"
+                . "            \$rows = \$this->model->getRelatedChildren((string) \$relation['childTable'], (string) \$relation['foreignKey'], \$id, (string) \$relation['primaryKey'], (int) (\$relation['limit'] ?? 20));
+"
+                . "            \$count = !empty(\$relation['showCount']) ? \$this->model->countRelatedChildren((string) \$relation['childTable'], (string) \$relation['foreignKey'], \$id) : count(\$rows);
+"
+                . "            \$children[\$relationKey] = ['rows' => \$rows, 'count' => \$count];
+"
+                . "        }";
+
         $content = <<<PHP
 <?php
 
@@ -433,15 +450,21 @@ class {$controller} extends BaseController
             );
         }
 
+        \$hasManyConfig = {$hasManyConfigCode};
+        \$children = [];
+
+        if (!empty(\$hasManyConfig)) {
+            {$childrenLoadCode}
+        }
+
         return view('{$table}/view', [
             'title' => 'Dettaglio',
-            'row'   => \$row,
+            'row' => \$row,
+            'children' => \$children,
+            'hasManyConfig' => \$hasManyConfig,
         ]);
     }
 
-    /**
-     * Form inserimento.
-     */
     public function create()
     {
         \$submissionToken =

@@ -27,7 +27,9 @@ trait GeneratorTrait
             throw new RuntimeException('Impossibile creare la directory: ' . $dir);
         }
 
-        if (is_file($path) && !$force) {
+        $exists = is_file($path);
+
+        if ($exists && !$force) {
             return [
                 'status' => 'skipped',
                 'path'   => $path,
@@ -39,7 +41,7 @@ trait GeneratorTrait
         }
 
         return [
-            'status' => 'generated',
+            'status' => $exists ? 'overwritten' : 'created',
             'path'   => $path,
         ];
     }

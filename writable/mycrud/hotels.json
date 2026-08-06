@@ -1,0 +1,1989 @@
+{
+    "table": "hotels",
+    "primaryKey": "hotel_id",
+    "architecture": "standard",
+    "fields": {
+        "hotel_id": {
+            "name": "hotel_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": true,
+            "autoIncrement": true,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Hotel Id",
+            "languageKey": "Fields.hotel_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "nome_hotel": {
+            "name": "nome_hotel",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "0",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Nome Hotel",
+            "languageKey": "Fields.nome_hotel",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "hotel_tipologia": {
+            "name": "hotel_tipologia",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Tipologia",
+            "languageKey": "Fields.hotel_tipologia",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "hotel_categoria": {
+            "name": "hotel_categoria",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Categoria",
+            "languageKey": "Fields.hotel_categoria",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "hotel_citta": {
+            "name": "hotel_citta",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Citta",
+            "languageKey": "Fields.hotel_citta",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "hotel_via": {
+            "name": "hotel_via",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Via",
+            "languageKey": "Fields.hotel_via",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "hotel_tel": {
+            "name": "hotel_tel",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Tel",
+            "languageKey": "Fields.hotel_tel",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "hotel_fax": {
+            "name": "hotel_fax",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Fax",
+            "languageKey": "Fields.hotel_fax",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "hotel_email": {
+            "name": "hotel_email",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "email",
+            "label": "",
+            "defaultLabel": "Hotel Email",
+            "languageKey": "Fields.hotel_email",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "hotel_stato": {
+            "name": "hotel_stato",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Stato",
+            "languageKey": "Fields.hotel_stato",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "hotel_cap": {
+            "name": "hotel_cap",
+            "type": "varchar",
+            "columnType": "varchar(10)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "10",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Cap",
+            "languageKey": "Fields.hotel_cap",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "10"
+                }
+            }
+        },
+        "hotel_piva": {
+            "name": "hotel_piva",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Piva",
+            "languageKey": "Fields.hotel_piva",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "hotel_numero_camere": {
+            "name": "hotel_numero_camere",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Numero Camere",
+            "languageKey": "Fields.hotel_numero_camere",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "hotel_data_record": {
+            "name": "hotel_data_record",
+            "type": "timestamp",
+            "columnType": "timestamp",
+            "nullable": false,
+            "default": "CURRENT_TIMESTAMP",
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "datetime-local",
+            "label": "",
+            "defaultLabel": "Hotel Data Record",
+            "languageKey": "Fields.hotel_data_record",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "hotels_utente_id": {
+            "name": "hotels_utente_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Hotels Utente Id",
+            "languageKey": "Fields.hotels_utente_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "hotel_web": {
+            "name": "hotel_web",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Web",
+            "languageKey": "Fields.hotel_web",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "hotel_logo": {
+            "name": "hotel_logo",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Logo",
+            "languageKey": "Fields.hotel_logo",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "hotel_mappa": {
+            "name": "hotel_mappa",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Mappa",
+            "languageKey": "Fields.hotel_mappa",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "hotel_reach_by_car": {
+            "name": "hotel_reach_by_car",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Reach By Car",
+            "languageKey": "Fields.hotel_reach_by_car",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "hotel_reach_by_treno": {
+            "name": "hotel_reach_by_treno",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Reach By Treno",
+            "languageKey": "Fields.hotel_reach_by_treno",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "hotel_reach_aereo": {
+            "name": "hotel_reach_aereo",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Reach Aereo",
+            "languageKey": "Fields.hotel_reach_aereo",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "hotel_reach_nave": {
+            "name": "hotel_reach_nave",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Reach Nave",
+            "languageKey": "Fields.hotel_reach_nave",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "hotel_foto_piccola": {
+            "name": "hotel_foto_piccola",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Foto Piccola",
+            "languageKey": "Fields.hotel_foto_piccola",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "hotel_foto_grande": {
+            "name": "hotel_foto_grande",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Foto Grande",
+            "languageKey": "Fields.hotel_foto_grande",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "hotel_testo_en": {
+            "name": "hotel_testo_en",
+            "type": "longtext",
+            "columnType": "longtext",
+            "nullable": true,
+            "default": null,
+            "maxLength": "4294967295",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Testo En",
+            "languageKey": "Fields.hotel_testo_en",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "4294967295"
+                }
+            }
+        },
+        "hotel_testo_it": {
+            "name": "hotel_testo_it",
+            "type": "longtext",
+            "columnType": "longtext",
+            "nullable": true,
+            "default": null,
+            "maxLength": "4294967295",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Testo It",
+            "languageKey": "Fields.hotel_testo_it",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "4294967295"
+                }
+            }
+        },
+        "hotel_disp_modo": {
+            "name": "hotel_disp_modo",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Hotel Disp Modo",
+            "languageKey": "Fields.hotel_disp_modo",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "hotel_limite_vendite_web": {
+            "name": "hotel_limite_vendite_web",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Hotel Limite Vendite Web",
+            "languageKey": "Fields.hotel_limite_vendite_web",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "hotel_limite_vendite_xml": {
+            "name": "hotel_limite_vendite_xml",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Hotel Limite Vendite Xml",
+            "languageKey": "Fields.hotel_limite_vendite_xml",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "hotel_incremento_prezzo_xml": {
+            "name": "hotel_incremento_prezzo_xml",
+            "type": "float",
+            "columnType": "float",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "12",
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Hotel Incremento Prezzo Xml",
+            "languageKey": "Fields.hotel_incremento_prezzo_xml",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "hotel_booking_attivazione": {
+            "name": "hotel_booking_attivazione",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Hotel Booking Attivazione",
+            "languageKey": "Fields.hotel_booking_attivazione",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "hotel_booking_url": {
+            "name": "hotel_booking_url",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "url",
+            "label": "",
+            "defaultLabel": "Hotel Booking Url",
+            "languageKey": "Fields.hotel_booking_url",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "hotel_booking_agenzia": {
+            "name": "hotel_booking_agenzia",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Hotel Booking Agenzia",
+            "languageKey": "Fields.hotel_booking_agenzia",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "hotel_tarif_cambia_gg": {
+            "name": "hotel_tarif_cambia_gg",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Hotel Tarif Cambia Gg",
+            "languageKey": "Fields.hotel_tarif_cambia_gg",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "hotel_tarif_listino_nome_id": {
+            "name": "hotel_tarif_listino_nome_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Hotel Tarif Listino Nome Id",
+            "languageKey": "Fields.hotel_tarif_listino_nome_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "hotel_agenzia_attivazione": {
+            "name": "hotel_agenzia_attivazione",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Hotel Agenzia Attivazione",
+            "languageKey": "Fields.hotel_agenzia_attivazione",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "hotel_type_booking": {
+            "name": "hotel_type_booking",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Hotel Type Booking",
+            "languageKey": "Fields.hotel_type_booking",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "hotel_check_in": {
+            "name": "hotel_check_in",
+            "type": "varchar",
+            "columnType": "varchar(10)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "10",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Check In",
+            "languageKey": "Fields.hotel_check_in",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "10"
+                }
+            }
+        },
+        "hotel_check_out": {
+            "name": "hotel_check_out",
+            "type": "varchar",
+            "columnType": "varchar(10)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "10",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Check Out",
+            "languageKey": "Fields.hotel_check_out",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "10"
+                }
+            }
+        },
+        "hotel_serv_inclusi": {
+            "name": "hotel_serv_inclusi",
+            "type": "longtext",
+            "columnType": "longtext",
+            "nullable": true,
+            "default": null,
+            "maxLength": "4294967295",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Serv Inclusi",
+            "languageKey": "Fields.hotel_serv_inclusi",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "4294967295"
+                }
+            }
+        },
+        "hotel_cancel_pol": {
+            "name": "hotel_cancel_pol",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Hotel Cancel Pol",
+            "languageKey": "Fields.hotel_cancel_pol",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "facebook": {
+            "name": "facebook",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Facebook",
+            "languageKey": "Fields.facebook",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "google": {
+            "name": "google",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Google",
+            "languageKey": "Fields.google",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "instagram": {
+            "name": "instagram",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Instagram",
+            "languageKey": "Fields.instagram",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "twitter": {
+            "name": "twitter",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Twitter",
+            "languageKey": "Fields.twitter",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "linkedin": {
+            "name": "linkedin",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Linkedin",
+            "languageKey": "Fields.linkedin",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "analytics": {
+            "name": "analytics",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Analytics",
+            "languageKey": "Fields.analytics",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "email_desk": {
+            "name": "email_desk",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "email",
+            "label": "",
+            "defaultLabel": "Email Desk",
+            "languageKey": "Fields.email_desk",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "tripadvisor": {
+            "name": "tripadvisor",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Tripadvisor",
+            "languageKey": "Fields.tripadvisor",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "trip_rec_url": {
+            "name": "trip_rec_url",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "url",
+            "label": "",
+            "defaultLabel": "Trip Rec Url",
+            "languageKey": "Fields.trip_rec_url",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "pec": {
+            "name": "pec",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Pec",
+            "languageKey": "Fields.pec",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "sdi": {
+            "name": "sdi",
+            "type": "varchar",
+            "columnType": "varchar(20)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "20",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Sdi",
+            "languageKey": "Fields.sdi",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "20"
+                }
+            }
+        },
+        "ae_user": {
+            "name": "ae_user",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Ae User",
+            "languageKey": "Fields.ae_user",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "ae_password": {
+            "name": "ae_password",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "password",
+            "label": "",
+            "defaultLabel": "Ae Password",
+            "languageKey": "Fields.ae_password",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "ae_pin": {
+            "name": "ae_pin",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Ae Pin",
+            "languageKey": "Fields.ae_pin",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "ae_codice_fiscale": {
+            "name": "ae_codice_fiscale",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Ae Codice Fiscale",
+            "languageKey": "Fields.ae_codice_fiscale",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "sa_nome": {
+            "name": "sa_nome",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Sa Nome",
+            "languageKey": "Fields.sa_nome",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "sa_chiave": {
+            "name": "sa_chiave",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Sa Chiave",
+            "languageKey": "Fields.sa_chiave",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "ae_test": {
+            "name": "ae_test",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Ae Test",
+            "languageKey": "Fields.ae_test",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "citytax": {
+            "name": "citytax",
+            "type": "decimal",
+            "columnType": "decimal(10,2)",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "2",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Citytax",
+            "languageKey": "Fields.citytax",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "wifi_network": {
+            "name": "wifi_network",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Wifi Network",
+            "languageKey": "Fields.wifi_network",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "wifi_password": {
+            "name": "wifi_password",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "password",
+            "label": "",
+            "defaultLabel": "Wifi Password",
+            "languageKey": "Fields.wifi_password",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "chek_email": {
+            "name": "chek_email",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "email",
+            "label": "",
+            "defaultLabel": "Chek Email",
+            "languageKey": "Fields.chek_email",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "chek_tel": {
+            "name": "chek_tel",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Chek Tel",
+            "languageKey": "Fields.chek_tel",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "nexi_alias": {
+            "name": "nexi_alias",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Nexi Alias",
+            "languageKey": "Fields.nexi_alias",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "nexi_key": {
+            "name": "nexi_key",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Nexi Key",
+            "languageKey": "Fields.nexi_key",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "nexi_url": {
+            "name": "nexi_url",
+            "type": "varchar",
+            "columnType": "varchar(250)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "250",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "url",
+            "label": "",
+            "defaultLabel": "Nexi Url",
+            "languageKey": "Fields.nexi_url",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "250"
+                }
+            }
+        },
+        "cir_bdsr": {
+            "name": "cir_bdsr",
+            "type": "varchar",
+            "columnType": "varchar(50)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "50",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Cir Bdsr",
+            "languageKey": "Fields.cir_bdsr",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "50"
+                }
+            }
+        },
+        "cin_bdsr": {
+            "name": "cin_bdsr",
+            "type": "varchar",
+            "columnType": "varchar(50)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "50",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Cin Bdsr",
+            "languageKey": "Fields.cin_bdsr",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "50"
+                }
+            }
+        },
+        "catastale_id": {
+            "name": "catastale_id",
+            "type": "varchar",
+            "columnType": "varchar(50)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "50",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Catastale Id",
+            "languageKey": "Fields.catastale_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "50"
+                }
+            }
+        }
+    },
+    "order": [
+        "hotel_id",
+        "nome_hotel",
+        "hotel_tipologia",
+        "hotel_categoria",
+        "hotel_citta",
+        "hotel_via",
+        "hotel_tel",
+        "hotel_fax",
+        "hotel_email",
+        "hotel_stato",
+        "hotel_cap",
+        "hotel_piva",
+        "hotel_numero_camere",
+        "hotel_data_record",
+        "hotels_utente_id",
+        "hotel_web",
+        "hotel_logo",
+        "hotel_mappa",
+        "hotel_reach_by_car",
+        "hotel_reach_by_treno",
+        "hotel_reach_aereo",
+        "hotel_reach_nave",
+        "hotel_foto_piccola",
+        "hotel_foto_grande",
+        "hotel_testo_en",
+        "hotel_testo_it",
+        "hotel_disp_modo",
+        "hotel_limite_vendite_web",
+        "hotel_limite_vendite_xml",
+        "hotel_incremento_prezzo_xml",
+        "hotel_booking_attivazione",
+        "hotel_booking_url",
+        "hotel_booking_agenzia",
+        "hotel_tarif_cambia_gg",
+        "hotel_tarif_listino_nome_id",
+        "hotel_agenzia_attivazione",
+        "hotel_type_booking",
+        "hotel_check_in",
+        "hotel_check_out",
+        "hotel_serv_inclusi",
+        "hotel_cancel_pol",
+        "facebook",
+        "google",
+        "instagram",
+        "twitter",
+        "linkedin",
+        "analytics",
+        "email_desk",
+        "tripadvisor",
+        "trip_rec_url",
+        "pec",
+        "sdi",
+        "ae_user",
+        "ae_password",
+        "ae_pin",
+        "ae_codice_fiscale",
+        "sa_nome",
+        "sa_chiave",
+        "ae_test",
+        "citytax",
+        "wifi_network",
+        "wifi_password",
+        "chek_email",
+        "chek_tel",
+        "nexi_alias",
+        "nexi_key",
+        "nexi_url",
+        "cir_bdsr",
+        "cin_bdsr",
+        "catastale_id"
+    ],
+    "relations": {
+        "belongsTo": [],
+        "hasMany": {
+            "doc_file__hotel_id": {
+                "key": "doc_file__hotel_id",
+                "type": "hasMany",
+                "childTable": "doc_file",
+                "childPrimaryKey": "doc_files_id",
+                "foreignKey": "hotel_id",
+                "parentTable": "hotels",
+                "parentKey": "hotel_id",
+                "displayField": "doc_url_file",
+                "columns": [
+                    "doc_files_id",
+                    "doc_dipar_id",
+                    "doc_protocollo",
+                    "doc_url_file",
+                    "doc_note",
+                    "doc_utente_id"
+                ]
+            },
+            "guasti__hotel_id": {
+                "key": "guasti__hotel_id",
+                "type": "hasMany",
+                "childTable": "guasti",
+                "childPrimaryKey": "guasto_id",
+                "foreignKey": "hotel_id",
+                "parentTable": "hotels",
+                "parentKey": "hotel_id",
+                "displayField": "guasto_area",
+                "columns": [
+                    "guasto_id",
+                    "camera_id",
+                    "guasto_priorita",
+                    "guasto_area",
+                    "guasto_piano",
+                    "guasto_note"
+                ]
+            }
+        },
+        "manyToMany": {
+            "guasti__hotel_id": {
+                "type": "manyToMany",
+                "pivotTable": "guasti",
+                "ownPivotField": "hotel_id",
+                "ownParentField": "hotel_id",
+                "relatedTable": "camere",
+                "relatedPivotField": "camera_id",
+                "relatedKey": "camera_id"
+            }
+        },
+        "self": []
+    },
+    "relationsConfig": {
+        "hasMany": {
+            "doc_file__hotel_id": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Doc File",
+                "icon": "bi-diagram-3",
+                "childTable": "doc_file",
+                "foreignKey": "hotel_id",
+                "parentKey": "hotel_id",
+                "primaryKey": "doc_files_id",
+                "columns": [
+                    "doc_files_id",
+                    "doc_dipar_id",
+                    "doc_protocollo",
+                    "doc_url_file",
+                    "doc_note",
+                    "doc_utente_id"
+                ],
+                "displayField": "doc_url_file",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
+            },
+            "guasti__hotel_id": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Guasti",
+                "icon": "bi-diagram-3",
+                "childTable": "guasti",
+                "foreignKey": "hotel_id",
+                "parentKey": "hotel_id",
+                "primaryKey": "guasto_id",
+                "columns": [
+                    "guasto_id",
+                    "camera_id",
+                    "guasto_priorita",
+                    "guasto_area",
+                    "guasto_piano",
+                    "guasto_note"
+                ],
+                "displayField": "guasto_area",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
+            }
+        }
+    },
+    "features": {
+        "entity": true,
+        "service": true,
+        "api": false,
+        "datatable": true,
+        "relations": true,
+        "softDeletes": false,
+        "timestamps": true,
+        "exportButtons": true
+    },
+    "softDelete": {
+        "available": false,
+        "field": "deleted_at"
+    },
+    "classes": {
+        "entity": "HotelEntity",
+        "model": "HotelModel",
+        "service": "HotelService",
+        "controller": "HotelController",
+        "api": "HotelApiController",
+        "rules": "HotelRules"
+    },
+    "dataStyle": "object"
+}

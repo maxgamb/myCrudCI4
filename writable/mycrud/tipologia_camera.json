@@ -1,0 +1,532 @@
+{
+    "table": "tipologia_camera",
+    "primaryKey": "tipologia_id",
+    "architecture": "standard",
+    "fields": {
+        "tipologia_id": {
+            "name": "tipologia_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": true,
+            "autoIncrement": true,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Tipologia Id",
+            "languageKey": "Fields.tipologia_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "nome_tipologia": {
+            "name": "nome_tipologia",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Nome Tipologia",
+            "languageKey": "Fields.nome_tipologia",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "nome_tipologia_en": {
+            "name": "nome_tipologia_en",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Nome Tipologia En",
+            "languageKey": "Fields.nome_tipologia_en",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "nome_tipologia_fr": {
+            "name": "nome_tipologia_fr",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Nome Tipologia Fr",
+            "languageKey": "Fields.nome_tipologia_fr",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "nome_tipologia_de": {
+            "name": "nome_tipologia_de",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Nome Tipologia De",
+            "languageKey": "Fields.nome_tipologia_de",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "nome_tipologia_sp": {
+            "name": "nome_tipologia_sp",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Nome Tipologia Sp",
+            "languageKey": "Fields.nome_tipologia_sp",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "nome_tipologia_jp": {
+            "name": "nome_tipologia_jp",
+            "type": "varchar",
+            "columnType": "varchar(200)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "200",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Nome Tipologia Jp",
+            "languageKey": "Fields.nome_tipologia_jp",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "200"
+                }
+            }
+        },
+        "tipologia_sigla": {
+            "name": "tipologia_sigla",
+            "type": "varchar",
+            "columnType": "varchar(10)",
+            "nullable": false,
+            "default": null,
+            "maxLength": "10",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Tipologia Sigla",
+            "languageKey": "Fields.tipologia_sigla",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": {
+                    "maxlength": "10"
+                }
+            }
+        },
+        "numero_pax": {
+            "name": "numero_pax",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Numero Pax",
+            "languageKey": "Fields.numero_pax",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "tipologia_camera_data_record": {
+            "name": "tipologia_camera_data_record",
+            "type": "timestamp",
+            "columnType": "timestamp",
+            "nullable": false,
+            "default": "CURRENT_TIMESTAMP",
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "datetime-local",
+            "label": "",
+            "defaultLabel": "Tipologia Camera Data Record",
+            "languageKey": "Fields.tipologia_camera_data_record",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "tipologia_camera_utente_id": {
+            "name": "tipologia_camera_utente_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Tipologia Camera Utente Id",
+            "languageKey": "Fields.tipologia_camera_utente_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "perc_prezzo": {
+            "name": "perc_prezzo",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Perc Prezzo",
+            "languageKey": "Fields.perc_prezzo",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        }
+    },
+    "order": [
+        "tipologia_id",
+        "nome_tipologia",
+        "nome_tipologia_en",
+        "nome_tipologia_fr",
+        "nome_tipologia_de",
+        "nome_tipologia_sp",
+        "nome_tipologia_jp",
+        "tipologia_sigla",
+        "numero_pax",
+        "tipologia_camera_data_record",
+        "tipologia_camera_utente_id",
+        "perc_prezzo"
+    ],
+    "relations": {
+        "belongsTo": [],
+        "hasMany": {
+            "camere__tipologia_id": {
+                "key": "camere__tipologia_id",
+                "type": "hasMany",
+                "childTable": "camere",
+                "childPrimaryKey": "camera_id",
+                "foreignKey": "tipologia_id",
+                "parentTable": "tipologia_camera",
+                "parentKey": "tipologia_id",
+                "displayField": "tipologia_camera",
+                "columns": [
+                    "camera_id",
+                    "hotel_id",
+                    "numero_camera",
+                    "tipologia_camera",
+                    "camere_max_pax",
+                    "camere_metri_quadri"
+                ]
+            },
+            "foglio_giorno__tipologia_id": {
+                "key": "foglio_giorno__tipologia_id",
+                "type": "hasMany",
+                "childTable": "foglio_giorno",
+                "childPrimaryKey": "foglio_id",
+                "foreignKey": "tipologia_id",
+                "parentTable": "tipologia_camera",
+                "parentKey": "tipologia_id",
+                "displayField": "date_foglio",
+                "columns": [
+                    "foglio_id",
+                    "hotel_id",
+                    "conto_id",
+                    "camera_id",
+                    "preno_id",
+                    "numero_camera"
+                ]
+            },
+            "obmp_cm_rooms__obmp_cm_rooms_tipologia_id": {
+                "key": "obmp_cm_rooms__obmp_cm_rooms_tipologia_id",
+                "type": "hasMany",
+                "childTable": "obmp_cm_rooms",
+                "childPrimaryKey": "obmp_cm_rooms_id",
+                "foreignKey": "obmp_cm_rooms_tipologia_id",
+                "parentTable": "tipologia_camera",
+                "parentKey": "tipologia_id",
+                "displayField": "obmp_cm_rooms_room_note",
+                "columns": [
+                    "obmp_cm_rooms_id",
+                    "obmp_cm_id",
+                    "hotel_id",
+                    "obmp_cm_rooms_room_id",
+                    "obmp_cm_rooms_attiva",
+                    "obmp_cm_rooms_room_note"
+                ]
+            },
+            "ref_costi_tipologia__tipologia_id": {
+                "key": "ref_costi_tipologia__tipologia_id",
+                "type": "hasMany",
+                "childTable": "ref_costi_tipologia",
+                "childPrimaryKey": "ref_costi_tipologia_id",
+                "foreignKey": "tipologia_id",
+                "parentTable": "tipologia_camera",
+                "parentKey": "tipologia_id",
+                "displayField": "ref_costi_tipologia_id",
+                "columns": [
+                    "ref_costi_tipologia_id",
+                    "costi_var_id",
+                    "hotel_id",
+                    "stay",
+                    "days",
+                    "check_out"
+                ]
+            }
+        },
+        "manyToMany": {
+            "obmp_cm_rooms__obmp_cm_rooms_tipologia_id": {
+                "type": "manyToMany",
+                "pivotTable": "obmp_cm_rooms",
+                "ownPivotField": "obmp_cm_rooms_tipologia_id",
+                "ownParentField": "tipologia_id",
+                "relatedTable": "obmp_cm",
+                "relatedPivotField": "obmp_cm_id",
+                "relatedKey": "obmp_cm_id"
+            },
+            "ref_costi_tipologia__tipologia_id": {
+                "type": "manyToMany",
+                "pivotTable": "ref_costi_tipologia",
+                "ownPivotField": "tipologia_id",
+                "ownParentField": "tipologia_id",
+                "relatedTable": "costi_var",
+                "relatedPivotField": "costi_var_id",
+                "relatedKey": "costi_var_id"
+            }
+        },
+        "self": []
+    },
+    "relationsConfig": {
+        "hasMany": {
+            "camere__tipologia_id": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Camere",
+                "icon": "bi-diagram-3",
+                "childTable": "camere",
+                "foreignKey": "tipologia_id",
+                "parentKey": "tipologia_id",
+                "primaryKey": "camera_id",
+                "columns": [
+                    "camera_id",
+                    "hotel_id",
+                    "numero_camera",
+                    "tipologia_camera",
+                    "camere_max_pax",
+                    "camere_metri_quadri"
+                ],
+                "displayField": "tipologia_camera",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
+            },
+            "foglio_giorno__tipologia_id": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Foglio Giorno",
+                "icon": "bi-diagram-3",
+                "childTable": "foglio_giorno",
+                "foreignKey": "tipologia_id",
+                "parentKey": "tipologia_id",
+                "primaryKey": "foglio_id",
+                "columns": [
+                    "foglio_id",
+                    "hotel_id",
+                    "conto_id",
+                    "camera_id",
+                    "preno_id",
+                    "numero_camera"
+                ],
+                "displayField": "date_foglio",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
+            },
+            "obmp_cm_rooms__obmp_cm_rooms_tipologia_id": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Obmp Cm Rooms",
+                "icon": "bi-diagram-3",
+                "childTable": "obmp_cm_rooms",
+                "foreignKey": "obmp_cm_rooms_tipologia_id",
+                "parentKey": "tipologia_id",
+                "primaryKey": "obmp_cm_rooms_id",
+                "columns": [
+                    "obmp_cm_rooms_id",
+                    "obmp_cm_id",
+                    "hotel_id",
+                    "obmp_cm_rooms_room_id",
+                    "obmp_cm_rooms_attiva",
+                    "obmp_cm_rooms_room_note"
+                ],
+                "displayField": "obmp_cm_rooms_room_note",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
+            },
+            "ref_costi_tipologia__tipologia_id": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Ref Costi Tipologia",
+                "icon": "bi-diagram-3",
+                "childTable": "ref_costi_tipologia",
+                "foreignKey": "tipologia_id",
+                "parentKey": "tipologia_id",
+                "primaryKey": "ref_costi_tipologia_id",
+                "columns": [
+                    "ref_costi_tipologia_id",
+                    "costi_var_id",
+                    "hotel_id",
+                    "stay",
+                    "days",
+                    "check_out"
+                ],
+                "displayField": "ref_costi_tipologia_id",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
+            }
+        }
+    },
+    "features": {
+        "entity": true,
+        "service": true,
+        "api": false,
+        "datatable": true,
+        "relations": true,
+        "softDeletes": false,
+        "timestamps": true,
+        "exportButtons": true
+    },
+    "softDelete": {
+        "available": false,
+        "field": "deleted_at"
+    },
+    "classes": {
+        "entity": "TipologiaCameraEntity",
+        "model": "TipologiaCameraModel",
+        "service": "TipologiaCameraService",
+        "controller": "TipologiaCameraController",
+        "api": "TipologiaCameraApiController",
+        "rules": "TipologiaCameraRules"
+    },
+    "dataStyle": "object"
+}

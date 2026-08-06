@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Libraries\MyCrud\Config\CrudConfigRepository;
 use App\Libraries\MyCrud\Core\ConfigBuilder;
 use App\Libraries\MyCrud\Core\CrudGeneratorService;
+use App\Libraries\MyCrud\Schema\TableFilter;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use Throwable;
 
@@ -13,8 +14,7 @@ class BuilderController extends BaseController
 {
     public function index()
     {
-        $tables = db_connect()->listTables();
-        sort($tables);
+        $tables = TableFilter::validTables(db_connect());
 
         return view('mycrud/table_list', [
             'title'  => 'myCrudGpt',
@@ -22,36 +22,27 @@ class BuilderController extends BaseController
         ]);
     }
 
-    
-    
     public function configure(string $table)
-{
-    $builder = new ConfigBuilder();
-    $config  = $builder->buildFromTable($table);
+    {
+        try {
+            $builder = new ConfigBuilder();
+            $config  = $builder->buildFromTable($table);
 
-    $saved = (new CrudConfigRepository())->load($table);
+            $saved = (new CrudConfigRepository())->load($table);
+            if (is_array($saved)) {
+                $config = $builder->mergeSavedConfiguration($config, $saved);
+            }
 
-    if (is_array($saved)) {
-        $config = $builder->mergeSavedConfiguration(
-            $config,
-            $saved
-        );
+            return view('mycrud/builder', [
+                'title'  => 'Configura ' . $table,
+                'config' => $config,
+                'table'  => $table,
+                'fields' => $config['fields'],
+            ]);
+        } catch (PageNotFoundException $e) {
+            throw $e;
+        }
     }
-
-    return view('mycrud/builder', [
-        'title'           => 'Configura ' . $table,
-        'config'          => $config,
-        'table'           => $table,
-        'fields'          => $config['fields'],
-
-        // Evita errori se nel builder è rimasto un riferimento.
-        'submissionToken' => null,
-    ]);
-}
-    
-    
-    
-    
 
     public function save()
     {
@@ -85,9 +76,7 @@ class BuilderController extends BaseController
                 'table'  => $config['table'],
                 'result' => $result,
             ]);
-        } 
-        
-        catch (Throwable $e) {
+        } catch (Throwable $e) {
             log_message('error', '[myCrudGpt] {message}', ['message' => $e->getMessage()]);
 
             return redirect()
@@ -95,15 +84,5 @@ class BuilderController extends BaseController
                 ->withInput()
                 ->with('error', $e->getMessage());
         }
-
-//        catch (\Throwable $e) {
-//    dd([
-//        'message' => $e->getMessage(),
-//        'file'    => $e->getFile(),
-//        'line'    => $e->getLine(),
-//    ]);
-//}
-        
-        
     }
 }

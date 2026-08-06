@@ -17,13 +17,24 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "number",
-            "label": "Camera Id",
+            "label": "",
+            "defaultLabel": "Camera Id",
+            "languageKey": "Fields.camera_id",
             "width": 6,
             "attributes": {
                 "boolean": [
                     "required"
                 ],
                 "values": []
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": false,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
             }
         },
         "hotel_id": {
@@ -40,11 +51,24 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "number",
-            "label": "Hotel Id",
+            "label": "",
+            "defaultLabel": "Hotel Id",
+            "languageKey": "Fields.hotel_id",
             "width": 6,
             "attributes": {
-                "boolean": [],
+                "boolean": [
+                    "required"
+                ],
                 "values": []
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": true,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
             }
         },
         "numero_camera": {
@@ -61,11 +85,24 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "number",
-            "label": "Numero Camera",
+            "label": "",
+            "defaultLabel": "Numero Camera",
+            "languageKey": "Fields.numero_camera",
             "width": 6,
             "attributes": {
-                "boolean": [],
+                "boolean": [
+                    "required"
+                ],
                 "values": []
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": true,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
             }
         },
         "tipologia_camera": {
@@ -82,13 +119,26 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Tipologia Camera",
+            "label": "",
+            "defaultLabel": "Tipologia Camera",
+            "languageKey": "Fields.tipologia_camera",
             "width": 6,
             "attributes": {
-                "boolean": [],
+                "boolean": [
+                    "required"
+                ],
                 "values": {
                     "maxlength": "100"
                 }
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": true,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
             }
         },
         "tipologia_id": {
@@ -106,17 +156,31 @@
             "foreignKey": {
                 "type": "belongsTo",
                 "field": "tipologia_id",
+                "childTable": "camere",
                 "parentTable": "tipologia_camera",
                 "parentKey": "tipologia_id",
                 "displayField": "nome_tipologia",
                 "alias": "tipologia_camera_nome_tipologia"
             },
             "inputType": "select",
-            "label": "Tipologia Id",
+            "label": "",
+            "defaultLabel": "Tipologia Id",
+            "languageKey": "Fields.tipologia_id",
             "width": 6,
             "attributes": {
-                "boolean": [],
+                "boolean": [
+                    "required"
+                ],
                 "values": []
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": true,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
             }
         },
         "camere_max_pax": {
@@ -133,11 +197,22 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "number",
-            "label": "Camere Max Pax",
+            "label": "",
+            "defaultLabel": "Camere Max Pax",
+            "languageKey": "Fields.camere_max_pax",
             "width": 6,
             "attributes": {
                 "boolean": [],
                 "values": []
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": true,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
             }
         },
         "camere_metri_quadri": {
@@ -154,11 +229,22 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "number",
-            "label": "Camere Metri Quadri",
+            "label": "",
+            "defaultLabel": "Camere Metri Quadri",
+            "languageKey": "Fields.camere_metri_quadri",
             "width": 6,
             "attributes": {
                 "boolean": [],
                 "values": []
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": true,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
             }
         },
         "camere_vista": {
@@ -175,13 +261,24 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Camere Vista",
+            "label": "",
+            "defaultLabel": "Camere Vista",
+            "languageKey": "Fields.camere_vista",
             "width": 6,
             "attributes": {
                 "boolean": [],
                 "values": {
                     "maxlength": "100"
                 }
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": true,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
             }
         },
         "camere_piano": {
@@ -198,11 +295,22 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "number",
-            "label": "Camere Piano",
+            "label": "",
+            "defaultLabel": "Camere Piano",
+            "languageKey": "Fields.camere_piano",
             "width": 6,
             "attributes": {
                 "boolean": [],
                 "values": []
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": true,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
             }
         },
         "camere_bagno": {
@@ -219,13 +327,24 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Camere Bagno",
+            "label": "",
+            "defaultLabel": "Camere Bagno",
+            "languageKey": "Fields.camere_bagno",
             "width": 6,
             "attributes": {
                 "boolean": [],
                 "values": {
                     "maxlength": "100"
                 }
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": true,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
             }
         },
         "camere_edificio": {
@@ -242,13 +361,24 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "text",
-            "label": "Camere Edificio",
+            "label": "",
+            "defaultLabel": "Camere Edificio",
+            "languageKey": "Fields.camere_edificio",
             "width": 6,
             "attributes": {
                 "boolean": [],
                 "values": {
                     "maxlength": "3"
                 }
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": true,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
             }
         },
         "review_tot": {
@@ -265,11 +395,22 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "number",
-            "label": "Review Tot",
+            "label": "",
+            "defaultLabel": "Review Tot",
+            "languageKey": "Fields.review_tot",
             "width": 6,
             "attributes": {
                 "boolean": [],
                 "values": []
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": true,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
             }
         },
         "camere_data_record": {
@@ -286,11 +427,24 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "datetime-local",
-            "label": "Camere Data Record",
+            "label": "",
+            "defaultLabel": "Camere Data Record",
+            "languageKey": "Fields.camere_data_record",
             "width": 6,
             "attributes": {
-                "boolean": [],
+                "boolean": [
+                    "required"
+                ],
                 "values": []
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": true,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
             }
         },
         "camere_utente_id": {
@@ -307,11 +461,22 @@
             "unique": false,
             "foreignKey": null,
             "inputType": "number",
-            "label": "Camere Utente Id",
+            "label": "",
+            "defaultLabel": "Camere Utente Id",
+            "languageKey": "Fields.camere_utente_id",
             "width": 6,
             "attributes": {
                 "boolean": [],
                 "values": []
+            },
+            "ui": {
+                "visibleIndex": true,
+                "visibleView": true,
+                "visibleForm": true,
+                "searchable": true,
+                "sortable": true,
+                "exportable": true,
+                "sensitive": false
             }
         }
     },
@@ -336,54 +501,142 @@
             "tipologia_id": {
                 "type": "belongsTo",
                 "field": "tipologia_id",
+                "childTable": "camere",
                 "parentTable": "tipologia_camera",
                 "parentKey": "tipologia_id",
                 "displayField": "nome_tipologia",
                 "alias": "tipologia_camera_nome_tipologia"
             }
         },
-        "hasMany": [
-            {
+        "hasMany": {
+            "conti__camera_id": {
+                "key": "conti__camera_id",
                 "type": "hasMany",
                 "childTable": "conti",
-                "childField": "camera_id",
-                "parentField": "camera_id"
+                "childPrimaryKey": "conto_id",
+                "foreignKey": "camera_id",
+                "parentTable": "camere",
+                "parentKey": "camera_id",
+                "displayField": "trattamento_sog",
+                "columns": [
+                    "conto_id",
+                    "hotel_id",
+                    "foglio_id",
+                    "clienti_id",
+                    "in_conto",
+                    "in_conto_time"
+                ]
             },
-            {
+            "foglio_giorno__camera_id": {
+                "key": "foglio_giorno__camera_id",
                 "type": "hasMany",
                 "childTable": "foglio_giorno",
-                "childField": "camera_id",
-                "parentField": "camera_id"
+                "childPrimaryKey": "foglio_id",
+                "foreignKey": "camera_id",
+                "parentTable": "camere",
+                "parentKey": "camera_id",
+                "displayField": "date_foglio",
+                "columns": [
+                    "foglio_id",
+                    "hotel_id",
+                    "conto_id",
+                    "preno_id",
+                    "tipologia_id",
+                    "numero_camera"
+                ]
             },
-            {
+            "guasti__camera_id": {
+                "key": "guasti__camera_id",
                 "type": "hasMany",
                 "childTable": "guasti",
-                "childField": "camera_id",
-                "parentField": "camera_id"
+                "childPrimaryKey": "guasto_id",
+                "foreignKey": "camera_id",
+                "parentTable": "camere",
+                "parentKey": "camera_id",
+                "displayField": "guasto_area",
+                "columns": [
+                    "guasto_id",
+                    "hotel_id",
+                    "guasto_priorita",
+                    "guasto_area",
+                    "guasto_piano",
+                    "guasto_note"
+                ]
             }
-        ],
-        "manyToMany": [
-            {
-                "type": "manyToMany",
-                "pivotTable": "conti",
-                "ownPivotField": "camera_id",
-                "ownParentField": "camera_id",
-                "relatedTable": "foglio_giorno",
-                "relatedPivotField": "foglio_id",
-                "relatedKey": "foglio_id",
-                "displayField": "hotel_id"
+        },
+        "manyToMany": [],
+        "self": []
+    },
+    "relationsConfig": {
+        "hasMany": {
+            "conti__camera_id": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Conti",
+                "icon": "bi-diagram-3",
+                "childTable": "conti",
+                "foreignKey": "camera_id",
+                "parentKey": "camera_id",
+                "primaryKey": "conto_id",
+                "columns": [
+                    "conto_id",
+                    "hotel_id",
+                    "foglio_id",
+                    "clienti_id",
+                    "in_conto",
+                    "in_conto_time"
+                ],
+                "displayField": "trattamento_sog",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
             },
-            {
-                "type": "manyToMany",
-                "pivotTable": "guasti",
-                "ownPivotField": "camera_id",
-                "ownParentField": "camera_id",
-                "relatedTable": "hotels",
-                "relatedPivotField": "hotel_id",
-                "relatedKey": "hotel_id",
-                "displayField": "nome_hotel"
+            "foglio_giorno__camera_id": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Foglio Giorno",
+                "icon": "bi-diagram-3",
+                "childTable": "foglio_giorno",
+                "foreignKey": "camera_id",
+                "parentKey": "camera_id",
+                "primaryKey": "foglio_id",
+                "columns": [
+                    "foglio_id",
+                    "hotel_id",
+                    "conto_id",
+                    "preno_id",
+                    "tipologia_id",
+                    "numero_camera"
+                ],
+                "displayField": "date_foglio",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
+            },
+            "guasti__camera_id": {
+                "enabled": true,
+                "mode": "readonly",
+                "title": "Guasti",
+                "icon": "bi-diagram-3",
+                "childTable": "guasti",
+                "foreignKey": "camera_id",
+                "parentKey": "camera_id",
+                "primaryKey": "guasto_id",
+                "columns": [
+                    "guasto_id",
+                    "hotel_id",
+                    "guasto_priorita",
+                    "guasto_area",
+                    "guasto_piano",
+                    "guasto_note"
+                ],
+                "displayField": "guasto_area",
+                "limit": 20,
+                "showCount": true,
+                "showViewButton": true
             }
-        ]
+        },
+        "manyToMany": []
     },
     "features": {
         "entity": true,

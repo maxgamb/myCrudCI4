@@ -15,9 +15,9 @@ class RouteGenerator
         $softDeleteRoutes = '';
         if (!empty($config['features']['softDeletes'])) {
             $softDeleteRoutes = <<<PHP
-    $routes->get('trash', '{$controller}::trash');
-    $routes->post('restore/(:segment)', '{$controller}::restore/$1');
-    $routes->post('force-delete/(:segment)', '{$controller}::forceDelete/$1');
+    \$routes->get('trash', '{$controller}::trash');
+    \$routes->post('restore/(:segment)', '{$controller}::restore/\$1');
+    \$routes->post('force-delete/(:segment)', '{$controller}::forceDelete/\$1');
 PHP;
         }
 
@@ -51,6 +51,7 @@ use CodeIgniter\Router\RouteCollection;
     \$routes->get('edit/(:segment)', '{$controller}::edit/\$1');
     \$routes->post('update/(:segment)', '{$controller}::update/\$1');
     \$routes->post('delete/(:segment)', '{$controller}::delete/\$1');
+{$softDeleteRoutes}
 });
 {$apiRoutes}
 

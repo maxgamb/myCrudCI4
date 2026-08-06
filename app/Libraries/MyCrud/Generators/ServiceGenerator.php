@@ -15,19 +15,22 @@ class ServiceGenerator
 
         $entityUse = $useEntity ? "use App\\Entities\\{$entity};\n" : '';
         $createBody = $useEntity
-            ? "\$record = new {$entity}(\$data);\n        \$id = \$this->model->insert(\$record, true);"
-            : "\$id = \$this->model->insert(\$data, true);";
-
+            ? "        \$record = new {$entity}(\$data);\n        \$id = \$this->model->insert(\$record, true);"
+            : "        \$id = \$this->model->insert(\$data, true);";
         $updateBody = $useEntity
-            ? "\$record = \$this->find(\$id);\n        \$record->fill(\$data);\n        \$result = \$this->model->save(\$record);"
-            : "\$result = \$this->model->update(\$id, \$data);";
+            ? "        \$record = \$this->find(\$id);\n        \$record->fill(\$data);\n        \$result = \$this->model->save(\$record);"
+            : "        \$result = \$this->model->update(\$id, \$data);";
+
+        // Remove the extra escaping used only while composing strings.
+        $createBody = str_replace('\\\$', '\$', $createBody);
+        $updateBody = str_replace('\\\$', '\$', $updateBody);
 
         $content = <<<PHP
 <?php
 
 namespace App\Services;
 
-{$entityUse}use App\Models\\{$modelClass};
+{$entityUse}use App\Models\{$modelClass};
 use RuntimeException;
 
 class {$class}
@@ -39,9 +42,6 @@ class {$class}
         \$this->model = \$model ?? new {$modelClass}();
     }
 
-    /**
-     * @return list<object>
-     */
     public function list(array \$filters = []): array
     {
         return \$this->model->getList(\$filters);
@@ -60,7 +60,7 @@ class {$class}
 
     public function create(array \$data): int
     {
-        {$createBody}
+{$createBody}
 
         if (\$id === false) {
             throw new RuntimeException(
@@ -73,7 +73,7 @@ class {$class}
 
     public function update(int|string \$id, array \$data): void
     {
-        {$updateBody}
+{$updateBody}
 
         if (\$result === false) {
             throw new RuntimeException(
@@ -87,6 +87,59 @@ class {$class}
         if (!\$this->model->delete(\$id)) {
             throw new RuntimeException('Eliminazione non riuscita.');
         }
+    }
+
+    public function deletedList(): array
+    {
+        return \$this->model->getDeletedList();
+    }
+
+    public function restore(int|string \$id): void
+    {
+        if (!\$this->model->restoreRecord(\$id)) {
+            throw new RuntimeException('Ripristino non riuscito.');
+        }
+    }
+
+    public function forceDelete(int|string \$id): void
+    {
+        if (!\$this->model->delete(\$id, true)) {
+            throw new RuntimeException('Eliminazione definitiva non riuscita.');
+        }
+    }
+
+    public function loadHasMany(int|string \$parentId, array \$relations): array
+    {
+        \$result = [];
+
+        foreach (\$relations as \$key => \$relation) {
+            if (empty(\$relation['enabled'])) {
+                continue;
+            }
+
+            \$rows = \$this->model->getRelatedChildren(
+                (string) \$relation['childTable'],
+                (string) \$relation['foreignKey'],
+                \$parentId,
+                (string) (\$relation['primaryKey'] ?? ''),
+                (int) (\$relation['limit'] ?? 20)
+            );
+
+            \$count = !empty(\$relation['showCount'])
+                ? \$this->model->countRelatedChildren(
+                    (string) \$relation['childTable'],
+                    (string) \$relation['foreignKey'],
+                    \$parentId
+                )
+                : count(\$rows);
+
+            \$result[\$key] = [
+                'rows'  => \$rows,
+                'count' => \$count,
+            ];
+        }
+
+        return \$result;
     }
 
     public function model(): {$modelClass}

@@ -1,0 +1,535 @@
+{
+    "table": "cassa",
+    "primaryKey": "cassa_id",
+    "architecture": "standard",
+    "fields": {
+        "cassa_id": {
+            "name": "cassa_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": true,
+            "autoIncrement": true,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Cassa Id",
+            "languageKey": "Fields.cassa_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "hotel_id": {
+            "name": "hotel_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": false,
+            "default": "0",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Hotel Id",
+            "languageKey": "Fields.hotel_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "preno_id": {
+            "name": "preno_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": {
+                "type": "belongsTo",
+                "field": "preno_id",
+                "childTable": "cassa",
+                "parentTable": "agenda",
+                "parentKey": "preno_id",
+                "displayField": "preno_arr_ore",
+                "alias": "agenda_preno_arr_ore"
+            },
+            "inputType": "select",
+            "label": "",
+            "defaultLabel": "Preno Id",
+            "languageKey": "Fields.preno_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "out_conto": {
+            "name": "out_conto",
+            "type": "date",
+            "columnType": "date",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "date",
+            "label": "",
+            "defaultLabel": "Out Conto",
+            "languageKey": "Fields.out_conto",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "conto_id": {
+            "name": "conto_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Conto Id",
+            "languageKey": "Fields.conto_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "totale_importo": {
+            "name": "totale_importo",
+            "type": "decimal",
+            "columnType": "decimal(10,2)",
+            "nullable": true,
+            "default": "0.00",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "2",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Totale Importo",
+            "languageKey": "Fields.totale_importo",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "totale_modificato": {
+            "name": "totale_modificato",
+            "type": "decimal",
+            "columnType": "decimal(10,2)",
+            "nullable": true,
+            "default": "0.00",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "2",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Totale Modificato",
+            "languageKey": "Fields.totale_modificato",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "pagamento_importo_pag": {
+            "name": "pagamento_importo_pag",
+            "type": "decimal",
+            "columnType": "decimal(10,2)",
+            "nullable": true,
+            "default": "0.00",
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "2",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Pagamento Importo Pag",
+            "languageKey": "Fields.pagamento_importo_pag",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "pagamento_forma": {
+            "name": "pagamento_forma",
+            "type": "char",
+            "columnType": "char(3)",
+            "nullable": true,
+            "default": "0",
+            "maxLength": "3",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Pagamento Forma",
+            "languageKey": "Fields.pagamento_forma",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "3"
+                }
+            }
+        },
+        "cassa_stato_camera": {
+            "name": "cassa_stato_camera",
+            "type": "char",
+            "columnType": "char(3)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "3",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Cassa Stato Camera",
+            "languageKey": "Fields.cassa_stato_camera",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "3"
+                }
+            }
+        },
+        "sospeso": {
+            "name": "sospeso",
+            "type": "char",
+            "columnType": "char(2)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "2",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Sospeso",
+            "languageKey": "Fields.sospeso",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "2"
+                }
+            }
+        },
+        "fattura_numero": {
+            "name": "fattura_numero",
+            "type": "smallint",
+            "columnType": "smallint",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "5",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Fattura Numero",
+            "languageKey": "Fields.fattura_numero",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "nome_pagante": {
+            "name": "nome_pagante",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": "",
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Nome Pagante",
+            "languageKey": "Fields.nome_pagante",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "cassa_data_record": {
+            "name": "cassa_data_record",
+            "type": "timestamp",
+            "columnType": "timestamp",
+            "nullable": false,
+            "default": "CURRENT_TIMESTAMP",
+            "maxLength": null,
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "datetime-local",
+            "label": "",
+            "defaultLabel": "Cassa Data Record",
+            "languageKey": "Fields.cassa_data_record",
+            "width": 6,
+            "attributes": {
+                "boolean": [
+                    "required"
+                ],
+                "values": []
+            }
+        },
+        "cassa_utente_id": {
+            "name": "cassa_utente_id",
+            "type": "int",
+            "columnType": "int",
+            "nullable": true,
+            "default": null,
+            "maxLength": null,
+            "numericPrecision": "10",
+            "numericScale": "0",
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "number",
+            "label": "",
+            "defaultLabel": "Cassa Utente Id",
+            "languageKey": "Fields.cassa_utente_id",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": []
+            }
+        },
+        "divisa": {
+            "name": "divisa",
+            "type": "varchar",
+            "columnType": "varchar(50)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "50",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Divisa",
+            "languageKey": "Fields.divisa",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "50"
+                }
+            }
+        },
+        "nexi_cod_aut": {
+            "name": "nexi_cod_aut",
+            "type": "varchar",
+            "columnType": "varchar(50)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "50",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Nexi Cod Aut",
+            "languageKey": "Fields.nexi_cod_aut",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "50"
+                }
+            }
+        },
+        "nexi_codTrans": {
+            "name": "nexi_codTrans",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Nexi CodTrans",
+            "languageKey": "Fields.nexi_codTrans",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        },
+        "nexi_pan": {
+            "name": "nexi_pan",
+            "type": "varchar",
+            "columnType": "varchar(100)",
+            "nullable": true,
+            "default": null,
+            "maxLength": "100",
+            "numericPrecision": null,
+            "numericScale": null,
+            "primary": false,
+            "autoIncrement": false,
+            "unique": false,
+            "foreignKey": null,
+            "inputType": "text",
+            "label": "",
+            "defaultLabel": "Nexi Pan",
+            "languageKey": "Fields.nexi_pan",
+            "width": 6,
+            "attributes": {
+                "boolean": [],
+                "values": {
+                    "maxlength": "100"
+                }
+            }
+        }
+    },
+    "order": [
+        "cassa_id",
+        "hotel_id",
+        "preno_id",
+        "out_conto",
+        "conto_id",
+        "totale_importo",
+        "totale_modificato",
+        "pagamento_importo_pag",
+        "pagamento_forma",
+        "cassa_stato_camera",
+        "sospeso",
+        "fattura_numero",
+        "nome_pagante",
+        "cassa_data_record",
+        "cassa_utente_id",
+        "divisa",
+        "nexi_cod_aut",
+        "nexi_codTrans",
+        "nexi_pan"
+    ],
+    "relations": {
+        "belongsTo": {
+            "preno_id": {
+                "type": "belongsTo",
+                "field": "preno_id",
+                "childTable": "cassa",
+                "parentTable": "agenda",
+                "parentKey": "preno_id",
+                "displayField": "preno_arr_ore",
+                "alias": "agenda_preno_arr_ore"
+            }
+        },
+        "hasMany": [],
+        "manyToMany": [],
+        "self": []
+    },
+    "relationsConfig": {
+        "hasMany": []
+    },
+    "features": {
+        "entity": true,
+        "service": true,
+        "api": false,
+        "datatable": true,
+        "relations": true,
+        "softDeletes": false,
+        "timestamps": true,
+        "exportButtons": true
+    },
+    "softDelete": {
+        "available": false,
+        "field": "deleted_at"
+    },
+    "classes": {
+        "entity": "CassaEntity",
+        "model": "CassaModel",
+        "service": "CassaService",
+        "controller": "CassaController",
+        "api": "CassaApiController",
+        "rules": "CassaRules"
+    },
+    "dataStyle": "object"
+}

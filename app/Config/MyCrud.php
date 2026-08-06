@@ -16,6 +16,13 @@ class MyCrud extends BaseConfig
         'migrations', 'sessions', 'cache', 'cache_locks',
     ];
 
+    /** @var list<string> */
+    public array $ignoredTablePatterns = [
+        '/^tmp_/',
+        '/^backup_/',
+        '/_backup$/',
+    ];
+
     public array $displayFieldCandidates = [
         'nome', 'name', 'titolo', 'title',
         'descrizione', 'description', 'label', 'codice', 'code',

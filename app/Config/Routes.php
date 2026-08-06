@@ -1,23 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\Router\RouteCollection;
 
-/** @var RouteCollection $routes */
-$routes->get('/', 'Home::index');
-
-
-/** @var RouteCollection $routes */
-
+/**
+ * Rotte del modulo myCrudGpt.
+ *
+ * @var RouteCollection $routes
+ */
 $routes->group(
     'mycrud',
     ['namespace' => 'App\Controllers\MyCrud'],
     static function (RouteCollection $routes): void {
+        /*
+         * Home / Builder.
+         */
         $routes->get('/', 'BuilderController::index');
-
-        $routes->get(
-            'auto/(:segment)',
-            'AutoCrudController::generate/$1'
-        );
+        $routes->get('builder', 'BuilderController::index');
 
         $routes->get(
             'builder/configure/(:segment)',
@@ -34,6 +34,27 @@ $routes->group(
             'BuilderController::generate'
         );
 
+        /*
+         * Quick globale.
+         */
+        $routes->get(
+            'quick',
+            'AutoCrudController::index'
+        );
+
+        $routes->post(
+            'quick/generate',
+            'AutoCrudController::generateAll'
+        );
+
+        $routes->get(
+            'quick/report/(:segment)',
+            'AutoCrudController::report/$1'
+        );
+
+        /*
+         * Strumenti.
+         */
         $routes->get(
             'tools/routes',
             'ToolsController::routes'
@@ -54,32 +75,8 @@ $routes->group(
             'ToolsController::schema/$1'
         );
     }
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
 );
 
 
-
-    $routes->group('agenda', static function (RouteCollection $routes): void {
-        
-    $routes->get('/', 'AgendaController::index');
-    $routes->post('datatable', 'AgendaController::datatable');
-    $routes->get('view/(:segment)', 'AgendaController::view/$1');
-    $routes->get('create', 'AgendaController::create');
-    $routes->post('store', 'AgendaController::store');
-    $routes->get('edit/(:segment)', 'AgendaController::edit/$1');
-    $routes->post('update/(:segment)', 'AgendaController::update/$1');
-    $routes->post('delete/(:segment)', 'AgendaController::delete/$1');
-    
-});
-    
 
 require APPPATH . 'Config/MyCrudRoutes.php';

@@ -2,706 +2,770 @@
 <?= $this->section('content') ?>
 
 
-<div class="container py-4">
+<?php
+/*
+ * Tabelle padre: relazioni belongsTo della tabella corrente.
+ */
+$parentTables = [];
 
+foreach (
+        $config['relations']['belongsTo'] ?? []
+as $relation
+) {
+    $parentTable = trim(
+            (string) ($relation['parentTable'] ?? '')
+    );
+
+    if ($parentTable !== '') {
+        $parentTables[$parentTable] = $parentTable;
+    }
+}
+
+/*
+ * Tabelle figlie: relazioni hasMany della tabella corrente.
+ */
+$childTables = [];
+
+foreach (
+        $config['relations']['hasMany'] ?? []
+as $relation
+) {
+    $childTable = trim(
+            (string) ($relation['childTable'] ?? '')
+    );
+
+    if ($childTable !== '') {
+        $childTables[$childTable] = $childTable;
+    }
+}
+
+ksort($parentTables);
+ksort($childTables);
+?>
+
+<div class="card shadow-sm mb-4 relation-navigation">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <strong>
+            <i class="bi bi-share"></i>
+            Navigazione relazioni
+        </strong>
+
+        <span class="badge bg-primary">
+            <?= count($parentTables) ?>
+            padri
+            ·
+            <?= count($childTables) ?>
+            figli
+        </span>
+    </div>
+
+    <div class="card-body">
+        <div class="row g-3 align-items-stretch">
+
+            <!-- TABELLE PADRE -->
+            <div class="col-12 col-lg-4">
+                <div class="relation-group h-100">
+
+                    <div class="small text-uppercase text-muted fw-semibold mb-2">
+                        <i class="bi bi-arrow-left"></i>
+                        Tabelle padre
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2">
+
+                        <?php if ($parentTables === []): ?>
+
+                            <span class="text-muted small">
+                                Nessuna tabella padre
+                            </span>
+
+                        <?php else: ?>
+
+                            <?php
+                            foreach (
+                                    $config['relations']['belongsTo'] ?? []
+                            as $foreignKey => $relation
+                            ):
+                                ?>
+                                <?php
+                                $parentTable = (string) (
+                                        $relation['parentTable'] ?? ''
+                                );
+                                ?>
+
+                                <a
+                                    href="<?=
+                                    site_url(
+                                            'mycrud/builder/configure/'
+                                            . rawurlencode($parentTable)
+                                    )
+                                    ?>"
+                                    class="btn btn-sm btn-outline-info"
+                                    >
+                                    <i class="bi bi-box-arrow-up-left"></i>
+
+                                        <?= esc($parentTable) ?>
+
+                                    <span class="badge text-bg-light ms-1">
+                                <?= esc($foreignKey) ?>
+                                    </span>
+                                </a>
+    <?php endforeach; ?>
+
+<?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABELLA CORRENTE -->
+            <div class="col-12 col-lg-4">
+                <div class="relation-current h-100 text-center">
+
+                    <div class="small text-uppercase text-muted fw-semibold mb-2">
+                        Tabella corrente
+                    </div>
+
+                    <div class="fs-5 fw-bold">
+                        <i class="bi bi-table"></i>
+                        <?= esc($table) ?>
+                    </div>
+
+                    <div class="small text-muted mt-1">
+<?= esc($config['primaryKey'] ?? 'id') ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABELLE FIGLIE -->
+            <div class="col-12 col-lg-4">
+                <div class="relation-group h-100">
+
+                    <div class="small text-uppercase text-muted fw-semibold mb-2">
+                        Tabelle figlie
+                        <i class="bi bi-arrow-right"></i>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <?php if ($childTables === []): ?>
+                            <span class="text-muted small">
+                                Nessuna tabella figlia
+                            </span>
+                        <?php else: ?>
+
+                            <?php
+                            foreach (
+                                    $config['relations']['hasMany'] ?? []
+                            as $relation
+                            ):
+                                ?>
+                                <?php
+                                $childTable = (string) (
+                                        $relation['childTable'] ?? ''
+                                );
+
+                                $foreignKey = (string) (
+                                        $relation['foreignKey'] ?? ''
+                                );
+                                ?>
+
+                                <a
+                                    href="<?=
+                                site_url(
+                                        'mycrud/builder/configure/'
+                                        . rawurlencode($childTable)
+                                )
+                                ?>"
+                                    class="btn btn-sm btn-outline-success"
+                                    >
+        <?= esc($childTable) ?>
+
+                                    <span class="badge text-bg-light ms-1">
+                                <?= esc($foreignKey) ?>
+                                    </span>
+
+                                    <i class="bi bi-box-arrow-up-right"></i>
+                                </a>
+    <?php endforeach; ?>
+
+<?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--CORPO-->
+
+
+<div class="container py-4">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
             <h1 class="h3 mb-1">
                 <i class="bi bi-sliders"></i>
                 Configura tabella: <?= esc($table) ?>
             </h1>
-
             <small class="text-muted">
-                Trascina i campi per modificarne l’ordine e personalizza il form.
+                Trascina i campi per modificarne l'ordine.
             </small>
         </div>
 
         <div class="btn-group">
-            <button
-                type="button"
-                class="btn btn-outline-secondary"
-                id="expandAll" >
-                <i class="bi bi-arrows-expand"></i>
-                Espandi
+            <button type="button" class="btn btn-outline-secondary" id="expandAll">
+                <i class="bi bi-arrows-expand"></i> Espandi
             </button>
-
-            <button
-                type="button"
-                class="btn btn-outline-secondary"
-                id="collapseAll" >
-                <i class="bi bi-arrows-collapse"></i>
-                Comprimi
+            <button type="button" class="btn btn-outline-secondary" id="collapseAll">
+                <i class="bi bi-arrows-collapse"></i> Comprimi
             </button>
-
-            <button
-                type="button"
-                class="btn btn-primary"
-                id="showPreview"  >
-                <i class="bi bi-eye"></i>
-                Anteprima
+            <button type="button" class="btn btn-primary" id="showPreview">
+                <i class="bi bi-eye"></i> Anteprima
             </button>
         </div>
     </div>
 
     <?php if (session('message')): ?>
-        <div class="alert alert-success alert-dismissible fade show">
-            <?= esc(session('message')) ?>
+        <div class="alert alert-success"><?= esc(session('message')) ?></div>
+<?php endif; ?>
 
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-            ></button>
-        </div>
-    <?php endif; ?>
-
-    <?php if (session('error')): ?>
-        <div class="alert alert-danger alert-dismissible fade show">
-            <?= esc(session('error')) ?>
-
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-            ></button>
-        </div>
-    <?php endif; ?>
+        <?php if (session('error')): ?>
+        <div class="alert alert-danger"><?= esc(session('error')) ?></div>
+<?php endif; ?>
 
     <form method="post" id="builderForm">
-        <?= csrf_field() ?>
+<?= csrf_field() ?>
+        <input type="hidden" name="table" value="<?= esc($table) ?>">
 
-        <input
-            type="hidden"
-            name="table"
-            value="<?= esc($table) ?>"
-        >
-
-        <!-- ARCHITETTURA -->
         <div class="card shadow-sm mb-4">
             <div class="card-header">
-                <strong>
-                    <i class="bi bi-diagram-3"></i>
-                    Architettura
-                </strong>
+                <strong>Architettura</strong>
             </div>
 
             <div class="card-body">
                 <div class="row g-3">
-
                     <?php
                     $architectures = [
                         'basic' => [
-                            'icon'        => 'bi-lightning-charge',
-                            'title'       => 'Basic',
-                            'description' => 'Controller, Model, Validation e Views',
-                            'class'       => 'secondary',
+                            'icon' => 'bi-lightning-charge',
+                            'title' => 'Basic',
+                            'description' => 'Controller + Model + 4 Views + Validation',
+                            'class' => 'secondary',
                         ],
                         'standard' => [
-                            'icon'        => 'bi-building',
-                            'title'       => 'Standard',
-                            'description' => 'Basic, Service ed Entity',
-                            'class'       => 'primary',
+                            'icon' => 'bi-building',
+                            'title' => 'Standard',
+                            'description' => 'Basic + Service + Entity',
+                            'class' => 'primary',
                         ],
                         'full' => [
-                            'icon'        => 'bi-rocket-takeoff',
-                            'title'       => 'Full',
-                            'description' => 'Standard, API REST e DataTables',
-                            'class'       => 'success',
+                            'icon' => 'bi-rocket-takeoff',
+                            'title' => 'Full',
+                            'description' => 'Standard + API REST + DataTables',
+                            'class' => 'success',
                         ],
                     ];
                     ?>
 
-                    <?php foreach ($architectures as $value => $item): ?>
+<?php foreach ($architectures as $value => $item): ?>
                         <div class="col-md-4">
-
                             <input
                                 type="radio"
                                 class="btn-check architecture-radio"
                                 name="architecture"
                                 id="architecture_<?= esc($value) ?>"
                                 value="<?= esc($value) ?>"
-                                <?= ($config['architecture'] ?? 'standard') === $value
-                                    ? 'checked'
-                                    : '' ?>
-                            >
+    <?= ($config['architecture'] ?? 'standard') === $value ? 'checked' : '' ?>
+                                >
 
                             <label
                                 class="btn btn-outline-<?= esc($item['class']) ?> w-100 h-100 p-3"
                                 for="architecture_<?= esc($value) ?>"
-                            >
+                                >
                                 <i class="bi <?= esc($item['icon']) ?> fs-2"></i>
-
-                                <div class="fw-bold mt-2">
-                                    <?= esc($item['title']) ?>
-                                </div>
-
-                                <small>
-                                    <?= esc($item['description']) ?>
-                                </small>
+                                <div class="fw-bold mt-2"><?= esc($item['title']) ?></div>
+                                <small><?= esc($item['description']) ?></small>
                             </label>
                         </div>
                     <?php endforeach; ?>
-
                 </div>
 
                 <hr>
 
-                <?php
-                $featureLabels = [
-                    'entity'        => 'Entity',
-                    'service'       => 'Service',
-                    'api'           => 'API REST',
-                    'datatable'     => 'DataTables',
-                    'relations'     => 'Relazioni FK',
-                    'timestamps'    => 'Timestamp',
-                    'softDeletes'   => 'Soft delete',
-                    'exportButtons' => 'Pulsanti export',
-                ];
-                ?>
-
                 <div class="row g-3">
+                    <?php
+                    $featureLabels = [
+                        'entity' => 'Entity',
+                        'service' => 'Service',
+                        'api' => 'API REST',
+                        'datatable' => 'DataTables',
+                        'relations' => 'Relazioni FK',
+                        'timestamps' => 'Timestamp',
+                        'softDeletes' => 'Soft delete',
+                        'exportButtons' => 'Pulsanti export',
+                    ];
+                    ?>
 
-                    <?php foreach ($featureLabels as $feature => $label): ?>
-                        <?php
-                        $softDeleteDisabled =
-                            $feature === 'softDeletes'
-                            && empty($config['softDelete']['available']);
-                        ?>
-
+<?php foreach ($featureLabels as $feature => $label): ?>
                         <div class="col-md-3 col-sm-6">
                             <div class="form-check form-switch">
-
                                 <input
                                     class="form-check-input feature-check"
                                     type="checkbox"
                                     name="features[<?= esc($feature) ?>]"
                                     value="1"
                                     id="feature_<?= esc($feature) ?>"
-                                    <?= !empty($config['features'][$feature])
-                                        ? 'checked'
-                                        : '' ?>
-                                    <?= $softDeleteDisabled
-                                        ? 'disabled'
-                                        : '' ?>
-                                >
-
-                                <label
-                                    class="form-check-label"
-                                    for="feature_<?= esc($feature) ?>"
-                                >
-                                    <?= esc($label) ?>
+    <?= !empty($config['features'][$feature]) ? 'checked' : '' ?>
+    <?= $feature === 'softDeletes' && empty($config['softDelete']['available']) ? 'disabled' : '' ?>
+                                    >
+                                <label class="form-check-label" for="feature_<?= esc($feature) ?>">
+    <?= esc($label) ?>
                                 </label>
-
-                                <?php if ($softDeleteDisabled): ?>
-                                    <div class="form-text">
-                                        Richiede il campo
-                                        <code>
-                                            <?= esc(
-                                                $config['softDelete']['field']
-                                                ?? 'deleted_at'
-                                            ) ?>
-                                        </code>
-                                        nullable.
-                                    </div>
-                                <?php endif; ?>
-
                             </div>
                         </div>
-                    <?php endforeach; ?>
-
+<?php endforeach; ?>
                 </div>
 
                 <div class="alert alert-info mt-3 mb-0">
                     <i class="bi bi-info-circle"></i>
-
-                    Le view utilizzano sempre oggetti:
-
-                    <code>$row-&gt;campo</code>.
-
-                    Basic restituisce oggetti standard; Standard e Full
-                    possono usare Entity.
+                    Formato risultati fisso: <strong>oggetti</strong>.
+                    Basic usa <code>stdClass</code>; Standard e Full usano Entity.
+                    Le view utilizzano sempre <code>$row-&gt;campo</code>.
                 </div>
             </div>
         </div>
 
-        <!-- CAMPI -->
+
+<?php if (!empty($config['relationsConfig']['hasMany'])): ?>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <strong>
+                        <i class="bi bi-diagram-3"></i>
+                        Related Panels (hasMany readonly)
+                    </strong>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row g-3">
+
+    <?php
+    foreach (
+            $config['relationsConfig']['hasMany']
+    as $relationKey => $relation
+    ):
+        ?>
+
+                            <div class="col-12 col-lg-6 col-xxl-4">
+
+                                <div class="card h-100 border shadow-sm">
+
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+
+                                        <div>
+                                            <strong>
+        <?= esc($relation['title']) ?>
+                                            </strong>
+
+                                            <div class="small text-muted">
+        <?= esc($relation['childTable']) ?>.
+        <?= esc($relation['foreignKey']) ?>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-check form-switch mb-0">
+
+                                            <input
+                                                class="form-check-input"
+                                                type="checkbox"
+                                                name="relationsConfig[hasMany][<?= esc($relationKey) ?>][enabled]"
+                                                value="1"
+                                                id="relation_enabled_<?= esc(md5($relationKey)) ?>"
+        <?=
+        !empty($relation['enabled']) ? 'checked' : ''
+        ?>
+                                                >
+
+                                            <label
+                                                class="form-check-label"
+                                                for="relation_enabled_<?= esc(md5($relationKey)) ?>"
+                                                >
+                                                Attivo
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+
+                                        <div class="row g-3">
+
+                                            <div class="col-12">
+
+                                                <label class="form-label">
+                                                    Titolo
+                                                </label>
+
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    name="relationsConfig[hasMany][<?= esc($relationKey) ?>][title]"
+                                                    value="<?= esc($relation['title']) ?>"
+                                                    >
+                                            </div>
+
+                                            <div class="col-md-8">
+
+                                                <label class="form-label">
+                                                    Icona
+                                                </label>
+
+                                                <div class="input-group">
+
+                                                    <span class="input-group-text">
+                                                        <i class="bi <?=
+        esc(
+                $relation['icon'] ?? 'bi-diagram-3'
+        )
+        ?>"></i>
+                                                    </span>
+
+                                                    <input
+                                                        type="text"
+                                                        class="form-control relation-icon-input"
+                                                        name="relationsConfig[hasMany][<?= esc($relationKey) ?>][icon]"
+                                                        value="<?=
+        esc(
+                $relation['icon'] ?? 'bi-diagram-3'
+        )
+        ?>"
+                                                        >
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+
+                                                <label class="form-label">
+                                                    Limite
+                                                </label>
+
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    max="200"
+                                                    class="form-control"
+                                                    name="relationsConfig[hasMany][<?= esc($relationKey) ?>][limit]"
+                                                    value="<?=
+        (int) (
+        $relation['limit'] ?? 20
+        )
+        ?>"
+                                                    >
+                                            </div>
+
+                                            <div class="col-12">
+
+                                                <div class="form-check">
+
+                                                    <input
+                                                        class="form-check-input"
+                                                        type="checkbox"
+                                                        name="relationsConfig[hasMany][<?= esc($relationKey) ?>][showCount]"
+                                                        value="1"
+                                                        id="relation_count_<?= esc(md5($relationKey)) ?>"
+        <?=
+        !empty($relation['showCount']) ? 'checked' : ''
+        ?>
+                                                        >
+
+                                                    <label
+                                                        class="form-check-label"
+                                                        for="relation_count_<?= esc(md5($relationKey)) ?>"
+                                                        >
+                                                        Mostra conteggio
+                                                    </label>
+                                                </div>
+
+                                                <div class="form-check">
+
+                                                    <input
+                                                        class="form-check-input"
+                                                        type="checkbox"
+                                                        name="relationsConfig[hasMany][<?= esc($relationKey) ?>][showViewButton]"
+                                                        value="1"
+                                                        id="relation_view_<?= esc(md5($relationKey)) ?>"
+        <?=
+        !empty($relation['showViewButton']) ? 'checked' : ''
+        ?>
+                                                        >
+
+                                                    <label
+                                                        class="form-check-label"
+                                                        for="relation_view_<?= esc(md5($relationKey)) ?>"
+                                                        >
+                                                        Pulsante dettaglio
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12">
+
+                                                <label class="form-label d-block">
+                                                    Colonne
+                                                </label>
+
+                                                <div class="border rounded p-2 related-columns">
+
+        <?php
+        foreach (
+                $relation['columns'] ?? []
+        as $column
+        ):
+            ?>
+
+                                                        <div class="form-check">
+
+                                                            <input
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                name="relationsConfig[hasMany][<?= esc($relationKey) ?>][columns][]"
+                                                                value="<?= esc($column) ?>"
+                                                                id="relation_column_<?=
+                                                                esc(
+                                                                        md5(
+                                                                                $relationKey
+                                                                                . '_'
+                                                                                . $column
+                                                                        )
+                                                                )
+                                                                ?>"
+                                                                checked
+                                                                >
+
+                                                            <label
+                                                                class="form-check-label"
+                                                                for="relation_column_<?=
+                                                                esc(
+                                                                        md5(
+                                                                                $relationKey
+                                                                                . '_'
+                                                                                . $column
+                                                                        )
+                                                                )
+                                                                ?>"
+                                                                >
+            <?= esc($column) ?>
+                                                            </label>
+                                                        </div>
+
+        <?php endforeach; ?>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                <?php endforeach; ?>
+
+                    </div>
+                </div>
+            </div>
+
+<?php endif; ?>
+
         <div id="sortableFields">
-
-            <?php foreach ($config['order'] as $fieldName): ?>
-                <?php
-                if (!isset($config['fields'][$fieldName])) {
-                    continue;
-                }
-
-                $field = $config['fields'][$fieldName];
-                $foreignKey = $field['foreignKey'] ?? null;
-
-                $allowedTypes = [
-                    'text',
-                    'number',
-                    'email',
-                    'password',
-                    'date',
-                    'datetime-local',
-                    'time',
-                    'month',
-                    'week',
-                    'textarea',
-                    'select',
-                    'checkbox',
-                    'radio',
-                    'url',
-                    'tel',
-                    'file',
-                    'image',
-                    'hidden',
-                    'range',
-                    'color',
-                    'search',
-                ];
-
-                $typeIcons = [
-                    'text'           => '📝',
-                    'number'         => '🔢',
-                    'email'          => '✉️',
-                    'password'       => '🔐',
-                    'date'           => '📅',
-                    'datetime-local' => '⏰',
-                    'time'           => '🕒',
-                    'month'          => '📆',
-                    'week'           => '📆',
-                    'textarea'       => '✍️',
-                    'select'         => '📂',
-                    'checkbox'       => '☑️',
-                    'radio'          => '🔘',
-                    'url'            => '🌐',
-                    'tel'            => '📞',
-                    'file'           => '📁',
-                    'image'          => '🖼️',
-                    'hidden'         => '👁️‍🗨️',
-                    'range'          => '🎚️',
-                    'color'          => '🎨',
-                    'search'         => '🔍',
-                ];
-                ?>
-
-                <div
-                    class="card shadow-sm mb-3 field-block"
-                    data-field="<?= esc($fieldName) ?>"
-                >
+<?php foreach ($config['order'] as $fieldName): ?>
+    <?php
+    $field = $config['fields'][$fieldName];
+    $fk = $field['foreignKey'];
+    $allowedTypes = [
+        'text', 'number', 'email', 'password', 'date',
+        'datetime-local', 'time', 'textarea', 'select',
+        'checkbox', 'radio', 'url', 'tel', 'file',
+        'hidden', 'range', 'color', 'search'
+    ];
+    ?>
+                <div class="card shadow-sm mb-3 field-block"
+                     data-field="<?= esc($fieldName) ?>">
 
                     <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="drag-handle fs-4" title="Trascina">☰</span>
+                            <strong><?= esc($fieldName) ?></strong>
 
-                        <div class="d-flex flex-wrap align-items-center gap-2">
+    <?php if ($field['primary']): ?>
+                                <span class="badge bg-secondary">PK</span>
+    <?php endif; ?>
 
-                            <span
-                                class="drag-handle fs-4"
-                                title="Trascina per ordinare"
-                                style="cursor: grab;"
-                            >
-                                ☰
-                            </span>
-
-                            <strong>
-                                <?= esc($fieldName) ?>
-                            </strong>
-
-                            <?php if (!empty($field['primary'])): ?>
-                                <span class="badge bg-secondary">
-                                    PK
-                                </span>
-                            <?php endif; ?>
-
-                            <?php if (!empty($field['unique'])): ?>
-                                <span class="badge bg-info text-dark">
-                                    UNIQUE
-                                </span>
-                            <?php endif; ?>
-
-                            <?php if ($foreignKey): ?>
+    <?php if ($fk): ?>
                                 <span class="badge bg-warning text-dark">
-                                    FK →
-                                    <?= esc($foreignKey['parentTable'] ?? '') ?>
+                                    FK → <?= esc($fk['parentTable']) ?>
                                 </span>
-                            <?php endif; ?>
-
-                            <span class="badge bg-light text-dark border">
-                                <?= esc($field['columnType'] ?? $field['type'] ?? '') ?>
-                            </span>
-
+                                        <?php endif; ?>
                         </div>
 
-                        <button
-                            type="button"
-                            class="btn btn-sm btn-outline-secondary toggle-field"
-                            title="Comprimi o espandi"
-                        >
+                        <button type="button"
+                                class="btn btn-sm btn-outline-secondary toggle-field">
                             <i class="bi bi-chevron-up"></i>
                         </button>
                     </div>
 
                     <div class="card-body field-body">
-
                         <div class="row g-3">
-
-                            <!-- TIPO INPUT -->
                             <div class="col-lg-4">
-                                <label class="form-label">
-                                    Tipo input
-                                </label>
-
+                                <label class="form-label">Tipo input</label>
                                 <select
                                     name="inputType[<?= esc($fieldName) ?>]"
                                     class="form-select input-type"
-                                >
-                                    <?php foreach ($allowedTypes as $type): ?>
+                                    >
+                                    <?php
+                                    $icons = [
+                                        'text' => '📝', 'number' => '🔢', 'email' => '✉️',
+                                        'password' => '🔐', 'date' => '📅', 'datetime-local' => '⏰',
+                                        'time' => '🕒', 'textarea' => '✍️', 'select' => '📂',
+                                        'checkbox' => '☑️', 'radio' => '🔘', 'url' => '🌐',
+                                        'tel' => '📞', 'file' => '📁', 'hidden' => '🙈',
+                                        'range' => '🎚️', 'color' => '🎨', 'search' => '🔍',
+                                    ];
+                                    ?>
+    <?php foreach ($allowedTypes as $type): ?>
                                         <option
                                             value="<?= esc($type) ?>"
-                                            <?= ($field['inputType'] ?? 'text') === $type
-                                                ? 'selected'
-                                                : '' ?>
-                                        >
-                                            <?= esc(
-                                                ($typeIcons[$type] ?? '')
-                                                . ' '
-                                                . $type
-                                            ) ?>
+        <?= $field['inputType'] === $type ? 'selected' : '' ?>
+                                            >
+        <?= esc(($icons[$type] ?? '') . ' ' . $type) ?>
                                         </option>
-                                    <?php endforeach; ?>
+    <?php endforeach; ?>
                                 </select>
                             </div>
 
-                            <!-- LABEL -->
                             <div class="col-lg-4">
-                                <label class="form-label">
-                                    Label
-                                </label>
-
-                
-                                
-                                
-                            <input
-                            type="text"
-                            name="label[<?= esc($fieldName) ?>]"
-                            value="<?= esc($field['label'] ?? '') ?>"
-                            placeholder="<?= esc(
-                            $field['defaultLabel']
-                            ?? $fieldName
-                            ) ?>"
-                            class="form-control field-label"
-                            >
-                                
-<div class="form-text">
-    Lascia vuoto per utilizzare:
-
-    <code>
-        <?= esc(
-            $field['languageKey']
-            ?? 'Fields.' . $fieldName
-        ) ?>
-    </code>
-</div>
-                                
-                                
-                                <div class="form-text">
-                                    Il valore iniziale proviene da
-                                    <code>Language/it/Fields.php</code>.
-                                </div>
+                                <label class="form-label">Label</label>
+                                <input
+                                    type="text"
+                                    name="label[<?= esc($fieldName) ?>]"
+                                    value="<?= esc($field['label'] ?? '') ?>"
+                                    placeholder="<?= esc($field['defaultLabel'] ?? $fieldName) ?>"
+                                    class="form-control field-label"
+                                    >
                             </div>
 
-                            <!-- WIDTH -->
                             <div class="col-lg-4">
-                                <label class="form-label">
-                                    Larghezza Bootstrap
-                                </label>
-
+                                <label class="form-label">Larghezza Bootstrap</label>
                                 <select
                                     name="width[<?= esc($fieldName) ?>]"
                                     class="form-select width-select"
-                                >
-                                    <?php for ($width = 12; $width >= 1; $width--): ?>
+                                    >
+    <?php for ($width = 12; $width >= 1; $width--): ?>
                                         <option
                                             value="<?= $width ?>"
-                                            <?= (int) ($field['width'] ?? 6) === $width
-                                                ? 'selected'
-                                                : '' ?>
-                                        >
+        <?= (int) $field['width'] === $width ? 'selected' : '' ?>
+                                            >
                                             col-md-<?= $width ?>
                                         </option>
-                                    <?php endfor; ?>
+                                        <?php endfor; ?>
                                 </select>
                             </div>
 
-              <!-- ATTRIBUTI BOOLEANI -->
-<div class="col-lg-4">
-    <label class="form-label d-block">
-        Attributi booleani
-    </label>
+                            <div class="col-lg-4">
+                                <label class="form-label d-block">Attributi booleani</label>
 
-    <?php
-    $booleanAttributes = [
-        'required' => '⭐',
-        'readonly' => '🔒',
-        'disabled' => '🚫',
-    ];
-
-    $booleanValues = $field['attributes']['boolean'] ?? [];
-
-    $isNotNullable = ($field['nullable'] ?? true) === false;
-    $isAutoIncrement = !empty($field['autoIncrement']);
-    $isDisabled = in_array('disabled', $booleanValues, true);
-    ?>
-
-    <?php foreach ($booleanAttributes as $attribute => $icon): ?>
-        <?php
-        $isChecked = in_array(
-            $attribute,
-            $booleanValues,
-            true
-        );
-
-        /*
-         * Se il campo DB è NOT NULL,
-         * required viene selezionato automaticamente,
-         * tranne per i campi autoincrementali.
-         */
-        if (
-            $attribute === 'required'
-            && $isNotNullable
-            && !$isAutoIncrement
-        ) {
-            $isChecked = true;
-        }
-
-        /*
-         * Un campo disabled non può essere required.
-         */
-        if (
-            $attribute === 'required'
-            && $isDisabled
-        ) {
-            $isChecked = false;
-        }
-
-        $inputId = $fieldName . '_' . $attribute;
-        ?>
-
-        <div class="form-check form-check-inline">
-            <input
-                type="checkbox"
-                class="form-check-input attribute-boolean"
-                name="attrBool[<?= esc($fieldName) ?>][]"
-                value="<?= esc($attribute) ?>"
-                id="<?= esc($inputId) ?>"
-                <?= $isChecked ? 'checked' : '' ?>
-            >
-
-            <label
-                class="form-check-label"
-                for="<?= esc($inputId) ?>"
-            >
-                <?= $icon ?>
-                <?= esc($attribute) ?>
-            </label>
-        </div>
+                                        <?php foreach (['required' => '⭐', 'readonly' => '🔒', 'disabled' => '🚫'] as $attribute => $icon): ?>
+                                    <div class="form-check form-check-inline">
+                                        <input
+                                            type="checkbox"
+                                            class="form-check-input attribute-boolean"
+                                            name="attrBool[<?= esc($fieldName) ?>][]"
+                                            value="<?= esc($attribute) ?>"
+                                            id="<?= esc($fieldName . '_' . $attribute) ?>"
+                                                <?php
+                                                $checked = in_array($attribute, $field['attributes']['boolean'] ?? [], true);
+                                                if ($attribute === 'required' && (($field['nullable'] ?? true) === false) && empty($field['autoIncrement']) && !in_array('disabled', $field['attributes']['boolean'] ?? [], true)
+                                                ) {
+                                                    $checked = true;
+                                                }
+                                                ?>
+        <?= $checked ? 'checked' : '' ?>
+                                            >
+                                        <label
+                                            class="form-check-label"
+                                            for="<?= esc($fieldName . '_' . $attribute) ?>"
+                                            >
+        <?= $icon ?> <?= esc($attribute) ?>
+                                        </label>
+                                    </div>
     <?php endforeach; ?>
-</div>
+                            </div>
 
-                            <!-- ATTRIBUTI CON VALORE -->
                             <div class="col-lg-8">
-                                <label class="form-label">
-                                    Attributi con valore
-                                </label>
-
-                                <?php
-                                $valueAttributes = [
-                                    'maxlength',
-                                    'minlength',
-                                    'min',
-                                    'max',
-                                    'step',
-                                    'pattern',
-                                    'placeholder',
-                                ];
-                                ?>
-
+                                <label class="form-label">Attributi con valore</label>
                                 <div class="row g-2">
-
-                                    <?php foreach ($valueAttributes as $attribute): ?>
+    <?php foreach (['maxlength', 'minlength', 'min', 'max', 'step', 'pattern', 'placeholder'] as $attribute): ?>
                                         <div class="col-md-4">
-
                                             <div class="input-group input-group-sm">
-
-                                                <span class="input-group-text">
-                                                    <?= esc($attribute) ?>
-                                                </span>
-
+                                                <span class="input-group-text"><?= esc($attribute) ?></span>
                                                 <input
                                                     type="text"
                                                     name="attrVal[<?= esc($fieldName) ?>][<?= esc($attribute) ?>]"
-                                                    value="<?= esc(
-                                                        $field['attributes']['values'][$attribute]
-                                                        ?? ''
-                                                    ) ?>"
+                                                    value="<?= esc($field['attributes']['values'][$attribute] ?? '') ?>"
                                                     class="form-control"
-                                                >
-
+                                                    >
                                             </div>
                                         </div>
-                                    <?php endforeach; ?>
-
+    <?php endforeach; ?>
                                 </div>
                             </div>
-
-                            <!-- INFO DB -->
-                            <div class="col-12">
-                                <div class="border rounded bg-light p-3">
-
-                                    <div class="row g-2 small">
-
-                                        <div class="col-md-3">
-                                            <strong>Tipo DB:</strong>
-                                            <?= esc($field['columnType'] ?? '') ?>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <strong>Nullable:</strong>
-                                            <?= !empty($field['nullable'])
-                                                ? 'Sì'
-                                                : 'No' ?>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <strong>Default:</strong>
-                                            <?= esc(
-                                                $field['default']
-                                                ?? 'NULL'
-                                            ) ?>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <strong>Auto increment:</strong>
-                                            <?= !empty($field['autoIncrement'])
-                                                ? 'Sì'
-                                                : 'No' ?>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
                 </div>
-
-            <?php endforeach; ?>
-
+<?php endforeach; ?>
         </div>
 
-        <!-- ORDINE CAMPI -->
         <div id="orderContainer"></div>
 
-        <!-- COMANDI -->
         <div class="sticky-bottom bg-light border-top py-3 mt-4">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-
-                <a
-                    href="<?= site_url('mycrud') ?>"
-                    class="btn btn-secondary"
-                >
-                    <i class="bi bi-arrow-left"></i>
-                    Tabelle
+                <a href="<?= site_url('mycrud') ?>" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Tabelle
                 </a>
 
                 <div class="d-flex flex-wrap gap-2">
-
                     <div class="form-check form-switch align-self-center me-2">
-
-                        <input
-                            class="form-check-input"
-                            type="checkbox"
-                            name="force"
-                            value="1"
-                            id="force"
-                        >
-
-                        <label
-                            class="form-check-label"
-                            for="force"
-                        >
+                        <input class="form-check-input" type="checkbox" name="force" value="1" id="force">
+                        <label class="form-check-label" for="force">
                             Sovrascrivi file esistenti
                         </label>
                     </div>
 
                     <button
                         type="submit"
-                        formaction="<?= site_url(
-                            'mycrud/builder/save'
-                        ) ?>"
+                        formaction="<?= site_url('mycrud/builder/save') ?>"
                         class="btn btn-outline-success"
-                    >
-                        <i class="bi bi-floppy"></i>
-                        Salva configurazione
+                        >
+                        <i class="bi bi-floppy"></i> Salva configurazione
                     </button>
 
                     <button
                         type="submit"
-                        formaction="<?= site_url(
-                            'mycrud/builder/generate'
-                        ) ?>"
+                        formaction="<?= site_url('mycrud/builder/generate') ?>"
                         class="btn btn-warning"
-                    >
-                        <i class="bi bi-gear"></i>
-                        Genera CRUD
+                        >
+                        <i class="bi bi-gear"></i> Genera CRUD
                     </button>
-
                 </div>
             </div>
         </div>
-
     </form>
 </div>
 
-<!-- MODALE ANTEPRIMA -->
-<div
-    class="modal fade"
-    id="previewModal"
-    tabindex="-1"
-    aria-labelledby="previewModalLabel"
-    aria-hidden="true"
->
+<div class="modal fade" id="previewModal" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
-
         <div class="modal-content">
-
             <div class="modal-header">
-
-                <h5
-                    class="modal-title"
-                    id="previewModalLabel"
-                >
-                    <i class="bi bi-eye"></i>
-                    Anteprima form completo
+                <h5 class="modal-title">
+                    <i class="bi bi-eye"></i> Anteprima form
                 </h5>
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Chiudi"
-                ></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-
-            <div class="modal-body">
-
-                <div class="alert alert-info">
-                    L’anteprima riflette ordine, label, tipo input e
-                    larghezza Bootstrap configurati.
-                </div>
-
-                <div id="previewContent"></div>
-            </div>
-
+            <div class="modal-body" id="previewContent"></div>
         </div>
     </div>
 </div>
@@ -709,800 +773,185 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
-
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const sortableFields = document.getElementById(
-        'sortableFields'
-    );
+    document.addEventListener('DOMContentLoaded', function () {
+        const sortableElement = document.getElementById('sortableFields');
+        const orderContainer = document.getElementById('orderContainer');
 
-    const orderContainer = document.getElementById(
-        'orderContainer'
-    );
+        function updateOrder() {
+            orderContainer.innerHTML = '';
 
-    const previewButton = document.getElementById(
-        'showPreview'
-    );
-
-    const previewContent = document.getElementById(
-        'previewContent'
-    );
-
-    const previewModal = document.getElementById(
-        'previewModal'
-    );
-
-    const emojiForType = {
-        text: '📝',
-        number: '🔢',
-        email: '✉️',
-        password: '🔐',
-        date: '📅',
-        'datetime-local': '⏰',
-        time: '🕒',
-        month: '📆',
-        week: '📆',
-        color: '🎨',
-        checkbox: '☑️',
-        radio: '🔘',
-        select: '📂',
-        file: '📁',
-        image: '🖼️',
-        hidden: '👁️‍🗨️',
-        range: '🎚️',
-        search: '🔍',
-        tel: '📞',
-        url: '🌐',
-        textarea: '✍️'
-    };
-
-    function escapeHtml(value) {
-        const element = document.createElement('div');
-        element.textContent = String(value);
-
-        return element.innerHTML;
-    }
-
-    function cssEscape(value) {
-        if (
-            window.CSS
-            && typeof window.CSS.escape === 'function'
-        ) {
-            return window.CSS.escape(value);
+            document.querySelectorAll('.field-block').forEach(function (block) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'order[]';
+                input.value = block.dataset.field;
+                orderContainer.appendChild(input);
+            });
         }
 
-        return String(value).replace(
-            /([ !"#$%&'()*+,./:;<=>?@[\\\]^`{|}~])/g,
-            '\\$1'
-        );
-    }
-
-    function generateFieldHtml(
-        type,
-        fieldName,
-        attributes
-    ) {
-        const safeName = escapeHtml(fieldName);
-        const required = attributes.required
-            ? 'required'
-            : '';
-
-        const readonly = attributes.readonly
-            ? 'readonly'
-            : '';
-
-        const disabled = attributes.disabled
-            ? 'disabled'
-            : '';
-
-        const placeholder = attributes.placeholder
-            ? `placeholder="${escapeHtml(
-                attributes.placeholder
-            )}"`
-            : '';
-
-        const maxlength = attributes.maxlength
-            ? `maxlength="${escapeHtml(
-                attributes.maxlength
-            )}"`
-            : '';
-
-        const minlength = attributes.minlength
-            ? `minlength="${escapeHtml(
-                attributes.minlength
-            )}"`
-            : '';
-
-        const min = attributes.min
-            ? `min="${escapeHtml(attributes.min)}"`
-            : '';
-
-        const max = attributes.max
-            ? `max="${escapeHtml(attributes.max)}"`
-            : '';
-
-        const step = attributes.step
-            ? `step="${escapeHtml(attributes.step)}"`
-            : '';
-
-        const pattern = attributes.pattern
-            ? `pattern="${escapeHtml(
-                attributes.pattern
-            )}"`
-            : '';
-
-        const commonAttributes = [
-            required,
-            readonly,
-            disabled,
-            placeholder,
-            maxlength,
-            minlength,
-            min,
-            max,
-            step,
-            pattern
-        ].filter(Boolean).join(' ');
-
-        switch (type) {
-            case 'hidden':
-                return `
-                    <input
-                        type="hidden"
-                        name="${safeName}"
-                        value=""
-                    >
-
-                    <div class="form-text">
-                        Campo nascosto
-                    </div>
-                `;
-
-            case 'number':
-                return `
-                    <input
-                        type="number"
-                        name="${safeName}"
-                        class="form-control"
-                        ${commonAttributes}
-                    >
-                `;
-
-            case 'email':
-                return `
-                    <input
-                        type="email"
-                        name="${safeName}"
-                        class="form-control"
-                        ${commonAttributes}
-                    >
-                `;
-
-            case 'password':
-                return `
-                    <input
-                        type="password"
-                        name="${safeName}"
-                        class="form-control"
-                        ${commonAttributes}
-                    >
-                `;
-
-            case 'date':
-                return `
-                    <input
-                        type="date"
-                        name="${safeName}"
-                        class="form-control"
-                        ${commonAttributes}
-                    >
-                `;
-
-            case 'datetime-local':
-                return `
-                    <input
-                        type="datetime-local"
-                        name="${safeName}"
-                        class="form-control"
-                        ${commonAttributes}
-                    >
-                `;
-
-            case 'time':
-                return `
-                    <input
-                        type="time"
-                        name="${safeName}"
-                        class="form-control"
-                        ${commonAttributes}
-                    >
-                `;
-
-            case 'month':
-                return `
-                    <input
-                        type="month"
-                        name="${safeName}"
-                        class="form-control"
-                        ${commonAttributes}
-                    >
-                `;
-
-            case 'week':
-                return `
-                    <input
-                        type="week"
-                        name="${safeName}"
-                        class="form-control"
-                        ${commonAttributes}
-                    >
-                `;
-
-            case 'color':
-                return `
-                    <input
-                        type="color"
-                        name="${safeName}"
-                        class="form-control form-control-color"
-                        ${commonAttributes}
-                    >
-                `;
-
-            case 'textarea':
-                return `
-                    <textarea
-                        name="${safeName}"
-                        class="form-control"
-                        rows="3"
-                        ${commonAttributes}
-                    ></textarea>
-                `;
-
-            case 'select':
-                return `
-                    <select
-                        name="${safeName}"
-                        class="form-select"
-                        ${required}
-                        ${disabled}
-                    >
-                        <option value="">
-                            Seleziona...
-                        </option>
-
-                        <option value="1">
-                            Opzione 1
-                        </option>
-
-                        <option value="2">
-                            Opzione 2
-                        </option>
-                    </select>
-                `;
-
-            case 'radio':
-                return `
-                    <div class="form-check">
-                        <input
-                            type="radio"
-                            name="${safeName}"
-                            class="form-check-input"
-                            value="1"
-                            id="${safeName}_radio_1"
-                            ${required}
-                            ${disabled}
-                        >
-
-                        <label
-                            class="form-check-label"
-                            for="${safeName}_radio_1"
-                        >
-                            Opzione 1
-                        </label>
-                    </div>
-
-                    <div class="form-check">
-                        <input
-                            type="radio"
-                            name="${safeName}"
-                            class="form-check-input"
-                            value="2"
-                            id="${safeName}_radio_2"
-                            ${disabled}
-                        >
-
-                        <label
-                            class="form-check-label"
-                            for="${safeName}_radio_2"
-                        >
-                            Opzione 2
-                        </label>
-                    </div>
-                `;
-
-            case 'checkbox':
-                return `
-                    <div class="form-check">
-                        <input
-                            type="checkbox"
-                            name="${safeName}"
-                            class="form-check-input"
-                            value="1"
-                            id="${safeName}_checkbox"
-                            ${required}
-                            ${disabled}
-                        >
-
-                        <label
-                            class="form-check-label"
-                            for="${safeName}_checkbox"
-                        >
-                            Seleziona
-                        </label>
-                    </div>
-                `;
-
-            case 'range':
-                return `
-                    <input
-                        type="range"
-                        name="${safeName}"
-                        class="form-range"
-                        ${commonAttributes}
-                    >
-                `;
-
-            case 'search':
-                return `
-                    <input
-                        type="search"
-                        name="${safeName}"
-                        class="form-control"
-                        ${commonAttributes}
-                    >
-                `;
-
-            case 'tel':
-                return `
-                    <input
-                        type="tel"
-                        name="${safeName}"
-                        class="form-control"
-                        ${commonAttributes}
-                    >
-                `;
-
-            case 'url':
-                return `
-                    <input
-                        type="url"
-                        name="${safeName}"
-                        class="form-control"
-                        ${commonAttributes}
-                    >
-                `;
-
-            case 'file':
-                return `
-                    <input
-                        type="file"
-                        name="${safeName}"
-                        class="form-control"
-                        ${required}
-                        ${disabled}
-                    >
-                `;
-
-            case 'image':
-                return `
-                    <input
-                        type="file"
-                        name="${safeName}"
-                        class="form-control"
-                        accept="image/*"
-                        ${required}
-                        ${disabled}
-                    >
-                `;
-
-            default:
-                return `
-                    <input
-                        type="text"
-                        name="${safeName}"
-                        class="form-control"
-                        ${commonAttributes}
-                    >
-                `;
-        }
-    }
-
-    function updateOrder() {
-        if (!orderContainer) {
-            return;
-        }
-
-        orderContainer.innerHTML = '';
-
-        document
-            .querySelectorAll('.field-block')
-            .forEach(function (block) {
-                const hidden = document.createElement(
-                    'input'
-                );
-
-                hidden.type = 'hidden';
-                hidden.name = 'order[]';
-                hidden.value = block.dataset.field;
-
-                orderContainer.appendChild(hidden);
-            });
-    }
-
-    function readFieldAttributes(block, fieldName) {
-        const attributes = {
-            required: false,
-            readonly: false,
-            disabled: false,
-            maxlength: '',
-            minlength: '',
-            min: '',
-            max: '',
-            step: '',
-            pattern: '',
-            placeholder: ''
-        };
-
-        block
-            .querySelectorAll(
-                `input[name="attrBool[${cssEscape(
-                    fieldName
-                )}][]"]`
-            )
-            .forEach(function (input) {
-                if (input.checked) {
-                    attributes[input.value] = true;
-                }
-            });
-
-        [
-            'maxlength',
-            'minlength',
-            'min',
-            'max',
-            'step',
-            'pattern',
-            'placeholder'
-        ].forEach(function (attribute) {
-            const input = block.querySelector(
-                `input[name="attrVal[${cssEscape(
-                    fieldName
-                )}][${attribute}]"]`
-            );
-
-            attributes[attribute] = input?.value?.trim()
-                || '';
-        });
-
-        return attributes;
-    }
-
-    function buildPreview() {
-        let formHtml = `
-            <form class="row g-3">
-        `;
-
-        document
-            .querySelectorAll('.field-block')
-            .forEach(function (block) {
-                const fieldName = block.dataset.field;
-
-                const labelInput = block.querySelector(
-                    `input[name="label[${cssEscape(
-                        fieldName
-                    )}]"]`
-                );
-
-                const typeSelect = block.querySelector(
-                    '.input-type'
-                );
-
-                const widthSelect = block.querySelector(
-                    '.width-select'
-                );
-
-            
-        
-//             const label = labelInput?.value?.trim()
-//                    || fieldName;
-            
-            const label = labelInput?.value?.trim()
-    || labelInput?.placeholder?.trim()
-    || fieldName;
-            
-
-                const type = typeSelect?.value
-                    || 'text';
-
-                let width = Number.parseInt(
-                    widthSelect?.value || '6',
-                    10
-                );
-
-                if (
-                    Number.isNaN(width)
-                    || width < 1
-                    || width > 12
-                ) {
-                    width = 6;
-                }
-
-                const icon = emojiForType[type]
-                    || '';
-
-                const attributes = readFieldAttributes(
-                    block,
-                    fieldName
-                );
-
-                const fieldHtml = generateFieldHtml(
-                    type,
-                    fieldName,
-                    attributes
-                );
-
-                const requiredBadge = attributes.required
-                    ? `
-                        <span class="badge bg-danger ms-1">
-                            obbligatorio
-                        </span>
-                    `
-                    : '';
-
-                const readonlyBadge = attributes.readonly
-                    ? `
-                        <span class="badge bg-secondary ms-1">
-                            readonly
-                        </span>
-                    `
-                    : '';
-
-                const disabledBadge = attributes.disabled
-                    ? `
-                        <span class="badge bg-dark ms-1">
-                            disabled
-                        </span>
-                    `
-                    : '';
-
-                formHtml += `
-                    <div class="col-md-${width} mb-3">
-                        <label class="form-label">
-                            ${icon}
-                            ${escapeHtml(label)}
-                            ${requiredBadge}
-                            ${readonlyBadge}
-                            ${disabledBadge}
-                        </label>
-
-                        ${fieldHtml}
-                    </div>
-                `;
-            });
-
-        formHtml += `
-            </form>
-        `;
-
-        return formHtml;
-    }
-
-    if (sortableFields) {
-        new Sortable(sortableFields, {
+        new Sortable(sortableElement, {
             animation: 150,
             handle: '.drag-handle',
-            ghostClass: 'bg-warning',
+            ghostClass: 'border-warning',
             onSort: updateOrder
         });
-    }
 
-    updateOrder();
+        updateOrder();
 
-    previewButton?.addEventListener(
-        'click',
-        function () {
-            if (!previewContent || !previewModal) {
-                return;
+        document.querySelectorAll('.toggle-field').forEach(function (button) {
+            button.addEventListener('click', function () {
+                const body = button.closest('.card').querySelector('.field-body');
+                const icon = button.querySelector('i');
+
+                body.classList.toggle('d-none');
+                icon.className = body.classList.contains('d-none')
+                        ? 'bi bi-chevron-down'
+                        : 'bi bi-chevron-up';
+            });
+        });
+
+        document.getElementById('expandAll').addEventListener('click', function () {
+            document.querySelectorAll('.field-body').forEach(body => body.classList.remove('d-none'));
+            document.querySelectorAll('.toggle-field i').forEach(icon => icon.className = 'bi bi-chevron-up');
+        });
+
+        document.getElementById('collapseAll').addEventListener('click', function () {
+            document.querySelectorAll('.field-body').forEach(body => body.classList.add('d-none'));
+            document.querySelectorAll('.toggle-field i').forEach(icon => icon.className = 'bi bi-chevron-down');
+        });
+
+        function previewControl(type) {
+            switch (type) {
+                case 'textarea':
+                    return '<textarea class="form-control"></textarea>';
+                case 'select':
+                    return '<select class="form-select"><option>Seleziona...</option></select>';
+                case 'checkbox':
+                    return '<div class="form-check"><input type="checkbox" class="form-check-input"></div>';
+                case 'radio':
+                    return '<div class="form-check"><input type="radio" class="form-check-input"></div>';
+                case 'hidden':
+                    return '<div class="form-text">Campo nascosto</div>';
+                default:
+                    return '<input type="' + type + '" class="form-control">';
             }
-
-            previewContent.innerHTML = buildPreview();
-
-            bootstrap.Modal
-                .getOrCreateInstance(previewModal)
-                .show();
         }
-    );
 
-    document
-        .querySelectorAll('.toggle-field')
-        .forEach(function (button) {
-            button.addEventListener(
-                'click',
-                function () {
-                    const block = button.closest(
-                        '.field-block'
+        const architectureInputs = document.querySelectorAll(
+                'input[name="architecture"]'
+                );
+
+        function featureInput(name) {
+            return document.querySelector(
+                    `input[name="features[${name}]"]`
                     );
+        }
 
-                    const body = block?.querySelector(
-                        '.field-body'
-                    );
+        function setArchitectureFeature(name, checked, locked) {
+            const input = featureInput(name);
 
-                    const icon = button.querySelector(
-                        'i'
-                    );
-
-                    if (!body) {
-                        return;
-                    }
-
-                    body.classList.toggle('d-none');
-
-                    if (icon) {
-                        icon.className = body.classList
-                            .contains('d-none')
-                            ? 'bi bi-chevron-down'
-                            : 'bi bi-chevron-up';
-                    }
-                }
-            );
-        });
-
-    document
-        .getElementById('expandAll')
-        ?.addEventListener(
-            'click',
-            function () {
-                document
-                    .querySelectorAll('.field-body')
-                    .forEach(function (body) {
-                        body.classList.remove('d-none');
-                    });
-
-                document
-                    .querySelectorAll('.toggle-field i')
-                    .forEach(function (icon) {
-                        icon.className =
-                            'bi bi-chevron-up';
-                    });
-            }
-        );
-
-    document
-        .getElementById('collapseAll')
-        ?.addEventListener(
-            'click',
-            function () {
-                document
-                    .querySelectorAll('.field-body')
-                    .forEach(function (body) {
-                        body.classList.add('d-none');
-                    });
-
-                document
-                    .querySelectorAll('.toggle-field i')
-                    .forEach(function (icon) {
-                        icon.className =
-                            'bi bi-chevron-down';
-                    });
-            }
-        );
-
-    document
-        .querySelectorAll('.field-block')
-        .forEach(function (block) {
-            const disabled = block.querySelector(
-                'input[value="disabled"]'
-            );
-
-            const required = block.querySelector(
-                'input[value="required"]'
-            );
-
-            if (!disabled || !required) {
+            if (!input) {
                 return;
             }
 
-            function synchronizeRequired() {
-                if (disabled.checked) {
-                    required.checked = false;
-                    required.disabled = true;
-                } else {
-                    required.disabled = false;
-                }
+            input.checked = checked;
+            input.dataset.locked = locked ? '1' : '0';
+            input.setAttribute(
+                    'aria-disabled',
+                    locked ? 'true' : 'false'
+                    );
+
+            input.closest('.form-check')?.classList.toggle(
+                    'opacity-50',
+                    locked
+                    );
+        }
+
+        function applyArchitecture(architecture) {
+            switch (architecture) {
+                case 'basic':
+                    setArchitectureFeature('entity', false, true);
+                    setArchitectureFeature('service', false, true);
+                    setArchitectureFeature('api', false, true);
+                    break;
+
+                case 'standard':
+                    setArchitectureFeature('entity', true, true);
+                    setArchitectureFeature('service', true, true);
+                    setArchitectureFeature('api', false, true);
+                    break;
+
+                case 'full':
+                    setArchitectureFeature('entity', true, true);
+                    setArchitectureFeature('service', true, true);
+                    setArchitectureFeature('api', true, true);
+                    break;
             }
+        }
 
-            disabled.addEventListener(
-                'change',
-                synchronizeRequired
-            );
-
-            synchronizeRequired();
-        });
-
-    document
-        .querySelectorAll('.architecture-radio')
-        .forEach(function (radio) {
-            radio.addEventListener(
-                'change',
-                function () {
-                    const architecture = this.value;
-
-                    const entity = document.getElementById(
-                        'feature_entity'
-                    );
-
-                    const service = document.getElementById(
-                        'feature_service'
-                    );
-
-                    const api = document.getElementById(
-                        'feature_api'
-                    );
-
-                    if (architecture === 'basic') {
-                        if (entity) {
-                            entity.checked = false;
-                            entity.disabled = true;
-                        }
-
-                        if (service) {
-                            service.checked = false;
-                            service.disabled = true;
-                        }
-
-                        if (api) {
-                            api.checked = false;
-                        }
-                    }
-
-                    if (architecture === 'standard') {
-                        if (entity) {
-                            entity.checked = true;
-                            entity.disabled = false;
-                        }
-
-                        if (service) {
-                            service.checked = true;
-                            service.disabled = false;
-                        }
-
-                        if (api) {
-                            api.checked = false;
-                        }
-                    }
-
-                    if (architecture === 'full') {
-                        if (entity) {
-                            entity.checked = true;
-                            entity.disabled = false;
-                        }
-
-                        if (service) {
-                            service.checked = true;
-                            service.disabled = false;
-                        }
-
-                        if (api) {
-                            api.checked = true;
-                        }
-                    }
+        architectureInputs.forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (this.checked) {
+                    applyArchitecture(this.value);
                 }
-            );
+            });
         });
-});
+
+        document.querySelectorAll('.feature-check').forEach(function (input) {
+            input.addEventListener('click', function (event) {
+                if (this.dataset.locked === '1') {
+                    event.preventDefault();
+                }
+            });
+        });
+
+        const selectedArchitecture = document.querySelector(
+                'input[name="architecture"]:checked'
+                );
+
+        if (selectedArchitecture) {
+            applyArchitecture(selectedArchitecture.value);
+        }
+
+        document.querySelectorAll('.field-block').forEach(function (block) {
+            const disabled = block.querySelector('input[value="disabled"]');
+            const required = block.querySelector('input[value="required"]');
+            if (!disabled || !required)
+                return;
+            const sync = () => {
+                required.checked = disabled.checked ? false : required.checked;
+                required.disabled = disabled.checked;
+            };
+            disabled.addEventListener('change', sync);
+            sync();
+        });
+
+        document.getElementById('showPreview').addEventListener('click', function () {
+            let html = '<form class="row g-3">';
+
+            document.querySelectorAll('.field-block').forEach(function (block) {
+                const type = block.querySelector('.input-type').value;
+                const labelInput = block.querySelector('.field-label');
+                const label = labelInput.value.trim() || labelInput.placeholder || block.dataset.field;
+                const width = block.querySelector('.width-select').value;
+
+                html += `
+                <div class="col-md-${width}">
+                    <label class="form-label">${label}</label>
+                    ${previewControl(type)}
+                </div>
+            `;
+            });
+
+            html += '</form>';
+
+            document.getElementById('previewContent').innerHTML = html;
+            bootstrap.Modal.getOrCreateInstance(
+                    document.getElementById('previewModal')
+                    ).show();
+        });
+    });
 </script>
-
 <?= $this->endSection() ?>
-
