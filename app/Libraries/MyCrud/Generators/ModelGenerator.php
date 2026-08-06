@@ -35,13 +35,23 @@ final class ModelGenerator
             $name = (string) $field['name'];
             $type = strtolower((string) ($field['type'] ?? ''));
             $inputType = strtolower((string) ($field['inputType'] ?? 'text'));
-            $isSensitive = preg_match('/password|passwd|secret|token|pin|key|chiave|cvv/i', $name) === 1;
+            $ui = (array) ($field['ui'] ?? []);
+            $isSensitive = !empty($ui['sensitive'])
+                || preg_match('/password|passwd|secret|token|pin|key|chiave|cvv/i', $name) === 1;
             $isLarge = in_array($type, ['text', 'mediumtext', 'longtext', 'blob', 'mediumblob', 'longblob'], true);
+            $isBinary = in_array($inputType, ['file', 'image'], true);
 
-            if (!$isSensitive && !$isLarge && $inputType !== 'file' && $inputType !== 'image') {
+            $canSearch = array_key_exists('searchable', $ui)
+                ? !empty($ui['searchable'])
+                : !$isSensitive && !$isLarge && !$isBinary;
+            $canSort = array_key_exists('sortable', $ui)
+                ? !empty($ui['sortable'])
+                : !$isLarge && !$isBinary;
+
+            if ($canSearch && !$isSensitive && !$isLarge && !$isBinary) {
                 $searchable[] = $name;
             }
-            if (!$isLarge && $inputType !== 'file' && $inputType !== 'image') {
+            if ($canSort && !$isLarge && !$isBinary) {
                 $sortable[] = $name;
             }
         }
@@ -58,9 +68,16 @@ final class ModelGenerator
             $displayField = (string) $relation['displayField'];
             $alias = (string) ($relation['alias'] ?? ($parentTable . '_' . $displayField));
 
-            $selects[] = "'{$parentTable}.{$displayField} AS {$alias}'";
-            $joinLines[] = "        \$builder->join('{$parentTable}', '{$parentTable}.{$parentKey} = {$table}.{$field}', 'left');";
-            $modelJoinLines[] = "        \$this->join('{$parentTable}', '{$parentTable}.{$parentKey} = {$table}.{$field}', 'left');";
+            /*
+             * La FK entra nell'alias del JOIN per supportare più relazioni
+             * verso la stessa tabella (es. created_by e updated_by → users).
+             */
+            $joinAlias = preg_replace('/[^a-zA-Z0-9_]/', '_', $parentTable . '__' . $field)
+                ?: $parentTable;
+
+            $selects[] = "'{$joinAlias}.{$displayField} AS {$alias}'";
+            $joinLines[] = "        \$builder->join('{$parentTable} AS {$joinAlias}', '{$joinAlias}.{$parentKey} = {$table}.{$field}', 'left');";
+            $modelJoinLines[] = "        \$this->join('{$parentTable} AS {$joinAlias}', '{$joinAlias}.{$parentKey} = {$table}.{$field}', 'left');";
 
             $method = 'get' . Naming::singularStudly($parentTable) . 'Options';
             $optionMethods[$method] = <<<PHP

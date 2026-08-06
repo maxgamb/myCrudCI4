@@ -41,7 +41,7 @@ class MyCrudGenerate extends BaseCommand
             $config['features'] = match ($config['architecture']) {
                 'basic' => [
                     'entity'=>false, 'service'=>false, 'api'=>false,
-                    'datatable'=>true, 'relations'=>true,
+                    'datatable'=>false, 'relations'=>true,
                     'softDeletes'=>false, 'timestamps'=>false,
                     'exportButtons'=>true,
                 ],

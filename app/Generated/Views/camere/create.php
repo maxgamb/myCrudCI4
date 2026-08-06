@@ -1,0 +1,14 @@
+<?= $this->extend('layouts/default') ?>
+<?= $this->section('content') ?>
+
+<?= view('camere/_form', [
+    'formTitle'       => 'Nuovo record',
+    'formIcon'        => 'bi-plus-circle',
+    'formAction'      => site_url('camere/store'),
+    'row'             => $row ?? null,
+    'errors'          => $errors ?? [],
+    'options'         => $options ?? [],
+    'submissionToken' => $submissionToken ?? '',
+]) ?>
+
+<?= $this->endSection() ?>
