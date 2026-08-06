@@ -1,0 +1,205 @@
+openapi: 3.0.3
+info:
+  title: agenda API
+  version: 1.0.0
+paths:
+  /api/v1/agenda:
+    get:
+      summary: Elenco agenda
+      parameters:
+        - { name: page, in: query, schema: { type: integer, minimum: 1 } }
+        - { name: perPage, in: query, schema: { type: integer, minimum: 1, maximum: 100 } }
+        - { name: search, in: query, schema: { type: string } }
+        - { name: sort, in: query, schema: { type: string } }
+        - { name: direction, in: query, schema: { type: string, enum: [asc, desc] } }
+      responses:
+        '200': { description: Elenco paginato }
+    post:
+      summary: Crea record
+      responses:
+        '201': { description: Record creato }
+        '422': { description: Errore di validazione }
+  /api/v1/agenda/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      summary: Dettaglio record
+      responses:
+        '200': { description: Record trovato }
+        '404': { description: Record non trovato }
+    put:
+      summary: Aggiornamento completo
+      responses:
+        '200': { description: Record aggiornato }
+    patch:
+      summary: Aggiornamento parziale
+      responses:
+        '200': { description: Record aggiornato }
+    delete:
+      summary: Elimina record
+      responses:
+        '204': { description: Record eliminato }
+components:
+  schemas:
+    agenda:
+      type: object
+      required:
+        - preno_in_data
+        - preno_dal
+        - preno_al
+        - q1
+        - preno_cogno
+        - preno_stato
+      properties:
+        preno_id:
+          type: integer
+          format: int32
+        hotel_id:
+          type: integer
+          format: int32
+        preno_in_data:
+          type: string
+          format: date-time
+        preno_importo:
+          type: number
+          format: double
+        preno_impoto_mod:
+          type: number
+          format: double
+        preno_dal:
+          type: string
+          format: date
+        preno_al:
+          type: string
+          format: date
+        preno_n_notti:
+          type: integer
+          format: int32
+        preno_arr_ore:
+          type: string
+        preno_trattamento:
+          type: string
+        t1:
+          type: integer
+          format: int32
+        q1:
+          type: integer
+          format: int32
+        p1:
+          type: number
+          format: double
+        t2:
+          type: integer
+          format: int32
+        q2:
+          type: integer
+          format: int32
+        p2:
+          type: number
+          format: double
+        t3:
+          type: integer
+          format: int32
+        q3:
+          type: integer
+          format: int32
+        p3:
+          type: number
+          format: double
+        t4:
+          type: integer
+          format: int32
+        q4:
+          type: integer
+          format: int32
+        p4:
+          type: number
+          format: double
+        t5:
+          type: integer
+          format: int32
+        q5:
+          type: integer
+          format: int32
+        p5:
+          type: number
+          format: double
+        t6:
+          type: integer
+          format: int32
+        q6:
+          type: integer
+          format: int32
+        p6:
+          type: number
+          format: double
+        preno_nome:
+          type: string
+        preno_cogno:
+          type: string
+        preno_agenzia:
+          type: integer
+          format: int32
+        voucher_id:
+          type: string
+        ota_voucher:
+          type: string
+        allotment_id:
+          type: integer
+          format: int32
+        preno_cc_tip:
+          type: string
+        preno_cc_n:
+          type: string
+        preno_cc_scad:
+          type: string
+        preno_tel:
+          type: string
+        preno_fax:
+          type: string
+        preno_email:
+          type: string
+        preno_mercato:
+          type: string
+        nazione_iso2:
+          type: string
+        preno_note:
+          type: string
+        preno_doc_fax:
+          type: string
+        preno_doc_email:
+          type: string
+        preno_doc_form:
+          type: string
+        preno_doc_mail:
+          type: string
+        preno_doc_vaglia:
+          type: string
+        preno_doc_woucher:
+          type: string
+        preno_pag_modalita:
+          type: integer
+          format: int32
+        preno_caparra:
+          type: number
+          format: double
+        preno_stato:
+          type: integer
+          format: int32
+        data_opzione:
+          type: string
+          format: date
+        cancella_data_record:
+          type: string
+          format: date-time
+        cancella_user:
+          type: integer
+          format: int32
+        cancella_pass:
+          type: string
+        preno_data_record:
+          type: string
+          format: date-time
+        agenda_utente_id:
+          type: integer
+          format: int32

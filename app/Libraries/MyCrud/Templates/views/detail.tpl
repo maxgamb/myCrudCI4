@@ -8,7 +8,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped align-middle">
+                <table class="table table-sm table-bordered table-striped align-middle">
                     <tbody>
 {{ROWS}}                    </tbody>
                 </table>

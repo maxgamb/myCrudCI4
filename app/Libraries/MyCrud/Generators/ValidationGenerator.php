@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Libraries\MyCrud\Generators;
 
 use App\Libraries\MyCrud\Core\DatabaseValidationResolver;
+use App\Libraries\MyCrud\Core\FieldPolicy;
 
 final class ValidationGenerator
 {
@@ -27,6 +28,14 @@ final class ValidationGenerator
             }
 
             $name = (string) $field['name'];
+            $ui = (array) ($field['ui'] ?? []);
+            $inputType = (string) ($field['inputType'] ?? 'text');
+            if (array_key_exists('visibleForm', $ui) && empty($ui['visibleForm'])) {
+                continue;
+            }
+            if (FieldPolicy::isSensitive($name, $inputType) && !FieldPolicy::isPassword($name, $inputType)) {
+                continue;
+            }
             if (!empty($config['features']['softDeletes'])
                 && $name === (string) ($config['softDelete']['field'] ?? 'deleted_at')) {
                 continue;
@@ -44,7 +53,7 @@ final class ValidationGenerator
             $updateRules = $resolver->rulesFor($field, $table, $primaryKey, true);
 
             // In modifica una password vuota significa "mantieni quella attuale".
-            if ((string) ($field['inputType'] ?? '') === 'password') {
+            if (FieldPolicy::isPassword($name, $inputType)) {
                 $updateRules = array_values(array_diff($updateRules, ['required', 'permit_empty']));
                 array_unshift($updateRules, 'permit_empty');
             }

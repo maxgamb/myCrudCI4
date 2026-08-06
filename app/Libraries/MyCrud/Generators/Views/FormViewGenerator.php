@@ -1,6 +1,8 @@
 <?php
 namespace App\Libraries\MyCrud\Generators\Views;
 
+use App\Libraries\MyCrud\Core\FieldPolicy;
+
 final class FormViewGenerator extends AbstractViewGenerator
 {
     /** @return array{form:string,create:string,edit:string} */
@@ -33,6 +35,11 @@ final class FormViewGenerator extends AbstractViewGenerator
 
         foreach ($this->orderedFields($config) as $name) {
             $field = $config['fields'][$name];
+            $ui = (array) ($field['ui'] ?? []);
+            $inputType = (string) ($field['inputType'] ?? 'text');
+            if (FieldPolicy::isSensitive($name, $inputType) && !FieldPolicy::isPassword($name, $inputType)) {
+                continue;
+            }
 
             if (!empty($field['primary']) && !empty($field['autoIncrement'])) {
                 continue;

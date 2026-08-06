@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Libraries\MyCrud\Generators;
 
 use App\Libraries\MyCrud\Generators\Views\DetailViewGenerator;
@@ -29,13 +30,17 @@ final class ViewGenerator
     {
         $table = (string) $config['table'];
         $formViews = $this->forms->generate($config);
+        $listViews = $this->index->generateAll($config);
 
         $files = [
-            '_form.php' => $this->writeGenerated("Generated/Views/{$table}/_form.php", $formViews['form'], $force),
-            'create.php' => $this->writeGenerated("Generated/Views/{$table}/create.php", $formViews['create'], $force),
-            'edit.php'   => $this->writeGenerated("Generated/Views/{$table}/edit.php", $formViews['edit'], $force),
-            'index.php'  => $this->writeGenerated("Generated/Views/{$table}/index.php", $this->index->generate($config), $force),
-            'view.php'   => $this->writeGenerated("Generated/Views/{$table}/view.php", $this->detail->generate($config), $force),
+            '_form.php'    => $this->writeGenerated("Generated/Views/{$table}/_form.php", $formViews['form'], $force),
+            'create.php'   => $this->writeGenerated("Generated/Views/{$table}/create.php", $formViews['create'], $force),
+            'edit.php'     => $this->writeGenerated("Generated/Views/{$table}/edit.php", $formViews['edit'], $force),
+            'index.php'    => $this->writeGenerated("Generated/Views/{$table}/index.php", $listViews['index'], $force),
+            '_filters.php' => $this->writeGenerated("Generated/Views/{$table}/_filters.php", $listViews['filters'], $force),
+            '_table.php'   => $this->writeGenerated("Generated/Views/{$table}/_table.php", $listViews['table'], $force),
+            '_pager.php'   => $this->writeGenerated("Generated/Views/{$table}/_pager.php", $listViews['pager'], $force),
+            'view.php'     => $this->writeGenerated("Generated/Views/{$table}/view.php", $this->detail->generate($config), $force),
         ];
 
         if (!empty($config['features']['softDeletes'])) {

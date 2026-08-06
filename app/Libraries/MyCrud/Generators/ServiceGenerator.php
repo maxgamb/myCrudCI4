@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Libraries\MyCrud\Generators;
 
+use App\Libraries\MyCrud\Core\FieldPolicy;
+
 /** Genera un Service privo di query SQL. */
 final class ServiceGenerator
 {
@@ -16,7 +18,26 @@ final class ServiceGenerator
         $entity = (string) $config['classes']['entity'];
         $primaryKey = (string) $config['primaryKey'];
         $useEntity = !empty($config['features']['entity']);
+        $apiEnabled = !empty($config['features']['api']);
         $entityUse = $useEntity ? "use App\\Entities\\{$entity};\n" : '';
+        $passwordFields = [];
+        $automaticDateFields = [];
+        foreach ((array) ($config['fields'] ?? []) as $field) {
+            $name = (string) ($field['name'] ?? '');
+            $inputType = (string) ($field['inputType'] ?? 'text');
+            $type = strtolower((string) ($field['type'] ?? ''));
+            if (FieldPolicy::isPassword($name, $inputType)) {
+                $passwordFields[] = $name;
+            }
+            if (
+                preg_match('/(?:^|_)(?:data_record|recorded_at)(?:$|_)/i', $name) === 1
+                && in_array($type, ['date', 'datetime', 'timestamp'], true)
+            ) {
+                $automaticDateFields[$name] = $type === 'date' ? 'Y-m-d' : 'Y-m-d H:i:s';
+            }
+        }
+        $passwordFieldsCode = var_export(array_values(array_unique($passwordFields)), true);
+        $automaticDateFieldsCode = var_export($automaticDateFields, true);
         $createBody = $useEntity
             ? "        \$id = \$this->model->insert(new {$entity}(\$data), true);"
             : "        \$id = \$this->model->insert(\$data, true);";
@@ -44,6 +65,7 @@ final class ServiceGenerator
         if (!\$this->model->restoreRecord(\$id)) {
             throw new RuntimeException('Ripristino non riuscito.');
         }
+        \$this->model->clearListCountCache();
     }
 
     public function forceDelete(int|string \$id): void
@@ -51,11 +73,20 @@ final class ServiceGenerator
         if (!\$this->model->delete(\$id, true)) {
             throw new RuntimeException('Eliminazione definitiva non riuscita.');
         }
+        \$this->model->clearListCountCache();
     }
 
 PHP : '';
 
         $modelUse = "use App\\Models\\{$modelClass};";
+        $apiMethodsCode = $apiEnabled ? <<<PHP
+    /** Elenco REST paginato con filtri e ordinamento autorizzati. */
+    public function apiList(array \$query, array \$filterable, array \$sortable): array
+    {
+        return \$this->model->apiList(\$query, \$filterable, \$sortable);
+    }
+
+PHP : '';
 
         $content = <<<PHP
 <?php
@@ -70,6 +101,9 @@ use RuntimeException;
 /** Coordina la logica applicativa senza comporre query SQL. */
 final class {$class}
 {
+    private const PASSWORD_FIELDS = {$passwordFieldsCode};
+    private const AUTOMATIC_DATE_FIELDS = {$automaticDateFieldsCode};
+
     public function __construct(private readonly {$modelClass} \$model = new {$modelClass}())
     {
     }
@@ -83,18 +117,33 @@ final class {$class}
         return \$record;
     }
 
-    public function datatable(array \$request): array
-    {
-        return \$this->model->datatable(\$request);
+    public function listPage(
+        array \$filters,
+        int \$page,
+        int \$perPage,
+        string \$sort,
+        string \$direction
+    ): array {
+        return \$this->model->getListPage(\$filters, \$page, \$perPage, \$sort, \$direction);
     }
 
-    /** Elenco REST paginato con filtri e ordinamento autorizzati. */
-    public function apiList(array \$query, array \$filterable, array \$sortable): array
+    public function csvRows(array \$filters, int \$limit, int|string|null \$after = null): array
     {
-        return \$this->model->apiList(\$query, \$filterable, \$sortable);
+        return \$this->model->getCsvRows(\$filters, \$limit, \$after);
     }
 
-    public function relationOptions(): array
+    public function countCsvRows(array \$filters): int
+    {
+        return \$this->model->countCsvRows(\$filters);
+    }
+
+    /** @return list<string> */
+    public function csvFields(): array
+    {
+        return \$this->model->csvFields();
+    }
+
+{$apiMethodsCode}    public function relationOptions(): array
     {
         return \$this->model->relationOptions();
     }
@@ -106,15 +155,18 @@ final class {$class}
 
     public function create(array \$data): int|string
     {
+        \$data = \$this->prepareData(\$data, false);
 {$createBody}
         if (\$id === false) {
             throw new RuntimeException(implode(' ', \$this->model->errors()) ?: 'Inserimento non riuscito.');
         }
+        \$this->model->clearListCountCache();
 {$returnCreatedId}
     }
 
     public function update(int|string \$id, array \$data): void
     {
+        \$data = \$this->prepareData(\$data, true);
         // update() applica allowedFields e funziona sia con returnType object
         // sia con Entity, senza usare il record arricchito dai JOIN.
         if (!\$this->model->update(\$id, \$data)) {
@@ -122,11 +174,41 @@ final class {$class}
         }
     }
 
+    private function prepareData(array \$data, bool \$isUpdate): array
+    {
+        if (!\$isUpdate) {
+            foreach (self::AUTOMATIC_DATE_FIELDS as \$field => \$format) {
+                if (!isset(\$data[\$field]) || trim((string) \$data[\$field]) === '') {
+                    \$data[\$field] = date(\$format);
+                }
+            }
+        }
+
+        foreach (self::PASSWORD_FIELDS as \$field) {
+            if (!array_key_exists(\$field, \$data)) {
+                continue;
+            }
+
+            \$value = trim((string) \$data[\$field]);
+            if (\$value === '') {
+                if (\$isUpdate) {
+                    unset(\$data[\$field]);
+                }
+                continue;
+            }
+
+            \$data[\$field] = password_hash(\$value, PASSWORD_DEFAULT);
+        }
+
+        return \$data;
+    }
+
     public function delete(int|string \$id): void
     {
         if (!\$this->model->delete(\$id)) {
             throw new RuntimeException('Eliminazione non riuscita.');
         }
+        \$this->model->clearListCountCache();
     }
 
 {$softMethods}}

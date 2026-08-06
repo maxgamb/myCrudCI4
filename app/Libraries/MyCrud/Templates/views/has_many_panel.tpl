@@ -22,7 +22,7 @@
                         </tbody>
                     </table>
                 </div>
-                <?php if ((int) ($children['{{RELATION_KEY}}']['count'] ?? 0) > {{LIMIT}}): ?>
+                <?php if (!empty($children['{{RELATION_KEY}}']['hasMore'])): ?>
                     <div class="small text-muted">Visualizzati i primi {{LIMIT}} record.</div>
                 <?php endif; ?>
             <?php endif; ?>

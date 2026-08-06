@@ -35,7 +35,8 @@ final class MyCrudApiCheck extends BaseCommand
         $root = config('MyCrud')->generatedStagingPath();
         $checks = [
             $root . 'Controllers/Api/V1/' . $config['classes']['api'] . '.php',
-            $root . 'API/Resources/' . preg_replace('/ApiController$/', 'Resource', $config['classes']['api']) . '.php',
+            $root . 'API/Resources/' . $config['classes']['resource'] . '.php',
+            $root . 'Validation/' . $config['classes']['apiRules'] . '.php',
             $root . 'OpenApi/' . $table . '.yaml',
             $root . 'Routes/' . $table . '.php',
         ];

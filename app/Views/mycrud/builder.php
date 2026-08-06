@@ -239,48 +239,46 @@ ksort($childTables);
             </div>
 
             <div class="card-body">
+                <?php $selectedArchitecture = (string) ($config['architecture'] ?? 'basic'); ?>
                 <div class="row g-3">
-                    <?php
-                    $architectures = [
+                    <?php foreach ([
                         'basic' => [
-                            'icon' => 'bi-lightning-charge',
                             'title' => 'Basic',
-                            'description' => 'Controller + Model + 4 Views + Validation',
-                            'class' => 'secondary',
+                            'icon' => 'bi-box',
+                            'description' => 'CRUD, validazione, Bootstrap AJAX, Pager CI4, filtri indicizzati, CSV e Word HTML.',
                         ],
                         'standard' => [
-                            'icon' => 'bi-building',
                             'title' => 'Standard',
-                            'description' => 'Basic + Service + Entity',
-                            'class' => 'primary',
+                            'icon' => 'bi-layers',
+                            'description' => 'Tutto Basic, con Entity e Service.',
                         ],
                         'full' => [
-                            'icon' => 'bi-rocket-takeoff',
                             'title' => 'Full',
-                            'description' => 'Standard + API REST + DataTables',
-                            'class' => 'success',
+                            'icon' => 'bi-rocket-takeoff',
+                            'description' => 'Tutto Standard, con API REST v1, Resource, validazione API e OpenAPI.',
                         ],
-                    ];
-                    ?>
-
-<?php foreach ($architectures as $value => $item): ?>
-                        <div class="col-md-4">
-                            <input
-                                type="radio"
-                                class="btn-check architecture-radio"
-                                name="architecture"
-                                id="architecture_<?= esc($value) ?>"
-                                value="<?= esc($value) ?>"
-    <?= ($config['architecture'] ?? 'standard') === $value ? 'checked' : '' ?>
-                                >
-
-                            <label
-                                class="btn btn-outline-<?= esc($item['class']) ?> w-100 h-100 p-3"
-                                for="architecture_<?= esc($value) ?>"
-                                >
-                                <i class="bi <?= esc($item['icon']) ?> fs-2"></i>
-                                <div class="fw-bold mt-2"><?= esc($item['title']) ?></div>
-                                <small><?= esc($item['description']) ?></small>
+                    ] as $value => $architecture): ?>
+                        <div class="col-12 col-lg-4">
+                            <label class="card h-100 border architecture-card <?= $selectedArchitecture === $value ? 'border-primary' : '' ?>">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input architecture-radio"
+                                            type="radio"
+                                            name="architecture"
+                                            id="architecture_<?= esc($value) ?>"
+                                            value="<?= esc($value) ?>"
+                                            <?= $selectedArchitecture === $value ? 'checked' : '' ?>
+                                        >
+                                        <span class="form-check-label fw-bold">
+                                            <i class="bi <?= esc($architecture['icon']) ?>"></i>
+                                            <?= esc($architecture['title']) ?>
+                                        </span>
+                                    </div>
+                                    <p class="small text-muted mt-2 mb-0">
+                                        <?= esc($architecture['description']) ?>
+                                    </p>
+                                </div>
                             </label>
                         </div>
                     <?php endforeach; ?>
@@ -291,18 +289,13 @@ ksort($childTables);
                 <div class="row g-3">
                     <?php
                     $featureLabels = [
-                        'entity' => 'Entity',
-                        'service' => 'Service',
-                        'api' => 'API REST',
-                        'datatable' => 'DataTables',
                         'relations' => 'Relazioni FK',
                         'timestamps' => 'Timestamp',
                         'softDeletes' => 'Soft delete',
-                        'exportButtons' => 'Pulsanti export',
                     ];
                     ?>
 
-<?php foreach ($featureLabels as $feature => $label): ?>
+                    <?php foreach ($featureLabels as $feature => $label): ?>
                         <div class="col-md-3 col-sm-6">
                             <div class="form-check form-switch">
                                 <input
@@ -311,22 +304,35 @@ ksort($childTables);
                                     name="features[<?= esc($feature) ?>]"
                                     value="1"
                                     id="feature_<?= esc($feature) ?>"
-    <?= !empty($config['features'][$feature]) ? 'checked' : '' ?>
-    <?= $feature === 'softDeletes' && empty($config['softDelete']['available']) ? 'disabled' : '' ?>
-                                    >
+                                    <?= !empty($config['features'][$feature]) ? 'checked' : '' ?>
+                                    <?= $feature === 'softDeletes' && empty($config['softDelete']['available']) ? 'disabled' : '' ?>
+                                >
                                 <label class="form-check-label" for="feature_<?= esc($feature) ?>">
-    <?= esc($label) ?>
+                                    <?= esc($label) ?>
                                 </label>
                             </div>
                         </div>
-<?php endforeach; ?>
+                    <?php endforeach; ?>
                 </div>
 
-                <div class="alert alert-info mt-3 mb-0">
+                <div class="alert alert-info mt-3">
                     <i class="bi bi-info-circle"></i>
-                    Formato risultati fisso: <strong>oggetti</strong>.
-                    Basic usa <code>stdClass</code>; Standard e Full usano Entity.
-                    Le view utilizzano sempre <code>$row-&gt;campo</code>.
+                    Il motore elenco è comune: Bootstrap AJAX, Pager CI4, filtri server-side indicizzati,
+                    CSV e Word HTML. Le differenze riguardano i livelli Entity, Service e API.
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12 col-lg-6">
+                        <label for="filtersSummary" class="form-label">Titolo sezione filtri</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="filtersSummary"
+                            name="list[filtersSummary]"
+                            value="<?= esc($config['list']['filtersSummary'] ?? 'Filtri di ricerca') ?>"
+                            maxlength="120"
+                        >
+                    </div>
                 </div>
             </div>
         </div>
@@ -706,6 +712,7 @@ ksort($childTables);
                                     'visibleForm' => '🧾 Visibile form',
                                     'visibleView' => '👁️ Visibile dettaglio',
                                     'sensitive' => '🔐 Sensibile',
+                                    'exportable' => '📄 Esportabile CSV',
                                 ];
                                 ?>
                                 <?php foreach ($uiFlags as $flag => $flagLabel): ?>
@@ -869,81 +876,7 @@ ksort($childTables);
             }
         }
 
-        const architectureInputs = document.querySelectorAll(
-                'input[name="architecture"]'
-                );
-
-        function featureInput(name) {
-            return document.querySelector(
-                    `input[name="features[${name}]"]`
-                    );
-        }
-
-        function setArchitectureFeature(name, checked, locked) {
-            const input = featureInput(name);
-
-            if (!input) {
-                return;
-            }
-
-            input.checked = checked;
-            input.dataset.locked = locked ? '1' : '0';
-            input.setAttribute(
-                    'aria-disabled',
-                    locked ? 'true' : 'false'
-                    );
-
-            input.closest('.form-check')?.classList.toggle(
-                    'opacity-50',
-                    locked
-                    );
-        }
-
-        function applyArchitecture(architecture) {
-            switch (architecture) {
-                case 'basic':
-                    setArchitectureFeature('entity', false, true);
-                    setArchitectureFeature('service', false, true);
-                    setArchitectureFeature('api', false, true);
-                    break;
-
-                case 'standard':
-                    setArchitectureFeature('entity', true, true);
-                    setArchitectureFeature('service', true, true);
-                    setArchitectureFeature('api', false, true);
-                    break;
-
-                case 'full':
-                    setArchitectureFeature('entity', true, true);
-                    setArchitectureFeature('service', true, true);
-                    setArchitectureFeature('api', true, true);
-                    break;
-            }
-        }
-
-        architectureInputs.forEach(function (input) {
-            input.addEventListener('change', function () {
-                if (this.checked) {
-                    applyArchitecture(this.value);
-                }
-            });
-        });
-
-        document.querySelectorAll('.feature-check').forEach(function (input) {
-            input.addEventListener('click', function (event) {
-                if (this.dataset.locked === '1') {
-                    event.preventDefault();
-                }
-            });
-        });
-
-        const selectedArchitecture = document.querySelector(
-                'input[name="architecture"]:checked'
-                );
-
-        if (selectedArchitecture) {
-            applyArchitecture(selectedArchitecture.value);
-        }
+        // Architettura unica Full: nessun cambio di struttura lato client.
 
         document.querySelectorAll('.field-block').forEach(function (block) {
             const disabled = block.querySelector('input[value="disabled"]');

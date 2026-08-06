@@ -18,7 +18,8 @@ class ToolsController extends BaseController
             $controller = Naming::singularStudly($table) . 'Controller';
             $output .= "\$routes->group('{$table}', static function (RouteCollection \$routes): void {\n";
             $output .= "    \$routes->get('/', '{$controller}::index');\n";
-            $output .= "    \$routes->post('datatable', '{$controller}::datatable');\n";
+            $output .= "    \$routes->get('export-csv', '{$controller}::exportCsv');\n";
+            $output .= "    \$routes->get('export-word', '{$controller}::exportWord');\n";
             $output .= "    \$routes->get('view/(:segment)', '{$controller}::view/\$1');\n";
             $output .= "    \$routes->get('create', '{$controller}::create');\n";
             $output .= "    \$routes->post('store', '{$controller}::store');\n";

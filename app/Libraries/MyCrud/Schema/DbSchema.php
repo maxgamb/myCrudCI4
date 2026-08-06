@@ -80,7 +80,9 @@ class DbSchema
         $indexes = $this->db->query(
             'SELECT INDEX_NAME AS indexName,
                     COLUMN_NAME AS columnName,
-                    NON_UNIQUE AS nonUnique
+                    NON_UNIQUE AS nonUnique,
+                    SEQ_IN_INDEX AS sequence,
+                    INDEX_TYPE AS indexType
              FROM information_schema.STATISTICS
              WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?
              ORDER BY INDEX_NAME, SEQ_IN_INDEX',

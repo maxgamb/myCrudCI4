@@ -5,11 +5,17 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
         <div>
             <h1 class="h3 mb-0">{{TABLE}}</h1>
-            <small class="text-muted">Elenco e gestione record</small>
+            <small class="text-muted">Tabella Bootstrap, Pager CI4 e caricamento AJAX</small>
         </div>
-        <div class="btn-group">
+        <div class="d-flex flex-wrap gap-2">
             <a href="<?= site_url('{{TABLE}}/create') ?>" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Nuovo
+            </a>
+            <a id="exportCsvButton" href="<?= site_url('{{TABLE}}/export-csv') ?>" class="btn btn-success">
+                <i class="bi bi-filetype-csv"></i> Esporta CSV
+            </a>
+            <a id="exportWordButton" href="<?= site_url('{{TABLE}}/export-word') ?>" class="btn btn-outline-primary">
+                <i class="bi bi-file-earmark-word"></i> Esporta Word
             </a>
 {{TRASH_BUTTON}}        </div>
     </div>
@@ -28,105 +34,166 @@
         </div>
     <?php endif; ?>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table id="crudTable" class="table table-striped table-hover align-middle w-100">
-                    <thead>
-                        <tr>
-{{HEADERS}}                            <th>Azioni</th>
-                        </tr>
-                        <tr class="filters">
-{{FILTERS}}                            <th></th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
+    <?php
+    $hasActiveFilters = array_filter(
+        (array) ($filters ?? []),
+        static fn ($value): bool => is_array($value)
+            ? array_filter($value, static fn ($item): bool => trim((string) $item) !== '') !== []
+            : trim((string) $value) !== ''
+    ) !== [];
+    ?>
+
+    <details class="mb-3" <?= $hasActiveFilters ? 'open' : '' ?>>
+        <summary class="fw-semibold">{{FILTERS_SUMMARY}}</summary>
+        <div class="card card-body mt-2">
+            <?= view('{{TABLE}}/_filters', [
+                'filters' => $filters ?? [],
+                'options' => $options ?? [],
+                'perPage' => $perPage ?? 25,
+                'sort' => $sort ?? '{{PRIMARY_KEY}}',
+                'direction' => $direction ?? 'desc',
+            ]) ?>
         </div>
+    </details>
+
+    <div id="crudTableContainer" aria-live="polite" aria-busy="false">
+        <?= view('{{TABLE}}/_table', [
+            'rows' => $rows ?? [],
+            'total' => $total ?? 0,
+            'page' => $page ?? 1,
+            'perPage' => $perPage ?? 25,
+            'pagerLinks' => $pagerLinks ?? '',
+            'primaryKey' => $primaryKey ?? '{{PRIMARY_KEY}}',
+            'sort' => $sort ?? '{{PRIMARY_KEY}}',
+            'direction' => $direction ?? 'desc',
+            'query' => $query ?? [],
+        ]) ?>
     </div>
 </div>
 
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
-
 <script>
-$(function () {
-    let csrfHash = '<?= csrf_hash() ?>';
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('crudFiltersForm');
+    const container = document.getElementById('crudTableContainer');
+    const exportCsvButton = document.getElementById('exportCsvButton');
+    const exportWordButton = document.getElementById('exportWordButton');
+    let activeRequest = null;
 
-    $('#crudTable').DataTable({
-        processing: true,
-        serverSide: true,
-        stateSave: true,
-        orderCellsTop: true,
-        searchDelay: 350,
-        ajax: {
-            url: "<?= site_url('{{TABLE}}/datatable') ?>",
-            type: 'POST',
-            data: function (data) {
-                data['<?= csrf_token() ?>'] = csrfHash;
-            },
-            dataSrc: function (json) {
-                if (json.csrfHash) {
-                    csrfHash = json.csrfHash;
-                }
-                return json.data || [];
-            }
-        },
-        columns: [
-{{COLUMNS}}            {
-                data: '{{PRIMARY_KEY}}',
-                name: '{{PRIMARY_KEY}}',
-                orderable: false,
-                searchable: false,
-                render: function (id) {
-                    const base = "<?= site_url('{{TABLE}}') ?>";
-                    const safeId = encodeURIComponent(String(id ?? ''));
-                    return `<div class="btn-group btn-group-sm">
-                        <a href="${base}/view/${safeId}" class="btn btn-outline-info"><i class="bi bi-eye"></i></a>
-                        <a href="${base}/edit/${safeId}" class="btn btn-outline-warning"><i class="bi bi-pencil-square"></i></a>
-                        <button type="button" class="btn btn-outline-danger delete-record" data-id="${safeId}"><i class="bi bi-trash"></i></button>
-                    </div>`;
-                }
-            }
-        ],
-        language: {
-            url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/it-IT.json'
-        },
-        initComplete: function () {
-            const api = this.api();
-            api.columns().every(function (index) {
-                const input = $('.filters th').eq(index).find('input');
-                if (!input.length) return;
+    if (!form || !container || !exportCsvButton || !exportWordButton) {
+        return;
+    }
 
-                input.on('keyup change clear', function () {
-                    const value = this.value || '';
-                    if (api.column(index).search() !== value) {
-                        api.column(index).search(value).draw();
-                    }
-                });
-            });
+    const formParameters = () => new URLSearchParams(new FormData(form));
+
+    const exportParameters = () => {
+        const params = formParameters();
+        params.delete('page');
+        params.delete('perPage');
+        return params;
+    };
+
+    const updateExportUrls = () => {
+        const params = exportParameters().toString();
+        const csvUrl = new URL("<?= site_url('{{TABLE}}/export-csv') ?>", window.location.origin);
+        const wordUrl = new URL("<?= site_url('{{TABLE}}/export-word') ?>", window.location.origin);
+        csvUrl.search = params;
+        wordUrl.search = params;
+        exportCsvButton.href = csvUrl.toString();
+        exportWordButton.href = wordUrl.toString();
+    };
+
+    const loadTable = async (url, updateHistory = true) => {
+        if (activeRequest) {
+            activeRequest.abort();
         }
+        const request = new AbortController();
+        activeRequest = request;
+
+        container.classList.add('opacity-50');
+        container.setAttribute('aria-busy', 'true');
+
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                signal: request.signal
+            });
+
+            if (!response.ok) {
+                throw new Error('Errore HTTP ' + response.status);
+            }
+
+            container.innerHTML = await response.text();
+
+            if (updateHistory) {
+                window.history.pushState({}, '', url);
+            }
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                console.error(error);
+                container.innerHTML = '<div class="alert alert-danger">Impossibile caricare i dati.</div>';
+            }
+        } finally {
+            if (activeRequest === request) {
+                activeRequest = null;
+                container.classList.remove('opacity-50');
+                container.setAttribute('aria-busy', 'false');
+            }
+        }
+    };
+
+    form.addEventListener('submit', event => {
+        event.preventDefault();
+        const url = new URL(form.action, window.location.origin);
+        url.search = formParameters().toString();
+        url.searchParams.set('page', '1');
+        updateExportUrls();
+        loadTable(url.toString());
     });
 
-    $(document).on('click', '.delete-record', function () {
-        if (!confirm('Eliminare questo record?')) return;
-
-        const form = $('<form>', {
-            method: 'POST',
-            action: "<?= site_url('{{TABLE}}/delete') ?>/" + $(this).data('id')
-        });
-
-        form.append($('<input>', {
-            type: 'hidden',
-            name: '<?= csrf_token() ?>',
-            value: csrfHash
-        }));
-
-        $('body').append(form);
-        form.trigger('submit');
+    form.querySelector('[name="perPage"]')?.addEventListener('change', () => {
+        form.requestSubmit();
     });
+
+    document.addEventListener('click', event => {
+        const resetLink = event.target.closest('a.js-reset-filters');
+        if (!resetLink) {
+            return;
+        }
+        event.preventDefault();
+        window.location.assign(resetLink.href);
+    });
+
+    container.addEventListener('click', event => {
+        const link = event.target.closest('.pagination a, a.js-list-link');
+        if (!link) {
+            return;
+        }
+
+        event.preventDefault();
+        const url = new URL(link.href, window.location.origin);
+        const params = formParameters();
+
+        for (const [name, value] of params.entries()) {
+            if (value !== '') {
+                url.searchParams.set(name, value);
+            }
+        }
+
+        if (link.dataset.sort) {
+            url.searchParams.set('sort', link.dataset.sort);
+            url.searchParams.set('direction', link.dataset.direction || 'asc');
+            url.searchParams.set('page', '1');
+            form.querySelector('[name="sort"]').value = link.dataset.sort;
+            form.querySelector('[name="direction"]').value = link.dataset.direction || 'asc';
+        }
+
+        loadTable(url.toString());
+    });
+
+    window.addEventListener('popstate', () => window.location.reload());
+    updateExportUrls();
 });
 </script>
 

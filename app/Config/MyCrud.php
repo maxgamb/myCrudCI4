@@ -24,9 +24,15 @@ class MyCrud extends BaseConfig
             . DIRECTORY_SEPARATOR;
     }
 
-    public string $defaultArchitecture = 'standard';
+    public string $defaultArchitecture = 'full';
     public bool $safeWrite = true;
     public int $defaultPerPage = 25;
+    public int $maximumPerPage = 100;
+    public int $listCountCacheSeconds = 60;
+    public int $csvChunkSize = 2000;
+    public int $csvMaximumRows = 150000;
+    public int $wordChunkSize = 1000;
+    public int $wordMaximumRows = 50000;
     public string $defaultLocale = 'it';
     public string $softDeleteField = 'deleted_at';
 

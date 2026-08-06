@@ -9,7 +9,7 @@
                 Quick globale
             </h1>
             <p class="text-muted mb-0">
-                Seleziona architettura e tabelle, poi genera o simula l'operazione.
+                Seleziona le tabelle e l’architettura da generare.
             </p>
         </div>
         <span class="badge text-bg-primary fs-6"><?= count($tables) ?> tabelle disponibili</span>
@@ -23,25 +23,19 @@
         <div class="row g-4">
             <div class="col-12 col-xl-4">
                 <div class="card shadow-sm mb-4">
-                    <div class="card-header"><strong>Architettura</strong></div>
+                    <div class="card-header"><strong>Generatore</strong></div>
                     <div class="card-body">
+                        <?php $selectedArchitecture = (string) old('architecture', config('MyCrud')->defaultArchitecture); ?>
                         <?php foreach ([
-                            'basic' => 'Controller + Model',
-                            'standard' => 'Controller + Service + Model + Entity',
-                            'full' => 'Web + API + Service + Model + Entity',
-                        ] as $value => $description): ?>
-                            <div class="form-check border rounded p-3 mb-3">
-                                <input
-                                    class="form-check-input"
-                                    type="radio"
-                                    name="architecture"
-                                    value="<?= esc($value) ?>"
-                                    id="architecture_<?= esc($value) ?>"
-                                    <?= old('architecture', 'standard') === $value ? 'checked' : '' ?>
-                                >
-                                <label class="form-check-label w-100" for="architecture_<?= esc($value) ?>">
-                                    <strong><?= esc(ucfirst($value)) ?></strong>
-                                    <span class="d-block small text-muted"><?= esc($description) ?></span>
+                            'basic' => 'CRUD + validazione + Bootstrap AJAX + Pager + CSV + Word',
+                            'standard' => 'Basic + Entity + Service',
+                            'full' => 'Standard + API REST + Resource + OpenAPI',
+                        ] as $value => $label): ?>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input architecture-radio" type="radio" name="architecture" id="quick_arch_<?= esc($value) ?>" value="<?= esc($value) ?>" <?= $selectedArchitecture === $value ? 'checked' : '' ?>>
+                                <label class="form-check-label" for="quick_arch_<?= esc($value) ?>">
+                                    <strong><?= esc(ucfirst($value)) ?></strong><br>
+                                    <small class="text-muted"><?= esc($label) ?></small>
                                 </label>
                             </div>
                         <?php endforeach; ?>
@@ -138,10 +132,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const dryRun = document.getElementById('dryRun');
     const forceWarning = document.getElementById('forceWarning');
     const button = document.getElementById('generateAllButton');
+    const architectures = [...document.querySelectorAll('.architecture-radio')];
 
     const updateSummary = () => {
         const selected = checkboxes.filter(item => item.checked).length;
-        const architecture = document.querySelector('input[name="architecture"]:checked')?.value ?? 'standard';
+        const architecture = architectures.find(item => item.checked)?.value || 'basic';
         selectedCount.textContent = `${selected} selezionate`;
         summary.textContent = `Architettura: ${architecture} · Tabelle: ${selected} · Modalità: ${dryRun.checked ? 'simulazione' : 'scrittura'}`;
         forceWarning.classList.toggle('d-none', !force.checked || dryRun.checked);
@@ -164,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSummary();
     });
 
-    [...checkboxes, force, dryRun, ...document.querySelectorAll('input[name="architecture"]')]
+    [...checkboxes, ...architectures, force, dryRun]
         .forEach(input => input.addEventListener('change', updateSummary));
 
     form.addEventListener('submit', event => {

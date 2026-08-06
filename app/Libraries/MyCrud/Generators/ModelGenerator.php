@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Libraries\MyCrud\Generators;
 
+use App\Libraries\MyCrud\Core\FieldPolicy;
 use App\Libraries\MyCrud\Core\Naming;
 
-/**
- * Genera il Model e concentra nel livello dati tutte le query SQL.
- */
+/** Genera il Model e concentra nel livello dati tutte le query SQL. */
 final class ModelGenerator
 {
     use GeneratorTrait;
@@ -19,63 +18,100 @@ final class ModelGenerator
         $primaryKey = (string) $config['primaryKey'];
         $class = (string) $config['classes']['model'];
         $entity = (string) $config['classes']['entity'];
-        $usesEntity = !empty($config['features']['entity']);
+        $useEntity = !empty($config['features']['entity']);
+        $apiEnabled = !empty($config['features']['api']);
         $softDeleteEnabled = !empty($config['features']['softDeletes']);
         $deletedField = (string) ($config['softDelete']['field'] ?? 'deleted_at');
         $timestampsEnabled = !empty($config['features']['timestamps'])
             && isset($config['fields']['created_at'], $config['fields']['updated_at']);
-        $managedFields = array_filter([
+        $myCrudConfig = config('MyCrud');
+        $countCacheSeconds = max(0, min(3600, (int) ($myCrudConfig->listCountCacheSeconds ?? 60)));
+
+        $managedFields = array_values(array_filter([
             $timestampsEnabled ? 'created_at' : null,
             $timestampsEnabled ? 'updated_at' : null,
             $softDeleteEnabled ? $deletedField : null,
-        ]);
+        ]));
 
         $allowed = [];
-        $searchable = [];
+        $detailFields = [];
+        $listFields = [];
+        $exportFields = [];
+        $filterDefinitions = [];
         $sortable = [];
-        $fieldNames = [];
 
         foreach ($config['fields'] as $field) {
             $name = (string) $field['name'];
-            $fieldNames[] = $name;
-
-            if (
-                (empty($field['primary']) || empty($field['autoIncrement']))
-                && !in_array($name, $managedFields, true)
-            ) {
-                $allowed[] = $name;
-            }
-
             $type = strtolower((string) ($field['type'] ?? ''));
             $inputType = strtolower((string) ($field['inputType'] ?? 'text'));
             $ui = (array) ($field['ui'] ?? []);
             $isSensitive = !empty($ui['sensitive'])
-                || preg_match('/password|passwd|secret|token|pin|api[_-]?key|private[_-]?key|chiave|cvv/i', $name) === 1;
+                || FieldPolicy::isSensitive($name, $inputType);
             $isLarge = in_array($type, ['text', 'mediumtext', 'longtext', 'blob', 'mediumblob', 'longblob'], true);
-            $isBinary = in_array($inputType, ['file', 'image'], true);
+            $isBinary = in_array($inputType, ['file', 'image'], true) || str_contains($type, 'blob') || str_contains($type, 'binary');
 
-            $canSearch = array_key_exists('searchable', $ui)
-                ? !empty($ui['searchable'])
-                : !$isSensitive && !$isLarge && !$isBinary;
-            $canSort = array_key_exists('sortable', $ui)
-                ? !empty($ui['sortable'])
-                : !$isLarge && !$isBinary;
-
-            if ($canSearch && !$isSensitive && !$isLarge && !$isBinary) {
-                $searchable[] = $name;
+            if (
+                (empty($field['primary']) || empty($field['autoIncrement']))
+                && !in_array($name, $managedFields, true)
+                && (!$isSensitive || FieldPolicy::isPassword($name, $inputType))
+            ) {
+                $allowed[] = $name;
             }
-            if ($canSort && !$isLarge && !$isBinary) {
+
+            if (!$isSensitive && !str_contains($type, 'blob') && !str_contains($type, 'binary')) {
+                $detailFields[] = $name;
+            }
+
+            if (!empty($ui['visibleIndex']) && !$isSensitive && !$isLarge && !$isBinary) {
+                $listFields[] = $name;
+            }
+
+            if (!empty($ui['exportable']) && !$isSensitive && !$isBinary) {
+                $exportFields[] = $name;
+            }
+
+            if (!empty($ui['searchable']) && !$isSensitive && !$isLarge && !$isBinary) {
+                $filterDefinitions[$name] = [
+                    'mode' => (string) ($ui['filterMode'] ?? 'exact'),
+                    'type' => $type,
+                ];
+            }
+
+            if (!empty($ui['sortable']) && !$isSensitive && !$isLarge && !$isBinary) {
                 $sortable[] = $name;
             }
         }
 
+        if (!in_array($primaryKey, $listFields, true)) {
+            array_unshift($listFields, $primaryKey);
+        }
+        if (!in_array($primaryKey, $exportFields, true)) {
+            array_unshift($exportFields, $primaryKey);
+        }
         if (!in_array($primaryKey, $sortable, true)) {
-            $sortable[] = $primaryKey;
+            array_unshift($sortable, $primaryKey);
+        }
+        if (!isset($filterDefinitions[$primaryKey])) {
+            $filterDefinitions[$primaryKey] = ['mode' => 'exact', 'type' => 'primary'];
         }
 
-        $selects = ["'{$table}.*'"];
-        $joinLines = [];
-        $modelJoinLines = [];
+        $detailSelects = [];
+        foreach (array_values(array_unique($detailFields)) as $field) {
+            $detailSelects[] = "'{$table}.{$field} AS {$field}'";
+        }
+        $listSelects = [];
+        $csvSelects = [];
+
+        foreach (array_values(array_unique($listFields)) as $field) {
+            $listSelects[] = "'{$table}.{$field} AS {$field}'";
+        }
+        foreach (array_values(array_unique($exportFields)) as $field) {
+            $csvSelects[] = "'{$table}.{$field} AS {$field}'";
+        }
+
+        $detailJoinLines = [];
+        $listJoinLines = [];
+        $csvJoinLines = [];
         $optionMethods = [];
         $optionMapLines = [];
 
@@ -84,15 +120,24 @@ final class ModelGenerator
             $parentKey = (string) $relation['parentKey'];
             $displayField = (string) $relation['displayField'];
             $alias = (string) ($relation['alias'] ?? ($parentTable . '_' . $displayField));
+            $joinAlias = preg_replace('/[^a-zA-Z0-9_]/', '_', $parentTable . '__' . $field) ?: $parentTable;
 
-            $joinAlias = preg_replace('/[^a-zA-Z0-9_]/', '_', $parentTable . '__' . $field)
-                ?: $parentTable;
+            $detailSelects[] = "'{$joinAlias}.{$displayField} AS {$alias}'";
+            if (in_array((string) $field, $listFields, true)) {
+                $listSelects[] = "'{$joinAlias}.{$displayField} AS {$alias}'";
+            }
+            if (in_array((string) $field, $exportFields, true)) {
+                $csvSelects[] = "'{$joinAlias}.{$displayField} AS {$alias}'";
+            }
+            $joinLine = "        \$builder->join('{$parentTable} AS {$joinAlias}', '{$joinAlias}.{$parentKey} = {$table}.{$field}', 'left');";
+            $detailJoinLines[] = $joinLine;
+            if (in_array((string) $field, $listFields, true)) {
+                $listJoinLines[] = $joinLine;
+            }
+            if (in_array((string) $field, $exportFields, true)) {
+                $csvJoinLines[] = $joinLine;
+            }
 
-            $selects[] = "'{$joinAlias}.{$displayField} AS {$alias}'";
-            $joinLines[] = "        \$builder->join('{$parentTable} AS {$joinAlias}', '{$joinAlias}.{$parentKey} = {$table}.{$field}', 'left');";
-            $modelJoinLines[] = "        \$this->join('{$parentTable} AS {$joinAlias}', '{$joinAlias}.{$parentKey} = {$table}.{$field}', 'left');";
-
-            // La FK rende univoco il metodo anche con due relazioni alla stessa tabella.
             $method = 'get' . Naming::singularStudly($parentTable) . Naming::singularStudly((string) $field) . 'Options';
             $optionMethods[] = <<<PHP
     /** Restituisce le opzioni della relazione {$field}. */
@@ -119,47 +164,45 @@ PHP;
             $childTable = (string) $relation['childTable'];
             $foreignKey = (string) $relation['foreignKey'];
             $childPk = (string) ($relation['primaryKey'] ?? 'id');
-            $methodSuffix = Naming::singularStudly($childTable) . Naming::singularStudly($foreignKey);
+            $methodSuffix = Naming::studly($childTable) . 'By' . Naming::studly($foreignKey);
             $getMethod = 'get' . $methodSuffix;
-            $countMethod = 'count' . $methodSuffix;
             $limit = max(1, min(200, (int) ($relation['limit'] ?? 20)));
 
             $childMethods[] = <<<PHP
-    /** Restituisce i record figli dalla tabella {$childTable}. */
+    /** Carica al massimo una riga in più per determinare se esistono altri risultati. */
     public function {$getMethod}(int|string \$parentId, int \$limit = {$limit}): array
     {
-        return \$this->db->table('{$childTable}')
+        \$limit = max(1, min(200, \$limit));
+        \$rows = \$this->db->table('{$childTable}')
             ->where('{$foreignKey}', \$parentId)
             ->orderBy('{$childPk}', 'DESC')
-            ->limit(max(1, min(200, \$limit)))
+            ->limit(\$limit + 1)
             ->get()
             ->getResult();
-    }
+        \$hasMore = count(\$rows) > \$limit;
+        if (\$hasMore) {
+            array_pop(\$rows);
+        }
 
-    /** Conta i record figli dalla tabella {$childTable}. */
-    public function {$countMethod}(int|string \$parentId): int
-    {
-        return \$this->db->table('{$childTable}')
-            ->where('{$foreignKey}', \$parentId)
-            ->countAllResults();
+        return [
+            'rows' => \$rows,
+            'count' => count(\$rows),
+            'hasMore' => \$hasMore,
+        ];
     }
 
 PHP;
-            $showCount = !empty($relation['showCount']) ? 'true' : 'false';
-            $childLoaderLines[] = "        \$rows = \$this->{$getMethod}(\$parentId, {$limit});\n        \$result['{$relationKey}'] = [\n            'rows' => \$rows,\n            'count' => {$showCount} ? \$this->{$countMethod}(\$parentId) : count(\$rows),\n        ];";
+            $childLoaderLines[] = "        \$result['{$relationKey}'] = \$this->{$getMethod}(\$parentId, {$limit});";
         }
-
-        $returnType = $usesEntity ? "{$entity}::class" : "'object'";
-        $useEntity = $usesEntity ? "use App\\Entities\\{$entity};\n" : '';
 
         $softDeleteCode = $softDeleteEnabled
             ? "    protected \$useSoftDeletes = true;\n    protected \$deletedField = '{$deletedField}';"
             : "    protected \$useSoftDeletes = false;";
-        $softBuilderFilter = $softDeleteEnabled
+        $softDataFilter = $softDeleteEnabled
             ? "        \$builder->where('{$table}.{$deletedField}', null);\n"
             : '';
-        $softTotalFilter = $softDeleteEnabled
-            ? "        \$totalBuilder->where('{$deletedField}', null);\n"
+        $softCountFilter = $softDeleteEnabled
+            ? "        \$builder->where('{$deletedField}', null);\n"
             : '';
         $softMethods = $softDeleteEnabled ? <<<PHP
     public function getDeletedList(): array
@@ -180,152 +223,30 @@ PHP : '';
             ? "    protected \$useTimestamps = true;\n    protected \$dateFormat = 'datetime';\n    protected \$createdField = 'created_at';\n    protected \$updatedField = 'updated_at';"
             : "    protected \$useTimestamps = false;";
 
-        $selectCode = implode(",\n            ", $selects);
-        $joinsCode = implode("\n", $joinLines);
-        $modelJoinsCode = implode("\n", $modelJoinLines);
+        $detailSelectCode = implode(",\n            ", array_values(array_unique($detailSelects)));
+        $listSelectCode = implode(",\n            ", array_values(array_unique($listSelects)));
+        $csvSelectCode = implode(",\n            ", array_values(array_unique($csvSelects)));
+        $detailJoinsCode = implode("\n", $detailJoinLines);
+        $listJoinsCode = implode("\n", $listJoinLines);
+        $csvJoinsCode = implode("\n", $csvJoinLines);
         $optionsMethodsCode = implode('', $optionMethods);
         $optionMapCode = implode("\n", $optionMapLines);
         $childrenMethodsCode = implode('', $childMethods);
         $childrenLoaderCode = implode("\n\n", $childLoaderLines);
         $allowedCode = var_export(array_values(array_unique($allowed)), true);
-        $searchableCode = var_export(array_values(array_unique($searchable)), true);
+        $filtersCode = var_export($filterDefinitions, true);
         $sortableCode = var_export(array_values(array_unique($sortable)), true);
+        $exportFieldsCode = var_export(array_values(array_unique($exportFields)), true);
+        $entityUse = $useEntity ? 'use App\\Entities\\' . $entity . ';' : '';
+        $returnTypeCode = $useEntity ? $entity . '::class' : "'object'";
 
-        $content = <<<PHP
-<?php
-
-declare(strict_types=1);
-
-namespace App\Models;
-
-{$useEntity}use CodeIgniter\Database\BaseBuilder;
-use CodeIgniter\Model;
-
-/**
- * Model per la tabella {$table}.
- * Tutte le query DB del CRUD sono centralizzate in questa classe.
- */
-final class {$class} extends Model
-{
-    protected \$table = '{$table}';
-    protected \$primaryKey = '{$primaryKey}';
-    protected \$returnType = {$returnType};
-{$softDeleteCode}
-    protected \$protectFields = true;
-    protected \$allowedFields = {$allowedCode};
-{$timestampsCode}
-    protected \$skipValidation = true;
-    protected \$cleanValidationRules = true;
-
-    private const SEARCHABLE_FIELDS = {$searchableCode};
-    private const SORTABLE_FIELDS = {$sortableCode};
-
-    /** Query base con tutti i LEFT JOIN verso le tabelle padre. */
-    public function baseBuilder(): BaseBuilder
-    {
-        \$builder = \$this->db->table('{$table}');
-        \$builder->select([
-            {$selectCode}
-        ]);
-{$joinsCode}
-{$softBuilderFilter}
-        return \$builder;
-    }
-
-    /** Restituisce il dettaglio con i dati descrittivi dei parent. */
-    public function getDetail(int|string \$id): ?object
-    {
-        return \$this->baseBuilder()
-            ->where('{$table}.{$primaryKey}', \$id)
-            ->get()
-            ->getRow();
-    }
-
-    /** Paginazione nativa CI4 usata dall'architettura Basic. */
-    public function paginateWithParents(int \$perPage = 25, string \$group = 'default', string \$search = ''): array
-    {
-        \$this->select([
-            {$selectCode}
-        ]);
-{$modelJoinsCode}
-
-        if (\$search !== '' && self::SEARCHABLE_FIELDS !== []) {
-            \$this->groupStart();
-            foreach (self::SEARCHABLE_FIELDS as \$index => \$field) {
-                \$method = \$index === 0 ? 'like' : 'orLike';
-                \$this->{\$method}('{$table}.' . \$field, \$search);
-            }
-            \$this->groupEnd();
-        }
-
-        \$this->orderBy('{$table}.{$primaryKey}', 'DESC');
-        return \$this->paginate(max(1, min(200, \$perPage)), \$group);
-    }
-
-    /** Elabora DataTables interamente nel Model. */
-    public function datatable(array \$request): array
-    {
-        \$draw = (int) (\$request['draw'] ?? 1);
-        \$start = max(0, (int) (\$request['start'] ?? 0));
-        \$length = max(1, min(500, (int) (\$request['length'] ?? 25)));
-        \$search = trim((string) (\$request['search']['value'] ?? ''));
-        \$builder = \$this->baseBuilder();
-
-        if (\$search !== '' && self::SEARCHABLE_FIELDS !== []) {
-            \$builder->groupStart();
-            foreach (self::SEARCHABLE_FIELDS as \$index => \$field) {
-                \$method = \$index === 0 ? 'like' : 'orLike';
-                \$builder->{\$method}('{$table}.' . \$field, \$search);
-            }
-            \$builder->groupEnd();
-        }
-
-        foreach ((array) (\$request['columns'] ?? []) as \$column) {
-            \$field = (string) (\$column['data'] ?? '');
-            \$value = trim((string) (\$column['search']['value'] ?? ''));
-            if (\$value !== '' && in_array(\$field, self::SEARCHABLE_FIELDS, true)) {
-                \$builder->like('{$table}.' . \$field, \$value);
-            }
-        }
-
-        \$totalBuilder = \$this->db->table('{$table}');
-{$softTotalFilter}        \$recordsTotal = \$totalBuilder->countAllResults();
-        \$recordsFiltered = (clone \$builder)->countAllResults(false);
-
-        \$orderIndex = (int) (\$request['order'][0]['column'] ?? 0);
-        \$requestedField = (string) (\$request['columns'][\$orderIndex]['data'] ?? '{$primaryKey}');
-        \$orderField = in_array(\$requestedField, self::SORTABLE_FIELDS, true) ? \$requestedField : '{$primaryKey}';
-        \$orderDirection = strtolower((string) (\$request['order'][0]['dir'] ?? 'asc')) === 'desc' ? 'DESC' : 'ASC';
-
-        \$rows = \$builder->orderBy('{$table}.' . \$orderField, \$orderDirection)
-            ->limit(\$length, \$start)
-            ->get()
-            ->getResult();
-
-        return [
-            'draw' => \$draw,
-            'recordsTotal' => \$recordsTotal,
-            'recordsFiltered' => \$recordsFiltered,
-            'data' => \$rows,
-        ];
-    }
-
+        $apiMethodsCode = $apiEnabled ? <<<PHP
     /** Elenco REST paginato con whitelist di filtri e ordinamento. */
     public function apiList(array \$query, array \$filterable, array \$sortable): array
     {
         \$page = max(1, (int) (\$query['page'] ?? 1));
         \$perPage = max(1, min(100, (int) (\$query['perPage'] ?? 25)));
-        \$search = trim((string) (\$query['search'] ?? ''));
         \$builder = \$this->baseBuilder();
-
-        if (\$search !== '' && \$filterable !== []) {
-            \$builder->groupStart();
-            foreach (\$filterable as \$index => \$field) {
-                \$method = \$index === 0 ? 'like' : 'orLike';
-                \$builder->{\$method}('{$table}.' . \$field, \$search);
-            }
-            \$builder->groupEnd();
-        }
 
         foreach ((array) (\$query['filter'] ?? []) as \$field => \$value) {
             if (is_scalar(\$value) && in_array(\$field, \$filterable, true) && (string) \$value !== '') {
@@ -365,8 +286,242 @@ final class {$class} extends Model
         return current_url() . '?' . http_build_query(\$query);
     }
 
-{$optionsMethodsCode}    /** Restituisce tutte le opzioni belongsTo già indicizzate. */
-    public function relationOptions(): array
+PHP : '';
+
+        $content = <<<PHP
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+{$entityUse}
+use CodeIgniter\Database\BaseBuilder;
+use CodeIgniter\Model;
+
+/** Model per {$table}; tutte le query del CRUD sono centralizzate qui. */
+final class {$class} extends Model
+{
+    protected \$table = '{$table}';
+    protected \$primaryKey = '{$primaryKey}';
+    protected \$returnType = {$returnTypeCode};
+{$softDeleteCode}
+    protected \$protectFields = true;
+    protected \$allowedFields = {$allowedCode};
+{$timestampsCode}
+    protected \$skipValidation = true;
+    protected \$cleanValidationRules = true;
+
+    private const LIST_FILTERS = {$filtersCode};
+    private const SORTABLE_FIELDS = {$sortableCode};
+    private const EXPORT_FIELDS = {$exportFieldsCode};
+    private const COUNT_CACHE_SECONDS = {$countCacheSeconds};
+
+    /** Query completa per dettaglio e API. */
+    public function baseBuilder(): BaseBuilder
+    {
+        \$builder = \$this->db->table('{$table}');
+        \$builder->select([
+            {$detailSelectCode}
+        ]);
+{$detailJoinsCode}
+{$softDataFilter}        return \$builder;
+    }
+
+    /** Query leggera per la tabella Bootstrap AJAX. */
+    private function listBuilder(): BaseBuilder
+    {
+        \$builder = \$this->db->table('{$table}');
+        \$builder->select([
+            {$listSelectCode}
+        ]);
+{$listJoinsCode}
+{$softDataFilter}        return \$builder;
+    }
+
+    /** Conteggio senza JOIN, così i filtri indicizzati restano economici. */
+    private function listCountBuilder(): BaseBuilder
+    {
+        \$builder = \$this->db->table('{$table}');
+{$softCountFilter}        return \$builder;
+    }
+
+    public function getDetail(int|string \$id): ?object
+    {
+        return \$this->baseBuilder()
+            ->where('{$table}.{$primaryKey}', \$id)
+            ->get()
+            ->getRow();
+    }
+
+    /**
+     * Restituisce una pagina HTML-ready con Pager CI4.
+     *
+     * @return array{rows: array, total: int, page: int, perPage: int, pagerLinks: string, sort: string, direction: string}
+     */
+    public function getListPage(
+        array \$filters,
+        int \$page = 1,
+        int \$perPage = 25,
+        string \$sort = '{$primaryKey}',
+        string \$direction = 'desc'
+    ): array {
+        \$page = max(1, \$page);
+        \$perPage = max(25, min(100, \$perPage));
+        \$sort = in_array(\$sort, self::SORTABLE_FIELDS, true) ? \$sort : '{$primaryKey}';
+        \$direction = strtolower(\$direction) === 'asc' ? 'ASC' : 'DESC';
+
+        \$dataBuilder = \$this->listBuilder();
+        \$countBuilder = \$this->listCountBuilder();
+        \$this->applyListFilters(\$dataBuilder, \$filters, true);
+        \$this->applyListFilters(\$countBuilder, \$filters, false);
+
+        \$total = \$this->countListRows(\$countBuilder, \$filters);
+        \$rows = \$dataBuilder
+            ->orderBy('{$table}.' . \$sort, \$direction)
+            ->limit(\$perPage, (\$page - 1) * \$perPage)
+            ->get()
+            ->getResult();
+
+        \$pagerLinks = service('pager')->makeLinks(
+            \$page,
+            \$perPage,
+            \$total,
+            'default_full'
+        );
+
+        return [
+            'rows' => \$rows,
+            'total' => \$total,
+            'page' => \$page,
+            'perPage' => \$perPage,
+            'pagerLinks' => \$pagerLinks,
+            'sort' => \$sort,
+            'direction' => strtolower(\$direction),
+        ];
+    }
+
+    /** Legge il CSV a blocchi usando la chiave primaria come cursore. */
+    public function getCsvRows(array \$filters, int \$limit = 2000, int|string|null \$after = null): array
+    {
+        \$builder = \$this->db->table('{$table}');
+        \$builder->select([
+            {$csvSelectCode}
+        ]);
+{$csvJoinsCode}
+{$softDataFilter}        \$this->applyListFilters(\$builder, \$filters, true);
+
+        if (\$after !== null && \$after !== '') {
+            \$builder->where('{$table}.{$primaryKey} >', \$after);
+        }
+
+        return \$builder
+            ->orderBy('{$table}.{$primaryKey}', 'ASC')
+            ->limit(max(1, min(5000, \$limit)))
+            ->get()
+            ->getResultArray();
+    }
+
+    public function countCsvRows(array \$filters): int
+    {
+        \$builder = \$this->listCountBuilder();
+        \$this->applyListFilters(\$builder, \$filters, false);
+
+        return \$this->countListRows(\$builder, \$filters);
+    }
+
+    /** @return list<string> */
+    public function csvFields(): array
+    {
+        return self::EXPORT_FIELDS;
+    }
+
+    private function countListRows(BaseBuilder \$builder, array \$filters): int
+    {
+        if (\$this->hasActiveFilters(\$filters) || self::COUNT_CACHE_SECONDS === 0) {
+            return \$builder->countAllResults();
+        }
+
+        \$cacheKey = 'mycrud_list_total_' . md5(\$this->table);
+        \$cache = service('cache');
+        \$cached = \$cache->get(\$cacheKey);
+        if (is_int(\$cached) || (is_string(\$cached) && ctype_digit(\$cached))) {
+            return (int) \$cached;
+        }
+
+        \$total = \$builder->countAllResults();
+        \$cache->save(\$cacheKey, \$total, self::COUNT_CACHE_SECONDS);
+
+        return \$total;
+    }
+
+    private function hasActiveFilters(array \$filters): bool
+    {
+        foreach (\$filters as \$value) {
+            if (is_array(\$value)) {
+                foreach (\$value as \$item) {
+                    if (is_scalar(\$item) && trim((string) \$item) !== '') {
+                        return true;
+                    }
+                }
+                continue;
+            }
+            if (is_scalar(\$value) && trim((string) \$value) !== '') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function clearListCountCache(): void
+    {
+        service('cache')->delete('mycrud_list_total_' . md5(\$this->table));
+    }
+
+    private function applyListFilters(BaseBuilder \$builder, array \$filters, bool \$qualified): void
+    {
+        foreach (self::LIST_FILTERS as \$field => \$definition) {
+            \$column = \$qualified ? '{$table}.' . \$field : \$field;
+            \$mode = (string) (\$definition['mode'] ?? 'exact');
+            \$value = \$filters[\$field] ?? null;
+
+            if (\$mode === 'range') {
+                if (!is_array(\$value)) {
+                    continue;
+                }
+                \$from = trim((string) (\$value['from'] ?? ''));
+                \$to = trim((string) (\$value['to'] ?? ''));
+                if (\$from !== '') {
+                    \$builder->where(\$column . ' >=', \$from);
+                }
+                if (\$to !== '') {
+                    \$builder->where(\$column . ' <=', \$to);
+                }
+                continue;
+            }
+
+            if (!is_scalar(\$value)) {
+                continue;
+            }
+
+            \$value = trim((string) \$value);
+            if (\$value === '') {
+                continue;
+            }
+
+            if (\$mode === 'prefix') {
+                if (strlen(\$value) >= 2) {
+                    \$builder->like(\$column, \$value, 'after');
+                }
+                continue;
+            }
+
+            \$builder->where(\$column, \$value);
+        }
+    }
+
+{$apiMethodsCode}{$optionsMethodsCode}    public function relationOptions(): array
     {
         return [
 {$optionMapCode}
@@ -382,8 +537,7 @@ final class {$class} extends Model
         return \$options;
     }
 
-{$childrenMethodsCode}    /** Carica i pannelli figli usando metodi query specifici. */
-    public function loadHasMany(int|string \$parentId): array
+{$childrenMethodsCode}    public function loadHasMany(int|string \$parentId): array
     {
         \$result = [];
 {$childrenLoaderCode}

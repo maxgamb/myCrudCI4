@@ -10,14 +10,12 @@ use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use RuntimeException;
 
-/**
- * Verifica end-to-end le strategie Query Layer della release 2.6.1.
- */
+/** Verifica il Query Layer comune delle architetture 2.7.3. */
 final class MyCrudQueryLayerCheck extends BaseCommand
 {
     protected $group = 'myCrudGpt';
     protected $name = 'mycrud:check-query-layer';
-    protected $description = 'Genera Basic, Standard e Full e controlla Query Layer, paginazione e lint.';
+    protected $description = 'Genera il CRUD Full e controlla Bootstrap AJAX, CSV, Word, Query Layer e lint.';
     protected $usage = 'mycrud:check-query-layer <table>';
 
     protected $arguments = [
@@ -32,60 +30,31 @@ final class MyCrudQueryLayerCheck extends BaseCommand
             return EXIT_ERROR;
         }
 
-        $failures = [];
-
-        foreach (['basic', 'standard', 'full'] as $architecture) {
-            CLI::write("Verifica {$architecture}...", 'yellow');
-
-            try {
-                $config = (new ConfigBuilder())->buildFromTable($table);
-                $config['architecture'] = $architecture;
-                $config['features'] = $this->featuresFor($architecture, $config);
-
-                (new CrudGeneratorService())->generate($config, true);
-                $this->inspectGeneratedFiles($config, $architecture);
-                CLI::write("  OK {$architecture}", 'green');
-            } catch (RuntimeException $e) {
-                $failures[] = "{$architecture}: {$e->getMessage()}";
-                CLI::error("  FAIL {$architecture}: {$e->getMessage()}");
-            }
-        }
-
-        if ($failures !== []) {
-            CLI::newLine();
-            CLI::error('Verifica Query Layer non superata.');
+        try {
+            $config = (new ConfigBuilder())->buildFromTable($table);
+            (new CrudGeneratorService())->generate($config, true);
+            $this->inspectGeneratedFiles($config);
+        } catch (RuntimeException $e) {
+            CLI::error('Verifica fallita: ' . $e->getMessage());
             return EXIT_ERROR;
         }
 
-        CLI::newLine();
-        CLI::write('Query Layer 2.6.1 verificato con successo.', 'green');
+        CLI::write('Query Layer comune 2.7.3 verificato con successo.', 'green');
         return EXIT_SUCCESS;
     }
 
-    private function featuresFor(string $architecture, array $config): array
-    {
-        $features = (array) ($config['features'] ?? []);
-        $features['entity'] = $architecture !== 'basic';
-        $features['service'] = $architecture !== 'basic';
-        $features['api'] = $architecture === 'full';
-        $features['datatable'] = $architecture !== 'basic';
-
-        if (empty($config['softDelete']['available'])) {
-            $features['softDeletes'] = false;
-        }
-
-        return $features;
-    }
-
-    private function inspectGeneratedFiles(array $config, string $architecture): void
+    private function inspectGeneratedFiles(array $config): void
     {
         $root = config('MyCrud')->generatedStagingPath();
         $controller = $root . 'Controllers/' . $config['classes']['controller'] . '.php';
         $model = $root . 'Models/' . $config['classes']['model'] . '.php';
         $route = $root . 'Routes/' . $config['table'] . '.php';
         $service = $root . 'Services/' . $config['classes']['service'] . '.php';
+        $index = $root . 'Views/' . $config['table'] . '/index.php';
+        $tableView = $root . 'Views/' . $config['table'] . '/_table.php';
+        $filtersView = $root . 'Views/' . $config['table'] . '/_filters.php';
 
-        foreach ([$controller, $model, $route] as $file) {
+        foreach ([$controller, $model, $route, $service, $index, $tableView, $filtersView] as $file) {
             $this->assertFile($file);
             $this->assertLint($file);
             $this->assertNoPlaceholders($file);
@@ -94,25 +63,20 @@ final class MyCrudQueryLayerCheck extends BaseCommand
         $controllerCode = (string) file_get_contents($controller);
         $modelCode = (string) file_get_contents($model);
         $routeCode = (string) file_get_contents($route);
+        $serviceCode = (string) file_get_contents($service);
+        $indexCode = (string) file_get_contents($index);
 
         $this->assertNoDatabaseCalls($controllerCode, 'Controller');
-        $this->assertContains($modelCode, 'function baseBuilder(', 'baseBuilder() mancante nel Model.');
-        $this->assertContains($modelCode, 'function getDetail(', 'getDetail() mancante nel Model.');
-
-        if ($architecture === 'basic') {
-            $this->assertContains($controllerCode, 'paginateWithParents(', 'Basic non usa paginateWithParents().');
-            $this->assertNotContains($controllerCode, 'function datatable(', 'Basic contiene ancora datatable().');
-            $this->assertNotContains($routeCode, "post('datatable'", 'Basic registra ancora la rotta DataTables.');
-            return;
-        }
-
-        $this->assertFile($service);
-        $this->assertLint($service);
-        $serviceCode = (string) file_get_contents($service);
         $this->assertNoDatabaseCalls($serviceCode, 'Service');
-        $this->assertContains($controllerCode, 'function datatable(', 'Standard/Full non contiene datatable().');
-        $this->assertContains($routeCode, "post('datatable'", 'Standard/Full non registra DataTables.');
-        $this->assertContains($modelCode, 'function datatable(', 'datatable() mancante nel Model.');
+        $this->assertContains($modelCode, 'function getListPage(', 'getListPage() mancante nel Model.');
+        $this->assertContains($modelCode, 'function getCsvRows(', 'getCsvRows() mancante nel Model.');
+        $this->assertContains($controllerCode, 'function exportCsv(', 'exportCsv() mancante nel Controller.');
+        $this->assertContains($controllerCode, 'function exportWord(', 'exportWord() mancante nel Controller.');
+        $this->assertContains($routeCode, "get('export-csv'", 'Rotta CSV mancante.');
+        $this->assertContains($routeCode, "get('export-word'", 'Rotta Word mancante.');
+        $this->assertContains($indexCode, 'X-Requested-With', 'Caricamento AJAX mancante nella view.');
+        $this->assertNotContains($routeCode, "post('datatable'", 'È ancora presente la rotta DataTables.');
+        $this->assertNotContains($modelCode, 'function datatable(', 'È ancora presente datatable() nel Model.');
     }
 
     private function assertNoDatabaseCalls(string $code, string $layer): void

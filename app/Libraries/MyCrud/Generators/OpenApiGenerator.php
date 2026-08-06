@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Libraries\MyCrud\Generators;
 
+use App\Libraries\MyCrud\Core\FieldPolicy;
+
 /** Genera una specifica OpenAPI essenziale e coerente con la risorsa. */
 final class OpenApiGenerator
 {
@@ -19,7 +21,7 @@ final class OpenApiGenerator
         foreach ($config['fields'] as $field) {
             $name = (string) $field['name'];
             $ui = (array) ($field['ui'] ?? []);
-            if (!empty($ui['sensitive']) || preg_match('/(?:^|_)(?:password|secret|token|pin|api_key|private_key|chiave|cvv)(?:$|_)/i', $name)) {
+            if (!empty($ui['sensitive']) || FieldPolicy::isSensitive($name, (string) ($field['inputType'] ?? 'text'))) {
                 continue;
             }
 

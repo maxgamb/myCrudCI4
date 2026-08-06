@@ -19,7 +19,7 @@ class MyCrudGenerate extends BaseCommand
     ];
 
     protected $options = [
-        '--architecture' => 'Architettura: basic, standard o full.',
+        '--architecture' => 'Architettura: basic, standard oppure full.',
         '--force'        => 'Sovrascrive i file già presenti nel percorso di generazione.',
     ];
 
@@ -34,31 +34,16 @@ class MyCrudGenerate extends BaseCommand
 
         $config = (new ConfigBuilder())->buildFromTable($table);
 
-        $architecture = CLI::getOption('architecture');
-        if (is_string($architecture) && $architecture !== '') {
-            $config['architecture'] = strtolower($architecture);
-
-            $config['features'] = match ($config['architecture']) {
-                'basic' => [
-                    'entity'=>false, 'service'=>false, 'api'=>false,
-                    'datatable'=>false, 'relations'=>true,
-                    'softDeletes'=>false, 'timestamps'=>false,
-                    'exportButtons'=>true,
-                ],
-                'full' => [
-                    'entity'=>true, 'service'=>true, 'api'=>true,
-                    'datatable'=>true, 'relations'=>true,
-                    'softDeletes'=>false, 'timestamps'=>true,
-                    'exportButtons'=>true,
-                ],
-                default => [
-                    'entity'=>true, 'service'=>true, 'api'=>false,
-                    'datatable'=>true, 'relations'=>true,
-                    'softDeletes'=>false, 'timestamps'=>true,
-                    'exportButtons'=>true,
-                ],
-            };
+        $architecture = strtolower((string) (CLI::getOption('architecture') ?: config('MyCrud')->defaultArchitecture));
+        if (!in_array($architecture, ['basic', 'standard', 'full'], true)) {
+            CLI::error('Architettura non valida. Usa basic, standard oppure full.');
+            return;
         }
+
+        $config['architecture'] = $architecture;
+        $config['features']['entity'] = in_array($architecture, ['standard', 'full'], true);
+        $config['features']['service'] = in_array($architecture, ['standard', 'full'], true);
+        $config['features']['api'] = $architecture === 'full';
 
         $result = (new CrudGeneratorService())->generate(
             $config,

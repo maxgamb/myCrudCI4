@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Libraries\MyCrud\Core;
 
 use Config\MyCrud;
+use InvalidArgumentException;
 use Throwable;
 
-/**
- * Coordina la generazione multipla e produce un report uniforme.
- */
+/** Coordina la generazione multipla e produce un report uniforme. */
 final class GlobalGenerationService
 {
+    private const ARCHITECTURES = ['basic', 'standard', 'full'];
+
     public function __construct(
         private readonly ?ConfigBuilder $configBuilder = null,
         private readonly ?CrudGeneratorService $generator = null,
@@ -30,6 +31,11 @@ final class GlobalGenerationService
         bool $dryRun
     ): array {
         $startedAt = microtime(true);
+        $architecture = strtolower(trim($architecture));
+        if (!in_array($architecture, self::ARCHITECTURES, true)) {
+            throw new InvalidArgumentException('Architettura non valida: ' . $architecture);
+        }
+
         $builder = $this->configBuilder ?? new ConfigBuilder();
         $generator = $this->generator ?? new CrudGeneratorService();
 
@@ -100,16 +106,14 @@ final class GlobalGenerationService
         return $report;
     }
 
-    /**
-     * Costruisce il piano dei file senza scrivere sul filesystem.
-     */
+    /** Costruisce il piano dei file senza scrivere sul filesystem. */
     private function plan(array $config, bool $force): array
     {
         /** @var MyCrud $settings */
         $settings = $this->settings ?? config('MyCrud');
         $root = $settings->generatedStagingPath();
-        $table = $config['table'];
-        $classes = $config['classes'];
+        $table = (string) $config['table'];
+        $classes = (array) $config['classes'];
 
         $paths = [
             'model'      => "Models/{$classes['model']}.php",
@@ -117,11 +121,13 @@ final class GlobalGenerationService
             'controller' => "Controllers/{$classes['controller']}.php",
             'routes'     => "Routes/{$table}.php",
             'views'      => [
-                'index.php'  => "Views/{$table}/index.php",
-                'view.php'   => "Views/{$table}/view.php",
-                'create.php' => "Views/{$table}/create.php",
-                'edit.php'   => "Views/{$table}/edit.php",
-                '_form.php'  => "Views/{$table}/_form.php",
+                'index.php'    => "Views/{$table}/index.php",
+                'view.php'     => "Views/{$table}/view.php",
+                'create.php'   => "Views/{$table}/create.php",
+                'edit.php'     => "Views/{$table}/edit.php",
+                '_form.php'    => "Views/{$table}/_form.php",
+                '_filters.php' => "Views/{$table}/_filters.php",
+                '_table.php'   => "Views/{$table}/_table.php",
             ],
         ];
 
@@ -132,11 +138,10 @@ final class GlobalGenerationService
             $paths['service'] = "Services/{$classes['service']}.php";
         }
         if (!empty($config['features']['api'])) {
-            $resource = preg_replace('/ApiController$/', 'Resource', (string) $classes['api'])
-                ?: $classes['api'] . 'Resource';
+            $paths['api_validation'] = "Validation/{$classes['apiRules']}.php";
             $paths['api'] = [
                 'controller' => "Controllers/Api/V1/{$classes['api']}.php",
-                'resource' => "API/Resources/{$resource}.php",
+                'resource'   => "API/Resources/{$classes['resource']}.php",
             ];
             $paths['openapi'] = "OpenApi/{$table}.yaml";
         }
@@ -144,9 +149,7 @@ final class GlobalGenerationService
             $paths['views']['trash.php'] = "Views/{$table}/trash.php";
         }
 
-        return [
-            'files' => $this->mapPlanPaths($paths, $root, $force),
-        ];
+        return ['files' => $this->mapPlanPaths($paths, $root, $force)];
     }
 
     private function mapPlanPaths(array $paths, string $root, bool $force): array
@@ -207,13 +210,16 @@ final class GlobalGenerationService
 
     private function featuresForArchitecture(string $architecture, array $config): array
     {
-        $features = $config['features'] ?? [];
-
-        [$features['entity'], $features['service'], $features['api']] = match ($architecture) {
-            'basic' => [false, false, false],
-            'full'  => [true, true, true],
-            default => [true, true, false],
-        };
+        $features = (array) ($config['features'] ?? []);
+        $features['entity'] = in_array($architecture, ['standard', 'full'], true);
+        $features['service'] = in_array($architecture, ['standard', 'full'], true);
+        $features['api'] = $architecture === 'full';
+        $features['ajaxList'] = true;
+        $features['csvExport'] = true;
+        $features['wordExport'] = true;
+        $features['datatable'] = false;
+        $features['relations'] = array_key_exists('relations', $features) ? !empty($features['relations']) : true;
+        $features['exportButtons'] = true;
 
         if (empty($config['softDelete']['available'])) {
             $features['softDeletes'] = false;

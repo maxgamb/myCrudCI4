@@ -1,6 +1,9 @@
 <?php
 namespace App\Libraries\MyCrud\Generators\Views;
 
+use App\Libraries\MyCrud\Core\FieldPolicy;
+use App\Libraries\MyCrud\Core\Naming;
+
 final class DetailViewGenerator extends AbstractViewGenerator
 {
     public function generate(array $config): string
@@ -9,6 +12,11 @@ final class DetailViewGenerator extends AbstractViewGenerator
 
         foreach ($this->orderedFields($config) as $name) {
             $field = $config['fields'][$name];
+            $ui = (array) ($field['ui'] ?? []);
+            $inputType = (string) ($field['inputType'] ?? 'text');
+            if (!empty($ui['sensitive']) || FieldPolicy::isSensitive($name, $inputType)) {
+                continue;
+            }
             if (array_key_exists('visibleView', (array) ($field['ui'] ?? [])) && empty($field['ui']['visibleView'])) {
                 continue;
             }
@@ -16,7 +24,7 @@ final class DetailViewGenerator extends AbstractViewGenerator
 
             $rows .= <<<PHP
                         <tr>
-                            <th style="width: 30%"><?= esc({$label}) ?></th>
+                            <th class="w-25"><?= esc({$label}) ?></th>
                             <td><?= esc(\$row->{$name} ?? '') ?></td>
                         </tr>
 PHP;
@@ -42,12 +50,13 @@ PHP;
             $cells = '';
 
             foreach ($relation['columns'] ?? [] as $column) {
-                $headers .= "                                <th><?= esc(lang('Fields.{$column}')) ?></th>\n";
+                $childLabel = var_export(Naming::human((string) $column), true);
+                $headers .= "                                <th><?= esc({$childLabel}) ?></th>\n";
                 $cells .= "                                <td><?= esc(\$child->{$column} ?? '') ?></td>\n";
             }
 
             $countBadge = !empty($relation['showCount'])
-                ? "<span class=\"badge bg-secondary\"><?= (int) (\$children['{$key}']['count'] ?? 0) ?></span>"
+                ? "<span class=\"badge bg-secondary\"><?= (int) (\$children['{$key}']['count'] ?? 0) ?><?= !empty(\$children['{$key}']['hasMore']) ? '+' : '' ?></span>"
                 : '';
 
             $actionHeader = !empty($relation['showViewButton']) ? '<th>Azioni</th>' : '';

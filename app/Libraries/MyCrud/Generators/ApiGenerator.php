@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Libraries\MyCrud\Generators;
 
+use App\Libraries\MyCrud\Core\FieldPolicy;
+
 /** Genera controller REST v1 e Resource di serializzazione. */
 final class ApiGenerator
 {
@@ -14,9 +16,9 @@ final class ApiGenerator
         $table = (string) $config['table'];
         $api = (string) $config['classes']['api'];
         $service = (string) $config['classes']['service'];
-        $rules = (string) $config['classes']['rules'];
+        $rules = (string) $config['classes']['apiRules'];
         $pk = (string) $config['primaryKey'];
-        $resource = preg_replace('/ApiController$/', 'Resource', $api) ?: $api . 'Resource';
+        $resource = (string) ($config['classes']['resource'] ?? (preg_replace('/ApiController$/', 'Resource', $api) ?: $api . 'Resource'));
         $softDeleteField = (string) ($config['softDelete']['field'] ?? 'deleted_at');
         $timestampsEnabled = !empty($config['features']['timestamps'])
             && isset($config['fields']['created_at'], $config['fields']['updated_at']);
@@ -30,8 +32,9 @@ final class ApiGenerator
             $name = (string) $field['name'];
             $ui = (array) ($field['ui'] ?? []);
             $attributes = (array) ($field['attributes']['boolean'] ?? []);
+            $inputType = (string) ($field['inputType'] ?? 'text');
             $sensitive = !empty($ui['sensitive'])
-                || preg_match('/password|passwd|secret|token|pin|api[_-]?key|private[_-]?key|chiave|cvv/i', $name) === 1;
+                || FieldPolicy::isSensitive($name, $inputType);
             $primaryAuto = !empty($field['primary']) && !empty($field['autoIncrement']);
             $managedField = (!empty($config['features']['softDeletes']) && $name === $softDeleteField)
                 || ($timestampsEnabled && in_array($name, ['created_at', 'updated_at'], true));
@@ -45,6 +48,7 @@ final class ApiGenerator
                 && !$managedField
                 && !in_array('disabled', $attributes, true)
                 && !in_array('readonly', $attributes, true)
+                && (!$sensitive || FieldPolicy::isPassword($name, $inputType))
             ) {
                 // Le password possono essere scritte ma non vengono mai serializzate.
                 $writable[] = $name;

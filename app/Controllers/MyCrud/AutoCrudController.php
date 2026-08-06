@@ -37,12 +37,9 @@ final class AutoCrudController extends BaseController
      */
     public function generateAll()
     {
-        $architecture = strtolower(trim((string) $this->request->getPost('architecture')));
-        $allowedArchitectures = ['basic', 'standard', 'full'];
-
-        if (!in_array($architecture, $allowedArchitectures, true)) {
-            return redirect()->back()->withInput()
-                ->with('error', 'Architettura non valida.');
+        $architecture = strtolower(trim((string) ($this->request->getPost('architecture') ?? config('MyCrud')->defaultArchitecture)));
+        if (!in_array($architecture, ['basic', 'standard', 'full'], true)) {
+            return redirect()->back()->withInput()->with('error', 'Architettura non valida.');
         }
 
         $availableTables = TableFilter::validTables(Database::connect());

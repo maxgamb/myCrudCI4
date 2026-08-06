@@ -42,16 +42,23 @@
                             <input class="form-control" value="<?= esc($config['table']) ?>" readonly>
                         </div>
                         <label class="form-label d-block">Architettura</label>
-                        <?php foreach (['basic' => 'Basic', 'standard' => 'Standard', 'full' => 'Full'] as $value => $label): ?>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="architecture" id="arch_<?= esc($value) ?>" value="<?= esc($value) ?>" <?= $value === ($config['architecture'] ?? 'standard') ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="arch_<?= esc($value) ?>"><?= esc($label) ?></label>
+                        <?php $selectedArchitecture = (string) ($config['architecture'] ?? config('MyCrud')->defaultArchitecture); ?>
+                        <?php foreach ([
+                            'basic' => 'CRUD, validazione, AJAX, Pager, CSV e Word',
+                            'standard' => 'Basic + Entity + Service',
+                            'full' => 'Standard + API REST e OpenAPI',
+                        ] as $value => $label): ?>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="architecture" id="auto_arch_<?= esc($value) ?>" value="<?= esc($value) ?>" <?= $selectedArchitecture === $value ? 'checked' : '' ?>>
+                                <label class="form-check-label" for="auto_arch_<?= esc($value) ?>">
+                                    <strong><?= esc(ucfirst($value)) ?></strong> — <?= esc($label) ?>
+                                </label>
                             </div>
                         <?php endforeach; ?>
 
                         <hr>
-                        <label class="form-label d-block">Feature</label>
-                        <?php foreach (['datatable' => 'DataTable', 'relations' => 'Relazioni', 'timestamps' => 'Timestamp', 'exportButtons' => 'Export', 'softDeletes' => 'Soft delete'] as $name => $label): ?>
+                        <label class="form-label d-block">Feature configurabili</label>
+                        <?php foreach (['relations' => 'Relazioni', 'timestamps' => 'Timestamp', 'softDeletes' => 'Soft delete'] as $name => $label): ?>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="features[<?= esc($name) ?>]" value="1" id="feature_<?= esc($name) ?>" <?= !empty($config['features'][$name]) ? 'checked' : '' ?> <?= $name === 'softDeletes' && empty($config['softDelete']['available']) ? 'disabled' : '' ?>>
                                 <label class="form-check-label" for="feature_<?= esc($name) ?>"><?= esc($label) ?></label>
@@ -59,6 +66,18 @@
                         <?php endforeach; ?>
 
                         <hr>
+                        <div class="mb-3">
+                            <label class="form-label" for="autoFiltersSummary">Titolo sezione filtri</label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                name="list[filtersSummary]"
+                                id="autoFiltersSummary"
+                                value="<?= esc($config['list']['filtersSummary'] ?? 'Filtri di ricerca') ?>"
+                                maxlength="120"
+                            >
+                        </div>
+
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="codeComments" value="1" id="codeComments" checked>
                             <label class="form-check-label" for="codeComments">Commenti essenziali nel codice</label>
