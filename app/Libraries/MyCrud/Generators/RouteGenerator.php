@@ -18,8 +18,11 @@ final class RouteGenerator
         $softRoutes = !empty($config['features']['softDeletes'])
             ? "    \$routes->get('trash', '{$controller}::trash');\n    \$routes->post('restore/(:segment)', '{$controller}::restore/\$1');\n    \$routes->post('force-delete/(:segment)', '{$controller}::forceDelete/\$1');\n"
             : '';
+        $softApiRoutes = !empty($config['features']['softDeletes'])
+            ? "    \$routes->get('trash', '{$api}::trash');\n    \$routes->post('(:segment)/restore', '{$api}::restore/\$1');\n    \$routes->delete('(:segment)/force', '{$api}::forceDelete/\$1');\n"
+            : '';
         $apiRoutes = !empty($config['features']['api'])
-            ? "\n\$routes->group('api/{$table}', ['namespace' => 'App\\Controllers\\Api'], static function (RouteCollection \$routes): void {\n    \$routes->get('/', '{$api}::index');\n    \$routes->get('(:segment)', '{$api}::show/\$1');\n    \$routes->post('/', '{$api}::create');\n    \$routes->put('(:segment)', '{$api}::update/\$1');\n    \$routes->delete('(:segment)', '{$api}::delete/\$1');\n});\n"
+            ? "\n\$routes->group('api/v1/{$table}', ['namespace' => 'App\\Controllers\\Api\\V1'], static function (RouteCollection \$routes): void {\n    \$routes->get('/', '{$api}::index');\n{$softApiRoutes}    \$routes->get('(:segment)', '{$api}::show/\$1');\n    \$routes->post('/', '{$api}::create');\n    \$routes->put('(:segment)', '{$api}::update/\$1');\n    \$routes->patch('(:segment)', '{$api}::patch/\$1');\n    \$routes->delete('(:segment)', '{$api}::delete/\$1');\n});\n"
             : '';
 
         $content = <<<PHP
