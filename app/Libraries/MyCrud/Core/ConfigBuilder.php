@@ -200,7 +200,7 @@ class ConfigBuilder
         return match ($architecture) {
             'basic' => [
                 'entity'=>false, 'service'=>false, 'api'=>false,
-                'datatable'=>true, 'relations'=>true, 'softDeletes'=>false,
+                'datatable'=>false, 'relations'=>true, 'softDeletes'=>false,
                 'timestamps'=>false, 'exportButtons'=>true,
             ],
             'full' => [
