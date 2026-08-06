@@ -72,8 +72,9 @@ class Filters extends BaseFilters
      */
     public array $globals = [
         'before' => [
+            // Le API REST usano autenticazione/header propri e non il cookie CSRF.
+            'csrf' => ['except' => ['api/*']],
             // 'honeypot',
-            // 'csrf',
             // 'invalidchars',
         ],
         'after' => [

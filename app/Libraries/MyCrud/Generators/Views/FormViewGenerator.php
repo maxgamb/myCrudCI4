@@ -28,11 +28,21 @@ final class FormViewGenerator extends AbstractViewGenerator
     private function buildFields(array $config): string
     {
         $output = '';
+        $manageTimestamps = !empty($config['features']['timestamps'])
+            && isset($config['fields']['created_at'], $config['fields']['updated_at']);
 
         foreach ($this->orderedFields($config) as $name) {
             $field = $config['fields'][$name];
 
             if (!empty($field['primary']) && !empty($field['autoIncrement'])) {
+                continue;
+            }
+
+            if (array_key_exists('visibleForm', (array) ($field['ui'] ?? [])) && empty($field['ui']['visibleForm'])) {
+                continue;
+            }
+
+            if ($manageTimestamps && in_array($name, ['created_at', 'updated_at'], true)) {
                 continue;
             }
 
@@ -45,10 +55,27 @@ final class FormViewGenerator extends AbstractViewGenerator
 
             $type = (string) ($field['inputType'] ?? 'text');
             $width = max(1, min(12, (int) ($field['width'] ?? 6)));
-            $attributes = $this->attributesString($field);
+            $fieldForAttributes = $field;
+            $passwordRequired = $type === 'password'
+                && in_array('required', (array) ($field['attributes']['boolean'] ?? []), true);
+            if ($passwordRequired) {
+                $fieldForAttributes['attributes']['boolean'] = array_values(array_diff(
+                    (array) ($fieldForAttributes['attributes']['boolean'] ?? []),
+                    ['required']
+                ));
+            }
+            $attributes = $this->attributesString($fieldForAttributes);
+            if ($passwordRequired) {
+                $attributes = trim($attributes . " <?= \$row === null ? 'required' : '' ?>");
+            }
             $label = $this->labelExpression($field, $name);
-            $value = "old('{$name}', \$row->{$name} ?? '')";
-            $control = $this->buildControl($type, $name, $value, $attributes);
+            $value = match ($type) {
+                'password', 'file', 'image' => "old('{$name}', '')",
+                'datetime-local' => "old('{$name}', isset(\$row->{$name}) ? str_replace(' ', 'T', substr((string) \$row->{$name}, 0, 16)) : '')",
+                default => "old('{$name}', \$row->{$name} ?? '')",
+            };
+            $errorId = $name . '-error';
+            $control = $this->buildControl($type, $name, $value, $attributes, $errorId);
             $wrapper = $type === 'hidden' ? 'd-none' : "col-md-{$width}";
 
             $labelHtml = $type === 'hidden'
@@ -64,7 +91,7 @@ PHP;
                 <div class="{$wrapper}">
 {$labelHtml}{$control}
                     <?php if (!empty(\$errors['{$name}'])): ?>
-                        <div class="invalid-feedback d-block">
+                        <div id="{$errorId}" class="invalid-feedback d-block">
                             <?= esc(\$errors['{$name}']) ?>
                         </div>
                     <?php endif; ?>
@@ -76,10 +103,13 @@ PHP;
         return $output;
     }
 
-    private function buildControl(string $type, string $name, string $value, string $attributes): string
+    private function buildControl(string $type, string $name, string $value, string $attributes, string $errorId): string
     {
         $invalid = "<?= isset(\$errors['{$name}']) ? 'is-invalid' : '' ?>";
-        $attributeLine = $attributes === '' ? '' : "\n                        {$attributes}";
+        $attributeLine = "\n                        aria-describedby=\"{$errorId}\"\n                        aria-invalid=\"<?= isset(\$errors['{$name}']) ? 'true' : 'false' ?>\"";
+        if ($attributes !== '') {
+            $attributeLine .= "\n                        {$attributes}";
+        }
 
         return match ($type) {
             'textarea' => <<<PHP

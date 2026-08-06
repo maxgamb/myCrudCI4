@@ -13,17 +13,18 @@ class EntityGenerator
         $dates = [];
 
         foreach ($config['fields'] as $field) {
-            $type = $field['type'];
+            $type = strtolower((string) $field['type']);
+            $columnType = strtolower((string) ($field['columnType'] ?? ''));
 
             if (in_array($type, ['date', 'datetime', 'timestamp'], true)) {
                 $dates[] = $field['name'];
             }
 
             $cast = match (true) {
+                $type === 'bool' || $type === 'boolean' || preg_match('/^tinyint\(1\)/', $columnType) === 1 => 'boolean',
                 preg_match('/tinyint|smallint|mediumint|int|bigint/', $type) === 1 => 'integer',
-                preg_match('/decimal|float|double|numeric/', $type) === 1         => 'float',
-                preg_match('/bool/', $type) === 1                                 => 'boolean',
-                default                                                           => null,
+                preg_match('/decimal|float|double|numeric/', $type) === 1 => 'float',
+                default => null,
             };
 
             if ($cast !== null) {

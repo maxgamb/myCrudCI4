@@ -13,7 +13,7 @@ final class GenerationTestRunner
 
     /**
      * Esegue una generazione reale sulla tabella indicata.
-     * I file vengono scritti nella directory Generated configurata.
+     * I file vengono scritti nel percorso configurato.
      */
     public function run(string $table, bool $force = true): DiagnosticReport
     {

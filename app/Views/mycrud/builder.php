@@ -695,6 +695,36 @@ ksort($childTables);
     <?php endforeach; ?>
                             </div>
 
+                            <div class="col-12">
+                                <label class="form-label d-block">Comportamento CRUD e API</label>
+                                <input type="hidden" name="ui[<?= esc($fieldName) ?>][]" value="">
+                                <?php
+                                $uiFlags = [
+                                    'searchable' => '🔍 Ricercabile',
+                                    'sortable' => '↕️ Ordinabile',
+                                    'visibleIndex' => '📋 Visibile elenco',
+                                    'visibleForm' => '🧾 Visibile form',
+                                    'visibleView' => '👁️ Visibile dettaglio',
+                                    'sensitive' => '🔐 Sensibile',
+                                ];
+                                ?>
+                                <?php foreach ($uiFlags as $flag => $flagLabel): ?>
+                                    <div class="form-check form-check-inline">
+                                        <input
+                                            type="checkbox"
+                                            class="form-check-input"
+                                            name="ui[<?= esc($fieldName) ?>][]"
+                                            value="<?= esc($flag) ?>"
+                                            id="<?= esc($fieldName . '_ui_' . $flag) ?>"
+                                            <?= !empty($field['ui'][$flag]) ? 'checked' : '' ?>
+                                        >
+                                        <label class="form-check-label" for="<?= esc($fieldName . '_ui_' . $flag) ?>">
+                                            <?= esc($flagLabel) ?>
+                                        </label>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+
                             <div class="col-lg-8">
                                 <label class="form-label">Attributi con valore</label>
                                 <div class="row g-2">

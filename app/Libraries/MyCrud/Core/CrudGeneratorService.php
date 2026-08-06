@@ -6,6 +6,7 @@ use App\Libraries\MyCrud\Generators\ApiGenerator;
 use App\Libraries\MyCrud\Generators\ControllerGenerator;
 use App\Libraries\MyCrud\Generators\EntityGenerator;
 use App\Libraries\MyCrud\Generators\ModelGenerator;
+use App\Libraries\MyCrud\Generators\OpenApiGenerator;
 use App\Libraries\MyCrud\Generators\RouteGenerator;
 use App\Libraries\MyCrud\Generators\ServiceGenerator;
 use App\Libraries\MyCrud\Generators\ValidationGenerator;
@@ -46,6 +47,7 @@ class CrudGeneratorService
 
         if (!empty($config['features']['api'])) {
             $result['files']['api'] = (new ApiGenerator())->generate($config, $force);
+            $result['files']['openapi'] = (new OpenApiGenerator())->generate($config, $force);
         }
 
         $result['files']['views']  = (new ViewGenerator())->generate($config, $force);

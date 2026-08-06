@@ -20,7 +20,7 @@ class MyCrudGenerate extends BaseCommand
 
     protected $options = [
         '--architecture' => 'Architettura: basic, standard o full.',
-        '--force'        => 'Sovrascrive i file già presenti nello staging.',
+        '--force'        => 'Sovrascrive i file già presenti nel percorso di generazione.',
     ];
 
     public function run(array $params)

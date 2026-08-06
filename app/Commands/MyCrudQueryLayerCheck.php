@@ -79,10 +79,11 @@ final class MyCrudQueryLayerCheck extends BaseCommand
 
     private function inspectGeneratedFiles(array $config, string $architecture): void
     {
-        $controller = APPPATH . 'Generated/Controllers/' . $config['classes']['controller'] . '.php';
-        $model = APPPATH . 'Generated/Models/' . $config['classes']['model'] . '.php';
-        $route = APPPATH . 'Generated/Routes/' . $config['table'] . '.php';
-        $service = APPPATH . 'Generated/Services/' . $config['classes']['service'] . '.php';
+        $root = rtrim((string) config('MyCrud')->generatedPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $controller = $root . 'Controllers/' . $config['classes']['controller'] . '.php';
+        $model = $root . 'Models/' . $config['classes']['model'] . '.php';
+        $route = $root . 'Routes/' . $config['table'] . '.php';
+        $service = $root . 'Services/' . $config['classes']['service'] . '.php';
 
         foreach ([$controller, $model, $route] as $file) {
             $this->assertFile($file);

@@ -33,8 +33,11 @@ final class GlobalGenerationService
         $builder = $this->configBuilder ?? new ConfigBuilder();
         $generator = $this->generator ?? new CrudGeneratorService();
 
+        /** @var MyCrud $settings */
+        $settings = $this->settings ?? config('MyCrud');
+
         $report = [
-            'version'      => '2.5.1',
+            'version'      => $settings->version,
             'generatedAt'  => date(DATE_ATOM),
             'architecture' => $architecture,
             'force'        => $force,
@@ -129,7 +132,13 @@ final class GlobalGenerationService
             $paths['service'] = "Services/{$classes['service']}.php";
         }
         if (!empty($config['features']['api'])) {
-            $paths['api'] = "Controllers/Api/{$classes['api']}.php";
+            $resource = preg_replace('/ApiController$/', 'Resource', (string) $classes['api'])
+                ?: $classes['api'] . 'Resource';
+            $paths['api'] = [
+                'controller' => "Controllers/Api/V1/{$classes['api']}.php",
+                'resource' => "API/Resources/{$resource}.php",
+            ];
+            $paths['openapi'] = "OpenApi/{$table}.yaml";
         }
         if (!empty($config['features']['softDeletes'])) {
             $paths['views']['trash.php'] = "Views/{$table}/trash.php";

@@ -9,6 +9,17 @@ class ConfigBuilder
 {
     private const ARCHITECTURES = ['basic', 'standard', 'full'];
 
+    private const INPUT_TYPES = [
+        'text', 'number', 'email', 'password', 'date', 'datetime-local',
+        'time', 'month', 'week', 'color', 'checkbox', 'radio', 'select',
+        'file', 'image', 'hidden', 'range', 'search', 'tel', 'url', 'textarea',
+    ];
+
+    private const VALUE_ATTRIBUTES = [
+        'maxlength', 'minlength', 'min', 'max', 'step', 'pattern', 'placeholder',
+        'accept', 'autocomplete',
+    ];
+
     private DbSchema $schema;
     private RelationResolver $relations;
     private MyCrud $config;
@@ -58,6 +69,7 @@ class ConfigBuilder
                 'languageKey' => 'Fields.' . $name,
                 'width' => 6,
                 'attributes' => $this->inferAttributes($column),
+                'ui' => $this->inferUi($column),
             ];
         }
 
@@ -100,7 +112,10 @@ class ConfigBuilder
             // Vuoto = usa lang('Fields.nome_campo'); valorizzato = label personalizzata.
             $field['label'] = trim((string) ($post['label'][$name] ?? ''));
 
-            $field['inputType'] = (string) ($post['inputType'][$name] ?? $field['inputType']);
+            $requestedInputType = (string) ($post['inputType'][$name] ?? $field['inputType']);
+            $field['inputType'] = in_array($requestedInputType, self::INPUT_TYPES, true)
+                ? $requestedInputType
+                : (string) $field['inputType'];
             $field['width'] = max(1, min(12, (int) ($post['width'][$name] ?? 6)));
 
             $boolean = array_values(array_intersect(
@@ -113,10 +128,24 @@ class ConfigBuilder
             }
 
             $field['attributes']['boolean'] = $boolean;
-            $field['attributes']['values'] = array_filter(
-                (array) ($post['attrVal'][$name] ?? []),
-                static fn ($value): bool => $value !== '' && $value !== null
-            );
+            $postedValues = (array) ($post['attrVal'][$name] ?? []);
+            $field['attributes']['values'] = [];
+            foreach (self::VALUE_ATTRIBUTES as $attribute) {
+                $value = $postedValues[$attribute] ?? null;
+                if ($value !== '' && $value !== null) {
+                    $field['attributes']['values'][$attribute] = (string) $value;
+                }
+            }
+
+            if (array_key_exists($name, (array) ($post['ui'] ?? []))) {
+                $postedUi = array_values(array_intersect(
+                    (array) $post['ui'][$name],
+                    ['searchable', 'sortable', 'visibleIndex', 'visibleForm', 'visibleView', 'sensitive']
+                ));
+                foreach (['searchable', 'sortable', 'visibleIndex', 'visibleForm', 'visibleView', 'sensitive'] as $flag) {
+                    $field['ui'][$flag] = in_array($flag, $postedUi, true);
+                }
+            }
         }
         unset($field);
 
@@ -284,13 +313,15 @@ class ConfigBuilder
         if (str_contains($name, 'password')) return 'password';
         if (str_contains($name, 'url') || str_contains($name, 'website')) return 'url';
 
+        $columnType = strtolower((string) ($column['columnType'] ?? ''));
+
         return match (true) {
             $type === 'text' || str_contains($type, 'blob') => 'textarea',
             $type === 'date' => 'date',
             in_array($type, ['datetime', 'timestamp'], true) => 'datetime-local',
             $type === 'time' => 'time',
+            $type === 'bool' || $type === 'boolean' || preg_match('/^tinyint\(1\)/', $columnType) === 1 => 'checkbox',
             preg_match('/int|decimal|float|double|numeric/', $type) === 1 => 'number',
-            preg_match('/bool|tinyint/', $type) === 1 => 'checkbox',
             default => 'text',
         };
     }
@@ -313,6 +344,24 @@ class ConfigBuilder
         }
 
         return ['boolean' => $boolean, 'values' => $values];
+    }
+
+
+    private function inferUi(array $column): array
+    {
+        $name = strtolower((string) ($column['name'] ?? ''));
+        $type = strtolower((string) ($column['type'] ?? ''));
+        $sensitive = preg_match('/password|passwd|secret|token|pin|api[_-]?key|private[_-]?key|chiave|cvv/i', $name) === 1;
+        $large = in_array($type, ['text', 'mediumtext', 'longtext', 'blob', 'mediumblob', 'longblob'], true);
+
+        return [
+            'searchable' => !$sensitive && !$large,
+            'sortable' => !$large,
+            'visibleIndex' => !$sensitive && !$large,
+            'visibleForm' => true,
+            'visibleView' => !$sensitive,
+            'sensitive' => $sensitive,
+        ];
     }
 
     private function buildHasManyConfig(array $relations): array
@@ -369,14 +418,21 @@ class ConfigBuilder
 
     private function uniqueFields(array $indexes): array
     {
-        $unique = [];
-
+        $groups = [];
         foreach ($indexes as $index) {
-            if (
-                (int) ($index['nonUnique'] ?? 1) === 0
-                && ($index['indexName'] ?? '') !== 'PRIMARY'
-            ) {
-                $unique[] = (string) $index['columnName'];
+            $name = (string) ($index['indexName'] ?? '');
+            if ($name === '' || $name === 'PRIMARY' || (int) ($index['nonUnique'] ?? 1) !== 0) {
+                continue;
+            }
+            $groups[$name][] = (string) ($index['columnName'] ?? '');
+        }
+
+        $unique = [];
+        foreach ($groups as $columns) {
+            $columns = array_values(array_filter(array_unique($columns)));
+            // is_unique di CI4 descrive una singola colonna, non un indice composto.
+            if (count($columns) === 1) {
+                $unique[] = $columns[0];
             }
         }
 

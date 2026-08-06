@@ -75,7 +75,7 @@
                 </table>
             </div>
 
-            <?= $pager->links($pagerGroup, 'bootstrap_full') ?>
+            <?= $pager->links($pagerGroup, 'default_full') ?>
         </div>
     </div>
 </div>

@@ -1,7 +1,7 @@
 {
     "table": "camere",
     "primaryKey": "camera_id",
-    "architecture": "standard",
+    "architecture": "full",
     "fields": {
         "camera_id": {
             "name": "camera_id",
@@ -26,15 +26,6 @@
                     "required"
                 ],
                 "values": []
-            },
-            "ui": {
-                "visibleIndex": true,
-                "visibleView": true,
-                "visibleForm": false,
-                "searchable": true,
-                "sortable": true,
-                "exportable": true,
-                "sensitive": false
             }
         },
         "hotel_id": {
@@ -60,15 +51,6 @@
                     "required"
                 ],
                 "values": []
-            },
-            "ui": {
-                "visibleIndex": true,
-                "visibleView": true,
-                "visibleForm": true,
-                "searchable": true,
-                "sortable": true,
-                "exportable": true,
-                "sensitive": false
             }
         },
         "numero_camera": {
@@ -94,15 +76,6 @@
                     "required"
                 ],
                 "values": []
-            },
-            "ui": {
-                "visibleIndex": true,
-                "visibleView": true,
-                "visibleForm": true,
-                "searchable": true,
-                "sortable": true,
-                "exportable": true,
-                "sensitive": false
             }
         },
         "tipologia_camera": {
@@ -130,15 +103,6 @@
                 "values": {
                     "maxlength": "100"
                 }
-            },
-            "ui": {
-                "visibleIndex": true,
-                "visibleView": true,
-                "visibleForm": true,
-                "searchable": true,
-                "sortable": true,
-                "exportable": true,
-                "sensitive": false
             }
         },
         "tipologia_id": {
@@ -172,15 +136,6 @@
                     "required"
                 ],
                 "values": []
-            },
-            "ui": {
-                "visibleIndex": true,
-                "visibleView": true,
-                "visibleForm": true,
-                "searchable": true,
-                "sortable": true,
-                "exportable": true,
-                "sensitive": false
             }
         },
         "camere_max_pax": {
@@ -204,15 +159,6 @@
             "attributes": {
                 "boolean": [],
                 "values": []
-            },
-            "ui": {
-                "visibleIndex": true,
-                "visibleView": true,
-                "visibleForm": true,
-                "searchable": true,
-                "sortable": true,
-                "exportable": true,
-                "sensitive": false
             }
         },
         "camere_metri_quadri": {
@@ -236,15 +182,6 @@
             "attributes": {
                 "boolean": [],
                 "values": []
-            },
-            "ui": {
-                "visibleIndex": true,
-                "visibleView": true,
-                "visibleForm": true,
-                "searchable": true,
-                "sortable": true,
-                "exportable": true,
-                "sensitive": false
             }
         },
         "camere_vista": {
@@ -270,15 +207,6 @@
                 "values": {
                     "maxlength": "100"
                 }
-            },
-            "ui": {
-                "visibleIndex": true,
-                "visibleView": true,
-                "visibleForm": true,
-                "searchable": true,
-                "sortable": true,
-                "exportable": true,
-                "sensitive": false
             }
         },
         "camere_piano": {
@@ -302,15 +230,6 @@
             "attributes": {
                 "boolean": [],
                 "values": []
-            },
-            "ui": {
-                "visibleIndex": true,
-                "visibleView": true,
-                "visibleForm": true,
-                "searchable": true,
-                "sortable": true,
-                "exportable": true,
-                "sensitive": false
             }
         },
         "camere_bagno": {
@@ -336,15 +255,6 @@
                 "values": {
                     "maxlength": "100"
                 }
-            },
-            "ui": {
-                "visibleIndex": true,
-                "visibleView": true,
-                "visibleForm": true,
-                "searchable": true,
-                "sortable": true,
-                "exportable": true,
-                "sensitive": false
             }
         },
         "camere_edificio": {
@@ -370,15 +280,6 @@
                 "values": {
                     "maxlength": "3"
                 }
-            },
-            "ui": {
-                "visibleIndex": true,
-                "visibleView": true,
-                "visibleForm": true,
-                "searchable": true,
-                "sortable": true,
-                "exportable": true,
-                "sensitive": false
             }
         },
         "review_tot": {
@@ -402,15 +303,6 @@
             "attributes": {
                 "boolean": [],
                 "values": []
-            },
-            "ui": {
-                "visibleIndex": true,
-                "visibleView": true,
-                "visibleForm": true,
-                "searchable": true,
-                "sortable": true,
-                "exportable": true,
-                "sensitive": false
             }
         },
         "camere_data_record": {
@@ -436,15 +328,6 @@
                     "required"
                 ],
                 "values": []
-            },
-            "ui": {
-                "visibleIndex": true,
-                "visibleView": true,
-                "visibleForm": true,
-                "searchable": true,
-                "sortable": true,
-                "exportable": true,
-                "sensitive": false
             }
         },
         "camere_utente_id": {
@@ -468,15 +351,6 @@
             "attributes": {
                 "boolean": [],
                 "values": []
-            },
-            "ui": {
-                "visibleIndex": true,
-                "visibleView": true,
-                "visibleForm": true,
-                "searchable": true,
-                "sortable": true,
-                "exportable": true,
-                "sensitive": false
             }
         }
     },
@@ -564,7 +438,26 @@
                 ]
             }
         },
-        "manyToMany": [],
+        "manyToMany": {
+            "conti__camera_id": {
+                "type": "manyToMany",
+                "pivotTable": "conti",
+                "ownPivotField": "camera_id",
+                "ownParentField": "camera_id",
+                "relatedTable": "foglio_giorno",
+                "relatedPivotField": "foglio_id",
+                "relatedKey": "foglio_id"
+            },
+            "guasti__camera_id": {
+                "type": "manyToMany",
+                "pivotTable": "guasti",
+                "ownPivotField": "camera_id",
+                "ownParentField": "camera_id",
+                "relatedTable": "hotels",
+                "relatedPivotField": "hotel_id",
+                "relatedKey": "hotel_id"
+            }
+        },
         "self": []
     },
     "relationsConfig": {
@@ -635,13 +528,12 @@
                 "showCount": true,
                 "showViewButton": true
             }
-        },
-        "manyToMany": []
+        }
     },
     "features": {
         "entity": true,
         "service": true,
-        "api": false,
+        "api": true,
         "datatable": true,
         "relations": true,
         "softDeletes": false,

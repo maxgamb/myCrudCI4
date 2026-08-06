@@ -1,11 +1,20 @@
 <?php
+
 namespace Config;
 
 use CodeIgniter\Config\BaseConfig;
 
 class MyCrud extends BaseConfig
 {
-    public string $generatedPath = APPPATH . 'Generated/';
+    public string $version = '2.7.1';
+
+    /**
+     * I generatori producono classi con namespace App\\... e view risolte da
+     * CodeIgniter dentro APPPATH. Per questo il percorso operativo predefinito
+     * deve essere APPPATH e non una cartella di staging non autocaricata.
+     */
+    public string $generatedPath = APPPATH;
+
     public string $defaultArchitecture = 'standard';
     public bool $safeWrite = true;
     public int $defaultPerPage = 25;

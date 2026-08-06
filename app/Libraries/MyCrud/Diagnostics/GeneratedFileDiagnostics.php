@@ -20,7 +20,7 @@ final class GeneratedFileDiagnostics
             return [new DiagnosticResult(
                 'Generated directory',
                 DiagnosticResult::WARN,
-                'La directory Generated non esiste ancora.',
+                'Il percorso di generazione non esiste ancora.',
                 ['path' => $root]
             )];
         }
@@ -68,7 +68,7 @@ final class GeneratedFileDiagnostics
             $phpFiles > 0 ? DiagnosticResult::PASS : DiagnosticResult::WARN,
             $phpFiles > 0
                 ? 'Analizzati ' . $phpFiles . ' file PHP.'
-                : 'Nessun file PHP presente nella directory Generated.'
+                : 'Nessun file PHP presente nel percorso di generazione.'
         );
 
         return $results;

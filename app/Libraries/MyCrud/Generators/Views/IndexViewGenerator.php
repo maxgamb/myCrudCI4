@@ -21,6 +21,9 @@ final class IndexViewGenerator extends AbstractViewGenerator
 
         foreach ($this->orderedFields($config) as $name) {
             $field = $config['fields'][$name];
+            if (array_key_exists('visibleIndex', (array) ($field['ui'] ?? [])) && empty($field['ui']['visibleIndex'])) {
+                continue;
+            }
             $type = strtolower((string) ($field['type'] ?? ''));
             if (in_array($type, ['text', 'mediumtext', 'longtext', 'blob', 'mediumblob', 'longblob'], true)) {
                 continue;
@@ -53,6 +56,9 @@ final class IndexViewGenerator extends AbstractViewGenerator
 
         foreach ($this->orderedFields($config) as $name) {
             $field = $config['fields'][$name];
+            if (array_key_exists('visibleIndex', (array) ($field['ui'] ?? [])) && empty($field['ui']['visibleIndex'])) {
+                continue;
+            }
             $label = $this->labelExpression($field, $name);
             $headers .= "                            <th><?= esc({$label}) ?></th>\n";
             $filters .= "                            <th><input type=\"text\" class=\"form-control form-control-sm\" placeholder=\"<?= esc('Filtra ' . {$label}) ?>\"></th>\n";

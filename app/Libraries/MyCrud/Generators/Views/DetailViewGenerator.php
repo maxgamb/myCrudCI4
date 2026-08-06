@@ -8,7 +8,11 @@ final class DetailViewGenerator extends AbstractViewGenerator
         $rows = '';
 
         foreach ($this->orderedFields($config) as $name) {
-            $label = $this->labelExpression($config['fields'][$name], $name);
+            $field = $config['fields'][$name];
+            if (array_key_exists('visibleView', (array) ($field['ui'] ?? [])) && empty($field['ui']['visibleView'])) {
+                continue;
+            }
+            $label = $this->labelExpression($field, $name);
 
             $rows .= <<<PHP
                         <tr>

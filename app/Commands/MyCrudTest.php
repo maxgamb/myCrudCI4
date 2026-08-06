@@ -21,7 +21,7 @@ final class MyCrudTest extends BaseCommand
     ];
 
     protected $options = [
-        '--no-force' => 'Non sovrascrive i file già presenti nello staging.',
+        '--no-force' => 'Non sovrascrive i file già presenti nel percorso di generazione.',
         '--json'     => 'Stampa il report JSON.',
         '--report'   => 'Salva il report JSON nel percorso indicato.',
     ];

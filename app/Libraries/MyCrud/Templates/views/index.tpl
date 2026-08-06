@@ -53,16 +53,25 @@
 
 <script>
 $(function () {
+    let csrfHash = '<?= csrf_hash() ?>';
+
     $('#crudTable').DataTable({
         processing: true,
         serverSide: true,
         stateSave: true,
+        orderCellsTop: true,
         searchDelay: 350,
         ajax: {
             url: "<?= site_url('{{TABLE}}/datatable') ?>",
             type: 'POST',
             data: function (data) {
-                data['<?= csrf_token() ?>'] = '<?= csrf_hash() ?>';
+                data['<?= csrf_token() ?>'] = csrfHash;
+            },
+            dataSrc: function (json) {
+                if (json.csrfHash) {
+                    csrfHash = json.csrfHash;
+                }
+                return json.data || [];
             }
         },
         columns: [
@@ -73,16 +82,31 @@ $(function () {
                 searchable: false,
                 render: function (id) {
                     const base = "<?= site_url('{{TABLE}}') ?>";
+                    const safeId = encodeURIComponent(String(id ?? ''));
                     return `<div class="btn-group btn-group-sm">
-                        <a href="${base}/view/${id}" class="btn btn-outline-info"><i class="bi bi-eye"></i></a>
-                        <a href="${base}/edit/${id}" class="btn btn-outline-warning"><i class="bi bi-pencil-square"></i></a>
-                        <button type="button" class="btn btn-outline-danger delete-record" data-id="${id}"><i class="bi bi-trash"></i></button>
+                        <a href="${base}/view/${safeId}" class="btn btn-outline-info"><i class="bi bi-eye"></i></a>
+                        <a href="${base}/edit/${safeId}" class="btn btn-outline-warning"><i class="bi bi-pencil-square"></i></a>
+                        <button type="button" class="btn btn-outline-danger delete-record" data-id="${safeId}"><i class="bi bi-trash"></i></button>
                     </div>`;
                 }
             }
         ],
         language: {
             url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/it-IT.json'
+        },
+        initComplete: function () {
+            const api = this.api();
+            api.columns().every(function (index) {
+                const input = $('.filters th').eq(index).find('input');
+                if (!input.length) return;
+
+                input.on('keyup change clear', function () {
+                    const value = this.value || '';
+                    if (api.column(index).search() !== value) {
+                        api.column(index).search(value).draw();
+                    }
+                });
+            });
         }
     });
 
@@ -97,7 +121,7 @@ $(function () {
         form.append($('<input>', {
             type: 'hidden',
             name: '<?= csrf_token() ?>',
-            value: '<?= csrf_hash() ?>'
+            value: csrfHash
         }));
 
         $('body').append(form);

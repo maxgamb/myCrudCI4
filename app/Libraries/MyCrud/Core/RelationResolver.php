@@ -18,9 +18,30 @@ final class RelationResolver
 
     public function resolve(string $table): array
     {
-        $schemaInfo = $this->schema->getSchemaInfo();
+        // Carica soltanto la tabella corrente e le tabelle realmente collegate.
+        // La versione precedente rileggeva l'intero schema per ogni CRUD.
+        $schemaInfo = $this->schema->getSchemaInfo($table);
         $tables = $schemaInfo['tables'] ?? [];
         $relations = $schemaInfo['relations'] ?? [];
+
+        $relatedTables = [];
+        foreach ($relations as $relation) {
+            $relatedTables[] = (string) ($relation['childTable'] ?? '');
+            $relatedTables[] = (string) ($relation['parentTable'] ?? '');
+        }
+
+        foreach (array_values(array_unique(array_filter($relatedTables))) as $relatedTable) {
+            if (isset($tables[$relatedTable])) {
+                continue;
+            }
+
+            try {
+                $tables[$relatedTable] = $this->schema->getTableInfo($relatedTable);
+            } catch (\Throwable) {
+                // Tabelle escluse dal filtro o non accessibili: la relazione
+                // resta rilevata ma verranno usati i fallback dei nomi campo.
+            }
+        }
 
         $belongsTo = [];
         $hasMany = [];

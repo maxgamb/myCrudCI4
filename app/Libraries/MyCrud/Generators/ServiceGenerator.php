@@ -14,14 +14,48 @@ final class ServiceGenerator
         $class = (string) $config['classes']['service'];
         $modelClass = (string) $config['classes']['model'];
         $entity = (string) $config['classes']['entity'];
+        $primaryKey = (string) $config['primaryKey'];
         $useEntity = !empty($config['features']['entity']);
         $entityUse = $useEntity ? "use App\\Entities\\{$entity};\n" : '';
         $createBody = $useEntity
             ? "        \$id = \$this->model->insert(new {$entity}(\$data), true);"
             : "        \$id = \$this->model->insert(\$data, true);";
-        $updateBody = $useEntity
-            ? "        \$record = \$this->find(\$id);\n        \$record->fill(\$data);\n        \$result = \$this->model->save(\$record);"
-            : "        \$result = \$this->model->update(\$id, \$data);";
+
+        $primaryAutoIncrement = false;
+        foreach ($config['fields'] as $field) {
+            if ((string) ($field['name'] ?? '') === $primaryKey) {
+                $primaryAutoIncrement = !empty($field['autoIncrement']);
+                break;
+            }
+        }
+
+        $returnCreatedId = $primaryAutoIncrement
+            ? "        return is_int(\$id) ? \$id : (string) \$id;"
+            : "        if (array_key_exists('{$primaryKey}', \$data) && (is_int(\$data['{$primaryKey}']) || is_string(\$data['{$primaryKey}']))) {\n            return \$data['{$primaryKey}'];\n        }\n        return is_int(\$id) ? \$id : (string) \$id;";
+
+        $softMethods = !empty($config['features']['softDeletes']) ? <<<PHP
+    public function deletedList(): array
+    {
+        return \$this->model->getDeletedList();
+    }
+
+    public function restore(int|string \$id): void
+    {
+        if (!\$this->model->restoreRecord(\$id)) {
+            throw new RuntimeException('Ripristino non riuscito.');
+        }
+    }
+
+    public function forceDelete(int|string \$id): void
+    {
+        if (!\$this->model->delete(\$id, true)) {
+            throw new RuntimeException('Eliminazione definitiva non riuscita.');
+        }
+    }
+
+PHP : '';
+
+        $modelUse = "use App\\Models\\{$modelClass};";
 
         $content = <<<PHP
 <?php
@@ -30,7 +64,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-{$entityUse}use App\Models\{$modelClass};
+{$entityUse}{$modelUse}
 use RuntimeException;
 
 /** Coordina la logica applicativa senza comporre query SQL. */
@@ -54,6 +88,12 @@ final class {$class}
         return \$this->model->datatable(\$request);
     }
 
+    /** Elenco REST paginato con filtri e ordinamento autorizzati. */
+    public function apiList(array \$query, array \$filterable, array \$sortable): array
+    {
+        return \$this->model->apiList(\$query, \$filterable, \$sortable);
+    }
+
     public function relationOptions(): array
     {
         return \$this->model->relationOptions();
@@ -64,19 +104,20 @@ final class {$class}
         return \$this->model->loadHasMany(\$parentId);
     }
 
-    public function create(array \$data): int
+    public function create(array \$data): int|string
     {
 {$createBody}
         if (\$id === false) {
             throw new RuntimeException(implode(' ', \$this->model->errors()) ?: 'Inserimento non riuscito.');
         }
-        return (int) \$id;
+{$returnCreatedId}
     }
 
     public function update(int|string \$id, array \$data): void
     {
-{$updateBody}
-        if (\$result === false) {
+        // update() applica allowedFields e funziona sia con returnType object
+        // sia con Entity, senza usare il record arricchito dai JOIN.
+        if (!\$this->model->update(\$id, \$data)) {
             throw new RuntimeException(implode(' ', \$this->model->errors()) ?: 'Aggiornamento non riuscito.');
         }
     }
@@ -88,25 +129,7 @@ final class {$class}
         }
     }
 
-    public function deletedList(): array
-    {
-        return \$this->model->getDeletedList();
-    }
-
-    public function restore(int|string \$id): void
-    {
-        if (!\$this->model->restoreRecord(\$id)) {
-            throw new RuntimeException('Ripristino non riuscito.');
-        }
-    }
-
-    public function forceDelete(int|string \$id): void
-    {
-        if (!\$this->model->delete(\$id, true)) {
-            throw new RuntimeException('Eliminazione definitiva non riuscita.');
-        }
-    }
-}
+{$softMethods}}
 
 PHP;
 

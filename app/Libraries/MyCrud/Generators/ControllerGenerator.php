@@ -27,12 +27,40 @@ final class ControllerGenerator
         $findCall = $usesService ? "\$this->service->find(\$id)" : "\$this->model->getDetail(\$id)";
         $optionsCall = $usesService ? "\$this->service->relationOptions()" : "\$this->model->relationOptions()";
         $childrenCall = $usesService ? "\$this->service->loadHasMany(\$id)" : "\$this->model->loadHasMany(\$id)";
-        $createCall = $usesService ? "\$this->service->create(\$data)" : "\$this->model->insert(\$data, true)";
-        $updateCall = $usesService ? "\$this->service->update(\$id, \$data)" : "\$this->model->update(\$id, \$data)";
-        $deleteCall = $usesService ? "\$this->service->delete(\$id)" : "\$this->model->delete(\$id)";
+        $createCall = $usesService
+            ? "\$this->service->create(\$data);"
+            : "if (\$this->model->insert(\$data, true) === false) {
+                throw new RuntimeException(implode(' ', \$this->model->errors()) ?: 'Inserimento non riuscito.');
+            }";
+        $updateCall = $usesService
+            ? "\$this->service->update(\$id, \$data);"
+            : "if (!\$this->model->update(\$id, \$data)) {
+                throw new RuntimeException(implode(' ', \$this->model->errors()) ?: 'Aggiornamento non riuscito.');
+            }";
+        $deleteCall = $usesService
+            ? "\$this->service->delete(\$id);"
+            : "if (!\$this->model->delete(\$id)) {
+                throw new RuntimeException('Eliminazione non riuscita.');
+            }";
+
+        $primaryAutoIncrement = false;
+        foreach ($config['fields'] as $field) {
+            if ((string) ($field['name'] ?? '') === $primaryKey) {
+                $primaryAutoIncrement = !empty($field['autoIncrement']);
+                break;
+            }
+        }
+        $unsetCreatePrimaryKey = $primaryAutoIncrement ? "        unset(\$data['{$primaryKey}']);
+" : '';
 
         $disabled = [];
         $readonly = [];
+        $passwords = [];
+        $managed = [];
+        $timestampsEnabled = !empty($config['features']['timestamps'])
+            && isset($config['fields']['created_at'], $config['fields']['updated_at']);
+        $softDeleteEnabled = !empty($config['features']['softDeletes']);
+        $deletedField = (string) ($config['softDelete']['field'] ?? 'deleted_at');
         foreach ($config['fields'] as $field) {
             $boolean = (array) ($field['attributes']['boolean'] ?? []);
             if (in_array('disabled', $boolean, true)) {
@@ -41,9 +69,21 @@ final class ControllerGenerator
             if (in_array('readonly', $boolean, true)) {
                 $readonly[] = (string) $field['name'];
             }
+            if ((string) ($field['inputType'] ?? '') === 'password') {
+                $passwords[] = (string) $field['name'];
+            }
+            $fieldName = (string) $field['name'];
+            if (
+                ($timestampsEnabled && in_array($fieldName, ['created_at', 'updated_at'], true))
+                || ($softDeleteEnabled && $fieldName === $deletedField)
+            ) {
+                $managed[] = $fieldName;
+            }
         }
         $disabledCode = var_export($disabled, true);
         $readonlyCode = var_export($readonly, true);
+        $passwordsCode = var_export($passwords, true);
+        $managedCode = var_export(array_values(array_unique($managed)), true);
 
         if ($architecture === 'basic') {
             $indexMethod = <<<PHP
@@ -84,7 +124,9 @@ PHP;
     /** Endpoint DataTables server-side; la query è gestita dal Model. */
     public function datatable()
     {
-        return \$this->response->setJSON({$datatableCall});
+        \$result = {$datatableCall};
+        \$result['csrfHash'] = csrf_hash();
+        return \$this->response->setJSON(\$result);
     }
 
 PHP;
@@ -122,6 +164,8 @@ PHP;
 PHP;
         }
 
+        $rulesUse = "use App\\Validation\\{$rules};";
+
         $content = <<<PHP
 <?php
 
@@ -131,8 +175,9 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 {$dependencyUse}
-use App\Validation\{$rules};
+{$rulesUse}
 use CodeIgniter\Exceptions\PageNotFoundException;
+use RuntimeException;
 use Throwable;
 
 /** Controller CRUD per {$table}; non contiene query SQL. */
@@ -181,10 +226,10 @@ final class {$controller} extends BaseController
         }
 
         \$data = \$this->sanitizeInput(\$this->request->getPost(), false);
-        unset(\$data['{$primaryKey}']);
+{$unsetCreatePrimaryKey}
 
         try {
-            {$createCall};
+            {$createCall}
         } catch (Throwable \$e) {
             return redirect()->back()->withInput()->with('error', \$e->getMessage());
         }
@@ -221,7 +266,7 @@ final class {$controller} extends BaseController
         unset(\$data['{$primaryKey}']);
 
         try {
-            {$updateCall};
+            {$updateCall}
         } catch (Throwable \$e) {
             return redirect()->back()->withInput()->with('error', \$e->getMessage());
         }
@@ -232,7 +277,7 @@ final class {$controller} extends BaseController
     public function delete(int|string \$id)
     {
         try {
-            {$deleteCall};
+            {$deleteCall}
         } catch (Throwable \$e) {
             return redirect()->to(site_url('{$table}'))->with('error', \$e->getMessage());
         }
@@ -247,12 +292,17 @@ final class {$controller} extends BaseController
             unset(\$data[\$csrfName]);
         }
 
-        foreach ({$disabledCode} as \$field) {
+        foreach (array_merge({$disabledCode}, {$managedCode}) as \$field) {
             unset(\$data[\$field]);
         }
         if (\$isUpdate) {
             foreach ({$readonlyCode} as \$field) {
                 unset(\$data[\$field]);
+            }
+            foreach ({$passwordsCode} as \$field) {
+                if ((string) (\$data[\$field] ?? '') === '') {
+                    unset(\$data[\$field]);
+                }
             }
         }
         return \$data;
