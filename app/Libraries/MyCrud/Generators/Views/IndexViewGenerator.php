@@ -6,6 +6,12 @@ namespace App\Libraries\MyCrud\Generators\Views;
 
 use App\Libraries\MyCrud\Core\FieldPolicy;
 
+/**
+ * Genera l'elenco del sito: tabella, ordinamento e filtro dinamico.
+ *
+ * Lato generatore vengono prodotte solo whitelist/configurazioni; la query
+ * effettiva resta nel Model generato.
+ */
 final class IndexViewGenerator extends AbstractViewGenerator
 {
     /** @return array{index: string, filters: string, table: string, pager: string} */
@@ -15,7 +21,7 @@ final class IndexViewGenerator extends AbstractViewGenerator
         $primaryKey = (string) $config['primaryKey'];
         $headers = '';
         $cells = '';
-        $filterControls = '';
+        $filterDefinitions = [];
         $visibleCount = 0;
 
         foreach ($this->orderedFields($config) as $name) {
@@ -24,6 +30,10 @@ final class IndexViewGenerator extends AbstractViewGenerator
             $type = strtolower((string) ($field['type'] ?? ''));
             $inputType = strtolower((string) ($field['inputType'] ?? 'text'));
             $sensitive = !empty($ui['sensitive']) || FieldPolicy::isSensitive($name, $inputType);
+            $index = (array) ($field['index'] ?? []);
+            $indexEligible = !empty($index['primary'])
+                || !empty($index['unique'])
+                || !empty($index['leading']);
 
             if (
                 !$sensitive
@@ -31,7 +41,7 @@ final class IndexViewGenerator extends AbstractViewGenerator
                 && !in_array($type, ['text', 'mediumtext', 'longtext', 'blob', 'mediumblob', 'longblob'], true)
             ) {
                 $label = $this->labelExpression($field, $name);
-                $sortable = !empty($ui['sortable']);
+                $sortable = !empty($ui['sortable']) && $indexEligible;
 
                 if ($sortable) {
                     $headers .= <<<PHP
@@ -71,13 +81,9 @@ PHP;
                 $visibleCount++;
             }
 
-            if (!$sensitive && !empty($ui['searchable'])) {
-                $filterControls .= $this->filterControl($config, $field, $name);
+            if (!$sensitive && !empty($ui['searchable']) && $indexEligible) {
+                $filterDefinitions[$name] = $this->filterDefinition($config, $field, $name);
             }
-        }
-
-        if ($filterControls === '') {
-            $filterControls = "        <div class=\"col-12\"><div class=\"alert alert-light border mb-0\">Nessun filtro indicizzato disponibile.</div></div>\n";
         }
 
         $trashButton = !empty($config['features']['softDeletes'])
@@ -96,7 +102,7 @@ PHP;
             'filters' => $this->templates->render('views/filters.tpl', [
                 'table' => $table,
                 'primary_key' => $primaryKey,
-                'filter_controls' => $filterControls,
+                'filter_definitions' => $this->filterDefinitionsCode($filterDefinitions),
             ]),
             'table' => $this->templates->render('views/table.tpl', [
                 'table' => $table,
@@ -109,73 +115,60 @@ PHP;
         ];
     }
 
-    private function filterControl(array $config, array $field, string $name): string
+    /** @return array{label:string,input:string,operators:list<string>,relation:?string} */
+    private function filterDefinition(array $config, array $field, string $name): array
     {
-        $label = $this->labelExpression($field, $name);
-        $ui = (array) ($field['ui'] ?? []);
-        $mode = (string) ($ui['filterMode'] ?? 'exact');
         $type = strtolower((string) ($field['type'] ?? ''));
         $inputType = strtolower((string) ($field['inputType'] ?? 'text'));
+        $columnType = strtolower((string) ($field['columnType'] ?? ''));
         $relation = $config['relations']['belongsTo'][$name] ?? null;
+        $isBoolean = $inputType === 'checkbox' || $type === 'bool' || $type === 'boolean'
+            || preg_match('/^tinyint\(1\)/', $columnType) === 1;
+        $isNumeric = preg_match('/int|decimal|float|double|numeric|real/', $type) === 1;
+        $isDate = in_array($type, ['date', 'datetime', 'timestamp', 'time'], true);
 
         if (is_array($relation)) {
-            return <<<PHP
-        <div class="col-12 col-md-3">
-            <label for="filter_{$name}" class="form-label"><?= esc({$label}) ?></label>
-            <select id="filter_{$name}" name="filter[{$name}]" class="form-select">
-                <option value="">Tutti</option>
-                <?php foreach ((array) (\$options['{$name}'] ?? []) as \$value => \$optionLabel): ?>
-                    <option value="<?= esc((string) \$value) ?>" <?= (string) (\$filters['{$name}'] ?? '') === (string) \$value ? 'selected' : '' ?>>
-                        <?= esc((string) \$optionLabel) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-
-PHP;
+            $relationMode = strtolower((string) ($field['relationMode'] ?? $relation['optionMode'] ?? 'select'));
+            $input = $relationMode === 'ajax' ? 'relation_ajax' : 'select';
+            $operators = ['eq', 'neq'];
+        } elseif ($isBoolean) {
+            $input = 'boolean';
+            $operators = ['eq', 'neq'];
+        } elseif ($isNumeric) {
+            $input = 'number';
+            $operators = ['eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'between', 'is_null', 'not_null'];
+        } elseif ($isDate) {
+            $input = $type === 'date' ? 'date' : ($type === 'time' ? 'time' : 'datetime-local');
+            $operators = ['eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'between', 'is_null', 'not_null'];
+        } else {
+            $input = 'text';
+            $operators = ['eq', 'neq', 'starts_with', 'contains', 'ends_with', 'is_null', 'not_null'];
         }
 
-        if ($mode === 'range') {
-            $htmlType = $type === 'date' ? 'date' : 'datetime-local';
-            return <<<PHP
-        <div class="col-12 col-md-4">
-            <label class="form-label"><?= esc({$label}) ?></label>
-            <div class="input-group">
-                <input type="{$htmlType}" name="filter[{$name}][from]" value="<?= esc((string) (\$filters['{$name}']['from'] ?? '')) ?>" class="form-control" aria-label="Da">
-                <input type="{$htmlType}" name="filter[{$name}][to]" value="<?= esc((string) (\$filters['{$name}']['to'] ?? '')) ?>" class="form-control" aria-label="A">
-            </div>
-        </div>
+        return [
+            'label' => $this->labelExpression($field, $name),
+            'input' => $input,
+            'operators' => $operators,
+            'relation' => is_array($relation) ? $name : null,
+        ];
+    }
 
-PHP;
+    /** Genera PHP, non JSON, così le label possono continuare a usare lang(). */
+    private function filterDefinitionsCode(array $definitions): string
+    {
+        $lines = [];
+        foreach ($definitions as $field => $definition) {
+            $operators = var_export($definition['operators'], true);
+            $relation = var_export($definition['relation'], true);
+            $input = var_export($definition['input'], true);
+            $lines[] = "    '" . addslashes((string) $field) . "' => [\n"
+                . "        'label' => " . $definition['label'] . ",\n"
+                . "        'input' => {$input},\n"
+                . "        'operators' => {$operators},\n"
+                . "        'relation' => {$relation},\n"
+                . "    ],";
         }
 
-        $columnType = strtolower((string) ($field['columnType'] ?? ''));
-        $isBoolean = $inputType === 'checkbox' || $type === 'bool' || $type === 'boolean' || preg_match('/^tinyint\(1\)/', $columnType) === 1;
-        if ($isBoolean) {
-            return <<<PHP
-        <div class="col-6 col-md-2">
-            <label for="filter_{$name}" class="form-label"><?= esc({$label}) ?></label>
-            <select id="filter_{$name}" name="filter[{$name}]" class="form-select">
-                <option value="">Tutti</option>
-                <option value="1" <?= (string) (\$filters['{$name}'] ?? '') === '1' ? 'selected' : '' ?>>Sì</option>
-                <option value="0" <?= (string) (\$filters['{$name}'] ?? '') === '0' ? 'selected' : '' ?>>No</option>
-            </select>
-        </div>
-
-PHP;
-        }
-
-        $htmlType = preg_match('/int|decimal|float|double|numeric/', $type) === 1 ? 'number' : 'search';
-        $step = $htmlType === 'number' && preg_match('/decimal|float|double|numeric/', $type) === 1 ? ' step="any"' : '';
-        $hint = $mode === 'prefix' ? '<div class="form-text">Ricerca per inizio testo, minimo 2 caratteri.</div>' : '';
-
-        return <<<PHP
-        <div class="col-12 col-md-3">
-            <label for="filter_{$name}" class="form-label"><?= esc({$label}) ?></label>
-            <input type="{$htmlType}"{$step} id="filter_{$name}" name="filter[{$name}]" value="<?= esc((string) (\$filters['{$name}'] ?? '')) ?>" class="form-control">
-            {$hint}
-        </div>
-
-PHP;
+        return implode("\n", $lines);
     }
 }

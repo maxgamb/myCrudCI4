@@ -1,3 +1,4 @@
+<?php /* Pager condiviso sopra e sotto la tabella; conserva i parametri GET correnti. */ ?>
 <?php if (($pagerLinks ?? '') !== '' || (int) ($total ?? 0) > 0): ?>
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 my-2">
         <span class="text-muted small">
@@ -6,9 +7,7 @@
         </span>
 
         <?php if (($pagerLinks ?? '') !== ''): ?>
-            <nav aria-label="Paginazione">
-                <?= $pagerLinks ?>
-            </nav>
+            <?= $pagerLinks ?>
         <?php endif; ?>
     </div>
 <?php endif; ?>

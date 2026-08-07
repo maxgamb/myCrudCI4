@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Libraries\MyCrud\Generators;
 
-use App\Libraries\MyCrud\Core\FieldPolicy;
-
 /** Genera controller REST v1 e Resource di serializzazione. */
 final class ApiGenerator
 {
@@ -32,40 +30,45 @@ final class ApiGenerator
             $name = (string) $field['name'];
             $ui = (array) ($field['ui'] ?? []);
             $attributes = (array) ($field['attributes']['boolean'] ?? []);
-            $inputType = (string) ($field['inputType'] ?? 'text');
-            $sensitive = !empty($ui['sensitive'])
-                || FieldPolicy::isSensitive($name, $inputType);
             $primaryAuto = !empty($field['primary']) && !empty($field['autoIncrement']);
             $managedField = (!empty($config['features']['softDeletes']) && $name === $softDeleteField)
                 || ($timestampsEnabled && in_array($name, ['created_at', 'updated_at'], true));
+            $index = (array) ($field['index'] ?? []);
+            $indexEligible = !empty($index['primary'])
+                || !empty($index['unique'])
+                || !empty($index['leading']);
 
-            if (!$sensitive) {
+            // La visibilità API è una scelta esplicita del Builder e non viene
+            // dedotta dal nome del campo.
+            if (!array_key_exists('apiVisible', $ui) || !empty($ui['apiVisible'])) {
                 $readable[] = $name;
             }
 
+            // In assenza di una proprietà apiWritable dedicata, l'API accetta
+            // gli stessi campi gestiti dal form web, esclusi quelli amministrati
+            // dal framework o dichiarati readonly/disabled.
             if (
                 !$primaryAuto
                 && !$managedField
+                && !empty($ui['visibleForm'])
                 && !in_array('disabled', $attributes, true)
                 && !in_array('readonly', $attributes, true)
-                && (!$sensitive || FieldPolicy::isPassword($name, $inputType))
             ) {
-                // Le password possono essere scritte ma non vengono mai serializzate.
                 $writable[] = $name;
             }
 
-            if (!$sensitive && !empty($ui['searchable'])) {
+            if (!empty($ui['searchable']) && $indexEligible) {
                 $filterable[] = $name;
             }
-            if (!$sensitive && !empty($ui['sortable'])) {
+            if (!empty($ui['sortable']) && $indexEligible) {
                 $sortable[] = $name;
             }
         }
 
-
-        foreach ($config['relations']['belongsTo'] ?? [] as $relation) {
+        foreach ($config['relations']['belongsTo'] ?? [] as $fieldName => $relation) {
+            $fieldUi = (array) ($config['fields'][$fieldName]['ui'] ?? []);
             $alias = (string) ($relation['alias'] ?? '');
-            if ($alias !== '') {
+            if ($alias !== '' && (!array_key_exists('apiVisible', $fieldUi) || !empty($fieldUi['apiVisible']))) {
                 $readable[] = $alias;
             }
         }
@@ -82,6 +85,98 @@ final class ApiGenerator
         $filterableCode = var_export(array_values(array_unique($filterable)), true);
         $sortableCode = var_export(array_values(array_unique($sortable)), true);
 
+        $baseControllerContent = <<<'BASEAPI'
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controllers\Api;
+
+use App\Controllers\BaseController;
+use CodeIgniter\HTTP\ResponseInterface;
+use Throwable;
+
+/**
+ * Base comune delle API generate.
+ * Uniforma payload, errori e limiti di paginazione.
+ */
+abstract class BaseApiController extends BaseController
+{
+    protected int $maxPerPage = 100;
+
+    protected function success(
+        mixed $data,
+        array $meta = [],
+        array $links = [],
+        int $status = 200
+    ): ResponseInterface {
+        return $this->response->setStatusCode($status)->setJSON([
+            'data'  => $data,
+            'meta'  => (object) $meta,
+            'links' => (object) $links,
+        ]);
+    }
+
+    protected function error(
+        string $code,
+        string $message,
+        int $status,
+        array $fields = []
+    ): ResponseInterface {
+        $error = [
+            'code'    => $code,
+            'message' => $message,
+        ];
+
+        if ($fields !== []) {
+            $error['fields'] = $fields;
+        }
+
+        return $this->response
+            ->setStatusCode($status)
+            ->setJSON(['error' => $error]);
+    }
+
+    protected function payload(): array
+    {
+        $json = $this->request->getJSON(true);
+
+        if (is_array($json)) {
+            return $json;
+        }
+
+        $raw = $this->request->getRawInput();
+
+        return is_array($raw) && $raw !== []
+            ? $raw
+            : (array) $this->request->getPost();
+    }
+
+    protected function safePerPage(int $default = 25): int
+    {
+        $requested = (int) ($this->request->getGet('perPage') ?? $default);
+
+        return max(1, min($this->maxPerPage, $requested));
+    }
+
+    protected function internalError(Throwable $exception): ResponseInterface
+    {
+        log_message('error', '[API] {message} in {file}:{line}', [
+            'message' => $exception->getMessage(),
+            'file'    => $exception->getFile(),
+            'line'    => $exception->getLine(),
+        ]);
+
+        return $this->error(
+            'INTERNAL_ERROR',
+            'Errore interno del server.',
+            500
+        );
+    }
+}
+
+BASEAPI;
+
         $resourceContent = <<<PHP
 <?php
 
@@ -89,7 +184,7 @@ declare(strict_types=1);
 
 namespace App\API\Resources;
 
-/** Serializza la risorsa {$table} senza esporre campi sensibili. */
+/** Serializza la risorsa {$table} secondo la configurazione del Builder. */
 final class {$resource}
 {
     private const READABLE = {$readableCode};
@@ -298,8 +393,21 @@ final class {$api} extends BaseApiController
 PHP;
 
         return [
-            'controller' => $this->writeGenerated("Generated/Controllers/Api/V1/{$api}.php", $controllerContent, $force),
-            'resource' => $this->writeGenerated("Generated/API/Resources/{$resource}.php", $resourceContent, $force),
+            'base_controller' => $this->writeGenerated(
+                'Generated/Controllers/Api/BaseApiController.php',
+                $baseControllerContent,
+                $force
+            ),
+            'controller' => $this->writeGenerated(
+                "Generated/Controllers/Api/V1/{$api}.php",
+                $controllerContent,
+                $force
+            ),
+            'resource' => $this->writeGenerated(
+                "Generated/API/Resources/{$resource}.php",
+                $resourceContent,
+                $force
+            ),
         ];
     }
 }

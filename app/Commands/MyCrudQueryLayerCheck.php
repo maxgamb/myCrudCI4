@@ -10,7 +10,7 @@ use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use RuntimeException;
 
-/** Verifica il Query Layer comune delle architetture 2.7.3. */
+/** Verifica il Query Layer comune delle architetture 2.7.4. */
 final class MyCrudQueryLayerCheck extends BaseCommand
 {
     protected $group = 'myCrudGpt';
@@ -39,7 +39,7 @@ final class MyCrudQueryLayerCheck extends BaseCommand
             return EXIT_ERROR;
         }
 
-        CLI::write('Query Layer comune 2.7.3 verificato con successo.', 'green');
+        CLI::write('Query Layer comune 2.7.4 verificato con successo.', 'green');
         return EXIT_SUCCESS;
     }
 
@@ -69,7 +69,7 @@ final class MyCrudQueryLayerCheck extends BaseCommand
         $this->assertNoDatabaseCalls($controllerCode, 'Controller');
         $this->assertNoDatabaseCalls($serviceCode, 'Service');
         $this->assertContains($modelCode, 'function getListPage(', 'getListPage() mancante nel Model.');
-        $this->assertContains($modelCode, 'function getCsvRows(', 'getCsvRows() mancante nel Model.');
+        $this->assertContains($modelCode, 'function getExportRows(', 'getExportRows() mancante nel Model.');
         $this->assertContains($controllerCode, 'function exportCsv(', 'exportCsv() mancante nel Controller.');
         $this->assertContains($controllerCode, 'function exportWord(', 'exportWord() mancante nel Controller.');
         $this->assertContains($routeCode, "get('export-csv'", 'Rotta CSV mancante.');

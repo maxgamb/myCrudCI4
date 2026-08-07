@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-
+use App\Entities\FoglioGiornoEntity;
 use CodeIgniter\Database\BaseBuilder;
 use CodeIgniter\Model;
 
@@ -13,7 +13,7 @@ final class FoglioGiornoModel extends Model
 {
     protected $table = 'foglio_giorno';
     protected $primaryKey = 'foglio_id';
-    protected $returnType = 'object';
+    protected $returnType = FoglioGiornoEntity::class;
     protected $useSoftDeletes = false;
     protected $protectFields = true;
     protected $allowedFields = array (
@@ -41,63 +41,193 @@ final class FoglioGiornoModel extends Model
     private const LIST_FILTERS = array (
   'foglio_id' => 
   array (
-    'mode' => 'exact',
     'type' => 'int',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
   'hotel_id' => 
   array (
-    'mode' => 'exact',
     'type' => 'smallint',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
   'conto_id' => 
   array (
-    'mode' => 'exact',
     'type' => 'int',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
   'camera_id' => 
   array (
-    'mode' => 'exact',
     'type' => 'int',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
   'preno_id' => 
   array (
-    'mode' => 'exact',
     'type' => 'int',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
   'tipologia_id' => 
   array (
-    'mode' => 'exact',
     'type' => 'int',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
   'foglio_prezzo_camera' => 
   array (
-    'mode' => 'exact',
     'type' => 'decimal',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
   'date_foglio' => 
   array (
-    'mode' => 'prefix',
     'type' => 'varchar',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'starts_with',
+      3 => 'contains',
+      4 => 'ends_with',
+      5 => 'is_null',
+      6 => 'not_null',
+    ),
   ),
   'in_conto' => 
   array (
-    'mode' => 'range',
     'type' => 'date',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
   'out_preno' => 
   array (
-    'mode' => 'range',
     'type' => 'date',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
   'stato_camera' => 
   array (
-    'mode' => 'exact',
     'type' => 'smallint',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
   'preno_agenzia' => 
   array (
-    'mode' => 'exact',
     'type' => 'int',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
 );
     private const SORTABLE_FIELDS = array (
@@ -131,6 +261,36 @@ final class FoglioGiornoModel extends Model
   13 => 'stato_camera',
   14 => 'preno_agenzia',
   15 => 'foglio_utente_id',
+);
+    private const RELATION_SEARCHES = array (
+  'preno_id' => 
+  array (
+    'table' => 'agenda',
+    'key' => 'preno_id',
+    'label' => 'preno_arr_ore',
+    'mode' => 'select',
+  ),
+  'preno_agenzia' => 
+  array (
+    'table' => 'agenzie',
+    'key' => 'agenzia_id',
+    'label' => 'agenzia_tipologia',
+    'mode' => 'select',
+  ),
+  'camera_id' => 
+  array (
+    'table' => 'camere',
+    'key' => 'camera_id',
+    'label' => 'tipologia_camera',
+    'mode' => 'select',
+  ),
+  'tipologia_id' => 
+  array (
+    'table' => 'tipologia_camera',
+    'key' => 'tipologia_id',
+    'label' => 'nome_tipologia',
+    'mode' => 'select',
+  ),
 );
     private const COUNT_CACHE_SECONDS = 60;
 
@@ -243,7 +403,7 @@ final class FoglioGiornoModel extends Model
             $page,
             $perPage,
             $total,
-            'default_full'
+            'bootstrap_full'
         );
 
         return [
@@ -257,8 +417,8 @@ final class FoglioGiornoModel extends Model
         ];
     }
 
-    /** Legge il CSV a blocchi usando la chiave primaria come cursore. */
-    public function getCsvRows(array $filters, int $limit = 2000, int|string|null $after = null): array
+    /** Legge i record di export a blocchi usando la chiave primaria come cursore. */
+    public function getExportRows(array $filters, int $limit = 2000, int|string|null $after = null): array
     {
         $builder = $this->db->table('foglio_giorno');
         $builder->select([
@@ -300,7 +460,7 @@ final class FoglioGiornoModel extends Model
             ->getResultArray();
     }
 
-    public function countCsvRows(array $filters): int
+    public function countExportRows(array $filters): int
     {
         $builder = $this->listCountBuilder();
         $this->applyListFilters($builder, $filters, false);
@@ -309,7 +469,7 @@ final class FoglioGiornoModel extends Model
     }
 
     /** @return list<string> */
-    public function csvFields(): array
+    public function exportFields(): array
     {
         return self::EXPORT_FIELDS;
     }
@@ -335,16 +495,8 @@ final class FoglioGiornoModel extends Model
 
     private function hasActiveFilters(array $filters): bool
     {
-        foreach ($filters as $value) {
-            if (is_array($value)) {
-                foreach ($value as $item) {
-                    if (is_scalar($item) && trim((string) $item) !== '') {
-                        return true;
-                    }
-                }
-                continue;
-            }
-            if (is_scalar($value) && trim((string) $value) !== '') {
+        foreach ($filters as $filter) {
+            if (is_array($filter) && trim((string) ($filter['field'] ?? '')) !== '') {
                 return true;
             }
         }
@@ -357,48 +509,144 @@ final class FoglioGiornoModel extends Model
         service('cache')->delete('mycrud_list_total_' . md5($this->table));
     }
 
+    /**
+     * Applica il filtro dinamico costruito dall'interfaccia del sito.
+     * Campo e operatore vengono sempre verificati contro LIST_FILTERS.
+     */
     private function applyListFilters(BaseBuilder $builder, array $filters, bool $qualified): void
     {
-        foreach (self::LIST_FILTERS as $field => $definition) {
+        $applied = 0;
+        $nextLogic = 'and';
+        foreach (array_values($filters) as $filter) {
+            if (!is_array($filter)) {
+                continue;
+            }
+
+            $field = trim((string) ($filter['field'] ?? ''));
+            $operator = trim((string) ($filter['operator'] ?? ''));
+            if ($field === '' || !isset(self::LIST_FILTERS[$field])) {
+                continue;
+            }
+
+            $definition = self::LIST_FILTERS[$field];
+            $allowedOperators = (array) ($definition['operators'] ?? ['eq']);
+            if (!in_array($operator, $allowedOperators, true)) {
+                continue;
+            }
+
             $column = $qualified ? 'foglio_giorno.' . $field : $field;
-            $mode = (string) ($definition['mode'] ?? 'exact');
-            $value = $filters[$field] ?? null;
+            $value = is_scalar($filter['value'] ?? null) ? trim((string) $filter['value']) : '';
+            $valueTo = is_scalar($filter['value_to'] ?? null) ? trim((string) $filter['value_to']) : '';
+            // La logica appartiene alla riga precedente e collega la
+            // condizione appena applicata a quella successiva nell'interfaccia.
+            $logic = $applied > 0 ? $nextLogic : 'and';
 
-            if ($mode === 'range') {
-                if (!is_array($value)) {
-                    continue;
-                }
-                $from = trim((string) ($value['from'] ?? ''));
-                $to = trim((string) ($value['to'] ?? ''));
-                if ($from !== '') {
-                    $builder->where($column . ' >=', $from);
-                }
-                if ($to !== '') {
-                    $builder->where($column . ' <=', $to);
-                }
+            if (!in_array($operator, ['is_null', 'not_null'], true) && $value === '') {
+                continue;
+            }
+            if ($operator === 'between' && $valueTo === '') {
                 continue;
             }
 
-            if (!is_scalar($value)) {
-                continue;
+            // Ogni condizione è raggruppata: AND/OR resta prevedibile anche
+            // per operatori composti come BETWEEN.
+            if ($logic === 'or') {
+                $builder->orGroupStart();
+            } else {
+                $builder->groupStart();
             }
 
-            $value = trim((string) $value);
-            if ($value === '') {
-                continue;
-            }
-
-            if ($mode === 'prefix') {
-                if (strlen($value) >= 2) {
+            switch ($operator) {
+                case 'neq':
+                    $builder->where($column . ' !=', $value);
+                    break;
+                case 'gt':
+                    $builder->where($column . ' >', $value);
+                    break;
+                case 'gte':
+                    $builder->where($column . ' >=', $value);
+                    break;
+                case 'lt':
+                    $builder->where($column . ' <', $value);
+                    break;
+                case 'lte':
+                    $builder->where($column . ' <=', $value);
+                    break;
+                case 'between':
+                    $builder->where($column . ' >=', $value)
+                        ->where($column . ' <=', $valueTo);
+                    break;
+                case 'starts_with':
                     $builder->like($column, $value, 'after');
-                }
-                continue;
+                    break;
+                case 'contains':
+                    $builder->like($column, $value, 'both');
+                    break;
+                case 'ends_with':
+                    $builder->like($column, $value, 'before');
+                    break;
+                case 'is_null':
+                    $builder->where($column, null);
+                    break;
+                case 'not_null':
+                    $builder->where($column . ' IS NOT NULL', null, false);
+                    break;
+                case 'eq':
+                default:
+                    $builder->where($column, $value);
+                    break;
             }
 
-            $builder->where($column, $value);
+            $builder->groupEnd();
+            $applied++;
+            $nextLogic = strtolower((string) ($filter['logic'] ?? 'and')) === 'or' ? 'or' : 'and';
         }
     }
 
+    /** Elenco REST paginato con whitelist di filtri e ordinamento. */
+    public function apiList(array $query, array $filterable, array $sortable): array
+    {
+        $page = max(1, (int) ($query['page'] ?? 1));
+        $perPage = max(1, min(100, (int) ($query['perPage'] ?? 25)));
+        $builder = $this->baseBuilder();
+
+        foreach ((array) ($query['filter'] ?? []) as $field => $value) {
+            if (is_scalar($value) && in_array($field, $filterable, true) && (string) $value !== '') {
+                $builder->where('foglio_giorno.' . $field, $value);
+            }
+        }
+
+        $sort = (string) ($query['sort'] ?? 'foglio_id');
+        $sort = in_array($sort, $sortable, true) ? $sort : 'foglio_id';
+        $direction = strtolower((string) ($query['direction'] ?? 'asc')) === 'desc' ? 'DESC' : 'ASC';
+        $total = (clone $builder)->countAllResults(false);
+        $rows = $builder->orderBy('foglio_giorno.' . $sort, $direction)
+            ->limit($perPage, ($page - 1) * $perPage)
+            ->get()
+            ->getResult();
+        $pageCount = max(1, (int) ceil($total / $perPage));
+
+        return [
+            'rows' => $rows,
+            'meta' => [
+                'page' => $page,
+                'perPage' => $perPage,
+                'total' => $total,
+                'pageCount' => $pageCount,
+            ],
+            'links' => [
+                'self' => $this->apiLink($query, $page),
+                'next' => $page < $pageCount ? $this->apiLink($query, $page + 1) : null,
+                'prev' => $page > 1 ? $this->apiLink($query, $page - 1) : null,
+            ],
+        ];
+    }
+
+    private function apiLink(array $query, int $page): string
+    {
+        $query['page'] = $page;
+        return current_url() . '?' . http_build_query($query);
+    }
     /** Restituisce le opzioni della relazione preno_id. */
     public function getAgendaPrenoIdOptions(): array
     {
@@ -409,7 +657,7 @@ final class FoglioGiornoModel extends Model
             ->getResult();
     }
     /** Restituisce le opzioni della relazione preno_agenzia. */
-    public function getAgenziePrenoAgenziumOptions(): array
+    public function getAgenziePrenoAgenziaOptions(): array
     {
         return $this->db->table('agenzie')
             ->select(['agenzia_id', 'agenzia_tipologia'])
@@ -439,10 +687,46 @@ final class FoglioGiornoModel extends Model
     {
         return [
             'preno_id' => $this->toOptions($this->getAgendaPrenoIdOptions(), 'preno_id', 'preno_arr_ore'),
-            'preno_agenzia' => $this->toOptions($this->getAgenziePrenoAgenziumOptions(), 'agenzia_id', 'agenzia_tipologia'),
+            'preno_agenzia' => $this->toOptions($this->getAgenziePrenoAgenziaOptions(), 'agenzia_id', 'agenzia_tipologia'),
             'camera_id' => $this->toOptions($this->getCamereCameraIdOptions(), 'camera_id', 'tipologia_camera'),
             'tipologia_id' => $this->toOptions($this->getTipologiaCameraTipologiaIdOptions(), 'tipologia_id', 'nome_tipologia'),
         ];
+    }
+
+    /**
+     * Ricerca server-side delle opzioni per relazioni grandi.
+     * Tabella, chiave e campo label arrivano solo dalla whitelist generata.
+     *
+     * @return list<array{id:string,text:string}>
+     */
+    public function searchRelationOptions(string $field, string $query, int $limit = 20): array
+    {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return [];
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $limit = max(1, min(100, $limit));
+        $builder = $this->db->table((string) $definition['table'])
+            ->select([(string) $definition['key'], (string) $definition['label']])
+            ->orderBy((string) $definition['label'], 'ASC')
+            ->limit($limit);
+
+        $query = trim($query);
+        if ($query !== '') {
+            $builder->like((string) $definition['label'], $query, 'after');
+        }
+
+        $rows = $builder->get()->getResultArray();
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = [
+                'id' => (string) ($row[(string) $definition['key']] ?? ''),
+                'text' => (string) ($row[(string) $definition['label']] ?? ''),
+            ];
+        }
+
+        return $result;
     }
 
     private function toOptions(array $rows, string $key, string $label): array

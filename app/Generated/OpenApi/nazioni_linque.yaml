@@ -1,0 +1,241 @@
+openapi: 3.0.3
+info:
+  title: 'nazioni_linque API'
+  version: 1.0.0
+paths:
+  /api/v1/nazioni_linque:
+    get:
+      summary: 'Elenco nazioni_linque'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[isoKey]'
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['isoKey'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NazioniLinqueListResponse'
+    post:
+      summary: Crea record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NazioniLinqueCreate'
+      responses:
+        '201':
+          description: Record creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NazioniLinqueCreatedResponse'
+        '422': { description: Errore di validazione }
+  /api/v1/nazioni_linque/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Dettaglio record
+      responses:
+        '200':
+          description: Record trovato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/NazioniLinqueRead'
+        '404': { description: Record non trovato }
+    put:
+      summary: Aggiornamento completo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NazioniLinqueUpdate'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    patch:
+      summary: Aggiornamento parziale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NazioniLinquePatch'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    delete:
+      summary: Elimina record
+      responses:
+        '204': { description: Record eliminato }
+components:
+  schemas:
+    NazioniLinqueRead:
+      type: object
+      properties:
+        'isoKey':
+          type: string
+          maxLength: 5
+        'iso3':
+          type: string
+          maxLength: 5
+        'nazioni_EN':
+          type: string
+          maxLength: 100
+        'nazioni_ES':
+          type: string
+          maxLength: 100
+        'nazioni_FR':
+          type: string
+          maxLength: 100
+        'nazioni_DE':
+          type: string
+          maxLength: 100
+        'nazioni_IT':
+          type: string
+          maxLength: 100
+        'lg':
+          type: string
+          maxLength: 4
+    NazioniLinqueCreate:
+      type: object
+      required:
+        - 'isoKey'
+        - 'iso3'
+        - 'nazioni_EN'
+        - 'nazioni_ES'
+        - 'nazioni_FR'
+        - 'nazioni_DE'
+        - 'nazioni_IT'
+        - 'lg'
+      properties:
+        'isoKey':
+          type: string
+          maxLength: 5
+        'iso3':
+          type: string
+          maxLength: 5
+        'nazioni_EN':
+          type: string
+          maxLength: 100
+        'nazioni_ES':
+          type: string
+          maxLength: 100
+        'nazioni_FR':
+          type: string
+          maxLength: 100
+        'nazioni_DE':
+          type: string
+          maxLength: 100
+        'nazioni_IT':
+          type: string
+          maxLength: 100
+        'lg':
+          type: string
+          maxLength: 4
+    NazioniLinqueUpdate:
+      type: object
+      required:
+        - 'isoKey'
+        - 'iso3'
+        - 'nazioni_EN'
+        - 'nazioni_ES'
+        - 'nazioni_FR'
+        - 'nazioni_DE'
+        - 'nazioni_IT'
+        - 'lg'
+      properties:
+        'isoKey':
+          type: string
+          maxLength: 5
+        'iso3':
+          type: string
+          maxLength: 5
+        'nazioni_EN':
+          type: string
+          maxLength: 100
+        'nazioni_ES':
+          type: string
+          maxLength: 100
+        'nazioni_FR':
+          type: string
+          maxLength: 100
+        'nazioni_DE':
+          type: string
+          maxLength: 100
+        'nazioni_IT':
+          type: string
+          maxLength: 100
+        'lg':
+          type: string
+          maxLength: 4
+    NazioniLinquePatch:
+      type: object
+      properties:
+        'isoKey':
+          type: string
+          maxLength: 5
+        'iso3':
+          type: string
+          maxLength: 5
+        'nazioni_EN':
+          type: string
+          maxLength: 100
+        'nazioni_ES':
+          type: string
+          maxLength: 100
+        'nazioni_FR':
+          type: string
+          maxLength: 100
+        'nazioni_DE':
+          type: string
+          maxLength: 100
+        'nazioni_IT':
+          type: string
+          maxLength: 100
+        'lg':
+          type: string
+          maxLength: 4
+    NazioniLinqueListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/NazioniLinqueRead'
+        meta: { type: object }
+        links: { type: object }
+    NazioniLinqueCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            'isoKey':
+              type: string
+              maxLength: 5
+        meta: { type: object }
+        links: { type: object }

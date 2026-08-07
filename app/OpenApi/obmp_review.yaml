@@ -1,0 +1,602 @@
+openapi: 3.0.3
+info:
+  title: 'obmp_review API'
+  version: 1.0.0
+paths:
+  /api/v1/obmp_review:
+    get:
+      summary: 'Elenco obmp_review'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[review_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[hotel_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[preno_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[conto_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[postazione_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['review_id', 'hotel_id', 'preno_id', 'conto_id', 'postazione_id'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObmpReviewListResponse'
+    post:
+      summary: Crea record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObmpReviewCreate'
+      responses:
+        '201':
+          description: Record creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObmpReviewCreatedResponse'
+        '422': { description: Errore di validazione }
+  /api/v1/obmp_review/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Dettaglio record
+      responses:
+        '200':
+          description: Record trovato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ObmpReviewRead'
+        '404': { description: Record non trovato }
+    put:
+      summary: Aggiornamento completo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObmpReviewUpdate'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    patch:
+      summary: Aggiornamento parziale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObmpReviewPatch'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    delete:
+      summary: Elimina record
+      responses:
+        '204': { description: Record eliminato }
+components:
+  schemas:
+    ObmpReviewRead:
+      type: object
+      properties:
+        'review_id':
+          type: integer
+          format: int32
+        'hotel_id':
+          type: integer
+          format: int32
+          nullable: true
+        'preno_id':
+          type: integer
+          format: int32
+          nullable: true
+        'conto_id':
+          type: integer
+          format: int32
+        'postazione_id':
+          type: integer
+          format: int32
+          nullable: true
+        'camera_numero':
+          type: integer
+          format: int32
+          nullable: true
+        'nome':
+          type: string
+          nullable: true
+          maxLength: 250
+        'stato':
+          type: string
+          nullable: true
+          maxLength: 250
+        'user_type':
+          type: integer
+          format: int32
+          nullable: true
+        'pulizia_camera':
+          type: integer
+          format: int32
+          nullable: true
+        'accoglienza':
+          type: integer
+          format: int32
+          nullable: true
+        'rumore_camere':
+          type: integer
+          format: int32
+          nullable: true
+        'spazio_camera':
+          type: integer
+          format: int32
+          nullable: true
+        'spazi_comuni':
+          type: integer
+          format: int32
+          nullable: true
+        'competenza_impiegati':
+          type: integer
+          format: int32
+          nullable: true
+        'qualita_servizi':
+          type: integer
+          format: int32
+          nullable: true
+        'dintorni':
+          type: integer
+          format: int32
+          nullable: true
+        'colazione':
+          type: integer
+          format: int32
+          nullable: true
+        'tariffa':
+          type: integer
+          format: int32
+          nullable: true
+        'servizi_offerti':
+          type: integer
+          format: int32
+          nullable: true
+        'foto':
+          type: integer
+          format: int32
+          nullable: true
+        'indicazione_mappa':
+          type: integer
+          format: int32
+          nullable: true
+        'giudizio_totale':
+          type: integer
+          format: int32
+          nullable: true
+        'prezzo_qualita':
+          type: integer
+          format: int32
+          nullable: true
+        'commento_tex':
+          type: string
+          nullable: true
+          maxLength: 16777215
+        'risposta':
+          type: string
+          nullable: true
+          maxLength: 16777215
+        'raccomandi':
+          type: integer
+          format: int32
+          nullable: true
+        'ip_review':
+          type: string
+          nullable: true
+          maxLength: 250
+        'data_review':
+          type: string
+          format: date
+          nullable: true
+        'conti_trattamento_sog':
+          type: string
+          nullable: true
+    ObmpReviewCreate:
+      type: object
+      required:
+        - 'conto_id'
+      properties:
+        'hotel_id':
+          type: integer
+          format: int32
+          nullable: true
+        'preno_id':
+          type: integer
+          format: int32
+          nullable: true
+        'conto_id':
+          type: integer
+          format: int32
+        'postazione_id':
+          type: integer
+          format: int32
+          nullable: true
+        'camera_numero':
+          type: integer
+          format: int32
+          nullable: true
+        'nome':
+          type: string
+          nullable: true
+          maxLength: 250
+        'stato':
+          type: string
+          nullable: true
+          maxLength: 250
+        'user_type':
+          type: integer
+          format: int32
+          nullable: true
+        'pulizia_camera':
+          type: integer
+          format: int32
+          nullable: true
+        'accoglienza':
+          type: integer
+          format: int32
+          nullable: true
+        'rumore_camere':
+          type: integer
+          format: int32
+          nullable: true
+        'spazio_camera':
+          type: integer
+          format: int32
+          nullable: true
+        'spazi_comuni':
+          type: integer
+          format: int32
+          nullable: true
+        'competenza_impiegati':
+          type: integer
+          format: int32
+          nullable: true
+        'qualita_servizi':
+          type: integer
+          format: int32
+          nullable: true
+        'dintorni':
+          type: integer
+          format: int32
+          nullable: true
+        'colazione':
+          type: integer
+          format: int32
+          nullable: true
+        'tariffa':
+          type: integer
+          format: int32
+          nullable: true
+        'servizi_offerti':
+          type: integer
+          format: int32
+          nullable: true
+        'foto':
+          type: integer
+          format: int32
+          nullable: true
+        'indicazione_mappa':
+          type: integer
+          format: int32
+          nullable: true
+        'giudizio_totale':
+          type: integer
+          format: int32
+          nullable: true
+        'prezzo_qualita':
+          type: integer
+          format: int32
+          nullable: true
+        'commento_tex':
+          type: string
+          nullable: true
+          maxLength: 16777215
+        'risposta':
+          type: string
+          nullable: true
+          maxLength: 16777215
+        'raccomandi':
+          type: integer
+          format: int32
+          nullable: true
+        'ip_review':
+          type: string
+          nullable: true
+          maxLength: 250
+        'data_review':
+          type: string
+          format: date
+          nullable: true
+    ObmpReviewUpdate:
+      type: object
+      required:
+        - 'conto_id'
+      properties:
+        'hotel_id':
+          type: integer
+          format: int32
+          nullable: true
+        'preno_id':
+          type: integer
+          format: int32
+          nullable: true
+        'conto_id':
+          type: integer
+          format: int32
+        'postazione_id':
+          type: integer
+          format: int32
+          nullable: true
+        'camera_numero':
+          type: integer
+          format: int32
+          nullable: true
+        'nome':
+          type: string
+          nullable: true
+          maxLength: 250
+        'stato':
+          type: string
+          nullable: true
+          maxLength: 250
+        'user_type':
+          type: integer
+          format: int32
+          nullable: true
+        'pulizia_camera':
+          type: integer
+          format: int32
+          nullable: true
+        'accoglienza':
+          type: integer
+          format: int32
+          nullable: true
+        'rumore_camere':
+          type: integer
+          format: int32
+          nullable: true
+        'spazio_camera':
+          type: integer
+          format: int32
+          nullable: true
+        'spazi_comuni':
+          type: integer
+          format: int32
+          nullable: true
+        'competenza_impiegati':
+          type: integer
+          format: int32
+          nullable: true
+        'qualita_servizi':
+          type: integer
+          format: int32
+          nullable: true
+        'dintorni':
+          type: integer
+          format: int32
+          nullable: true
+        'colazione':
+          type: integer
+          format: int32
+          nullable: true
+        'tariffa':
+          type: integer
+          format: int32
+          nullable: true
+        'servizi_offerti':
+          type: integer
+          format: int32
+          nullable: true
+        'foto':
+          type: integer
+          format: int32
+          nullable: true
+        'indicazione_mappa':
+          type: integer
+          format: int32
+          nullable: true
+        'giudizio_totale':
+          type: integer
+          format: int32
+          nullable: true
+        'prezzo_qualita':
+          type: integer
+          format: int32
+          nullable: true
+        'commento_tex':
+          type: string
+          nullable: true
+          maxLength: 16777215
+        'risposta':
+          type: string
+          nullable: true
+          maxLength: 16777215
+        'raccomandi':
+          type: integer
+          format: int32
+          nullable: true
+        'ip_review':
+          type: string
+          nullable: true
+          maxLength: 250
+        'data_review':
+          type: string
+          format: date
+          nullable: true
+    ObmpReviewPatch:
+      type: object
+      properties:
+        'hotel_id':
+          type: integer
+          format: int32
+          nullable: true
+        'preno_id':
+          type: integer
+          format: int32
+          nullable: true
+        'conto_id':
+          type: integer
+          format: int32
+        'postazione_id':
+          type: integer
+          format: int32
+          nullable: true
+        'camera_numero':
+          type: integer
+          format: int32
+          nullable: true
+        'nome':
+          type: string
+          nullable: true
+          maxLength: 250
+        'stato':
+          type: string
+          nullable: true
+          maxLength: 250
+        'user_type':
+          type: integer
+          format: int32
+          nullable: true
+        'pulizia_camera':
+          type: integer
+          format: int32
+          nullable: true
+        'accoglienza':
+          type: integer
+          format: int32
+          nullable: true
+        'rumore_camere':
+          type: integer
+          format: int32
+          nullable: true
+        'spazio_camera':
+          type: integer
+          format: int32
+          nullable: true
+        'spazi_comuni':
+          type: integer
+          format: int32
+          nullable: true
+        'competenza_impiegati':
+          type: integer
+          format: int32
+          nullable: true
+        'qualita_servizi':
+          type: integer
+          format: int32
+          nullable: true
+        'dintorni':
+          type: integer
+          format: int32
+          nullable: true
+        'colazione':
+          type: integer
+          format: int32
+          nullable: true
+        'tariffa':
+          type: integer
+          format: int32
+          nullable: true
+        'servizi_offerti':
+          type: integer
+          format: int32
+          nullable: true
+        'foto':
+          type: integer
+          format: int32
+          nullable: true
+        'indicazione_mappa':
+          type: integer
+          format: int32
+          nullable: true
+        'giudizio_totale':
+          type: integer
+          format: int32
+          nullable: true
+        'prezzo_qualita':
+          type: integer
+          format: int32
+          nullable: true
+        'commento_tex':
+          type: string
+          nullable: true
+          maxLength: 16777215
+        'risposta':
+          type: string
+          nullable: true
+          maxLength: 16777215
+        'raccomandi':
+          type: integer
+          format: int32
+          nullable: true
+        'ip_review':
+          type: string
+          nullable: true
+          maxLength: 250
+        'data_review':
+          type: string
+          format: date
+          nullable: true
+    ObmpReviewListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ObmpReviewRead'
+        meta: { type: object }
+        links: { type: object }
+    ObmpReviewCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            'review_id':
+              type: integer
+              format: int32
+        meta: { type: object }
+        links: { type: object }

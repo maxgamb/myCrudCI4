@@ -11,15 +11,14 @@ final class Naming
         return str_replace(' ', '', ucwords(strtolower($value)));
     }
 
-    public static function singularStudly(string $table): string
+    /**
+     * Converte il nome fisico della tabella in StudlyCase senza tentare
+     * singularizzazioni linguistiche. Il database resta la fonte del nome:
+     * clienti -> Clienti, conti -> Conti, foglio_giorno -> FoglioGiorno.
+     */
+    public static function tableClass(string $table): string
     {
-        helper('inflector');
-
-        $singular = function_exists('singular')
-            ? singular($table)
-            : rtrim($table, 's');
-
-        return self::studly($singular);
+        return self::studly($table);
     }
 
     public static function human(string $value): string

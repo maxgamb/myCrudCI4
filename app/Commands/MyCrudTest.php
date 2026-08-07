@@ -13,7 +13,7 @@ final class MyCrudTest extends BaseCommand
 {
     protected $group       = 'myCrudGpt';
     protected $name        = 'mycrud:test';
-    protected $description = 'Genera e verifica un CRUD 2.7.3 su una tabella reale.';
+    protected $description = 'Genera e verifica un CRUD 2.7.4 su una tabella reale.';
     protected $usage       = 'mycrud:test <table> [--no-force] [--json] [--report path]';
 
     protected $arguments = [

@@ -74,6 +74,10 @@ final class RelationResolver
                     $parentColumn
                 );
 
+                $parentInfo = $tables[$parentTable] ?? [];
+                $rowEstimate = max(0, (int) ($parentInfo['rowEstimate'] ?? 0));
+                $ajaxThreshold = max(1, (int) ($this->config->relationAjaxThreshold ?? 5000));
+
                 $belongsTo[$childColumn] = [
                     'type' => 'belongsTo',
                     'field' => $childColumn,
@@ -82,6 +86,10 @@ final class RelationResolver
                     'parentKey' => $parentColumn,
                     'displayField' => $displayField,
                     'alias' => $parentTable . '_' . $displayField,
+                    'rowEstimate' => $rowEstimate,
+                    // Lato generatore: proponiamo AJAX soltanto per relazioni
+                    // grandi; lo sviluppatore può cambiare modalità nel Builder.
+                    'optionMode' => $rowEstimate >= $ajaxThreshold ? 'ajax' : 'select',
                 ];
             }
 

@@ -170,9 +170,6 @@
                             <th class="w-25"><?= esc(lang('Agenda.data_opzione')) ?></th>
                             <td><?= esc($row->data_opzione ?? '') ?></td>
                         </tr>                        <tr>
-                            <th class="w-25"><?= esc(lang('Agenda.cancella_data_record')) ?></th>
-                            <td><?= esc($row->cancella_data_record ?? '') ?></td>
-                        </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Agenda.cancella_user')) ?></th>
                             <td><?= esc($row->cancella_user ?? '') ?></td>
                         </tr>                        <tr>

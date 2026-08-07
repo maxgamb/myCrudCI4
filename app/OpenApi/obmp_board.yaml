@@ -1,0 +1,208 @@
+openapi: 3.0.3
+info:
+  title: 'obmp_board API'
+  version: 1.0.0
+paths:
+  /api/v1/obmp_board:
+    get:
+      summary: 'Elenco obmp_board'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[obmp_board_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[obmp_board_title]'
+          in: query
+          schema:
+            type: string
+        - name: 'filter[obmp_board_cod]'
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['obmp_board_id', 'obmp_board_title', 'obmp_board_cod'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObmpBoardListResponse'
+    post:
+      summary: Crea record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObmpBoardCreate'
+      responses:
+        '201':
+          description: Record creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObmpBoardCreatedResponse'
+        '422': { description: Errore di validazione }
+  /api/v1/obmp_board/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Dettaglio record
+      responses:
+        '200':
+          description: Record trovato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ObmpBoardRead'
+        '404': { description: Record non trovato }
+    put:
+      summary: Aggiornamento completo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObmpBoardUpdate'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    patch:
+      summary: Aggiornamento parziale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObmpBoardPatch'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    delete:
+      summary: Elimina record
+      responses:
+        '204': { description: Record eliminato }
+components:
+  schemas:
+    ObmpBoardRead:
+      type: object
+      properties:
+        'obmp_board_id':
+          type: integer
+          format: int32
+        'obmp_board_title':
+          type: string
+          maxLength: 45
+        'obmp_board':
+          type: string
+          maxLength: 255
+        'obmp_board_cod':
+          type: string
+          maxLength: 6
+        'board_lg':
+          type: string
+          maxLength: 4
+    ObmpBoardCreate:
+      type: object
+      required:
+        - 'obmp_board_id'
+        - 'obmp_board_title'
+        - 'obmp_board'
+        - 'obmp_board_cod'
+        - 'board_lg'
+      properties:
+        'obmp_board_id':
+          type: integer
+          format: int32
+        'obmp_board_title':
+          type: string
+          maxLength: 45
+        'obmp_board':
+          type: string
+          maxLength: 255
+        'obmp_board_cod':
+          type: string
+          maxLength: 6
+        'board_lg':
+          type: string
+          maxLength: 4
+    ObmpBoardUpdate:
+      type: object
+      required:
+        - 'obmp_board_id'
+        - 'obmp_board_title'
+        - 'obmp_board'
+        - 'obmp_board_cod'
+        - 'board_lg'
+      properties:
+        'obmp_board_id':
+          type: integer
+          format: int32
+        'obmp_board_title':
+          type: string
+          maxLength: 45
+        'obmp_board':
+          type: string
+          maxLength: 255
+        'obmp_board_cod':
+          type: string
+          maxLength: 6
+        'board_lg':
+          type: string
+          maxLength: 4
+    ObmpBoardPatch:
+      type: object
+      properties:
+        'obmp_board_id':
+          type: integer
+          format: int32
+        'obmp_board_title':
+          type: string
+          maxLength: 45
+        'obmp_board':
+          type: string
+          maxLength: 255
+        'obmp_board_cod':
+          type: string
+          maxLength: 6
+        'board_lg':
+          type: string
+          maxLength: 4
+    ObmpBoardListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ObmpBoardRead'
+        meta: { type: object }
+        links: { type: object }
+    ObmpBoardCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            'obmp_board_id':
+              type: integer
+              format: int32
+        meta: { type: object }
+        links: { type: object }

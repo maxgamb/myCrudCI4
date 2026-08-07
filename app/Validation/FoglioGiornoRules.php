@@ -9,12 +9,12 @@ final class FoglioGiornoRules
     public static function createRules(): array
     {
         return array (
-  'hotel_id' => 'required|integer',
+  'hotel_id' => 'permit_empty|integer',
   'conto_id' => 'permit_empty|integer',
-  'camera_id' => 'required|integer|is_not_unique[camere.camera_id]',
+  'camera_id' => 'permit_empty|integer|is_not_unique[camere.camera_id]',
   'preno_id' => 'permit_empty|integer|is_not_unique[agenda.preno_id]',
   'tipologia_id' => 'required|integer|is_not_unique[tipologia_camera.tipologia_id]',
-  'numero_camera' => 'required|integer',
+  'numero_camera' => 'permit_empty|integer',
   'foglio_prezzo_camera' => 'permit_empty|decimal',
   'date_foglio' => 'permit_empty|max_length[100]',
   'nome_cliente' => 'permit_empty|max_length[100]',
@@ -30,12 +30,12 @@ final class FoglioGiornoRules
     public static function updateRules(int|string $id): array
     {
         $rules = array (
-  'hotel_id' => 'required|integer',
+  'hotel_id' => 'permit_empty|integer',
   'conto_id' => 'permit_empty|integer',
-  'camera_id' => 'required|integer|is_not_unique[camere.camera_id]',
+  'camera_id' => 'permit_empty|integer|is_not_unique[camere.camera_id]',
   'preno_id' => 'permit_empty|integer|is_not_unique[agenda.preno_id]',
   'tipologia_id' => 'required|integer|is_not_unique[tipologia_camera.tipologia_id]',
-  'numero_camera' => 'required|integer',
+  'numero_camera' => 'permit_empty|integer',
   'foglio_prezzo_camera' => 'permit_empty|decimal',
   'date_foglio' => 'permit_empty|max_length[100]',
   'nome_cliente' => 'permit_empty|max_length[100]',

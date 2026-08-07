@@ -1,0 +1,87 @@
+<?= $this->extend('layouts/default_app') ?>
+<?= $this->section('content') ?>
+
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h1 class="h4 mb-0"><i class="bi bi-eye"></i> Dettaglio record</h1>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered table-striped align-middle">
+                    <tbody>
+                        <tr>
+                            <th class="w-25"><?= esc(lang('ObmpRestrictions.obmp_restriction_id')) ?></th>
+                            <td><?= esc($row->obmp_restriction_id ?? '') ?></td>
+                        </tr>                        <tr>
+                            <th class="w-25"><?= esc(lang('ObmpRestrictions.hotel_id')) ?></th>
+                            <td><?= esc($row->hotel_id ?? '') ?></td>
+                        </tr>                        <tr>
+                            <th class="w-25"><?= esc(lang('ObmpRestrictions.restr_nama')) ?></th>
+                            <td><?= esc($row->restr_nama ?? '') ?></td>
+                        </tr>                        <tr>
+                            <th class="w-25"><?= esc(lang('ObmpRestrictions.restr_min_stay')) ?></th>
+                            <td><?= esc($row->restr_min_stay ?? '') ?></td>
+                        </tr>                        <tr>
+                            <th class="w-25"><?= esc(lang('ObmpRestrictions.restr_max_stay')) ?></th>
+                            <td><?= esc($row->restr_max_stay ?? '') ?></td>
+                        </tr>                        <tr>
+                            <th class="w-25"><?= esc(lang('ObmpRestrictions.restr_min_bw')) ?></th>
+                            <td><?= esc($row->restr_min_bw ?? '') ?></td>
+                        </tr>                        <tr>
+                            <th class="w-25"><?= esc(lang('ObmpRestrictions.restr_max_bw')) ?></th>
+                            <td><?= esc($row->restr_max_bw ?? '') ?></td>
+                        </tr>                    </tbody>
+                </table>
+            </div>
+            <a href="<?= site_url('obmp_restrictions') ?>" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Torna alla lista
+            </a>
+        </div>
+    </div>
+
+<div class="card shadow-sm mt-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <strong><i class="bi bi-diagram-3"></i> Obmp Rates</strong>
+            <span class="badge bg-secondary"><?= (int) ($children['obmp_rates__obmp_restriction_id']['count'] ?? 0) ?><?= !empty($children['obmp_rates__obmp_restriction_id']['hasMore']) ? '+' : '' ?></span>
+        </div>
+        <div class="card-body">
+            <?php $relatedRows = $children['obmp_rates__obmp_restriction_id']['rows'] ?? []; ?>
+            <?php if (empty($relatedRows)): ?>
+                <div class="alert alert-light border mb-0">Nessun record collegato.</div>
+            <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped table-hover align-middle">
+                        <thead><tr>
+                                <th><?= esc('Obmp Rate Id') ?></th>
+                                <th><?= esc('Obmp Cm Rooms Id') ?></th>
+                                <th><?= esc('Hotel Id') ?></th>
+                                <th><?= esc('Obmp Board Cod') ?></th>
+                                <th><?= esc('Obmp Cancellation Cod') ?></th>
+                                <th><?= esc('Obmp Payment Cod') ?></th>
+                            <th>Azioni</th>
+                        </tr></thead>
+                        <tbody>
+                            <?php foreach ($relatedRows as $child): ?>
+                                <tr>
+                                <td><?= esc($child->obmp_rate_id ?? '') ?></td>
+                                <td><?= esc($child->obmp_cm_rooms_id ?? '') ?></td>
+                                <td><?= esc($child->hotel_id ?? '') ?></td>
+                                <td><?= esc($child->obmp_board_cod ?? '') ?></td>
+                                <td><?= esc($child->obmp_cancellation_cod ?? '') ?></td>
+                                <td><?= esc($child->obmp_payment_cod ?? '') ?></td>
+                                    <td><a href="<?= site_url('obmp_rates/view/' . ($child->obmp_rate_id ?? '')) ?>" class="btn btn-sm btn-outline-info"><i class="bi bi-eye"></i></a></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <?php if (!empty($children['obmp_rates__obmp_restriction_id']['hasMore'])): ?>
+                    <div class="small text-muted">Visualizzati i primi 20 record.</div>
+                <?php endif; ?>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<?= $this->endSection() ?>

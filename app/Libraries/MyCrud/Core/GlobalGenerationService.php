@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Libraries\MyCrud\Core;
 
+use App\Libraries\MyCrud\Config\CrudConfigRepository;
 use Config\MyCrud;
 use InvalidArgumentException;
 use Throwable;
@@ -67,6 +68,13 @@ final class GlobalGenerationService
                 $config['architecture'] = $architecture;
                 $config['features'] = $this->featuresForArchitecture($architecture, $config);
 
+                $configPath = null;
+                if (!$dryRun) {
+                    // 2.8: ogni CRUD realmente generato dalla Quick globale
+                    // diventa riproducibile tramite una config versionabile.
+                    $configPath = (new CrudConfigRepository())->save($table, $config);
+                }
+
                 $result = $dryRun
                     ? $this->plan($config, $force)
                     : $generator->generate($config, $force);
@@ -83,6 +91,7 @@ final class GlobalGenerationService
                     'status'  => $dryRun ? 'planned' : 'ok',
                     'summary' => $tableSummary,
                     'files'   => $files,
+                    'configPath' => $configPath,
                 ];
             } catch (Throwable $e) {
                 $report['summary']['tablesFailed']++;

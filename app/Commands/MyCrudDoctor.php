@@ -2,28 +2,53 @@
 
 namespace App\Commands;
 
+use App\Libraries\MyCrud\Diagnostics\CrudBenchmarkRunner;
 use App\Libraries\MyCrud\Diagnostics\DiagnosticReport;
 use App\Libraries\MyCrud\Diagnostics\DiagnosticResult;
+use App\Libraries\MyCrud\Diagnostics\ExplainAnalyzer;
+use App\Libraries\MyCrud\Diagnostics\IndexAnalyzer;
 use App\Libraries\MyCrud\Diagnostics\ProjectDiagnostics;
+use App\Libraries\MyCrud\Diagnostics\PersistentConfigAnalyzer;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use JsonException;
+use Throwable;
 
+/**
+ * Diagnostica generale o di una singola tabella.
+ * Senza argomenti controlla myCrudGpt; con una tabella analizza schema, indici,
+ * relazioni e, su richiesta, piano EXPLAIN e benchmark non distruttivo.
+ */
 final class MyCrudDoctor extends BaseCommand
 {
     protected $group       = 'myCrudGpt';
     protected $name        = 'mycrud:doctor';
-    protected $description = 'Controlla installazione, template e file generati di myCrudGpt.';
-    protected $usage       = 'mycrud:doctor [--json] [--report path]';
+    protected $description = 'Controlla progetto oppure schema/indici/performance di una tabella.';
+    protected $usage       = 'mycrud:doctor [table] [--explain] [--benchmark] [--json] [--report path]';
+
+    protected $arguments = [
+        'table' => 'Tabella opzionale da analizzare.',
+    ];
 
     protected $options = [
-        '--json'   => 'Stampa il report in formato JSON.',
-        '--report' => 'Salva anche il report JSON nel percorso indicato.',
+        '--explain'   => 'Esegue EXPLAIN su query rappresentative della lista.',
+        '--benchmark' => 'Esegue benchmark sintetico e non distruttivo.',
+        '--json'      => 'Stampa il report in formato JSON.',
+        '--report'    => 'Salva anche il report JSON nel percorso indicato.',
     ];
 
     public function run(array $params)
     {
-        $report = (new ProjectDiagnostics())->run();
+        $table = trim((string) ($params[0] ?? ''));
+
+        try {
+            $report = $table === ''
+                ? (new ProjectDiagnostics())->run()
+                : $this->tableReport($table);
+        } catch (Throwable $exception) {
+            CLI::error($exception->getMessage());
+            return EXIT_ERROR;
+        }
 
         $reportPath = CLI::getOption('report');
         if (is_string($reportPath) && $reportPath !== '') {
@@ -38,15 +63,39 @@ final class MyCrudDoctor extends BaseCommand
                 return EXIT_ERROR;
             }
         } else {
-            $this->printReport($report);
+            $this->printReport($report, $table);
         }
 
         return $report->hasFailures() ? EXIT_ERROR : EXIT_SUCCESS;
     }
 
-    private function printReport(DiagnosticReport $report): void
+    private function tableReport(string $table): DiagnosticReport
     {
-        CLI::write('myCrudGpt Doctor', 'yellow');
+        $report = new DiagnosticReport();
+        $report->addMany((new PersistentConfigAnalyzer())->analyze($table));
+        $report->addMany((new IndexAnalyzer())->analyze($table));
+
+        if ((bool) CLI::getOption('explain')) {
+            $report->addMany((new ExplainAnalyzer())->analyze(
+                $table,
+                (int) (config('MyCrud')->benchmarkPerPage ?? 50)
+            ));
+        }
+
+        if ((bool) CLI::getOption('benchmark')) {
+            $report->addMany((new CrudBenchmarkRunner())->run(
+                $table,
+                (int) (config('MyCrud')->benchmarkIterations ?? 5),
+                (int) (config('MyCrud')->benchmarkPerPage ?? 50)
+            ));
+        }
+
+        return $report;
+    }
+
+    private function printReport(DiagnosticReport $report, string $table = ''): void
+    {
+        CLI::write($table === '' ? 'myCrudGpt Doctor' : 'myCrudGpt Doctor: ' . $table, 'yellow');
         CLI::newLine();
 
         foreach ($report->results() as $result) {
@@ -58,10 +107,6 @@ final class MyCrudDoctor extends BaseCommand
             };
 
             CLI::write($symbol . ' ' . $result->name . ': ' . $result->message, $color);
-
-            if ($result->status === DiagnosticResult::FAIL && $result->context !== []) {
-                CLI::write('  ' . json_encode($result->context, JSON_UNESCAPED_SLASHES));
-            }
         }
 
         $summary = $report->summary();

@@ -1,0 +1,299 @@
+openapi: 3.0.3
+info:
+  title: 'note_utente API'
+  version: 1.0.0
+paths:
+  /api/v1/note_utente:
+    get:
+      summary: 'Elenco note_utente'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[note_utente_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[Utente_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['note_utente_id', 'Utente_id'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteUtenteListResponse'
+    post:
+      summary: Crea record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteUtenteCreate'
+      responses:
+        '201':
+          description: Record creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteUtenteCreatedResponse'
+        '422': { description: Errore di validazione }
+  /api/v1/note_utente/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Dettaglio record
+      responses:
+        '200':
+          description: Record trovato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/NoteUtenteRead'
+        '404': { description: Record non trovato }
+    put:
+      summary: Aggiornamento completo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteUtenteUpdate'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    patch:
+      summary: Aggiornamento parziale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteUtentePatch'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    delete:
+      summary: Elimina record
+      responses:
+        '204': { description: Record eliminato }
+components:
+  schemas:
+    NoteUtenteRead:
+      type: object
+      properties:
+        'note_utente_id':
+          type: integer
+          format: int32
+        'note_utente_rispondi_id':
+          type: integer
+          format: int32
+          nullable: true
+        'Utente_id':
+          type: integer
+          format: int32
+        'hotel_id':
+          type: integer
+          format: int32
+        'reparto':
+          type: integer
+          format: int32
+        'titolo':
+          type: string
+          nullable: true
+          maxLength: 250
+        'note_utente_per':
+          type: integer
+          format: int32
+        'note_utente_stato':
+          type: integer
+          format: int32
+        'note_utente_dal':
+          type: string
+          format: date
+        'note_utente_al':
+          type: string
+          format: date
+        'note_utente_data':
+          type: string
+          format: date
+        'utenti_Nome_Utente':
+          type: string
+          nullable: true
+    NoteUtenteCreate:
+      type: object
+      required:
+        - 'Utente_id'
+        - 'hotel_id'
+        - 'reparto'
+        - 'note_utente_tex'
+        - 'note_utente_per'
+        - 'note_utente_stato'
+        - 'note_utente_dal'
+        - 'note_utente_al'
+        - 'note_utente_data'
+      properties:
+        'note_utente_rispondi_id':
+          type: integer
+          format: int32
+          nullable: true
+        'Utente_id':
+          type: integer
+          format: int32
+        'hotel_id':
+          type: integer
+          format: int32
+        'reparto':
+          type: integer
+          format: int32
+        'titolo':
+          type: string
+          nullable: true
+          maxLength: 250
+        'note_utente_tex':
+          type: string
+          format: byte
+          maxLength: 16777215
+        'note_utente_per':
+          type: integer
+          format: int32
+        'note_utente_stato':
+          type: integer
+          format: int32
+        'note_utente_dal':
+          type: string
+          format: date
+        'note_utente_al':
+          type: string
+          format: date
+        'note_utente_data':
+          type: string
+          format: date
+    NoteUtenteUpdate:
+      type: object
+      required:
+        - 'Utente_id'
+        - 'hotel_id'
+        - 'reparto'
+        - 'note_utente_tex'
+        - 'note_utente_per'
+        - 'note_utente_stato'
+        - 'note_utente_dal'
+        - 'note_utente_al'
+        - 'note_utente_data'
+      properties:
+        'note_utente_rispondi_id':
+          type: integer
+          format: int32
+          nullable: true
+        'Utente_id':
+          type: integer
+          format: int32
+        'hotel_id':
+          type: integer
+          format: int32
+        'reparto':
+          type: integer
+          format: int32
+        'titolo':
+          type: string
+          nullable: true
+          maxLength: 250
+        'note_utente_tex':
+          type: string
+          format: byte
+          maxLength: 16777215
+        'note_utente_per':
+          type: integer
+          format: int32
+        'note_utente_stato':
+          type: integer
+          format: int32
+        'note_utente_dal':
+          type: string
+          format: date
+        'note_utente_al':
+          type: string
+          format: date
+        'note_utente_data':
+          type: string
+          format: date
+    NoteUtentePatch:
+      type: object
+      properties:
+        'note_utente_rispondi_id':
+          type: integer
+          format: int32
+          nullable: true
+        'Utente_id':
+          type: integer
+          format: int32
+        'hotel_id':
+          type: integer
+          format: int32
+        'reparto':
+          type: integer
+          format: int32
+        'titolo':
+          type: string
+          nullable: true
+          maxLength: 250
+        'note_utente_tex':
+          type: string
+          format: byte
+          maxLength: 16777215
+        'note_utente_per':
+          type: integer
+          format: int32
+        'note_utente_stato':
+          type: integer
+          format: int32
+        'note_utente_dal':
+          type: string
+          format: date
+        'note_utente_al':
+          type: string
+          format: date
+        'note_utente_data':
+          type: string
+          format: date
+    NoteUtenteListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteUtenteRead'
+        meta: { type: object }
+        links: { type: object }
+    NoteUtenteCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            'note_utente_id':
+              type: integer
+              format: int32
+        meta: { type: object }
+        links: { type: object }

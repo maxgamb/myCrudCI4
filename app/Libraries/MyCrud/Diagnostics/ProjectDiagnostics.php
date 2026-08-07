@@ -46,6 +46,21 @@ final class ProjectDiagnostics
             ['path' => $generatedPath]
         ));
 
+        $crudConfigPath = rtrim($config->crudConfigPath, DIRECTORY_SEPARATOR);
+        $crudConfigParent = dirname($crudConfigPath);
+        $configWritable = is_dir($crudConfigPath)
+            ? is_writable($crudConfigPath)
+            : (is_dir($crudConfigParent) && is_writable($crudConfigParent));
+
+        $report->add(new DiagnosticResult(
+            'MyCrudConfig path',
+            $configWritable ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+            $configWritable
+                ? 'Directory configurazioni persistenti disponibile/scrivibile.'
+                : 'Directory configurazioni persistenti non scrivibile.',
+            ['path' => $crudConfigPath]
+        ));
+
         $report->addMany((new TemplateDiagnostics())->inspect());
         $report->addMany((new GeneratedFileDiagnostics())->inspect($generatedPath));
 

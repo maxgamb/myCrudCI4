@@ -1,307 +1,164 @@
+<?php
+/*
+ * Filtro dinamico del sito.
+ * Ogni riga rappresenta una condizione: campo, operatore, valore e AND/OR.
+ * La whitelist reale viene ricontrollata dal Model: i valori del browser non
+ * vengono mai usati direttamente come nomi colonna o operatori SQL.
+ */
+$filterDefinitions = [
+    'preno_id' => [
+        'label' => lang('Agenda.preno_id'),
+        'input' => 'number',
+        'operators' => array (
+  0 => 'eq',
+  1 => 'neq',
+  2 => 'gt',
+  3 => 'gte',
+  4 => 'lt',
+  5 => 'lte',
+  6 => 'between',
+  7 => 'is_null',
+  8 => 'not_null',
+),
+        'relation' => NULL,
+    ],
+    'hotel_id' => [
+        'label' => lang('Agenda.hotel_id'),
+        'input' => 'number',
+        'operators' => array (
+  0 => 'eq',
+  1 => 'neq',
+  2 => 'gt',
+  3 => 'gte',
+  4 => 'lt',
+  5 => 'lte',
+  6 => 'between',
+  7 => 'is_null',
+  8 => 'not_null',
+),
+        'relation' => NULL,
+    ],
+    'preno_in_data' => [
+        'label' => lang('Agenda.preno_in_data'),
+        'input' => 'datetime-local',
+        'operators' => array (
+  0 => 'eq',
+  1 => 'neq',
+  2 => 'gt',
+  3 => 'gte',
+  4 => 'lt',
+  5 => 'lte',
+  6 => 'between',
+  7 => 'is_null',
+  8 => 'not_null',
+),
+        'relation' => NULL,
+    ],
+    'preno_dal' => [
+        'label' => lang('Agenda.preno_dal'),
+        'input' => 'date',
+        'operators' => array (
+  0 => 'eq',
+  1 => 'neq',
+  2 => 'gt',
+  3 => 'gte',
+  4 => 'lt',
+  5 => 'lte',
+  6 => 'between',
+  7 => 'is_null',
+  8 => 'not_null',
+),
+        'relation' => NULL,
+    ],
+    'preno_al' => [
+        'label' => lang('Agenda.preno_al'),
+        'input' => 'date',
+        'operators' => array (
+  0 => 'eq',
+  1 => 'neq',
+  2 => 'gt',
+  3 => 'gte',
+  4 => 'lt',
+  5 => 'lte',
+  6 => 'between',
+  7 => 'is_null',
+  8 => 'not_null',
+),
+        'relation' => NULL,
+    ],
+    'preno_cogno' => [
+        'label' => lang('Agenda.preno_cogno'),
+        'input' => 'text',
+        'operators' => array (
+  0 => 'eq',
+  1 => 'neq',
+  2 => 'starts_with',
+  3 => 'contains',
+  4 => 'ends_with',
+  5 => 'is_null',
+  6 => 'not_null',
+),
+        'relation' => NULL,
+    ],
+    'preno_agenzia' => [
+        'label' => lang('Agenda.preno_agenzia'),
+        'input' => 'select',
+        'operators' => array (
+  0 => 'eq',
+  1 => 'neq',
+),
+        'relation' => 'preno_agenzia',
+    ],
+    'voucher_id' => [
+        'label' => lang('Agenda.voucher_id'),
+        'input' => 'text',
+        'operators' => array (
+  0 => 'eq',
+  1 => 'neq',
+  2 => 'starts_with',
+  3 => 'contains',
+  4 => 'ends_with',
+  5 => 'is_null',
+  6 => 'not_null',
+),
+        'relation' => NULL,
+    ],
+    'preno_stato' => [
+        'label' => lang('Agenda.preno_stato'),
+        'input' => 'number',
+        'operators' => array (
+  0 => 'eq',
+  1 => 'neq',
+  2 => 'gt',
+  3 => 'gte',
+  4 => 'lt',
+  5 => 'lte',
+  6 => 'between',
+  7 => 'is_null',
+  8 => 'not_null',
+),
+        'relation' => NULL,
+    ],
+];
+$activeFilters = array_values(array_filter(
+    (array) ($filters ?? []),
+    static fn ($filter): bool => is_array($filter) && trim((string) ($filter['field'] ?? '')) !== ''
+));
+?>
+
 <form id="crudFiltersForm" method="get" action="<?= site_url('agenda') ?>">
     <input type="hidden" name="sort" value="<?= esc($sort ?? 'preno_id') ?>">
     <input type="hidden" name="direction" value="<?= esc($direction ?? 'desc') ?>">
 
-    <div class="row g-3 align-items-end">
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_id" class="form-label"><?= esc(lang('Agenda.preno_id')) ?></label>
-            <input type="number" id="filter_preno_id" name="filter[preno_id]" value="<?= esc((string) ($filters['preno_id'] ?? '')) ?>" class="form-control">
+    <div id="crudFilterRows"></div>
 
+    <?php if ($filterDefinitions === []): ?>
+        <div class="alert alert-light border mb-3">
+            Nessun campo filtrabile disponibile nella configurazione corrente.
         </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_hotel_id" class="form-label"><?= esc(lang('Agenda.hotel_id')) ?></label>
-            <input type="number" id="filter_hotel_id" name="filter[hotel_id]" value="<?= esc((string) ($filters['hotel_id'] ?? '')) ?>" class="form-control">
+    <?php endif; ?>
 
-        </div>
-        <div class="col-12 col-md-4">
-            <label class="form-label"><?= esc(lang('Agenda.preno_in_data')) ?></label>
-            <div class="input-group">
-                <input type="datetime-local" name="filter[preno_in_data][from]" value="<?= esc((string) ($filters['preno_in_data']['from'] ?? '')) ?>" class="form-control" aria-label="Da">
-                <input type="datetime-local" name="filter[preno_in_data][to]" value="<?= esc((string) ($filters['preno_in_data']['to'] ?? '')) ?>" class="form-control" aria-label="A">
-            </div>
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_importo" class="form-label"><?= esc(lang('Agenda.preno_importo')) ?></label>
-            <input type="number" step="any" id="filter_preno_importo" name="filter[preno_importo]" value="<?= esc((string) ($filters['preno_importo'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_impoto_mod" class="form-label"><?= esc(lang('Agenda.preno_impoto_mod')) ?></label>
-            <input type="number" step="any" id="filter_preno_impoto_mod" name="filter[preno_impoto_mod]" value="<?= esc((string) ($filters['preno_impoto_mod'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-4">
-            <label class="form-label"><?= esc(lang('Agenda.preno_dal')) ?></label>
-            <div class="input-group">
-                <input type="date" name="filter[preno_dal][from]" value="<?= esc((string) ($filters['preno_dal']['from'] ?? '')) ?>" class="form-control" aria-label="Da">
-                <input type="date" name="filter[preno_dal][to]" value="<?= esc((string) ($filters['preno_dal']['to'] ?? '')) ?>" class="form-control" aria-label="A">
-            </div>
-        </div>
-        <div class="col-12 col-md-4">
-            <label class="form-label"><?= esc(lang('Agenda.preno_al')) ?></label>
-            <div class="input-group">
-                <input type="date" name="filter[preno_al][from]" value="<?= esc((string) ($filters['preno_al']['from'] ?? '')) ?>" class="form-control" aria-label="Da">
-                <input type="date" name="filter[preno_al][to]" value="<?= esc((string) ($filters['preno_al']['to'] ?? '')) ?>" class="form-control" aria-label="A">
-            </div>
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_n_notti" class="form-label"><?= esc(lang('Agenda.preno_n_notti')) ?></label>
-            <input type="number" id="filter_preno_n_notti" name="filter[preno_n_notti]" value="<?= esc((string) ($filters['preno_n_notti'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_arr_ore" class="form-label"><?= esc(lang('Agenda.preno_arr_ore')) ?></label>
-            <input type="search" id="filter_preno_arr_ore" name="filter[preno_arr_ore]" value="<?= esc((string) ($filters['preno_arr_ore'] ?? '')) ?>" class="form-control">
-            <div class="form-text">Ricerca per inizio testo, minimo 2 caratteri.</div>
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_trattamento" class="form-label"><?= esc(lang('Agenda.preno_trattamento')) ?></label>
-            <input type="search" id="filter_preno_trattamento" name="filter[preno_trattamento]" value="<?= esc((string) ($filters['preno_trattamento'] ?? '')) ?>" class="form-control">
-            <div class="form-text">Ricerca per inizio testo, minimo 2 caratteri.</div>
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_t1" class="form-label"><?= esc(lang('Agenda.t1')) ?></label>
-            <input type="number" id="filter_t1" name="filter[t1]" value="<?= esc((string) ($filters['t1'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_q1" class="form-label"><?= esc(lang('Agenda.q1')) ?></label>
-            <input type="number" id="filter_q1" name="filter[q1]" value="<?= esc((string) ($filters['q1'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_p1" class="form-label"><?= esc(lang('Agenda.p1')) ?></label>
-            <input type="number" step="any" id="filter_p1" name="filter[p1]" value="<?= esc((string) ($filters['p1'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_t2" class="form-label"><?= esc(lang('Agenda.t2')) ?></label>
-            <input type="number" id="filter_t2" name="filter[t2]" value="<?= esc((string) ($filters['t2'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_q2" class="form-label"><?= esc(lang('Agenda.q2')) ?></label>
-            <input type="number" id="filter_q2" name="filter[q2]" value="<?= esc((string) ($filters['q2'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_p2" class="form-label"><?= esc(lang('Agenda.p2')) ?></label>
-            <input type="number" step="any" id="filter_p2" name="filter[p2]" value="<?= esc((string) ($filters['p2'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_t3" class="form-label"><?= esc(lang('Agenda.t3')) ?></label>
-            <input type="number" id="filter_t3" name="filter[t3]" value="<?= esc((string) ($filters['t3'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_q3" class="form-label"><?= esc(lang('Agenda.q3')) ?></label>
-            <input type="number" id="filter_q3" name="filter[q3]" value="<?= esc((string) ($filters['q3'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_p3" class="form-label"><?= esc(lang('Agenda.p3')) ?></label>
-            <input type="number" step="any" id="filter_p3" name="filter[p3]" value="<?= esc((string) ($filters['p3'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_t4" class="form-label"><?= esc(lang('Agenda.t4')) ?></label>
-            <input type="number" id="filter_t4" name="filter[t4]" value="<?= esc((string) ($filters['t4'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_q4" class="form-label"><?= esc(lang('Agenda.q4')) ?></label>
-            <input type="number" id="filter_q4" name="filter[q4]" value="<?= esc((string) ($filters['q4'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_p4" class="form-label"><?= esc(lang('Agenda.p4')) ?></label>
-            <input type="number" step="any" id="filter_p4" name="filter[p4]" value="<?= esc((string) ($filters['p4'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_t5" class="form-label"><?= esc(lang('Agenda.t5')) ?></label>
-            <input type="number" id="filter_t5" name="filter[t5]" value="<?= esc((string) ($filters['t5'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_q5" class="form-label"><?= esc(lang('Agenda.q5')) ?></label>
-            <input type="number" id="filter_q5" name="filter[q5]" value="<?= esc((string) ($filters['q5'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_p5" class="form-label"><?= esc(lang('Agenda.p5')) ?></label>
-            <input type="number" step="any" id="filter_p5" name="filter[p5]" value="<?= esc((string) ($filters['p5'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_t6" class="form-label"><?= esc(lang('Agenda.t6')) ?></label>
-            <input type="number" id="filter_t6" name="filter[t6]" value="<?= esc((string) ($filters['t6'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_q6" class="form-label"><?= esc(lang('Agenda.q6')) ?></label>
-            <input type="number" id="filter_q6" name="filter[q6]" value="<?= esc((string) ($filters['q6'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_p6" class="form-label"><?= esc(lang('Agenda.p6')) ?></label>
-            <input type="number" step="any" id="filter_p6" name="filter[p6]" value="<?= esc((string) ($filters['p6'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_nome" class="form-label"><?= esc(lang('Agenda.preno_nome')) ?></label>
-            <input type="search" id="filter_preno_nome" name="filter[preno_nome]" value="<?= esc((string) ($filters['preno_nome'] ?? '')) ?>" class="form-control">
-            <div class="form-text">Ricerca per inizio testo, minimo 2 caratteri.</div>
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_cogno" class="form-label"><?= esc(lang('Agenda.preno_cogno')) ?></label>
-            <input type="search" id="filter_preno_cogno" name="filter[preno_cogno]" value="<?= esc((string) ($filters['preno_cogno'] ?? '')) ?>" class="form-control">
-            <div class="form-text">Ricerca per inizio testo, minimo 2 caratteri.</div>
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_agenzia" class="form-label"><?= esc(lang('Agenda.preno_agenzia')) ?></label>
-            <select id="filter_preno_agenzia" name="filter[preno_agenzia]" class="form-select">
-                <option value="">Tutti</option>
-                <?php foreach ((array) ($options['preno_agenzia'] ?? []) as $value => $optionLabel): ?>
-                    <option value="<?= esc((string) $value) ?>" <?= (string) ($filters['preno_agenzia'] ?? '') === (string) $value ? 'selected' : '' ?>>
-                        <?= esc((string) $optionLabel) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_voucher_id" class="form-label"><?= esc(lang('Agenda.voucher_id')) ?></label>
-            <input type="search" id="filter_voucher_id" name="filter[voucher_id]" value="<?= esc((string) ($filters['voucher_id'] ?? '')) ?>" class="form-control">
-            <div class="form-text">Ricerca per inizio testo, minimo 2 caratteri.</div>
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_ota_voucher" class="form-label"><?= esc(lang('Agenda.ota_voucher')) ?></label>
-            <input type="search" id="filter_ota_voucher" name="filter[ota_voucher]" value="<?= esc((string) ($filters['ota_voucher'] ?? '')) ?>" class="form-control">
-            <div class="form-text">Ricerca per inizio testo, minimo 2 caratteri.</div>
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_allotment_id" class="form-label"><?= esc(lang('Agenda.allotment_id')) ?></label>
-            <input type="number" id="filter_allotment_id" name="filter[allotment_id]" value="<?= esc((string) ($filters['allotment_id'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_cc_tip" class="form-label"><?= esc(lang('Agenda.preno_cc_tip')) ?></label>
-            <input type="search" id="filter_preno_cc_tip" name="filter[preno_cc_tip]" value="<?= esc((string) ($filters['preno_cc_tip'] ?? '')) ?>" class="form-control">
-            <div class="form-text">Ricerca per inizio testo, minimo 2 caratteri.</div>
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_cc_n" class="form-label"><?= esc(lang('Agenda.preno_cc_n')) ?></label>
-            <input type="search" id="filter_preno_cc_n" name="filter[preno_cc_n]" value="<?= esc((string) ($filters['preno_cc_n'] ?? '')) ?>" class="form-control">
-            <div class="form-text">Ricerca per inizio testo, minimo 2 caratteri.</div>
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_cc_scad" class="form-label"><?= esc(lang('Agenda.preno_cc_scad')) ?></label>
-            <input type="search" id="filter_preno_cc_scad" name="filter[preno_cc_scad]" value="<?= esc((string) ($filters['preno_cc_scad'] ?? '')) ?>" class="form-control">
-            <div class="form-text">Ricerca per inizio testo, minimo 2 caratteri.</div>
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_tel" class="form-label"><?= esc(lang('Agenda.preno_tel')) ?></label>
-            <input type="search" id="filter_preno_tel" name="filter[preno_tel]" value="<?= esc((string) ($filters['preno_tel'] ?? '')) ?>" class="form-control">
-            <div class="form-text">Ricerca per inizio testo, minimo 2 caratteri.</div>
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_fax" class="form-label"><?= esc(lang('Agenda.preno_fax')) ?></label>
-            <input type="search" id="filter_preno_fax" name="filter[preno_fax]" value="<?= esc((string) ($filters['preno_fax'] ?? '')) ?>" class="form-control">
-            <div class="form-text">Ricerca per inizio testo, minimo 2 caratteri.</div>
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_email" class="form-label"><?= esc(lang('Agenda.preno_email')) ?></label>
-            <input type="search" id="filter_preno_email" name="filter[preno_email]" value="<?= esc((string) ($filters['preno_email'] ?? '')) ?>" class="form-control">
-            <div class="form-text">Ricerca per inizio testo, minimo 2 caratteri.</div>
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_mercato" class="form-label"><?= esc(lang('Agenda.preno_mercato')) ?></label>
-            <input type="search" id="filter_preno_mercato" name="filter[preno_mercato]" value="<?= esc((string) ($filters['preno_mercato'] ?? '')) ?>" class="form-control">
-            <div class="form-text">Ricerca per inizio testo, minimo 2 caratteri.</div>
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_nazione_iso2" class="form-label"><?= esc(lang('Agenda.nazione_iso2')) ?></label>
-            <input type="search" id="filter_nazione_iso2" name="filter[nazione_iso2]" value="<?= esc((string) ($filters['nazione_iso2'] ?? '')) ?>" class="form-control">
-            <div class="form-text">Ricerca per inizio testo, minimo 2 caratteri.</div>
-        </div>
-        <div class="col-6 col-md-2">
-            <label for="filter_preno_doc_fax" class="form-label"><?= esc(lang('Agenda.preno_doc_fax')) ?></label>
-            <select id="filter_preno_doc_fax" name="filter[preno_doc_fax]" class="form-select">
-                <option value="">Tutti</option>
-                <option value="1" <?= (string) ($filters['preno_doc_fax'] ?? '') === '1' ? 'selected' : '' ?>>Sì</option>
-                <option value="0" <?= (string) ($filters['preno_doc_fax'] ?? '') === '0' ? 'selected' : '' ?>>No</option>
-            </select>
-        </div>
-        <div class="col-6 col-md-2">
-            <label for="filter_preno_doc_email" class="form-label"><?= esc(lang('Agenda.preno_doc_email')) ?></label>
-            <select id="filter_preno_doc_email" name="filter[preno_doc_email]" class="form-select">
-                <option value="">Tutti</option>
-                <option value="1" <?= (string) ($filters['preno_doc_email'] ?? '') === '1' ? 'selected' : '' ?>>Sì</option>
-                <option value="0" <?= (string) ($filters['preno_doc_email'] ?? '') === '0' ? 'selected' : '' ?>>No</option>
-            </select>
-        </div>
-        <div class="col-6 col-md-2">
-            <label for="filter_preno_doc_form" class="form-label"><?= esc(lang('Agenda.preno_doc_form')) ?></label>
-            <select id="filter_preno_doc_form" name="filter[preno_doc_form]" class="form-select">
-                <option value="">Tutti</option>
-                <option value="1" <?= (string) ($filters['preno_doc_form'] ?? '') === '1' ? 'selected' : '' ?>>Sì</option>
-                <option value="0" <?= (string) ($filters['preno_doc_form'] ?? '') === '0' ? 'selected' : '' ?>>No</option>
-            </select>
-        </div>
-        <div class="col-6 col-md-2">
-            <label for="filter_preno_doc_mail" class="form-label"><?= esc(lang('Agenda.preno_doc_mail')) ?></label>
-            <select id="filter_preno_doc_mail" name="filter[preno_doc_mail]" class="form-select">
-                <option value="">Tutti</option>
-                <option value="1" <?= (string) ($filters['preno_doc_mail'] ?? '') === '1' ? 'selected' : '' ?>>Sì</option>
-                <option value="0" <?= (string) ($filters['preno_doc_mail'] ?? '') === '0' ? 'selected' : '' ?>>No</option>
-            </select>
-        </div>
-        <div class="col-6 col-md-2">
-            <label for="filter_preno_doc_vaglia" class="form-label"><?= esc(lang('Agenda.preno_doc_vaglia')) ?></label>
-            <select id="filter_preno_doc_vaglia" name="filter[preno_doc_vaglia]" class="form-select">
-                <option value="">Tutti</option>
-                <option value="1" <?= (string) ($filters['preno_doc_vaglia'] ?? '') === '1' ? 'selected' : '' ?>>Sì</option>
-                <option value="0" <?= (string) ($filters['preno_doc_vaglia'] ?? '') === '0' ? 'selected' : '' ?>>No</option>
-            </select>
-        </div>
-        <div class="col-6 col-md-2">
-            <label for="filter_preno_doc_woucher" class="form-label"><?= esc(lang('Agenda.preno_doc_woucher')) ?></label>
-            <select id="filter_preno_doc_woucher" name="filter[preno_doc_woucher]" class="form-select">
-                <option value="">Tutti</option>
-                <option value="1" <?= (string) ($filters['preno_doc_woucher'] ?? '') === '1' ? 'selected' : '' ?>>Sì</option>
-                <option value="0" <?= (string) ($filters['preno_doc_woucher'] ?? '') === '0' ? 'selected' : '' ?>>No</option>
-            </select>
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_pag_modalita" class="form-label"><?= esc(lang('Agenda.preno_pag_modalita')) ?></label>
-            <input type="number" id="filter_preno_pag_modalita" name="filter[preno_pag_modalita]" value="<?= esc((string) ($filters['preno_pag_modalita'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_caparra" class="form-label"><?= esc(lang('Agenda.preno_caparra')) ?></label>
-            <input type="number" step="any" id="filter_preno_caparra" name="filter[preno_caparra]" value="<?= esc((string) ($filters['preno_caparra'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-3">
-            <label for="filter_preno_stato" class="form-label"><?= esc(lang('Agenda.preno_stato')) ?></label>
-            <input type="number" id="filter_preno_stato" name="filter[preno_stato]" value="<?= esc((string) ($filters['preno_stato'] ?? '')) ?>" class="form-control">
-
-        </div>
-        <div class="col-12 col-md-4">
-            <label class="form-label"><?= esc(lang('Agenda.data_opzione')) ?></label>
-            <div class="input-group">
-                <input type="date" name="filter[data_opzione][from]" value="<?= esc((string) ($filters['data_opzione']['from'] ?? '')) ?>" class="form-control" aria-label="Da">
-                <input type="date" name="filter[data_opzione][to]" value="<?= esc((string) ($filters['data_opzione']['to'] ?? '')) ?>" class="form-control" aria-label="A">
-            </div>
-        </div>
-        <div class="col-12 col-md-4">
-            <label class="form-label"><?= esc(lang('Agenda.cancella_data_record')) ?></label>
-            <div class="input-group">
-                <input type="datetime-local" name="filter[cancella_data_record][from]" value="<?= esc((string) ($filters['cancella_data_record']['from'] ?? '')) ?>" class="form-control" aria-label="Da">
-                <input type="datetime-local" name="filter[cancella_data_record][to]" value="<?= esc((string) ($filters['cancella_data_record']['to'] ?? '')) ?>" class="form-control" aria-label="A">
-            </div>
-        </div>
+    <div class="row g-2 align-items-end">
         <div class="col-6 col-md-2">
             <label for="crudPerPage" class="form-label">Righe</label>
             <select id="crudPerPage" name="perPage" class="form-select">
@@ -317,9 +174,294 @@
             <button type="submit" class="btn btn-primary">
                 <i class="bi bi-search"></i> Cerca
             </button>
+            <button type="button" id="crudAddFilter" class="btn btn-outline-primary" <?= $filterDefinitions === [] ? 'disabled' : '' ?>>
+                <i class="bi bi-plus-circle"></i> Aggiungi filtro
+            </button>
             <a href="<?= site_url('agenda') ?>" class="btn btn-outline-secondary js-reset-filters">
                 Azzera
             </a>
         </div>
     </div>
 </form>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    /*
+     * Runtime lato sito del filtro dinamico. Costruiamo solo controlli HTML;
+     * l'interpretazione sicura di campo/operatore avviene sempre nel Model.
+     */
+    const definitions = <?= json_encode($filterDefinitions, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+    const relationOptions = <?= json_encode((array) ($options ?? []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+    const relationBaseUrl = <?= json_encode(site_url('agenda/relation-options'), JSON_UNESCAPED_SLASHES) ?>;
+    const initialFilters = <?= json_encode($activeFilters, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+    const rowsContainer = document.getElementById('crudFilterRows');
+    const addButton = document.getElementById('crudAddFilter');
+
+    if (!rowsContainer || !addButton) {
+        return;
+    }
+
+    const operatorLabels = {
+        eq: '=',
+        neq: '≠',
+        gt: '>',
+        gte: '≥',
+        lt: '<',
+        lte: '≤',
+        between: 'Tra',
+        starts_with: 'Inizia con',
+        contains: 'Contiene',
+        ends_with: 'Finisce con',
+        is_null: 'Vuoto / NULL',
+        not_null: 'Non vuoto / NOT NULL'
+    };
+
+    const escapeHtml = value => String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+
+    const renumberRows = () => {
+        [...rowsContainer.querySelectorAll('.js-filter-row')].forEach((row, index) => {
+            row.dataset.index = String(index);
+            row.querySelectorAll('[data-filter-part]').forEach(input => {
+                input.name = `filters[${index}][${input.dataset.filterPart}]`;
+            });
+
+            const logic = row.querySelector('[data-filter-part="logic"]');
+            if (logic) {
+                const isLast = index === rowsContainer.querySelectorAll('.js-filter-row').length - 1;
+                logic.disabled = isLast;
+                if (isLast) {
+                    logic.value = 'and';
+                }
+            }
+        });
+    };
+
+    const valueMarkup = (field, filter) => {
+        const definition = definitions[field] || {};
+        const input = definition.input || 'text';
+        const operator = filter.operator || (definition.operators || ['eq'])[0] || 'eq';
+        const value = escapeHtml(filter.value ?? '');
+        const valueTo = escapeHtml(filter.value_to ?? '');
+
+        if (operator === 'is_null' || operator === 'not_null') {
+            return '<div class="form-control bg-body-secondary text-muted">Nessun valore richiesto</div>';
+        }
+
+        if (input === 'relation_ajax') {
+            return `<div class="js-filter-relation" data-field="${escapeHtml(field)}">
+                <input type="hidden" data-filter-part="value" value="${value}">
+                <input type="search" class="form-control js-filter-relation-search" value="${value}" placeholder="Cerca…" autocomplete="off">
+                <select class="form-select mt-2 d-none js-filter-relation-results" size="5"></select>
+            </div>`;
+        }
+
+        if (input === 'select') {
+            const options = relationOptions[field] || {};
+            const optionHtml = Object.entries(options).map(([optionValue, optionLabel]) =>
+                `<option value="${escapeHtml(optionValue)}" ${String(filter.value ?? '') === String(optionValue) ? 'selected' : ''}>${escapeHtml(optionLabel)}</option>`
+            ).join('');
+            return `<select class="form-select" data-filter-part="value"><option value="">Seleziona…</option>${optionHtml}</select>`;
+        }
+
+        if (input === 'boolean') {
+            return `<select class="form-select" data-filter-part="value">
+                <option value="">Seleziona…</option>
+                <option value="1" ${String(filter.value ?? '') === '1' ? 'selected' : ''}>Sì</option>
+                <option value="0" ${String(filter.value ?? '') === '0' ? 'selected' : ''}>No</option>
+            </select>`;
+        }
+
+        const htmlType = ['number', 'date', 'datetime-local', 'time'].includes(input) ? input : 'text';
+        const step = htmlType === 'number' ? ' step="any"' : '';
+        const first = `<input type="${htmlType}"${step} class="form-control" data-filter-part="value" value="${value}">`;
+
+        if (operator === 'between') {
+            return `<div class="input-group">${first}<span class="input-group-text">e</span><input type="${htmlType}"${step} class="form-control" data-filter-part="value_to" value="${valueTo}"></div>`;
+        }
+
+        return first;
+    };
+
+    const refreshRow = row => {
+        const fieldSelect = row.querySelector('[data-filter-part="field"]');
+        const operatorSelect = row.querySelector('[data-filter-part="operator"]');
+        const valueContainer = row.querySelector('.js-filter-value');
+        if (!fieldSelect || !operatorSelect || !valueContainer) {
+            return;
+        }
+
+        const field = fieldSelect.value;
+        const definition = definitions[field] || { operators: ['eq'] };
+        const previousOperator = operatorSelect.value;
+        operatorSelect.innerHTML = (definition.operators || ['eq'])
+            .map(operator => `<option value="${escapeHtml(operator)}">${escapeHtml(operatorLabels[operator] || operator)}</option>`)
+            .join('');
+        operatorSelect.value = (definition.operators || []).includes(previousOperator)
+            ? previousOperator
+            : ((definition.operators || ['eq'])[0] || 'eq');
+
+        const currentValue = valueContainer.querySelector('[data-filter-part="value"]')?.value ?? '';
+        const currentValueTo = valueContainer.querySelector('[data-filter-part="value_to"]')?.value ?? '';
+        valueContainer.innerHTML = valueMarkup(field, {
+            operator: operatorSelect.value,
+            value: currentValue,
+            value_to: currentValueTo
+        });
+        renumberRows();
+    };
+
+    const addRow = (filter = {}, afterRow = null) => {
+        const fields = Object.keys(definitions);
+        if (fields.length === 0) {
+            return;
+        }
+
+        const selectedField = definitions[filter.field] ? filter.field : fields[0];
+        const definition = definitions[selectedField];
+        const selectedOperator = (definition.operators || []).includes(filter.operator)
+            ? filter.operator
+            : ((definition.operators || ['eq'])[0] || 'eq');
+
+        const row = document.createElement('div');
+        row.className = 'row g-2 align-items-end mb-2 js-filter-row';
+        row.innerHTML = `
+            <div class="col-12 col-md-3">
+                <label class="form-label">Campo</label>
+                <select class="form-select" data-filter-part="field">
+                    ${fields.map(field => `<option value="${escapeHtml(field)}" ${field === selectedField ? 'selected' : ''}>${escapeHtml(definitions[field].label || field)}</option>`).join('')}
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label">Criterio</label>
+                <select class="form-select" data-filter-part="operator">
+                    ${(definition.operators || ['eq']).map(operator => `<option value="${escapeHtml(operator)}" ${operator === selectedOperator ? 'selected' : ''}>${escapeHtml(operatorLabels[operator] || operator)}</option>`).join('')}
+                </select>
+            </div>
+            <div class="col-12 col-md-4 js-filter-value">
+                <label class="form-label">Valore</label>
+                ${valueMarkup(selectedField, {...filter, operator: selectedOperator})}
+            </div>
+            <div class="col-6 col-md-1">
+                <label class="form-label">Logica</label>
+                <select class="form-select" data-filter-part="logic">
+                    <option value="and" ${(filter.logic || 'and') === 'and' ? 'selected' : ''}>AND</option>
+                    <option value="or" ${filter.logic === 'or' ? 'selected' : ''}>OR</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <button type="button" class="btn btn-outline-primary js-add-filter" title="Aggiungi riga"><i class="bi bi-plus"></i></button>
+                <button type="button" class="btn btn-outline-danger js-remove-filter" title="Rimuovi riga"><i class="bi bi-dash"></i></button>
+            </div>
+        `;
+
+        if (afterRow instanceof HTMLElement && afterRow.parentElement === rowsContainer) {
+            afterRow.insertAdjacentElement('afterend', row);
+        } else {
+            rowsContainer.appendChild(row);
+        }
+        renumberRows();
+    };
+
+    const relationTimers = new WeakMap();
+    const relationControllers = new WeakMap();
+
+    rowsContainer.addEventListener('input', event => {
+        const input = event.target.closest('.js-filter-relation-search');
+        if (!input) return;
+
+        const wrapper = input.closest('.js-filter-relation');
+        const hidden = wrapper?.querySelector('[data-filter-part="value"]');
+        const results = wrapper?.querySelector('.js-filter-relation-results');
+        const field = wrapper?.dataset.field || '';
+        if (!wrapper || !hidden || !results || !field) return;
+
+        hidden.value = '';
+        results.innerHTML = '';
+        results.classList.add('d-none');
+
+        const oldTimer = relationTimers.get(input);
+        if (oldTimer) window.clearTimeout(oldTimer);
+
+        const query = input.value.trim();
+        if (query.length < 2) return;
+
+        const timer = window.setTimeout(async () => {
+            relationControllers.get(input)?.abort();
+            const controller = new AbortController();
+            relationControllers.set(input, controller);
+
+            try {
+                const response = await fetch(`${relationBaseUrl}/${encodeURIComponent(field)}?q=${encodeURIComponent(query)}`, {
+                    headers: {'X-Requested-With': 'XMLHttpRequest'},
+                    signal: controller.signal
+                });
+                if (!response.ok) throw new Error('Errore ricerca relazione');
+                const payload = await response.json();
+                const rows = Array.isArray(payload.results) ? payload.results : [];
+                rows.forEach(row => {
+                    const option = document.createElement('option');
+                    option.value = String(row.id ?? '');
+                    option.textContent = String(row.text ?? '');
+                    results.appendChild(option);
+                });
+                results.classList.toggle('d-none', rows.length === 0);
+            } catch (error) {
+                if (error.name !== 'AbortError') console.error(error);
+            }
+        }, 350);
+        relationTimers.set(input, timer);
+    });
+
+    rowsContainer.addEventListener('change', event => {
+        const relationResults = event.target.closest('.js-filter-relation-results');
+        if (relationResults) {
+            const wrapper = relationResults.closest('.js-filter-relation');
+            const hidden = wrapper?.querySelector('[data-filter-part="value"]');
+            const search = wrapper?.querySelector('.js-filter-relation-search');
+            const selected = relationResults.options[relationResults.selectedIndex];
+            if (hidden && search && selected) {
+                hidden.value = selected.value;
+                search.value = selected.textContent || '';
+                relationResults.classList.add('d-none');
+            }
+            return;
+        }
+        const row = event.target.closest('.js-filter-row');
+        if (!row) {
+            return;
+        }
+        if (event.target.matches('[data-filter-part="field"], [data-filter-part="operator"]')) {
+            refreshRow(row);
+        }
+    });
+
+    rowsContainer.addEventListener('click', event => {
+        const add = event.target.closest('.js-add-filter');
+        const remove = event.target.closest('.js-remove-filter');
+        if (add) {
+            addRow({}, add.closest('.js-filter-row'));
+        }
+        if (remove) {
+            const row = remove.closest('.js-filter-row');
+            row?.remove();
+            if (rowsContainer.querySelectorAll('.js-filter-row').length === 0) {
+                addRow();
+            }
+            renumberRows();
+        }
+    });
+
+    addButton.addEventListener('click', () => addRow());
+
+    if (initialFilters.length > 0) {
+        initialFilters.forEach(filter => addRow(filter));
+    } else if (Object.keys(definitions).length > 0) {
+        addRow();
+    }
+});
+</script>

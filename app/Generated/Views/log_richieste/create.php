@@ -1,0 +1,14 @@
+<?= $this->extend('layouts/default_app') ?>
+<?= $this->section('content') ?>
+
+<?= view('log_richieste/_form', [
+    'formTitle'       => 'Nuovo record',
+    'formIcon'        => 'bi-plus-circle',
+    'formAction'      => site_url('log_richieste/store'),
+    'row'             => $row ?? null,
+    'errors'          => $errors ?? [],
+    'options'         => $options ?? [],
+    'submissionToken' => $submissionToken ?? '',
+]) ?>
+
+<?= $this->endSection() ?>

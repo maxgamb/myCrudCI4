@@ -1,0 +1,426 @@
+openapi: 3.0.3
+info:
+  title: 'modifica_conti API'
+  version: 1.0.0
+paths:
+  /api/v1/modifica_conti:
+    get:
+      summary: 'Elenco modifica_conti'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[id_mod_conto]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[mod_conto_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[mod_camera_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['id_mod_conto', 'mod_conto_id', 'mod_camera_id'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModificaContiListResponse'
+    post:
+      summary: Crea record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModificaContiCreate'
+      responses:
+        '201':
+          description: Record creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModificaContiCreatedResponse'
+        '422': { description: Errore di validazione }
+  /api/v1/modifica_conti/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Dettaglio record
+      responses:
+        '200':
+          description: Record trovato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ModificaContiRead'
+        '404': { description: Record non trovato }
+    put:
+      summary: Aggiornamento completo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModificaContiUpdate'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    patch:
+      summary: Aggiornamento parziale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModificaContiPatch'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    delete:
+      summary: Elimina record
+      responses:
+        '204': { description: Record eliminato }
+components:
+  schemas:
+    ModificaContiRead:
+      type: object
+      properties:
+        'id_mod_conto':
+          type: integer
+          format: int32
+        'mod_conto_id':
+          type: integer
+          format: int32
+        'mod_hotel_id':
+          type: integer
+          format: int32
+        'mod_foglio_id':
+          type: integer
+          format: int32
+        'mod_clienti_id':
+          type: integer
+          format: int32
+          nullable: true
+        'mod_in_conto':
+          type: string
+          format: date
+        'mod_out_preno':
+          type: string
+          format: date
+        'mod_out_conto':
+          type: string
+          format: date
+          nullable: true
+        'mod_preno_id':
+          type: integer
+          format: int32
+          nullable: true
+        'mod_camera_id':
+          type: integer
+          format: int32
+        'mod_numero_camera':
+          type: integer
+          format: int32
+        'mod_trattamento_sog':
+          type: string
+          maxLength: 100
+        'mod_tipo_camera':
+          type: string
+          maxLength: 100
+        'mod_prezzo':
+          type: string
+          maxLength: 100
+        'mod_nome_cliente':
+          type: string
+          nullable: true
+          maxLength: 100
+        'mod_cognome_cliente':
+          type: string
+          maxLength: 100
+        'mod_preno_agenzia':
+          type: integer
+          format: int32
+          nullable: true
+        'mod_mercato':
+          type: string
+          nullable: true
+          maxLength: 100
+        'mod_conti_stato_camere':
+          type: string
+          nullable: true
+          maxLength: 100
+        'mod_acconto':
+          type: string
+          nullable: true
+          maxLength: 100
+        'modifica_conti_adebiti_utente_id':
+          type: integer
+          format: int32
+          nullable: true
+        'conti_trattamento_sog':
+          type: string
+          nullable: true
+    ModificaContiCreate:
+      type: object
+      required:
+        - 'mod_in_conto'
+        - 'mod_out_preno'
+      properties:
+        'mod_conto_id':
+          type: integer
+          format: int32
+        'mod_hotel_id':
+          type: integer
+          format: int32
+        'mod_foglio_id':
+          type: integer
+          format: int32
+        'mod_clienti_id':
+          type: integer
+          format: int32
+          nullable: true
+        'mod_in_conto':
+          type: string
+          format: date
+        'mod_out_preno':
+          type: string
+          format: date
+        'mod_out_conto':
+          type: string
+          format: date
+          nullable: true
+        'mod_preno_id':
+          type: integer
+          format: int32
+          nullable: true
+        'mod_camera_id':
+          type: integer
+          format: int32
+        'mod_numero_camera':
+          type: integer
+          format: int32
+        'mod_trattamento_sog':
+          type: string
+          maxLength: 100
+        'mod_tipo_camera':
+          type: string
+          maxLength: 100
+        'mod_prezzo':
+          type: string
+          maxLength: 100
+        'mod_nome_cliente':
+          type: string
+          nullable: true
+          maxLength: 100
+        'mod_cognome_cliente':
+          type: string
+          maxLength: 100
+        'mod_preno_agenzia':
+          type: integer
+          format: int32
+          nullable: true
+        'mod_mercato':
+          type: string
+          nullable: true
+          maxLength: 100
+        'mod_conti_stato_camere':
+          type: string
+          nullable: true
+          maxLength: 100
+        'mod_acconto':
+          type: string
+          nullable: true
+          maxLength: 100
+        'modifica_conti_adebiti_utente_id':
+          type: integer
+          format: int32
+          nullable: true
+    ModificaContiUpdate:
+      type: object
+      required:
+        - 'mod_in_conto'
+        - 'mod_out_preno'
+      properties:
+        'mod_conto_id':
+          type: integer
+          format: int32
+        'mod_hotel_id':
+          type: integer
+          format: int32
+        'mod_foglio_id':
+          type: integer
+          format: int32
+        'mod_clienti_id':
+          type: integer
+          format: int32
+          nullable: true
+        'mod_in_conto':
+          type: string
+          format: date
+        'mod_out_preno':
+          type: string
+          format: date
+        'mod_out_conto':
+          type: string
+          format: date
+          nullable: true
+        'mod_preno_id':
+          type: integer
+          format: int32
+          nullable: true
+        'mod_camera_id':
+          type: integer
+          format: int32
+        'mod_numero_camera':
+          type: integer
+          format: int32
+        'mod_trattamento_sog':
+          type: string
+          maxLength: 100
+        'mod_tipo_camera':
+          type: string
+          maxLength: 100
+        'mod_prezzo':
+          type: string
+          maxLength: 100
+        'mod_nome_cliente':
+          type: string
+          nullable: true
+          maxLength: 100
+        'mod_cognome_cliente':
+          type: string
+          maxLength: 100
+        'mod_preno_agenzia':
+          type: integer
+          format: int32
+          nullable: true
+        'mod_mercato':
+          type: string
+          nullable: true
+          maxLength: 100
+        'mod_conti_stato_camere':
+          type: string
+          nullable: true
+          maxLength: 100
+        'mod_acconto':
+          type: string
+          nullable: true
+          maxLength: 100
+        'modifica_conti_adebiti_utente_id':
+          type: integer
+          format: int32
+          nullable: true
+    ModificaContiPatch:
+      type: object
+      properties:
+        'mod_conto_id':
+          type: integer
+          format: int32
+        'mod_hotel_id':
+          type: integer
+          format: int32
+        'mod_foglio_id':
+          type: integer
+          format: int32
+        'mod_clienti_id':
+          type: integer
+          format: int32
+          nullable: true
+        'mod_in_conto':
+          type: string
+          format: date
+        'mod_out_preno':
+          type: string
+          format: date
+        'mod_out_conto':
+          type: string
+          format: date
+          nullable: true
+        'mod_preno_id':
+          type: integer
+          format: int32
+          nullable: true
+        'mod_camera_id':
+          type: integer
+          format: int32
+        'mod_numero_camera':
+          type: integer
+          format: int32
+        'mod_trattamento_sog':
+          type: string
+          maxLength: 100
+        'mod_tipo_camera':
+          type: string
+          maxLength: 100
+        'mod_prezzo':
+          type: string
+          maxLength: 100
+        'mod_nome_cliente':
+          type: string
+          nullable: true
+          maxLength: 100
+        'mod_cognome_cliente':
+          type: string
+          maxLength: 100
+        'mod_preno_agenzia':
+          type: integer
+          format: int32
+          nullable: true
+        'mod_mercato':
+          type: string
+          nullable: true
+          maxLength: 100
+        'mod_conti_stato_camere':
+          type: string
+          nullable: true
+          maxLength: 100
+        'mod_acconto':
+          type: string
+          nullable: true
+          maxLength: 100
+        'modifica_conti_adebiti_utente_id':
+          type: integer
+          format: int32
+          nullable: true
+    ModificaContiListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModificaContiRead'
+        meta: { type: object }
+        links: { type: object }
+    ModificaContiCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            'id_mod_conto':
+              type: integer
+              format: int32
+        meta: { type: object }
+        links: { type: object }

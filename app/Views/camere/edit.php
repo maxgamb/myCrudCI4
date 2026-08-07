@@ -1,0 +1,19 @@
+<?= $this->extend('layouts/default_app') ?>
+<?= $this->section('content') ?>
+
+<?php
+$primaryKey = 'camera_id';
+$formAction = site_url('camere/update/' . ($row->{$primaryKey} ?? ''));
+?>
+
+<?= view('camere/_form', [
+    'formTitle'       => 'Modifica record',
+    'formIcon'        => 'bi-pencil-square',
+    'formAction'      => $formAction,
+    'row'             => $row ?? null,
+    'errors'          => $errors ?? [],
+    'options'         => $options ?? [],
+    'submissionToken' => $submissionToken ?? '',
+]) ?>
+
+<?= $this->endSection() ?>

@@ -2,8 +2,10 @@
 namespace App\Controllers\MyCrud;
 
 use App\Controllers\BaseController;
+use App\Libraries\MyCrud\Core\MenuBuilderService;
 use App\Libraries\MyCrud\Core\Naming;
 use App\Libraries\MyCrud\Schema\DbSchema;
+use App\Libraries\MyCrud\Generators\MenuGenerator;
 use App\Libraries\MyCrud\Schema\TableFilter;
 use Config\Database;
 
@@ -15,7 +17,7 @@ class ToolsController extends BaseController
         $output = "<?php\n\nuse CodeIgniter\\Router\\RouteCollection;\n\n";
 
         foreach (TableFilter::validTables($db) as $table) {
-            $controller = Naming::singularStudly($table) . 'Controller';
+            $controller = Naming::tableClass($table) . 'Controller';
             $output .= "\$routes->group('{$table}', static function (RouteCollection \$routes): void {\n";
             $output .= "    \$routes->get('/', '{$controller}::index');\n";
             $output .= "    \$routes->get('export-csv', '{$controller}::exportCsv');\n";
@@ -53,6 +55,31 @@ class ToolsController extends BaseController
         $output .= "];\n";
 
         return view('mycrud/code_output', ['title'=>'Fields.php','heading'=>'Traduzioni Fields.php','code'=>$output]);
+    }
+
+
+    /** Mostra il tool che costruisce il menu applicativo da tabelle e relazioni SQL. */
+    public function menu(): string
+    {
+        return view('mycrud/menu_builder', [
+            'title' => 'Generatore Menu',
+            'items' => (new MenuBuilderService())->suggestedItems(),
+        ]);
+    }
+
+    /** Genera configurazione e renderer Bootstrap esclusivamente nello staging. */
+    public function generateMenu(): string
+    {
+        $builder = new MenuBuilderService();
+        $menu = $builder->fromRequest($this->request->getPost());
+        $force = (bool) $this->request->getPost('force');
+        $files = (new MenuGenerator())->generate($menu, $force);
+
+        return view('mycrud/menu_result', [
+            'title' => 'Menu generato',
+            'type' => $menu['type'],
+            'files' => $files,
+        ]);
     }
 
     public function schema(?string $table = null)

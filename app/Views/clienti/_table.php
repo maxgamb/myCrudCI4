@@ -1,3 +1,4 @@
+<?php /* Frammento sostituito via AJAX: doppio Pager e tabella Bootstrap compatta. */ ?>
 <div class="card shadow-sm">
     <div class="card-body">
         <?= view('clienti/_pager', [
@@ -7,7 +8,7 @@
         ]) ?>
 
         <div class="table-responsive">
-            <table class="table table-sm table-striped table-hover align-middle mb-0">
+            <table class="table table-sm table-striped table-hover align-middle text-nowrap mb-0 crud-table">
                 <thead class="table-light">
                     <tr>
                         <?php

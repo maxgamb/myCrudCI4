@@ -1,0 +1,312 @@
+openapi: 3.0.3
+info:
+  title: 'obmp_rates API'
+  version: 1.0.0
+paths:
+  /api/v1/obmp_rates:
+    get:
+      summary: 'Elenco obmp_rates'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[obmp_rate_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[obmp_cm_rooms_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[obmp_restriction_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[obmp_board_cod]'
+          in: query
+          schema:
+            type: string
+        - name: 'filter[obmp_cancellation_cod]'
+          in: query
+          schema:
+            type: string
+        - name: 'filter[obmp_payment_cod]'
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['obmp_rate_id', 'obmp_cm_rooms_id', 'obmp_restriction_id', 'obmp_board_cod', 'obmp_cancellation_cod', 'obmp_payment_cod'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObmpRatesListResponse'
+    post:
+      summary: Crea record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObmpRatesCreate'
+      responses:
+        '201':
+          description: Record creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObmpRatesCreatedResponse'
+        '422': { description: Errore di validazione }
+  /api/v1/obmp_rates/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Dettaglio record
+      responses:
+        '200':
+          description: Record trovato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ObmpRatesRead'
+        '404': { description: Record non trovato }
+    put:
+      summary: Aggiornamento completo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObmpRatesUpdate'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    patch:
+      summary: Aggiornamento parziale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObmpRatesPatch'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    delete:
+      summary: Elimina record
+      responses:
+        '204': { description: Record eliminato }
+components:
+  schemas:
+    ObmpRatesRead:
+      type: object
+      properties:
+        'obmp_rate_id':
+          type: integer
+          format: int32
+        'obmp_cm_rooms_id':
+          type: integer
+          format: int32
+        'obmp_restriction_id':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_id':
+          type: integer
+          format: int32
+          nullable: true
+        'obmp_board_cod':
+          type: string
+          nullable: true
+          maxLength: 6
+        'obmp_cancellation_cod':
+          type: string
+          nullable: true
+          maxLength: 6
+        'obmp_payment_cod':
+          type: string
+          nullable: true
+          maxLength: 6
+        'rate_sum':
+          type: number
+          format: double
+          nullable: true
+        'rate_mol':
+          type: number
+          format: double
+          nullable: true
+        'rate_stato':
+          type: integer
+          format: int32
+          nullable: true
+        'obmp_board_obmp_board_title':
+          type: string
+          nullable: true
+        'obmp_cancellations_obmp_cancellation_title':
+          type: string
+          nullable: true
+        'obmp_cm_rooms_obmp_cm_rooms_room_note':
+          type: string
+          nullable: true
+        'obmp_payments_obmp_payment_title':
+          type: string
+          nullable: true
+        'obmp_restrictions_hotel_id':
+          type: string
+          nullable: true
+    ObmpRatesCreate:
+      type: object
+      required:
+        - 'obmp_cm_rooms_id'
+      properties:
+        'obmp_cm_rooms_id':
+          type: integer
+          format: int32
+        'obmp_restriction_id':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_id':
+          type: integer
+          format: int32
+          nullable: true
+        'obmp_board_cod':
+          type: string
+          nullable: true
+          maxLength: 6
+        'obmp_cancellation_cod':
+          type: string
+          nullable: true
+          maxLength: 6
+        'obmp_payment_cod':
+          type: string
+          nullable: true
+          maxLength: 6
+        'rate_sum':
+          type: number
+          format: double
+          nullable: true
+        'rate_mol':
+          type: number
+          format: double
+          nullable: true
+        'rate_stato':
+          type: integer
+          format: int32
+          nullable: true
+    ObmpRatesUpdate:
+      type: object
+      required:
+        - 'obmp_cm_rooms_id'
+      properties:
+        'obmp_cm_rooms_id':
+          type: integer
+          format: int32
+        'obmp_restriction_id':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_id':
+          type: integer
+          format: int32
+          nullable: true
+        'obmp_board_cod':
+          type: string
+          nullable: true
+          maxLength: 6
+        'obmp_cancellation_cod':
+          type: string
+          nullable: true
+          maxLength: 6
+        'obmp_payment_cod':
+          type: string
+          nullable: true
+          maxLength: 6
+        'rate_sum':
+          type: number
+          format: double
+          nullable: true
+        'rate_mol':
+          type: number
+          format: double
+          nullable: true
+        'rate_stato':
+          type: integer
+          format: int32
+          nullable: true
+    ObmpRatesPatch:
+      type: object
+      properties:
+        'obmp_cm_rooms_id':
+          type: integer
+          format: int32
+        'obmp_restriction_id':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_id':
+          type: integer
+          format: int32
+          nullable: true
+        'obmp_board_cod':
+          type: string
+          nullable: true
+          maxLength: 6
+        'obmp_cancellation_cod':
+          type: string
+          nullable: true
+          maxLength: 6
+        'obmp_payment_cod':
+          type: string
+          nullable: true
+          maxLength: 6
+        'rate_sum':
+          type: number
+          format: double
+          nullable: true
+        'rate_mol':
+          type: number
+          format: double
+          nullable: true
+        'rate_stato':
+          type: integer
+          format: int32
+          nullable: true
+    ObmpRatesListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ObmpRatesRead'
+        meta: { type: object }
+        links: { type: object }
+    ObmpRatesCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            'obmp_rate_id':
+              type: integer
+              format: int32
+        meta: { type: object }
+        links: { type: object }

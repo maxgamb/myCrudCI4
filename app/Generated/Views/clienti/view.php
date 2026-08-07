@@ -176,6 +176,9 @@
                             <th class="w-25"><?= esc(lang('Clienti.lingua')) ?></th>
                             <td><?= esc($row->lingua ?? '') ?></td>
                         </tr>                        <tr>
+                            <th class="w-25"><?= esc(lang('Clienti.password')) ?></th>
+                            <td><?= esc($row->password ?? '') ?></td>
+                        </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Clienti.clienti_utente_id')) ?></th>
                             <td><?= esc($row->clienti_utente_id ?? '') ?></td>
                         </tr>                    </tbody>

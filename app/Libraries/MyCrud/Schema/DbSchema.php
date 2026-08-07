@@ -89,12 +89,27 @@ class DbSchema
             [$table]
         )->getResultArray();
 
+        // TABLE_ROWS e le dimensioni sono stime leggere, utili al Builder e
+        // alla diagnostica senza eseguire COUNT(*) durante la configurazione.
+        $stats = $this->db->query(
+            'SELECT TABLE_ROWS AS rowEstimate,
+                    DATA_LENGTH AS dataLength,
+                    INDEX_LENGTH AS indexLength
+             FROM information_schema.TABLES
+             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?
+             LIMIT 1',
+            [$table]
+        )->getRowArray() ?: [];
+
         return [
             'name' => $table,
             'primaryKey' => $primaryKey ?? ($columns[0]['name'] ?? 'id'),
             'columns' => $columns,
             'foreignKeys' => $foreignKeys,
             'indexes' => $indexes,
+            'rowEstimate' => max(0, (int) ($stats['rowEstimate'] ?? 0)),
+            'dataLength' => max(0, (int) ($stats['dataLength'] ?? 0)),
+            'indexLength' => max(0, (int) ($stats['indexLength'] ?? 0)),
         ];
     }
 

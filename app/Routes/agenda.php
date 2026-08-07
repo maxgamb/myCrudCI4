@@ -2,11 +2,18 @@
 
 use CodeIgniter\Router\RouteCollection;
 
+/*
+ * Route modulari del CRUD agenda.
+ * myCrudGpt genera volutamente un file per tabella: app/Config/Routes.php
+ * può caricare app/Routes/*.php senza concentrare tutte le route in un unico file.
+ */
+
 /** @var RouteCollection $routes */
 $routes->group('agenda', static function (RouteCollection $routes): void {
     $routes->get('/', 'AgendaController::index');
     $routes->get('export-csv', 'AgendaController::exportCsv');
     $routes->get('export-word', 'AgendaController::exportWord');
+    $routes->get('relation-options/(:segment)', 'AgendaController::relationOptions/$1');
     $routes->get('view/(:segment)', 'AgendaController::view/$1');
     $routes->get('create', 'AgendaController::create');
     $routes->post('store', 'AgendaController::store');

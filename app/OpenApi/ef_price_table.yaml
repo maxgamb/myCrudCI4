@@ -1,0 +1,274 @@
+openapi: 3.0.3
+info:
+  title: 'ef_price_table API'
+  version: 1.0.0
+paths:
+  /api/v1/ef_price_table:
+    get:
+      summary: 'Elenco ef_price_table'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[price_ef_is]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[hotel_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[from]'
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: 'filter[to]'
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['price_ef_is', 'hotel_id', 'from', 'to'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EfPriceTableListResponse'
+    post:
+      summary: Crea record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EfPriceTableCreate'
+      responses:
+        '201':
+          description: Record creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EfPriceTableCreatedResponse'
+        '422': { description: Errore di validazione }
+  /api/v1/ef_price_table/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Dettaglio record
+      responses:
+        '200':
+          description: Record trovato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/EfPriceTableRead'
+        '404': { description: Record non trovato }
+    put:
+      summary: Aggiornamento completo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EfPriceTableUpdate'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    patch:
+      summary: Aggiornamento parziale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EfPriceTablePatch'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    delete:
+      summary: Elimina record
+      responses:
+        '204': { description: Record eliminato }
+components:
+  schemas:
+    EfPriceTableRead:
+      type: object
+      properties:
+        'price_ef_is':
+          type: integer
+          format: int32
+        'hotel_id':
+          type: integer
+          format: int32
+          nullable: true
+        'from':
+          type: string
+          format: date
+          nullable: true
+        'to':
+          type: string
+          format: date
+          nullable: true
+        'single':
+          type: integer
+          format: int32
+          nullable: true
+        'single_plus':
+          type: integer
+          format: int32
+          nullable: true
+        'tw_db':
+          type: integer
+          format: int32
+          nullable: true
+        'student':
+          type: integer
+          format: int32
+          nullable: true
+        'fam_tr':
+          type: integer
+          format: int32
+          nullable: true
+    EfPriceTableCreate:
+      type: object
+      properties:
+        'hotel_id':
+          type: integer
+          format: int32
+          nullable: true
+        'from':
+          type: string
+          format: date
+          nullable: true
+        'to':
+          type: string
+          format: date
+          nullable: true
+        'single':
+          type: integer
+          format: int32
+          nullable: true
+        'single_plus':
+          type: integer
+          format: int32
+          nullable: true
+        'tw_db':
+          type: integer
+          format: int32
+          nullable: true
+        'student':
+          type: integer
+          format: int32
+          nullable: true
+        'fam_tr':
+          type: integer
+          format: int32
+          nullable: true
+    EfPriceTableUpdate:
+      type: object
+      properties:
+        'hotel_id':
+          type: integer
+          format: int32
+          nullable: true
+        'from':
+          type: string
+          format: date
+          nullable: true
+        'to':
+          type: string
+          format: date
+          nullable: true
+        'single':
+          type: integer
+          format: int32
+          nullable: true
+        'single_plus':
+          type: integer
+          format: int32
+          nullable: true
+        'tw_db':
+          type: integer
+          format: int32
+          nullable: true
+        'student':
+          type: integer
+          format: int32
+          nullable: true
+        'fam_tr':
+          type: integer
+          format: int32
+          nullable: true
+    EfPriceTablePatch:
+      type: object
+      properties:
+        'hotel_id':
+          type: integer
+          format: int32
+          nullable: true
+        'from':
+          type: string
+          format: date
+          nullable: true
+        'to':
+          type: string
+          format: date
+          nullable: true
+        'single':
+          type: integer
+          format: int32
+          nullable: true
+        'single_plus':
+          type: integer
+          format: int32
+          nullable: true
+        'tw_db':
+          type: integer
+          format: int32
+          nullable: true
+        'student':
+          type: integer
+          format: int32
+          nullable: true
+        'fam_tr':
+          type: integer
+          format: int32
+          nullable: true
+    EfPriceTableListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EfPriceTableRead'
+        meta: { type: object }
+        links: { type: object }
+    EfPriceTableCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            'price_ef_is':
+              type: integer
+              format: int32
+        meta: { type: object }
+        links: { type: object }

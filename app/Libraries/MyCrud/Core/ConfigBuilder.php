@@ -69,6 +69,8 @@ class ConfigBuilder
                     'indexes' => [],
                 ],
                 'foreignKey' => $relations['belongsTo'][$name] ?? null,
+                'relationMode' => (string) (($relations['belongsTo'][$name]['optionMode'] ?? '') ?: ''),
+                'relationRowEstimate' => max(0, (int) ($relations['belongsTo'][$name]['rowEstimate'] ?? 0)),
                 'inputType' => $this->inferInputType(
                     $column,
                     isset($relations['belongsTo'][$name])
@@ -98,6 +100,11 @@ class ConfigBuilder
         return $this->finalize([
             'table' => $table,
             'primaryKey' => $info['primaryKey'],
+            'tableStats' => [
+                'rowEstimate' => max(0, (int) ($info['rowEstimate'] ?? 0)),
+                'dataLength' => max(0, (int) ($info['dataLength'] ?? 0)),
+                'indexLength' => max(0, (int) ($info['indexLength'] ?? 0)),
+            ],
             'architecture' => $architecture,
             'fields' => $fields,
             'order' => array_keys($fields),
@@ -136,6 +143,17 @@ class ConfigBuilder
                 : (string) $field['inputType'];
             $field['width'] = max(1, min(12, (int) ($post['width'][$name] ?? 6)));
 
+            if (!empty($field['foreignKey'])) {
+                $requestedRelationMode = strtolower(trim((string) (
+                    $post['relationMode'][$name]
+                    ?? $field['relationMode']
+                    ?? 'select'
+                )));
+                $field['relationMode'] = in_array($requestedRelationMode, ['select', 'ajax'], true)
+                    ? $requestedRelationMode
+                    : 'select';
+            }
+
             $boolean = array_values(array_intersect(
                 (array) ($post['attrBool'][$name] ?? []),
                 ['required', 'readonly', 'disabled']
@@ -158,9 +176,9 @@ class ConfigBuilder
             if (array_key_exists($name, (array) ($post['ui'] ?? []))) {
                 $postedUi = array_values(array_intersect(
                     (array) $post['ui'][$name],
-                    ['searchable', 'sortable', 'visibleIndex', 'visibleForm', 'visibleView', 'sensitive', 'exportable']
+                    ['searchable', 'sortable', 'visibleIndex', 'visibleForm', 'visibleView', 'sensitive', 'exportable', 'apiVisible']
                 ));
-                foreach (['searchable', 'sortable', 'visibleIndex', 'visibleForm', 'visibleView', 'sensitive', 'exportable'] as $flag) {
+                foreach (['searchable', 'sortable', 'visibleIndex', 'visibleForm', 'visibleView', 'sensitive', 'exportable', 'apiVisible'] as $flag) {
                     $field['ui'][$flag] = in_array($flag, $postedUi, true);
                 }
             }
@@ -195,6 +213,10 @@ class ConfigBuilder
 
     public function mergeSavedConfiguration(array $base, array $saved): array
     {
+        // I metadati 2.8 descrivono lo snapshot persistente ma non devono
+        // sovrascrivere informazioni ricavate dallo schema corrente.
+        $savedMeta = (array) ($saved['_meta'] ?? []);
+        unset($saved['_meta']);
         $saved['table'] = $base['table'];
 
         /*
@@ -241,25 +263,44 @@ class ConfigBuilder
         $merged['architecture'] = $architecture;
         $merged['features'] = $baseFeatures;
 
-        return $this->finalize($merged);
+        $final = $this->finalize($merged);
+        if ($savedMeta !== []) {
+            $final['_meta'] = $savedMeta;
+        }
+
+        return $final;
     }
 
     private function finalize(array $config): array
     {
-        $entity = Naming::singularStudly($config['table']);
+        $entity = Naming::tableClass((string) $config['table']);
         $languageFile = Naming::studly((string) $config['table']);
 
         foreach ((array) ($config['fields'] ?? []) as $name => &$field) {
             $field['languageKey'] = $languageFile . '.' . $name;
-            $inputType = (string) ($field['inputType'] ?? 'text');
-            if (FieldPolicy::isSensitive((string) $name, $inputType)) {
-                $field['ui']['sensitive'] = true;
-                $field['ui']['visibleIndex'] = false;
-                $field['ui']['visibleView'] = false;
-                $field['ui']['visibleForm'] = FieldPolicy::isPassword((string) $name, $inputType);
+            $field['ui'] = (array) ($field['ui'] ?? []);
+
+            // I filtri e l'ordinamento server-side sono ammessi soltanto sui
+            // campi che guidano un indice (PRIMARY, UNIQUE o prima colonna
+            // di un indice semplice/composto). Le altre opzioni restano una
+            // decisione esplicita dello sviluppatore nel Builder.
+            $index = (array) ($field['index'] ?? []);
+            $indexEligible = !empty($index['primary'])
+                || !empty($index['unique'])
+                || !empty($index['leading']);
+
+            if (!$indexEligible) {
                 $field['ui']['searchable'] = false;
                 $field['ui']['sortable'] = false;
-                $field['ui']['exportable'] = false;
+            }
+
+            if (!array_key_exists('apiVisible', $field['ui'])) {
+                $field['ui']['apiVisible'] = true;
+            }
+
+            if (!empty($field['foreignKey'])) {
+                $mode = strtolower(trim((string) ($field['relationMode'] ?? 'select')));
+                $field['relationMode'] = in_array($mode, ['select', 'ajax'], true) ? $mode : 'select';
             }
         }
         unset($field);
@@ -410,6 +451,7 @@ class ConfigBuilder
             'visibleView'  => !$sensitive && !$managed,
             'sensitive'    => $sensitive,
             'exportable'   => !$managed && !$sensitive && !$binary,
+            'apiVisible'   => !$managed && !$binary,
             'filterMode'   => $filterMode,
         ];
     }

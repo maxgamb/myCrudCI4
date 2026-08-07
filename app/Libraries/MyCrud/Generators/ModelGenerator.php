@@ -49,6 +49,10 @@ final class ModelGenerator
                 || FieldPolicy::isSensitive($name, $inputType);
             $isLarge = in_array($type, ['text', 'mediumtext', 'longtext', 'blob', 'mediumblob', 'longblob'], true);
             $isBinary = in_array($inputType, ['file', 'image'], true) || str_contains($type, 'blob') || str_contains($type, 'binary');
+            $index = (array) ($field['index'] ?? []);
+            $indexEligible = !empty($index['primary'])
+                || !empty($index['unique'])
+                || !empty($index['leading']);
 
             if (
                 (empty($field['primary']) || empty($field['autoIncrement']))
@@ -70,14 +74,30 @@ final class ModelGenerator
                 $exportFields[] = $name;
             }
 
-            if (!empty($ui['searchable']) && !$isSensitive && !$isLarge && !$isBinary) {
+            if (!empty($ui['searchable']) && $indexEligible && !$isSensitive && !$isLarge && !$isBinary) {
+                // Lato generatore: definiamo una whitelist di operatori coerente
+                // col tipo DB. La UI potrà mostrare solo questi criteri e il
+                // Model li ricontrollerà prima di comporre qualsiasi query.
+                $isNumeric = preg_match('/int|decimal|float|double|numeric|real/', $type) === 1;
+                $isDate = in_array($type, ['date', 'datetime', 'timestamp', 'time'], true);
+                $isBoolean = $inputType === 'checkbox' || $type === 'bool' || $type === 'boolean'
+                    || preg_match('/^tinyint\(1\)/', strtolower((string) ($field['columnType'] ?? ''))) === 1;
+
+                if ($isBoolean) {
+                    $operators = ['eq', 'neq'];
+                } elseif ($isNumeric || $isDate) {
+                    $operators = ['eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'between', 'is_null', 'not_null'];
+                } else {
+                    $operators = ['eq', 'neq', 'starts_with', 'contains', 'ends_with', 'is_null', 'not_null'];
+                }
+
                 $filterDefinitions[$name] = [
-                    'mode' => (string) ($ui['filterMode'] ?? 'exact'),
                     'type' => $type,
+                    'operators' => $operators,
                 ];
             }
 
-            if (!empty($ui['sortable']) && !$isSensitive && !$isLarge && !$isBinary) {
+            if (!empty($ui['sortable']) && $indexEligible && !$isSensitive && !$isLarge && !$isBinary) {
                 $sortable[] = $name;
             }
         }
@@ -92,7 +112,7 @@ final class ModelGenerator
             array_unshift($sortable, $primaryKey);
         }
         if (!isset($filterDefinitions[$primaryKey])) {
-            $filterDefinitions[$primaryKey] = ['mode' => 'exact', 'type' => 'primary'];
+            $filterDefinitions[$primaryKey] = ['type' => 'primary', 'operators' => ['eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'between']];
         }
 
         $detailSelects = [];
@@ -114,6 +134,7 @@ final class ModelGenerator
         $csvJoinLines = [];
         $optionMethods = [];
         $optionMapLines = [];
+        $relationSearchDefinitions = [];
 
         foreach ($config['relations']['belongsTo'] ?? [] as $field => $relation) {
             $parentTable = (string) $relation['parentTable'];
@@ -138,8 +159,19 @@ final class ModelGenerator
                 $csvJoinLines[] = $joinLine;
             }
 
-            $method = 'get' . Naming::singularStudly($parentTable) . Naming::singularStudly((string) $field) . 'Options';
-            $optionMethods[] = <<<PHP
+            $relationMode = strtolower((string) ($config['fields'][$field]['relationMode'] ?? $relation['optionMode'] ?? 'select'));
+            $relationMode = in_array($relationMode, ['select', 'ajax'], true) ? $relationMode : 'select';
+
+            $relationSearchDefinitions[(string) $field] = [
+                'table' => $parentTable,
+                'key' => $parentKey,
+                'label' => $displayField,
+                'mode' => $relationMode,
+            ];
+
+            if ($relationMode === 'select') {
+                $method = 'get' . Naming::tableClass($parentTable) . Naming::studly((string) $field) . 'Options';
+                $optionMethods[] = <<<PHP
     /** Restituisce le opzioni della relazione {$field}. */
     public function {$method}(): array
     {
@@ -151,7 +183,8 @@ final class ModelGenerator
     }
 
 PHP;
-            $optionMapLines[] = "            '{$field}' => \$this->toOptions(\$this->{$method}(), '{$parentKey}', '{$displayField}'),";
+                $optionMapLines[] = "            '{$field}' => \$this->toOptions(\$this->{$method}(), '{$parentKey}', '{$displayField}'),";
+            }
         }
 
         $childMethods = [];
@@ -237,6 +270,7 @@ PHP : '';
         $filtersCode = var_export($filterDefinitions, true);
         $sortableCode = var_export(array_values(array_unique($sortable)), true);
         $exportFieldsCode = var_export(array_values(array_unique($exportFields)), true);
+        $relationSearchCode = var_export($relationSearchDefinitions, true);
         $entityUse = $useEntity ? 'use App\\Entities\\' . $entity . ';' : '';
         $returnTypeCode = $useEntity ? $entity . '::class' : "'object'";
 
@@ -315,6 +349,7 @@ final class {$class} extends Model
     private const LIST_FILTERS = {$filtersCode};
     private const SORTABLE_FIELDS = {$sortableCode};
     private const EXPORT_FIELDS = {$exportFieldsCode};
+    private const RELATION_SEARCHES = {$relationSearchCode};
     private const COUNT_CACHE_SECONDS = {$countCacheSeconds};
 
     /** Query completa per dettaglio e API. */
@@ -387,7 +422,7 @@ final class {$class} extends Model
             \$page,
             \$perPage,
             \$total,
-            'default_full'
+            'bootstrap_full'
         );
 
         return [
@@ -401,8 +436,8 @@ final class {$class} extends Model
         ];
     }
 
-    /** Legge il CSV a blocchi usando la chiave primaria come cursore. */
-    public function getCsvRows(array \$filters, int \$limit = 2000, int|string|null \$after = null): array
+    /** Legge i record di export a blocchi usando la chiave primaria come cursore. */
+    public function getExportRows(array \$filters, int \$limit = 2000, int|string|null \$after = null): array
     {
         \$builder = \$this->db->table('{$table}');
         \$builder->select([
@@ -422,7 +457,7 @@ final class {$class} extends Model
             ->getResultArray();
     }
 
-    public function countCsvRows(array \$filters): int
+    public function countExportRows(array \$filters): int
     {
         \$builder = \$this->listCountBuilder();
         \$this->applyListFilters(\$builder, \$filters, false);
@@ -431,7 +466,7 @@ final class {$class} extends Model
     }
 
     /** @return list<string> */
-    public function csvFields(): array
+    public function exportFields(): array
     {
         return self::EXPORT_FIELDS;
     }
@@ -457,16 +492,8 @@ final class {$class} extends Model
 
     private function hasActiveFilters(array \$filters): bool
     {
-        foreach (\$filters as \$value) {
-            if (is_array(\$value)) {
-                foreach (\$value as \$item) {
-                    if (is_scalar(\$item) && trim((string) \$item) !== '') {
-                        return true;
-                    }
-                }
-                continue;
-            }
-            if (is_scalar(\$value) && trim((string) \$value) !== '') {
+        foreach (\$filters as \$filter) {
+            if (is_array(\$filter) && trim((string) (\$filter['field'] ?? '')) !== '') {
                 return true;
             }
         }
@@ -479,45 +506,97 @@ final class {$class} extends Model
         service('cache')->delete('mycrud_list_total_' . md5(\$this->table));
     }
 
+    /**
+     * Applica il filtro dinamico costruito dall'interfaccia del sito.
+     * Campo e operatore vengono sempre verificati contro LIST_FILTERS.
+     */
     private function applyListFilters(BaseBuilder \$builder, array \$filters, bool \$qualified): void
     {
-        foreach (self::LIST_FILTERS as \$field => \$definition) {
+        \$applied = 0;
+        \$nextLogic = 'and';
+        foreach (array_values(\$filters) as \$filter) {
+            if (!is_array(\$filter)) {
+                continue;
+            }
+
+            \$field = trim((string) (\$filter['field'] ?? ''));
+            \$operator = trim((string) (\$filter['operator'] ?? ''));
+            if (\$field === '' || !isset(self::LIST_FILTERS[\$field])) {
+                continue;
+            }
+
+            \$definition = self::LIST_FILTERS[\$field];
+            \$allowedOperators = (array) (\$definition['operators'] ?? ['eq']);
+            if (!in_array(\$operator, \$allowedOperators, true)) {
+                continue;
+            }
+
             \$column = \$qualified ? '{$table}.' . \$field : \$field;
-            \$mode = (string) (\$definition['mode'] ?? 'exact');
-            \$value = \$filters[\$field] ?? null;
+            \$value = is_scalar(\$filter['value'] ?? null) ? trim((string) \$filter['value']) : '';
+            \$valueTo = is_scalar(\$filter['value_to'] ?? null) ? trim((string) \$filter['value_to']) : '';
+            // La logica appartiene alla riga precedente e collega la
+            // condizione appena applicata a quella successiva nell'interfaccia.
+            \$logic = \$applied > 0 ? \$nextLogic : 'and';
 
-            if (\$mode === 'range') {
-                if (!is_array(\$value)) {
-                    continue;
-                }
-                \$from = trim((string) (\$value['from'] ?? ''));
-                \$to = trim((string) (\$value['to'] ?? ''));
-                if (\$from !== '') {
-                    \$builder->where(\$column . ' >=', \$from);
-                }
-                if (\$to !== '') {
-                    \$builder->where(\$column . ' <=', \$to);
-                }
+            if (!in_array(\$operator, ['is_null', 'not_null'], true) && \$value === '') {
+                continue;
+            }
+            if (\$operator === 'between' && \$valueTo === '') {
                 continue;
             }
 
-            if (!is_scalar(\$value)) {
-                continue;
+            // Ogni condizione è raggruppata: AND/OR resta prevedibile anche
+            // per operatori composti come BETWEEN.
+            if (\$logic === 'or') {
+                \$builder->orGroupStart();
+            } else {
+                \$builder->groupStart();
             }
 
-            \$value = trim((string) \$value);
-            if (\$value === '') {
-                continue;
-            }
-
-            if (\$mode === 'prefix') {
-                if (strlen(\$value) >= 2) {
+            switch (\$operator) {
+                case 'neq':
+                    \$builder->where(\$column . ' !=', \$value);
+                    break;
+                case 'gt':
+                    \$builder->where(\$column . ' >', \$value);
+                    break;
+                case 'gte':
+                    \$builder->where(\$column . ' >=', \$value);
+                    break;
+                case 'lt':
+                    \$builder->where(\$column . ' <', \$value);
+                    break;
+                case 'lte':
+                    \$builder->where(\$column . ' <=', \$value);
+                    break;
+                case 'between':
+                    \$builder->where(\$column . ' >=', \$value)
+                        ->where(\$column . ' <=', \$valueTo);
+                    break;
+                case 'starts_with':
                     \$builder->like(\$column, \$value, 'after');
-                }
-                continue;
+                    break;
+                case 'contains':
+                    \$builder->like(\$column, \$value, 'both');
+                    break;
+                case 'ends_with':
+                    \$builder->like(\$column, \$value, 'before');
+                    break;
+                case 'is_null':
+                    \$builder->where(\$column, null);
+                    break;
+                case 'not_null':
+                    \$builder->where(\$column . ' IS NOT NULL', null, false);
+                    break;
+                case 'eq':
+                default:
+                    \$builder->where(\$column, \$value);
+                    break;
             }
 
-            \$builder->where(\$column, \$value);
+            \$builder->groupEnd();
+            \$applied++;
+            \$nextLogic = strtolower((string) (\$filter['logic'] ?? 'and')) === 'or' ? 'or' : 'and';
         }
     }
 
@@ -526,6 +605,42 @@ final class {$class} extends Model
         return [
 {$optionMapCode}
         ];
+    }
+
+    /**
+     * Ricerca server-side delle opzioni per relazioni grandi.
+     * Tabella, chiave e campo label arrivano solo dalla whitelist generata.
+     *
+     * @return list<array{id:string,text:string}>
+     */
+    public function searchRelationOptions(string \$field, string \$query, int \$limit = 20): array
+    {
+        if (!isset(self::RELATION_SEARCHES[\$field])) {
+            return [];
+        }
+
+        \$definition = self::RELATION_SEARCHES[\$field];
+        \$limit = max(1, min(100, \$limit));
+        \$builder = \$this->db->table((string) \$definition['table'])
+            ->select([(string) \$definition['key'], (string) \$definition['label']])
+            ->orderBy((string) \$definition['label'], 'ASC')
+            ->limit(\$limit);
+
+        \$query = trim(\$query);
+        if (\$query !== '') {
+            \$builder->like((string) \$definition['label'], \$query, 'after');
+        }
+
+        \$rows = \$builder->get()->getResultArray();
+        \$result = [];
+        foreach (\$rows as \$row) {
+            \$result[] = [
+                'id' => (string) (\$row[(string) \$definition['key']] ?? ''),
+                'text' => (string) (\$row[(string) \$definition['label']] ?? ''),
+            ];
+        }
+
+        return \$result;
     }
 
     private function toOptions(array \$rows, string \$key, string \$label): array

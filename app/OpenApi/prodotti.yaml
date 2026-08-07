@@ -1,0 +1,252 @@
+openapi: 3.0.3
+info:
+  title: 'prodotti API'
+  version: 1.0.0
+paths:
+  /api/v1/prodotti:
+    get:
+      summary: 'Elenco prodotti'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[prodotto_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[hotel_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['prodotto_id', 'hotel_id'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProdottiListResponse'
+    post:
+      summary: Crea record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProdottiCreate'
+      responses:
+        '201':
+          description: Record creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProdottiCreatedResponse'
+        '422': { description: Errore di validazione }
+  /api/v1/prodotti/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Dettaglio record
+      responses:
+        '200':
+          description: Record trovato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ProdottiRead'
+        '404': { description: Record non trovato }
+    put:
+      summary: Aggiornamento completo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProdottiUpdate'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    patch:
+      summary: Aggiornamento parziale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProdottiPatch'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    delete:
+      summary: Elimina record
+      responses:
+        '204': { description: Record eliminato }
+components:
+  schemas:
+    ProdottiRead:
+      type: object
+      properties:
+        'prodotto_id':
+          type: integer
+          format: int32
+        'prodotti_lista_id':
+          type: integer
+          format: int32
+        'hotel_id':
+          type: integer
+          format: int32
+        'nome_prodotto':
+          type: string
+          maxLength: 100
+        'prezzo_prodotto':
+          type: number
+          format: double
+        'tipologia_prodotto':
+          type: string
+          nullable: true
+          maxLength: 100
+        'reparto_prodotto':
+          type: string
+          nullable: true
+          maxLength: 100
+        'cent_costo_prodotto':
+          type: number
+          format: float
+          nullable: true
+        'prodotti_utente_id':
+          type: integer
+          format: int32
+          nullable: true
+    ProdottiCreate:
+      type: object
+      required:
+        - 'prodotti_lista_id'
+      properties:
+        'prodotti_lista_id':
+          type: integer
+          format: int32
+        'hotel_id':
+          type: integer
+          format: int32
+        'nome_prodotto':
+          type: string
+          maxLength: 100
+        'prezzo_prodotto':
+          type: number
+          format: double
+        'tipologia_prodotto':
+          type: string
+          nullable: true
+          maxLength: 100
+        'reparto_prodotto':
+          type: string
+          nullable: true
+          maxLength: 100
+        'cent_costo_prodotto':
+          type: number
+          format: float
+          nullable: true
+        'prodotti_utente_id':
+          type: integer
+          format: int32
+          nullable: true
+    ProdottiUpdate:
+      type: object
+      required:
+        - 'prodotti_lista_id'
+      properties:
+        'prodotti_lista_id':
+          type: integer
+          format: int32
+        'hotel_id':
+          type: integer
+          format: int32
+        'nome_prodotto':
+          type: string
+          maxLength: 100
+        'prezzo_prodotto':
+          type: number
+          format: double
+        'tipologia_prodotto':
+          type: string
+          nullable: true
+          maxLength: 100
+        'reparto_prodotto':
+          type: string
+          nullable: true
+          maxLength: 100
+        'cent_costo_prodotto':
+          type: number
+          format: float
+          nullable: true
+        'prodotti_utente_id':
+          type: integer
+          format: int32
+          nullable: true
+    ProdottiPatch:
+      type: object
+      properties:
+        'prodotti_lista_id':
+          type: integer
+          format: int32
+        'hotel_id':
+          type: integer
+          format: int32
+        'nome_prodotto':
+          type: string
+          maxLength: 100
+        'prezzo_prodotto':
+          type: number
+          format: double
+        'tipologia_prodotto':
+          type: string
+          nullable: true
+          maxLength: 100
+        'reparto_prodotto':
+          type: string
+          nullable: true
+          maxLength: 100
+        'cent_costo_prodotto':
+          type: number
+          format: float
+          nullable: true
+        'prodotti_utente_id':
+          type: integer
+          format: int32
+          nullable: true
+    ProdottiListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProdottiRead'
+        meta: { type: object }
+        links: { type: object }
+    ProdottiCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            'prodotto_id':
+              type: integer
+              format: int32
+        meta: { type: object }
+        links: { type: object }

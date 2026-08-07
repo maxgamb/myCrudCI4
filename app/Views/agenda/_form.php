@@ -34,23 +34,46 @@ $submissionToken = $submissionToken ?? '';
 
                 <input type="hidden" name="_submission_token" value="<?= esc($submissionToken) ?>">
 
-                <div class="d-none">
-                    <input type="hidden" name="hotel_id" id="hotel_id" value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>">
+                <div class="col-md-6">
+                    <label for="hotel_id" class="form-label">
+                        <?= esc(lang('Agenda.hotel_id')) ?>
+                    </label>
+                    <input
+                        type="number"
+                        name="hotel_id"
+                        id="hotel_id"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
+                        aria-describedby="hotel_id-error"
+                        aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
+                    >
                     <?php if (!empty($errors['hotel_id'])): ?>
                         <div id="hotel_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['hotel_id']) ?>
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="d-none">
-                    <input type="hidden" name="preno_in_data" id="preno_in_data" value="<?= esc(old('preno_in_data', $row->preno_in_data ?? '')) ?>">
+                <div class="col-md-6">
+                    <label for="preno_in_data" class="form-label">
+                        <?= esc(lang('Agenda.preno_in_data')) ?>
+                    </label>
+                    <input
+                        type="datetime-local"
+                        name="preno_in_data"
+                        id="preno_in_data"
+                        value="<?= esc(old('preno_in_data', isset($row->preno_in_data) ? str_replace(' ', 'T', substr((string) $row->preno_in_data, 0, 16)) : '')) ?>"
+                        class="form-control <?= isset($errors['preno_in_data']) ? 'is-invalid' : '' ?>"
+                        aria-describedby="preno_in_data-error"
+                        aria-invalid="<?= isset($errors['preno_in_data']) ? 'true' : 'false' ?>"
+                        required
+                    >
                     <?php if (!empty($errors['preno_in_data'])): ?>
                         <div id="preno_in_data-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_in_data']) ?>
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <label for="preno_importo" class="form-label">
                         <?= esc(lang('Agenda.preno_importo')) ?>
                     </label>
@@ -69,8 +92,19 @@ $submissionToken = $submissionToken ?? '';
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="d-none">
-                    <input type="hidden" name="preno_impoto_mod" id="preno_impoto_mod" value="<?= esc(old('preno_impoto_mod', $row->preno_impoto_mod ?? '')) ?>">
+                <div class="col-md-6">
+                    <label for="preno_impoto_mod" class="form-label">
+                        <?= esc(lang('Agenda.preno_impoto_mod')) ?>
+                    </label>
+                    <input
+                        type="number"
+                        name="preno_impoto_mod"
+                        id="preno_impoto_mod"
+                        value="<?= esc(old('preno_impoto_mod', $row->preno_impoto_mod ?? '')) ?>"
+                        class="form-control <?= isset($errors['preno_impoto_mod']) ? 'is-invalid' : '' ?>"
+                        aria-describedby="preno_impoto_mod-error"
+                        aria-invalid="<?= isset($errors['preno_impoto_mod']) ? 'true' : 'false' ?>"
+                    >
                     <?php if (!empty($errors['preno_impoto_mod'])): ?>
                         <div id="preno_impoto_mod-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_impoto_mod']) ?>
@@ -117,8 +151,19 @@ $submissionToken = $submissionToken ?? '';
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="d-none">
-                    <input type="hidden" name="preno_n_notti" id="preno_n_notti" value="<?= esc(old('preno_n_notti', $row->preno_n_notti ?? '')) ?>">
+                <div class="col-md-6">
+                    <label for="preno_n_notti" class="form-label">
+                        <?= esc(lang('Agenda.preno_n_notti')) ?>
+                    </label>
+                    <input
+                        type="number"
+                        name="preno_n_notti"
+                        id="preno_n_notti"
+                        value="<?= esc(old('preno_n_notti', $row->preno_n_notti ?? '')) ?>"
+                        class="form-control <?= isset($errors['preno_n_notti']) ? 'is-invalid' : '' ?>"
+                        aria-describedby="preno_n_notti-error"
+                        aria-invalid="<?= isset($errors['preno_n_notti']) ? 'true' : 'false' ?>"
+                    >
                     <?php if (!empty($errors['preno_n_notti'])): ?>
                         <div id="preno_n_notti-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_n_notti']) ?>
@@ -129,24 +174,16 @@ $submissionToken = $submissionToken ?? '';
                     <label for="preno_arr_ore" class="form-label">
                         <?= esc(lang('Agenda.preno_arr_ore')) ?>
                     </label>
-                    <select
+                    <input
+                        type="text"
                         name="preno_arr_ore"
                         id="preno_arr_ore"
-                        class="form-select <?= isset($errors['preno_arr_ore']) ? 'is-invalid' : '' ?>"
+                        value="<?= esc(old('preno_arr_ore', $row->preno_arr_ore ?? '')) ?>"
+                        class="form-control <?= isset($errors['preno_arr_ore']) ? 'is-invalid' : '' ?>"
                         aria-describedby="preno_arr_ore-error"
                         aria-invalid="<?= isset($errors['preno_arr_ore']) ? 'true' : 'false' ?>"
                         maxlength="20"
                     >
-                        <option value="">Seleziona...</option>
-                        <?php foreach (($options['preno_arr_ore'] ?? []) as $optionValue => $optionLabel): ?>
-                            <option
-                                value="<?= esc($optionValue) ?>"
-                                <?= (string) old('preno_arr_ore', $row->preno_arr_ore ?? '') === (string) $optionValue ? 'selected' : '' ?>
-                            >
-                                <?= esc($optionLabel) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
                     <?php if (!empty($errors['preno_arr_ore'])): ?>
                         <div id="preno_arr_ore-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_arr_ore']) ?>
@@ -157,59 +194,42 @@ $submissionToken = $submissionToken ?? '';
                     <label for="preno_trattamento" class="form-label">
                         <?= esc(lang('Agenda.preno_trattamento')) ?>
                     </label>
-                    <select
+                    <input
+                        type="text"
                         name="preno_trattamento"
                         id="preno_trattamento"
-                        class="form-select <?= isset($errors['preno_trattamento']) ? 'is-invalid' : '' ?>"
+                        value="<?= esc(old('preno_trattamento', $row->preno_trattamento ?? '')) ?>"
+                        class="form-control <?= isset($errors['preno_trattamento']) ? 'is-invalid' : '' ?>"
                         aria-describedby="preno_trattamento-error"
                         aria-invalid="<?= isset($errors['preno_trattamento']) ? 'true' : 'false' ?>"
-                        required maxlength="3"
+                        maxlength="3"
                     >
-                        <option value="">Seleziona...</option>
-                        <?php foreach (($options['preno_trattamento'] ?? []) as $optionValue => $optionLabel): ?>
-                            <option
-                                value="<?= esc($optionValue) ?>"
-                                <?= (string) old('preno_trattamento', $row->preno_trattamento ?? '') === (string) $optionValue ? 'selected' : '' ?>
-                            >
-                                <?= esc($optionLabel) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
                     <?php if (!empty($errors['preno_trattamento'])): ?>
                         <div id="preno_trattamento-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_trattamento']) ?>
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="t1" class="form-label">
                         <?= esc(lang('Agenda.t1')) ?>
                     </label>
-                    <select
+                    <input
+                        type="number"
                         name="t1"
                         id="t1"
-                        class="form-select <?= isset($errors['t1']) ? 'is-invalid' : '' ?>"
+                        value="<?= esc(old('t1', $row->t1 ?? '')) ?>"
+                        class="form-control <?= isset($errors['t1']) ? 'is-invalid' : '' ?>"
                         aria-describedby="t1-error"
                         aria-invalid="<?= isset($errors['t1']) ? 'true' : 'false' ?>"
-                        required
                     >
-                        <option value="">Seleziona...</option>
-                        <?php foreach (($options['t1'] ?? []) as $optionValue => $optionLabel): ?>
-                            <option
-                                value="<?= esc($optionValue) ?>"
-                                <?= (string) old('t1', $row->t1 ?? '') === (string) $optionValue ? 'selected' : '' ?>
-                            >
-                                <?= esc($optionLabel) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
                     <?php if (!empty($errors['t1'])): ?>
                         <div id="t1-error" class="invalid-feedback d-block">
                             <?= esc($errors['t1']) ?>
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="q1" class="form-label">
                         <?= esc(lang('Agenda.q1')) ?>
                     </label>
@@ -229,7 +249,7 @@ $submissionToken = $submissionToken ?? '';
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="p1" class="form-label">
                         <?= esc(lang('Agenda.p1')) ?>
                     </label>
@@ -241,7 +261,6 @@ $submissionToken = $submissionToken ?? '';
                         class="form-control <?= isset($errors['p1']) ? 'is-invalid' : '' ?>"
                         aria-describedby="p1-error"
                         aria-invalid="<?= isset($errors['p1']) ? 'true' : 'false' ?>"
-                        required
                     >
                     <?php if (!empty($errors['p1'])): ?>
                         <div id="p1-error" class="invalid-feedback d-block">
@@ -249,34 +268,26 @@ $submissionToken = $submissionToken ?? '';
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="t2" class="form-label">
                         <?= esc(lang('Agenda.t2')) ?>
                     </label>
-                    <select
+                    <input
+                        type="number"
                         name="t2"
                         id="t2"
-                        class="form-select <?= isset($errors['t2']) ? 'is-invalid' : '' ?>"
+                        value="<?= esc(old('t2', $row->t2 ?? '')) ?>"
+                        class="form-control <?= isset($errors['t2']) ? 'is-invalid' : '' ?>"
                         aria-describedby="t2-error"
                         aria-invalid="<?= isset($errors['t2']) ? 'true' : 'false' ?>"
                     >
-                        <option value="">Seleziona...</option>
-                        <?php foreach (($options['t2'] ?? []) as $optionValue => $optionLabel): ?>
-                            <option
-                                value="<?= esc($optionValue) ?>"
-                                <?= (string) old('t2', $row->t2 ?? '') === (string) $optionValue ? 'selected' : '' ?>
-                            >
-                                <?= esc($optionLabel) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
                     <?php if (!empty($errors['t2'])): ?>
                         <div id="t2-error" class="invalid-feedback d-block">
                             <?= esc($errors['t2']) ?>
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="q2" class="form-label">
                         <?= esc(lang('Agenda.q2')) ?>
                     </label>
@@ -295,7 +306,7 @@ $submissionToken = $submissionToken ?? '';
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="p2" class="form-label">
                         <?= esc(lang('Agenda.p2')) ?>
                     </label>
@@ -314,34 +325,26 @@ $submissionToken = $submissionToken ?? '';
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="t3" class="form-label">
                         <?= esc(lang('Agenda.t3')) ?>
                     </label>
-                    <select
+                    <input
+                        type="number"
                         name="t3"
                         id="t3"
-                        class="form-select <?= isset($errors['t3']) ? 'is-invalid' : '' ?>"
+                        value="<?= esc(old('t3', $row->t3 ?? '')) ?>"
+                        class="form-control <?= isset($errors['t3']) ? 'is-invalid' : '' ?>"
                         aria-describedby="t3-error"
                         aria-invalid="<?= isset($errors['t3']) ? 'true' : 'false' ?>"
                     >
-                        <option value="">Seleziona...</option>
-                        <?php foreach (($options['t3'] ?? []) as $optionValue => $optionLabel): ?>
-                            <option
-                                value="<?= esc($optionValue) ?>"
-                                <?= (string) old('t3', $row->t3 ?? '') === (string) $optionValue ? 'selected' : '' ?>
-                            >
-                                <?= esc($optionLabel) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
                     <?php if (!empty($errors['t3'])): ?>
                         <div id="t3-error" class="invalid-feedback d-block">
                             <?= esc($errors['t3']) ?>
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="q3" class="form-label">
                         <?= esc(lang('Agenda.q3')) ?>
                     </label>
@@ -360,7 +363,7 @@ $submissionToken = $submissionToken ?? '';
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="p3" class="form-label">
                         <?= esc(lang('Agenda.p3')) ?>
                     </label>
@@ -379,34 +382,26 @@ $submissionToken = $submissionToken ?? '';
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="t4" class="form-label">
                         <?= esc(lang('Agenda.t4')) ?>
                     </label>
-                    <select
+                    <input
+                        type="number"
                         name="t4"
                         id="t4"
-                        class="form-select <?= isset($errors['t4']) ? 'is-invalid' : '' ?>"
+                        value="<?= esc(old('t4', $row->t4 ?? '')) ?>"
+                        class="form-control <?= isset($errors['t4']) ? 'is-invalid' : '' ?>"
                         aria-describedby="t4-error"
                         aria-invalid="<?= isset($errors['t4']) ? 'true' : 'false' ?>"
                     >
-                        <option value="">Seleziona...</option>
-                        <?php foreach (($options['t4'] ?? []) as $optionValue => $optionLabel): ?>
-                            <option
-                                value="<?= esc($optionValue) ?>"
-                                <?= (string) old('t4', $row->t4 ?? '') === (string) $optionValue ? 'selected' : '' ?>
-                            >
-                                <?= esc($optionLabel) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
                     <?php if (!empty($errors['t4'])): ?>
                         <div id="t4-error" class="invalid-feedback d-block">
                             <?= esc($errors['t4']) ?>
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="q4" class="form-label">
                         <?= esc(lang('Agenda.q4')) ?>
                     </label>
@@ -425,7 +420,7 @@ $submissionToken = $submissionToken ?? '';
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="p4" class="form-label">
                         <?= esc(lang('Agenda.p4')) ?>
                     </label>
@@ -444,34 +439,26 @@ $submissionToken = $submissionToken ?? '';
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="t5" class="form-label">
                         <?= esc(lang('Agenda.t5')) ?>
                     </label>
-                    <select
+                    <input
+                        type="number"
                         name="t5"
                         id="t5"
-                        class="form-select <?= isset($errors['t5']) ? 'is-invalid' : '' ?>"
+                        value="<?= esc(old('t5', $row->t5 ?? '')) ?>"
+                        class="form-control <?= isset($errors['t5']) ? 'is-invalid' : '' ?>"
                         aria-describedby="t5-error"
                         aria-invalid="<?= isset($errors['t5']) ? 'true' : 'false' ?>"
                     >
-                        <option value="">Seleziona...</option>
-                        <?php foreach (($options['t5'] ?? []) as $optionValue => $optionLabel): ?>
-                            <option
-                                value="<?= esc($optionValue) ?>"
-                                <?= (string) old('t5', $row->t5 ?? '') === (string) $optionValue ? 'selected' : '' ?>
-                            >
-                                <?= esc($optionLabel) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
                     <?php if (!empty($errors['t5'])): ?>
                         <div id="t5-error" class="invalid-feedback d-block">
                             <?= esc($errors['t5']) ?>
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="q5" class="form-label">
                         <?= esc(lang('Agenda.q5')) ?>
                     </label>
@@ -490,7 +477,7 @@ $submissionToken = $submissionToken ?? '';
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="p5" class="form-label">
                         <?= esc(lang('Agenda.p5')) ?>
                     </label>
@@ -509,34 +496,26 @@ $submissionToken = $submissionToken ?? '';
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="t6" class="form-label">
                         <?= esc(lang('Agenda.t6')) ?>
                     </label>
-                    <select
+                    <input
+                        type="number"
                         name="t6"
                         id="t6"
-                        class="form-select <?= isset($errors['t6']) ? 'is-invalid' : '' ?>"
+                        value="<?= esc(old('t6', $row->t6 ?? '')) ?>"
+                        class="form-control <?= isset($errors['t6']) ? 'is-invalid' : '' ?>"
                         aria-describedby="t6-error"
                         aria-invalid="<?= isset($errors['t6']) ? 'true' : 'false' ?>"
                     >
-                        <option value="">Seleziona...</option>
-                        <?php foreach (($options['t6'] ?? []) as $optionValue => $optionLabel): ?>
-                            <option
-                                value="<?= esc($optionValue) ?>"
-                                <?= (string) old('t6', $row->t6 ?? '') === (string) $optionValue ? 'selected' : '' ?>
-                            >
-                                <?= esc($optionLabel) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
                     <?php if (!empty($errors['t6'])): ?>
                         <div id="t6-error" class="invalid-feedback d-block">
                             <?= esc($errors['t6']) ?>
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="q6" class="form-label">
                         <?= esc(lang('Agenda.q6')) ?>
                     </label>
@@ -555,7 +534,7 @@ $submissionToken = $submissionToken ?? '';
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <label for="p6" class="form-label">
                         <?= esc(lang('Agenda.p6')) ?>
                     </label>
@@ -681,8 +660,19 @@ $submissionToken = $submissionToken ?? '';
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="d-none">
-                    <input type="hidden" name="allotment_id" id="allotment_id" value="<?= esc(old('allotment_id', $row->allotment_id ?? '')) ?>">
+                <div class="col-md-6">
+                    <label for="allotment_id" class="form-label">
+                        <?= esc(lang('Agenda.allotment_id')) ?>
+                    </label>
+                    <input
+                        type="number"
+                        name="allotment_id"
+                        id="allotment_id"
+                        value="<?= esc(old('allotment_id', $row->allotment_id ?? '')) ?>"
+                        class="form-control <?= isset($errors['allotment_id']) ? 'is-invalid' : '' ?>"
+                        aria-describedby="allotment_id-error"
+                        aria-invalid="<?= isset($errors['allotment_id']) ? 'true' : 'false' ?>"
+                    >
                     <?php if (!empty($errors['allotment_id'])): ?>
                         <div id="allotment_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['allotment_id']) ?>
@@ -693,24 +683,16 @@ $submissionToken = $submissionToken ?? '';
                     <label for="preno_cc_tip" class="form-label">
                         <?= esc(lang('Agenda.preno_cc_tip')) ?>
                     </label>
-                    <select
+                    <input
+                        type="text"
                         name="preno_cc_tip"
                         id="preno_cc_tip"
-                        class="form-select <?= isset($errors['preno_cc_tip']) ? 'is-invalid' : '' ?>"
+                        value="<?= esc(old('preno_cc_tip', $row->preno_cc_tip ?? '')) ?>"
+                        class="form-control <?= isset($errors['preno_cc_tip']) ? 'is-invalid' : '' ?>"
                         aria-describedby="preno_cc_tip-error"
                         aria-invalid="<?= isset($errors['preno_cc_tip']) ? 'true' : 'false' ?>"
                         maxlength="100"
                     >
-                        <option value="">Seleziona...</option>
-                        <?php foreach (($options['preno_cc_tip'] ?? []) as $optionValue => $optionLabel): ?>
-                            <option
-                                value="<?= esc($optionValue) ?>"
-                                <?= (string) old('preno_cc_tip', $row->preno_cc_tip ?? '') === (string) $optionValue ? 'selected' : '' ?>
-                            >
-                                <?= esc($optionLabel) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
                     <?php if (!empty($errors['preno_cc_tip'])): ?>
                         <div id="preno_cc_tip-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_cc_tip']) ?>
@@ -777,8 +759,20 @@ $submissionToken = $submissionToken ?? '';
                         </div>
                     <?php endif; ?>
                 </div>
-                <div class="d-none">
-                    <input type="hidden" name="preno_fax" id="preno_fax" value="<?= esc(old('preno_fax', $row->preno_fax ?? '')) ?>">
+                <div class="col-md-6">
+                    <label for="preno_fax" class="form-label">
+                        <?= esc(lang('Agenda.preno_fax')) ?>
+                    </label>
+                    <input
+                        type="text"
+                        name="preno_fax"
+                        id="preno_fax"
+                        value="<?= esc(old('preno_fax', $row->preno_fax ?? '')) ?>"
+                        class="form-control <?= isset($errors['preno_fax']) ? 'is-invalid' : '' ?>"
+                        aria-describedby="preno_fax-error"
+                        aria-invalid="<?= isset($errors['preno_fax']) ? 'true' : 'false' ?>"
+                        maxlength="100"
+                    >
                     <?php if (!empty($errors['preno_fax'])): ?>
                         <div id="preno_fax-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_fax']) ?>
@@ -829,24 +823,16 @@ $submissionToken = $submissionToken ?? '';
                     <label for="nazione_iso2" class="form-label">
                         <?= esc(lang('Agenda.nazione_iso2')) ?>
                     </label>
-                    <select
+                    <input
+                        type="text"
                         name="nazione_iso2"
                         id="nazione_iso2"
-                        class="form-select <?= isset($errors['nazione_iso2']) ? 'is-invalid' : '' ?>"
+                        value="<?= esc(old('nazione_iso2', $row->nazione_iso2 ?? '')) ?>"
+                        class="form-control <?= isset($errors['nazione_iso2']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nazione_iso2-error"
                         aria-invalid="<?= isset($errors['nazione_iso2']) ? 'true' : 'false' ?>"
                         maxlength="5"
                     >
-                        <option value="">Seleziona...</option>
-                        <?php foreach (($options['nazione_iso2'] ?? []) as $optionValue => $optionLabel): ?>
-                            <option
-                                value="<?= esc($optionValue) ?>"
-                                <?= (string) old('nazione_iso2', $row->nazione_iso2 ?? '') === (string) $optionValue ? 'selected' : '' ?>
-                            >
-                                <?= esc($optionLabel) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
                     <?php if (!empty($errors['nazione_iso2'])): ?>
                         <div id="nazione_iso2-error" class="invalid-feedback d-block">
                             <?= esc($errors['nazione_iso2']) ?>
@@ -876,21 +862,16 @@ $submissionToken = $submissionToken ?? '';
                     <label for="preno_doc_fax" class="form-label">
                         <?= esc(lang('Agenda.preno_doc_fax')) ?>
                     </label>
-                    <input type="hidden" name="preno_doc_fax" value="0">
-
-                    <div class="form-check mt-2">
-                        <input
-                            type="checkbox"
-                            name="preno_doc_fax"
-                            id="preno_doc_fax"
-                            value="1"
-                            class="form-check-input <?= isset($errors['preno_doc_fax']) ? 'is-invalid' : '' ?>"
-                            <?= old('preno_doc_fax', $row->preno_doc_fax ?? '') ? 'checked' : '' ?>
+                    <input
+                        type="text"
+                        name="preno_doc_fax"
+                        id="preno_doc_fax"
+                        value="<?= esc(old('preno_doc_fax', $row->preno_doc_fax ?? '')) ?>"
+                        class="form-control <?= isset($errors['preno_doc_fax']) ? 'is-invalid' : '' ?>"
                         aria-describedby="preno_doc_fax-error"
                         aria-invalid="<?= isset($errors['preno_doc_fax']) ? 'true' : 'false' ?>"
                         maxlength="2"
-                        >
-                    </div>
+                    >
                     <?php if (!empty($errors['preno_doc_fax'])): ?>
                         <div id="preno_doc_fax-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_doc_fax']) ?>
@@ -901,21 +882,16 @@ $submissionToken = $submissionToken ?? '';
                     <label for="preno_doc_email" class="form-label">
                         <?= esc(lang('Agenda.preno_doc_email')) ?>
                     </label>
-                    <input type="hidden" name="preno_doc_email" value="0">
-
-                    <div class="form-check mt-2">
-                        <input
-                            type="checkbox"
-                            name="preno_doc_email"
-                            id="preno_doc_email"
-                            value="1"
-                            class="form-check-input <?= isset($errors['preno_doc_email']) ? 'is-invalid' : '' ?>"
-                            <?= old('preno_doc_email', $row->preno_doc_email ?? '') ? 'checked' : '' ?>
+                    <input
+                        type="email"
+                        name="preno_doc_email"
+                        id="preno_doc_email"
+                        value="<?= esc(old('preno_doc_email', $row->preno_doc_email ?? '')) ?>"
+                        class="form-control <?= isset($errors['preno_doc_email']) ? 'is-invalid' : '' ?>"
                         aria-describedby="preno_doc_email-error"
                         aria-invalid="<?= isset($errors['preno_doc_email']) ? 'true' : 'false' ?>"
                         maxlength="2"
-                        >
-                    </div>
+                    >
                     <?php if (!empty($errors['preno_doc_email'])): ?>
                         <div id="preno_doc_email-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_doc_email']) ?>
@@ -926,21 +902,16 @@ $submissionToken = $submissionToken ?? '';
                     <label for="preno_doc_form" class="form-label">
                         <?= esc(lang('Agenda.preno_doc_form')) ?>
                     </label>
-                    <input type="hidden" name="preno_doc_form" value="0">
-
-                    <div class="form-check mt-2">
-                        <input
-                            type="checkbox"
-                            name="preno_doc_form"
-                            id="preno_doc_form"
-                            value="1"
-                            class="form-check-input <?= isset($errors['preno_doc_form']) ? 'is-invalid' : '' ?>"
-                            <?= old('preno_doc_form', $row->preno_doc_form ?? '') ? 'checked' : '' ?>
+                    <input
+                        type="text"
+                        name="preno_doc_form"
+                        id="preno_doc_form"
+                        value="<?= esc(old('preno_doc_form', $row->preno_doc_form ?? '')) ?>"
+                        class="form-control <?= isset($errors['preno_doc_form']) ? 'is-invalid' : '' ?>"
                         aria-describedby="preno_doc_form-error"
                         aria-invalid="<?= isset($errors['preno_doc_form']) ? 'true' : 'false' ?>"
                         maxlength="2"
-                        >
-                    </div>
+                    >
                     <?php if (!empty($errors['preno_doc_form'])): ?>
                         <div id="preno_doc_form-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_doc_form']) ?>
@@ -951,21 +922,16 @@ $submissionToken = $submissionToken ?? '';
                     <label for="preno_doc_mail" class="form-label">
                         <?= esc(lang('Agenda.preno_doc_mail')) ?>
                     </label>
-                    <input type="hidden" name="preno_doc_mail" value="0">
-
-                    <div class="form-check mt-2">
-                        <input
-                            type="checkbox"
-                            name="preno_doc_mail"
-                            id="preno_doc_mail"
-                            value="1"
-                            class="form-check-input <?= isset($errors['preno_doc_mail']) ? 'is-invalid' : '' ?>"
-                            <?= old('preno_doc_mail', $row->preno_doc_mail ?? '') ? 'checked' : '' ?>
+                    <input
+                        type="text"
+                        name="preno_doc_mail"
+                        id="preno_doc_mail"
+                        value="<?= esc(old('preno_doc_mail', $row->preno_doc_mail ?? '')) ?>"
+                        class="form-control <?= isset($errors['preno_doc_mail']) ? 'is-invalid' : '' ?>"
                         aria-describedby="preno_doc_mail-error"
                         aria-invalid="<?= isset($errors['preno_doc_mail']) ? 'true' : 'false' ?>"
                         maxlength="2"
-                        >
-                    </div>
+                    >
                     <?php if (!empty($errors['preno_doc_mail'])): ?>
                         <div id="preno_doc_mail-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_doc_mail']) ?>
@@ -976,21 +942,16 @@ $submissionToken = $submissionToken ?? '';
                     <label for="preno_doc_vaglia" class="form-label">
                         <?= esc(lang('Agenda.preno_doc_vaglia')) ?>
                     </label>
-                    <input type="hidden" name="preno_doc_vaglia" value="0">
-
-                    <div class="form-check mt-2">
-                        <input
-                            type="checkbox"
-                            name="preno_doc_vaglia"
-                            id="preno_doc_vaglia"
-                            value="1"
-                            class="form-check-input <?= isset($errors['preno_doc_vaglia']) ? 'is-invalid' : '' ?>"
-                            <?= old('preno_doc_vaglia', $row->preno_doc_vaglia ?? '') ? 'checked' : '' ?>
+                    <input
+                        type="text"
+                        name="preno_doc_vaglia"
+                        id="preno_doc_vaglia"
+                        value="<?= esc(old('preno_doc_vaglia', $row->preno_doc_vaglia ?? '')) ?>"
+                        class="form-control <?= isset($errors['preno_doc_vaglia']) ? 'is-invalid' : '' ?>"
                         aria-describedby="preno_doc_vaglia-error"
                         aria-invalid="<?= isset($errors['preno_doc_vaglia']) ? 'true' : 'false' ?>"
                         maxlength="2"
-                        >
-                    </div>
+                    >
                     <?php if (!empty($errors['preno_doc_vaglia'])): ?>
                         <div id="preno_doc_vaglia-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_doc_vaglia']) ?>
@@ -1001,21 +962,16 @@ $submissionToken = $submissionToken ?? '';
                     <label for="preno_doc_woucher" class="form-label">
                         <?= esc(lang('Agenda.preno_doc_woucher')) ?>
                     </label>
-                    <input type="hidden" name="preno_doc_woucher" value="0">
-
-                    <div class="form-check mt-2">
-                        <input
-                            type="checkbox"
-                            name="preno_doc_woucher"
-                            id="preno_doc_woucher"
-                            value="1"
-                            class="form-check-input <?= isset($errors['preno_doc_woucher']) ? 'is-invalid' : '' ?>"
-                            <?= old('preno_doc_woucher', $row->preno_doc_woucher ?? '') ? 'checked' : '' ?>
+                    <input
+                        type="text"
+                        name="preno_doc_woucher"
+                        id="preno_doc_woucher"
+                        value="<?= esc(old('preno_doc_woucher', $row->preno_doc_woucher ?? '')) ?>"
+                        class="form-control <?= isset($errors['preno_doc_woucher']) ? 'is-invalid' : '' ?>"
                         aria-describedby="preno_doc_woucher-error"
                         aria-invalid="<?= isset($errors['preno_doc_woucher']) ? 'true' : 'false' ?>"
                         maxlength="2"
-                        >
-                    </div>
+                    >
                     <?php if (!empty($errors['preno_doc_woucher'])): ?>
                         <div id="preno_doc_woucher-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_doc_woucher']) ?>
@@ -1026,23 +982,15 @@ $submissionToken = $submissionToken ?? '';
                     <label for="preno_pag_modalita" class="form-label">
                         <?= esc(lang('Agenda.preno_pag_modalita')) ?>
                     </label>
-                    <select
+                    <input
+                        type="number"
                         name="preno_pag_modalita"
                         id="preno_pag_modalita"
-                        class="form-select <?= isset($errors['preno_pag_modalita']) ? 'is-invalid' : '' ?>"
+                        value="<?= esc(old('preno_pag_modalita', $row->preno_pag_modalita ?? '')) ?>"
+                        class="form-control <?= isset($errors['preno_pag_modalita']) ? 'is-invalid' : '' ?>"
                         aria-describedby="preno_pag_modalita-error"
                         aria-invalid="<?= isset($errors['preno_pag_modalita']) ? 'true' : 'false' ?>"
                     >
-                        <option value="">Seleziona...</option>
-                        <?php foreach (($options['preno_pag_modalita'] ?? []) as $optionValue => $optionLabel): ?>
-                            <option
-                                value="<?= esc($optionValue) ?>"
-                                <?= (string) old('preno_pag_modalita', $row->preno_pag_modalita ?? '') === (string) $optionValue ? 'selected' : '' ?>
-                            >
-                                <?= esc($optionLabel) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
                     <?php if (!empty($errors['preno_pag_modalita'])): ?>
                         <div id="preno_pag_modalita-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_pag_modalita']) ?>
@@ -1072,24 +1020,16 @@ $submissionToken = $submissionToken ?? '';
                     <label for="preno_stato" class="form-label">
                         <?= esc(lang('Agenda.preno_stato')) ?>
                     </label>
-                    <select
+                    <input
+                        type="number"
                         name="preno_stato"
                         id="preno_stato"
-                        class="form-select <?= isset($errors['preno_stato']) ? 'is-invalid' : '' ?>"
+                        value="<?= esc(old('preno_stato', $row->preno_stato ?? '')) ?>"
+                        class="form-control <?= isset($errors['preno_stato']) ? 'is-invalid' : '' ?>"
                         aria-describedby="preno_stato-error"
                         aria-invalid="<?= isset($errors['preno_stato']) ? 'true' : 'false' ?>"
                         required
                     >
-                        <option value="">Seleziona...</option>
-                        <?php foreach (($options['preno_stato'] ?? []) as $optionValue => $optionLabel): ?>
-                            <option
-                                value="<?= esc($optionValue) ?>"
-                                <?= (string) old('preno_stato', $row->preno_stato ?? '') === (string) $optionValue ? 'selected' : '' ?>
-                            >
-                                <?= esc($optionLabel) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
                     <?php if (!empty($errors['preno_stato'])): ?>
                         <div id="preno_stato-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_stato']) ?>
@@ -1112,14 +1052,6 @@ $submissionToken = $submissionToken ?? '';
                     <?php if (!empty($errors['data_opzione'])): ?>
                         <div id="data_opzione-error" class="invalid-feedback d-block">
                             <?= esc($errors['data_opzione']) ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
-                <div class="d-none">
-                    <input type="hidden" name="cancella_data_record" id="cancella_data_record" value="<?= esc(old('cancella_data_record', $row->cancella_data_record ?? '')) ?>">
-                    <?php if (!empty($errors['cancella_data_record'])): ?>
-                        <div id="cancella_data_record-error" class="invalid-feedback d-block">
-                            <?= esc($errors['cancella_data_record']) ?>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -1154,6 +1086,7 @@ $submissionToken = $submissionToken ?? '';
                         class="form-control <?= isset($errors['cancella_pass']) ? 'is-invalid' : '' ?>"
                         aria-describedby="cancella_pass-error"
                         aria-invalid="<?= isset($errors['cancella_pass']) ? 'true' : 'false' ?>"
+                        maxlength="100"
                     >
                     <?php if (!empty($errors['cancella_pass'])): ?>
                         <div id="cancella_pass-error" class="invalid-feedback d-block">
@@ -1207,6 +1140,72 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!form || !submitButton) return;
 
     let submitted = false;
+
+    // Select AJAX per relazioni grandi: il browser carica soltanto i risultati
+    // cercati dall'utente, evitando migliaia di <option> nel form.
+    document.querySelectorAll('.crud-relation-search').forEach(function (input) {
+        const valueTarget = document.getElementById(input.dataset.valueTarget || '');
+        const results = document.getElementById(input.dataset.resultsTarget || '');
+        const minChars = Number.parseInt(input.dataset.minChars || '2', 10);
+        let timer = null;
+        let controller = null;
+
+        if (!valueTarget || !results) return;
+
+        input.addEventListener('input', function () {
+            valueTarget.value = '';
+            results.classList.add('d-none');
+            results.innerHTML = '';
+            window.clearTimeout(timer);
+
+            const query = input.value.trim();
+            if (query.length < minChars) return;
+
+            timer = window.setTimeout(async function () {
+                controller?.abort();
+                controller = new AbortController();
+
+                try {
+                    const separator = input.dataset.url.includes('?') ? '&' : '?';
+                    const response = await fetch(
+                        input.dataset.url + separator + 'q=' + encodeURIComponent(query),
+                        {
+                            headers: {'X-Requested-With': 'XMLHttpRequest'},
+                            signal: controller.signal
+                        }
+                    );
+                    if (!response.ok) throw new Error('Errore ricerca relazione');
+
+                    const payload = await response.json();
+                    const rows = Array.isArray(payload.results) ? payload.results : [];
+                    results.innerHTML = '';
+
+                    rows.forEach(function (row) {
+                        const option = document.createElement('option');
+                        option.value = String(row.id ?? '');
+                        option.textContent = String(row.text ?? '');
+                        results.appendChild(option);
+                    });
+
+                    results.classList.toggle('d-none', rows.length === 0);
+                } catch (error) {
+                    if (error.name !== 'AbortError') console.error(error);
+                }
+            }, 350);
+        });
+
+        results.addEventListener('change', function () {
+            const selected = results.options[results.selectedIndex];
+            if (!selected) return;
+            valueTarget.value = selected.value;
+            input.value = selected.textContent || '';
+            results.classList.add('d-none');
+        });
+
+        results.addEventListener('dblclick', function () {
+            results.dispatchEvent(new Event('change'));
+        });
+    });
 
     form.addEventListener('submit', function (event) {
         if (!form.checkValidity()) {

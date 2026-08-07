@@ -111,6 +111,16 @@
                         <li>
                             <a
                                 class="dropdown-item"
+                                href="<?= site_url('mycrud/tools/menu') ?>"
+                            >
+                                <i class="bi bi-list"></i>
+                                Genera Menu
+                            </a>
+                        </li>
+
+                        <li>
+                            <a
+                                class="dropdown-item"
                                 href="<?= site_url('mycrud/tools/schema') ?>"
                             >
                                 <i class="bi bi-diagram-3"></i>

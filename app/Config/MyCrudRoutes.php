@@ -20,6 +20,8 @@ $routes->group('mycrud', ['namespace' => 'App\Controllers\MyCrud'], static funct
 
     $routes->get('tools/routes', 'ToolsController::routes');
     $routes->get('tools/fields', 'ToolsController::fields');
+    $routes->get('tools/menu', 'ToolsController::menu');
+    $routes->post('tools/menu/generate', 'ToolsController::generateMenu');
     $routes->get('tools/schema', 'ToolsController::schema');
     $routes->get('tools/schema/(:segment)', 'ToolsController::schema/$1');
 });

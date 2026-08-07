@@ -122,7 +122,7 @@ $submissionToken = $submissionToken ?? '';
                         class="form-control <?= isset($errors['camara_tipologia']) ? 'is-invalid' : '' ?>"
                         aria-describedby="camara_tipologia-error"
                         aria-invalid="<?= isset($errors['camara_tipologia']) ? 'true' : 'false' ?>"
-                        required maxlength="100"
+                        maxlength="100"
                     >
                     <?php if (!empty($errors['camara_tipologia'])): ?>
                         <div id="camara_tipologia-error" class="invalid-feedback d-block">
@@ -142,7 +142,7 @@ $submissionToken = $submissionToken ?? '';
                         class="form-control <?= isset($errors['clienti_nome']) ? 'is-invalid' : '' ?>"
                         aria-describedby="clienti_nome-error"
                         aria-invalid="<?= isset($errors['clienti_nome']) ? 'true' : 'false' ?>"
-                        required maxlength="100"
+                        maxlength="100"
                     >
                     <?php if (!empty($errors['clienti_nome'])): ?>
                         <div id="clienti_nome-error" class="invalid-feedback d-block">
@@ -162,7 +162,7 @@ $submissionToken = $submissionToken ?? '';
                         class="form-control <?= isset($errors['clienti_cogno']) ? 'is-invalid' : '' ?>"
                         aria-describedby="clienti_cogno-error"
                         aria-invalid="<?= isset($errors['clienti_cogno']) ? 'true' : 'false' ?>"
-                        required maxlength="100"
+                        maxlength="100"
                     >
                     <?php if (!empty($errors['clienti_cogno'])): ?>
                         <div id="clienti_cogno-error" class="invalid-feedback d-block">
@@ -182,7 +182,7 @@ $submissionToken = $submissionToken ?? '';
                         class="form-control <?= isset($errors['cliente_nato_a']) ? 'is-invalid' : '' ?>"
                         aria-describedby="cliente_nato_a-error"
                         aria-invalid="<?= isset($errors['cliente_nato_a']) ? 'true' : 'false' ?>"
-                        required maxlength="100"
+                        maxlength="100"
                     >
                     <?php if (!empty($errors['cliente_nato_a'])): ?>
                         <div id="cliente_nato_a-error" class="invalid-feedback d-block">
@@ -202,7 +202,7 @@ $submissionToken = $submissionToken ?? '';
                         class="form-control <?= isset($errors['cliente_nato_il']) ? 'is-invalid' : '' ?>"
                         aria-describedby="cliente_nato_il-error"
                         aria-invalid="<?= isset($errors['cliente_nato_il']) ? 'true' : 'false' ?>"
-                        required maxlength="12"
+                        maxlength="12"
                     >
                     <?php if (!empty($errors['cliente_nato_il'])): ?>
                         <div id="cliente_nato_il-error" class="invalid-feedback d-block">
@@ -222,7 +222,7 @@ $submissionToken = $submissionToken ?? '';
                         class="form-control <?= isset($errors['cliente_nazione']) ? 'is-invalid' : '' ?>"
                         aria-describedby="cliente_nazione-error"
                         aria-invalid="<?= isset($errors['cliente_nazione']) ? 'true' : 'false' ?>"
-                        required maxlength="100"
+                        maxlength="100"
                     >
                     <?php if (!empty($errors['cliente_nazione'])): ?>
                         <div id="cliente_nazione-error" class="invalid-feedback d-block">
@@ -282,7 +282,7 @@ $submissionToken = $submissionToken ?? '';
                         class="form-control <?= isset($errors['cliente_cocumento_tipo']) ? 'is-invalid' : '' ?>"
                         aria-describedby="cliente_cocumento_tipo-error"
                         aria-invalid="<?= isset($errors['cliente_cocumento_tipo']) ? 'true' : 'false' ?>"
-                        required maxlength="100"
+                        maxlength="100"
                     >
                     <?php if (!empty($errors['cliente_cocumento_tipo'])): ?>
                         <div id="cliente_cocumento_tipo-error" class="invalid-feedback d-block">
@@ -302,7 +302,7 @@ $submissionToken = $submissionToken ?? '';
                         class="form-control <?= isset($errors['cliente_cocumento_numero']) ? 'is-invalid' : '' ?>"
                         aria-describedby="cliente_cocumento_numero-error"
                         aria-invalid="<?= isset($errors['cliente_cocumento_numero']) ? 'true' : 'false' ?>"
-                        required maxlength="100"
+                        maxlength="100"
                     >
                     <?php if (!empty($errors['cliente_cocumento_numero'])): ?>
                         <div id="cliente_cocumento_numero-error" class="invalid-feedback d-block">
@@ -342,7 +342,7 @@ $submissionToken = $submissionToken ?? '';
                         class="form-control <?= isset($errors['cliente_sesso']) ? 'is-invalid' : '' ?>"
                         aria-describedby="cliente_sesso-error"
                         aria-invalid="<?= isset($errors['cliente_sesso']) ? 'true' : 'false' ?>"
-                        required maxlength="100"
+                        maxlength="100"
                     >
                     <?php if (!empty($errors['cliente_sesso'])): ?>
                         <div id="cliente_sesso-error" class="invalid-feedback d-block">
@@ -1115,10 +1115,10 @@ $submissionToken = $submissionToken ?? '';
                         <?= esc(lang('Clienti.password')) ?>
                     </label>
                     <input
-                        type="password"
+                        type="text"
                         name="password"
                         id="password"
-                        value="<?= esc(old('password', '')) ?>"
+                        value="<?= esc(old('password', $row->password ?? '')) ?>"
                         class="form-control <?= isset($errors['password']) ? 'is-invalid' : '' ?>"
                         aria-describedby="password-error"
                         aria-invalid="<?= isset($errors['password']) ? 'true' : 'false' ?>"
@@ -1176,6 +1176,72 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!form || !submitButton) return;
 
     let submitted = false;
+
+    // Select AJAX per relazioni grandi: il browser carica soltanto i risultati
+    // cercati dall'utente, evitando migliaia di <option> nel form.
+    document.querySelectorAll('.crud-relation-search').forEach(function (input) {
+        const valueTarget = document.getElementById(input.dataset.valueTarget || '');
+        const results = document.getElementById(input.dataset.resultsTarget || '');
+        const minChars = Number.parseInt(input.dataset.minChars || '2', 10);
+        let timer = null;
+        let controller = null;
+
+        if (!valueTarget || !results) return;
+
+        input.addEventListener('input', function () {
+            valueTarget.value = '';
+            results.classList.add('d-none');
+            results.innerHTML = '';
+            window.clearTimeout(timer);
+
+            const query = input.value.trim();
+            if (query.length < minChars) return;
+
+            timer = window.setTimeout(async function () {
+                controller?.abort();
+                controller = new AbortController();
+
+                try {
+                    const separator = input.dataset.url.includes('?') ? '&' : '?';
+                    const response = await fetch(
+                        input.dataset.url + separator + 'q=' + encodeURIComponent(query),
+                        {
+                            headers: {'X-Requested-With': 'XMLHttpRequest'},
+                            signal: controller.signal
+                        }
+                    );
+                    if (!response.ok) throw new Error('Errore ricerca relazione');
+
+                    const payload = await response.json();
+                    const rows = Array.isArray(payload.results) ? payload.results : [];
+                    results.innerHTML = '';
+
+                    rows.forEach(function (row) {
+                        const option = document.createElement('option');
+                        option.value = String(row.id ?? '');
+                        option.textContent = String(row.text ?? '');
+                        results.appendChild(option);
+                    });
+
+                    results.classList.toggle('d-none', rows.length === 0);
+                } catch (error) {
+                    if (error.name !== 'AbortError') console.error(error);
+                }
+            }, 350);
+        });
+
+        results.addEventListener('change', function () {
+            const selected = results.options[results.selectedIndex];
+            if (!selected) return;
+            valueTarget.value = selected.value;
+            input.value = selected.textContent || '';
+            results.classList.add('d-none');
+        });
+
+        results.addEventListener('dblclick', function () {
+            results.dispatchEvent(new Event('change'));
+        });
+    });
 
     form.addEventListener('submit', function (event) {
         if (!form.checkValidity()) {

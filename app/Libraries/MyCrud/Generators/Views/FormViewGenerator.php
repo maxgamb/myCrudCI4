@@ -82,7 +82,12 @@ final class FormViewGenerator extends AbstractViewGenerator
                 default => "old('{$name}', \$row->{$name} ?? '')",
             };
             $errorId = $name . '-error';
-            $control = $this->buildControl($type, $name, $value, $attributes, $errorId);
+            $relationMode = strtolower((string) ($field['relationMode'] ?? ''));
+            if (!empty($field['foreignKey']) && $relationMode === 'ajax') {
+                $control = $this->buildAjaxRelationControl($config, $field, $name, $value, $errorId);
+            } else {
+                $control = $this->buildControl($type, $name, $value, $attributes, $errorId);
+            }
             $wrapper = $type === 'hidden' ? 'd-none' : "col-md-{$width}";
 
             $labelHtml = $type === 'hidden'
@@ -108,6 +113,47 @@ PHP;
         }
 
         return $output;
+    }
+
+    private function buildAjaxRelationControl(array $config, array $field, string $name, string $value, string $errorId): string
+    {
+        $table = (string) ($config['table'] ?? '');
+        $relation = (array) ($field['foreignKey'] ?? []);
+        $alias = (string) ($relation['alias'] ?? '');
+        $labelValue = $alias !== ''
+            ? "old('{$name}__label', \$row->{$alias} ?? '')"
+            : "old('{$name}__label', '')";
+        $invalid = "<?= isset(\$errors['{$name}']) ? 'is-invalid' : '' ?>";
+        $minChars = max(0, min(10, (int) (config('MyCrud')->relationAjaxMinimumChars ?? 2)));
+
+        return <<<PHP
+                    <input
+                        type="hidden"
+                        name="{$name}"
+                        id="{$name}"
+                        value="<?= esc({$value}) ?>"
+                        class="crud-relation-value"
+                    >
+                    <input
+                        type="search"
+                        name="{$name}__label"
+                        id="{$name}_search"
+                        value="<?= esc({$labelValue}) ?>"
+                        class="form-control {$invalid} crud-relation-search"
+                        data-url="<?= site_url('{$table}/relation-options/{$name}') ?>"
+                        data-value-target="{$name}"
+                        data-results-target="{$name}_results"
+                        data-min-chars="{$minChars}"
+                        autocomplete="off"
+                        aria-describedby="{$errorId}"
+                    >
+                    <select
+                        id="{$name}_results"
+                        class="form-select mt-2 d-none crud-relation-results"
+                        size="5"
+                        aria-label="Risultati ricerca"
+                    ></select>
+PHP;
     }
 
     private function buildControl(string $type, string $name, string $value, string $attributes, string $errorId): string

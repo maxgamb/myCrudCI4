@@ -1,0 +1,245 @@
+openapi: 3.0.3
+info:
+  title: 'win_booking API'
+  version: 1.0.0
+paths:
+  /api/v1/win_booking:
+    get:
+      summary: 'Elenco win_booking'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[win_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['win_id'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WinBookingListResponse'
+    post:
+      summary: Crea record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WinBookingCreate'
+      responses:
+        '201':
+          description: Record creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WinBookingCreatedResponse'
+        '422': { description: Errore di validazione }
+  /api/v1/win_booking/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Dettaglio record
+      responses:
+        '200':
+          description: Record trovato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/WinBookingRead'
+        '404': { description: Record non trovato }
+    put:
+      summary: Aggiornamento completo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WinBookingUpdate'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    patch:
+      summary: Aggiornamento parziale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WinBookingPatch'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    delete:
+      summary: Elimina record
+      responses:
+        '204': { description: Record eliminato }
+components:
+  schemas:
+    WinBookingRead:
+      type: object
+      properties:
+        'win_id':
+          type: integer
+          format: int32
+        'hotel_id':
+          type: integer
+          format: int32
+        'win_dal':
+          type: integer
+          format: int32
+        'win_al':
+          type: integer
+          format: int32
+        'mese':
+          type: integer
+          format: int32
+        'win_hotel':
+          type: integer
+          format: int32
+        'win_comp':
+          type: integer
+          format: int32
+        'win_hotel_cum':
+          type: integer
+          format: int32
+        'win_comp_cum':
+          type: integer
+          format: int32
+    WinBookingCreate:
+      type: object
+      required:
+        - 'hotel_id'
+        - 'win_dal'
+        - 'win_al'
+        - 'mese'
+        - 'win_hotel'
+        - 'win_comp'
+        - 'win_hotel_cum'
+        - 'win_comp_cum'
+      properties:
+        'hotel_id':
+          type: integer
+          format: int32
+        'win_dal':
+          type: integer
+          format: int32
+        'win_al':
+          type: integer
+          format: int32
+        'mese':
+          type: integer
+          format: int32
+        'win_hotel':
+          type: integer
+          format: int32
+        'win_comp':
+          type: integer
+          format: int32
+        'win_hotel_cum':
+          type: integer
+          format: int32
+        'win_comp_cum':
+          type: integer
+          format: int32
+    WinBookingUpdate:
+      type: object
+      required:
+        - 'hotel_id'
+        - 'win_dal'
+        - 'win_al'
+        - 'mese'
+        - 'win_hotel'
+        - 'win_comp'
+        - 'win_hotel_cum'
+        - 'win_comp_cum'
+      properties:
+        'hotel_id':
+          type: integer
+          format: int32
+        'win_dal':
+          type: integer
+          format: int32
+        'win_al':
+          type: integer
+          format: int32
+        'mese':
+          type: integer
+          format: int32
+        'win_hotel':
+          type: integer
+          format: int32
+        'win_comp':
+          type: integer
+          format: int32
+        'win_hotel_cum':
+          type: integer
+          format: int32
+        'win_comp_cum':
+          type: integer
+          format: int32
+    WinBookingPatch:
+      type: object
+      properties:
+        'hotel_id':
+          type: integer
+          format: int32
+        'win_dal':
+          type: integer
+          format: int32
+        'win_al':
+          type: integer
+          format: int32
+        'mese':
+          type: integer
+          format: int32
+        'win_hotel':
+          type: integer
+          format: int32
+        'win_comp':
+          type: integer
+          format: int32
+        'win_hotel_cum':
+          type: integer
+          format: int32
+        'win_comp_cum':
+          type: integer
+          format: int32
+    WinBookingListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/WinBookingRead'
+        meta: { type: object }
+        links: { type: object }
+    WinBookingCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            'win_id':
+              type: integer
+              format: int32
+        meta: { type: object }
+        links: { type: object }

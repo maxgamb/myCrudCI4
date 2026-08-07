@@ -28,6 +28,11 @@ final class CrudArchitectureGenerator
             'files'        => [],
         ];
 
+        // Runtime del sito: librerie condivise dai CRUD generati.
+        // Sono indipendenti da myCrudGpt e restano utilizzabili anche se il
+        // generatore viene rimosso dall'applicazione a progetto concluso.
+        $result['files']['runtime'] = (new RuntimeSupportGenerator())->generate($force);
+
         if (!empty($config['features']['entity'])) {
             $result['files']['entity'] = (new EntityGenerator())->generate($config, $force);
         }

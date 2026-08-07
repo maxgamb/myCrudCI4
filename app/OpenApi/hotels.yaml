@@ -1,0 +1,1135 @@
+openapi: 3.0.3
+info:
+  title: 'hotels API'
+  version: 1.0.0
+paths:
+  /api/v1/hotels:
+    get:
+      summary: 'Elenco hotels'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[hotel_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['hotel_id'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HotelsListResponse'
+    post:
+      summary: Crea record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HotelsCreate'
+      responses:
+        '201':
+          description: Record creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HotelsCreatedResponse'
+        '422': { description: Errore di validazione }
+  /api/v1/hotels/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Dettaglio record
+      responses:
+        '200':
+          description: Record trovato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HotelsRead'
+        '404': { description: Record non trovato }
+    put:
+      summary: Aggiornamento completo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HotelsUpdate'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    patch:
+      summary: Aggiornamento parziale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HotelsPatch'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    delete:
+      summary: Elimina record
+      responses:
+        '204': { description: Record eliminato }
+components:
+  schemas:
+    HotelsRead:
+      type: object
+      properties:
+        'hotel_id':
+          type: integer
+          format: int32
+        'nome_hotel':
+          type: string
+          maxLength: 100
+        'hotel_tipologia':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_categoria':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_citta':
+          type: string
+          maxLength: 100
+        'hotel_via':
+          type: string
+          maxLength: 100
+        'hotel_tel':
+          type: string
+          maxLength: 100
+        'hotel_fax':
+          type: string
+          maxLength: 100
+        'hotel_email':
+          type: string
+          maxLength: 100
+        'hotel_stato':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_cap':
+          type: string
+          nullable: true
+          maxLength: 10
+        'hotel_piva':
+          type: string
+          maxLength: 100
+        'hotel_numero_camere':
+          type: string
+          maxLength: 100
+        'hotels_utente_id':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_web':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_logo':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_mappa':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_reach_by_car':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_reach_by_treno':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_reach_aereo':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_reach_nave':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_foto_piccola':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_foto_grande':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_testo_en':
+          type: string
+          nullable: true
+          maxLength: 4294967295
+        'hotel_testo_it':
+          type: string
+          nullable: true
+          maxLength: 4294967295
+        'hotel_disp_modo':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_limite_vendite_web':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_limite_vendite_xml':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_incremento_prezzo_xml':
+          type: number
+          format: float
+          nullable: true
+        'hotel_booking_attivazione':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_booking_url':
+          type: string
+          nullable: true
+          maxLength: 200
+        'hotel_booking_agenzia':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_tarif_cambia_gg':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_tarif_listino_nome_id':
+          type: integer
+          format: int32
+        'hotel_agenzia_attivazione':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_type_booking':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_check_in':
+          type: string
+          nullable: true
+          maxLength: 10
+        'hotel_check_out':
+          type: string
+          nullable: true
+          maxLength: 10
+        'hotel_serv_inclusi':
+          type: string
+          nullable: true
+          maxLength: 4294967295
+        'hotel_cancel_pol':
+          type: string
+          nullable: true
+          maxLength: 250
+        'facebook':
+          type: string
+          maxLength: 200
+        'google':
+          type: string
+          maxLength: 200
+        'instagram':
+          type: string
+          maxLength: 200
+        'twitter':
+          type: string
+          maxLength: 200
+        'linkedin':
+          type: string
+          maxLength: 200
+        'analytics':
+          type: string
+          maxLength: 200
+        'email_desk':
+          type: string
+          maxLength: 200
+        'tripadvisor':
+          type: string
+          maxLength: 250
+        'trip_rec_url':
+          type: string
+          maxLength: 250
+        'pec':
+          type: string
+          maxLength: 100
+        'sdi':
+          type: string
+          maxLength: 20
+        'ae_user':
+          type: string
+          maxLength: 100
+        'ae_password':
+          type: string
+          maxLength: 100
+        'ae_pin':
+          type: string
+          maxLength: 100
+        'ae_codice_fiscale':
+          type: string
+          maxLength: 100
+        'sa_nome':
+          type: string
+          maxLength: 100
+        'sa_chiave':
+          type: string
+          maxLength: 100
+        'ae_test':
+          type: integer
+          format: int32
+        'citytax':
+          type: number
+          format: double
+        'wifi_network':
+          type: string
+          maxLength: 100
+        'wifi_password':
+          type: string
+          maxLength: 100
+        'chek_email':
+          type: integer
+          format: int32
+          nullable: true
+        'chek_tel':
+          type: integer
+          format: int32
+          nullable: true
+        'nexi_alias':
+          type: string
+          nullable: true
+          maxLength: 100
+        'nexi_key':
+          type: string
+          nullable: true
+          maxLength: 100
+        'nexi_url':
+          type: string
+          maxLength: 250
+        'cir_bdsr':
+          type: string
+          maxLength: 50
+        'cin_bdsr':
+          type: string
+          maxLength: 50
+        'catastale_id':
+          type: string
+          maxLength: 50
+    HotelsCreate:
+      type: object
+      required:
+        - 'facebook'
+        - 'google'
+        - 'instagram'
+        - 'twitter'
+        - 'linkedin'
+        - 'analytics'
+        - 'email_desk'
+        - 'tripadvisor'
+        - 'trip_rec_url'
+        - 'pec'
+        - 'sdi'
+        - 'ae_user'
+        - 'ae_password'
+        - 'ae_pin'
+        - 'ae_codice_fiscale'
+        - 'sa_nome'
+        - 'sa_chiave'
+        - 'ae_test'
+        - 'citytax'
+        - 'wifi_network'
+        - 'wifi_password'
+        - 'nexi_url'
+        - 'cir_bdsr'
+        - 'cin_bdsr'
+        - 'catastale_id'
+      properties:
+        'nome_hotel':
+          type: string
+          maxLength: 100
+        'hotel_tipologia':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_categoria':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_citta':
+          type: string
+          maxLength: 100
+        'hotel_via':
+          type: string
+          maxLength: 100
+        'hotel_tel':
+          type: string
+          maxLength: 100
+        'hotel_fax':
+          type: string
+          maxLength: 100
+        'hotel_email':
+          type: string
+          maxLength: 100
+        'hotel_stato':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_cap':
+          type: string
+          nullable: true
+          maxLength: 10
+        'hotel_piva':
+          type: string
+          maxLength: 100
+        'hotel_numero_camere':
+          type: string
+          maxLength: 100
+        'hotels_utente_id':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_web':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_logo':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_mappa':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_reach_by_car':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_reach_by_treno':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_reach_aereo':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_reach_nave':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_foto_piccola':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_foto_grande':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_testo_en':
+          type: string
+          nullable: true
+          maxLength: 4294967295
+        'hotel_testo_it':
+          type: string
+          nullable: true
+          maxLength: 4294967295
+        'hotel_disp_modo':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_limite_vendite_web':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_limite_vendite_xml':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_incremento_prezzo_xml':
+          type: number
+          format: float
+          nullable: true
+        'hotel_booking_attivazione':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_booking_url':
+          type: string
+          nullable: true
+          maxLength: 200
+        'hotel_booking_agenzia':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_tarif_cambia_gg':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_tarif_listino_nome_id':
+          type: integer
+          format: int32
+        'hotel_agenzia_attivazione':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_type_booking':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_check_in':
+          type: string
+          nullable: true
+          maxLength: 10
+        'hotel_check_out':
+          type: string
+          nullable: true
+          maxLength: 10
+        'hotel_serv_inclusi':
+          type: string
+          nullable: true
+          maxLength: 4294967295
+        'hotel_cancel_pol':
+          type: string
+          nullable: true
+          maxLength: 250
+        'facebook':
+          type: string
+          maxLength: 200
+        'google':
+          type: string
+          maxLength: 200
+        'instagram':
+          type: string
+          maxLength: 200
+        'twitter':
+          type: string
+          maxLength: 200
+        'linkedin':
+          type: string
+          maxLength: 200
+        'analytics':
+          type: string
+          maxLength: 200
+        'email_desk':
+          type: string
+          maxLength: 200
+        'tripadvisor':
+          type: string
+          maxLength: 250
+        'trip_rec_url':
+          type: string
+          maxLength: 250
+        'pec':
+          type: string
+          maxLength: 100
+        'sdi':
+          type: string
+          maxLength: 20
+        'ae_user':
+          type: string
+          maxLength: 100
+        'ae_password':
+          type: string
+          maxLength: 100
+        'ae_pin':
+          type: string
+          maxLength: 100
+        'ae_codice_fiscale':
+          type: string
+          maxLength: 100
+        'sa_nome':
+          type: string
+          maxLength: 100
+        'sa_chiave':
+          type: string
+          maxLength: 100
+        'ae_test':
+          type: integer
+          format: int32
+        'citytax':
+          type: number
+          format: double
+        'wifi_network':
+          type: string
+          maxLength: 100
+        'wifi_password':
+          type: string
+          maxLength: 100
+        'chek_email':
+          type: integer
+          format: int32
+          nullable: true
+        'chek_tel':
+          type: integer
+          format: int32
+          nullable: true
+        'nexi_alias':
+          type: string
+          nullable: true
+          maxLength: 100
+        'nexi_key':
+          type: string
+          nullable: true
+          maxLength: 100
+        'nexi_url':
+          type: string
+          maxLength: 250
+        'cir_bdsr':
+          type: string
+          maxLength: 50
+        'cin_bdsr':
+          type: string
+          maxLength: 50
+        'catastale_id':
+          type: string
+          maxLength: 50
+    HotelsUpdate:
+      type: object
+      required:
+        - 'facebook'
+        - 'google'
+        - 'instagram'
+        - 'twitter'
+        - 'linkedin'
+        - 'analytics'
+        - 'email_desk'
+        - 'tripadvisor'
+        - 'trip_rec_url'
+        - 'pec'
+        - 'sdi'
+        - 'ae_user'
+        - 'ae_password'
+        - 'ae_pin'
+        - 'ae_codice_fiscale'
+        - 'sa_nome'
+        - 'sa_chiave'
+        - 'ae_test'
+        - 'citytax'
+        - 'wifi_network'
+        - 'wifi_password'
+        - 'nexi_url'
+        - 'cir_bdsr'
+        - 'cin_bdsr'
+        - 'catastale_id'
+      properties:
+        'nome_hotel':
+          type: string
+          maxLength: 100
+        'hotel_tipologia':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_categoria':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_citta':
+          type: string
+          maxLength: 100
+        'hotel_via':
+          type: string
+          maxLength: 100
+        'hotel_tel':
+          type: string
+          maxLength: 100
+        'hotel_fax':
+          type: string
+          maxLength: 100
+        'hotel_email':
+          type: string
+          maxLength: 100
+        'hotel_stato':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_cap':
+          type: string
+          nullable: true
+          maxLength: 10
+        'hotel_piva':
+          type: string
+          maxLength: 100
+        'hotel_numero_camere':
+          type: string
+          maxLength: 100
+        'hotels_utente_id':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_web':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_logo':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_mappa':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_reach_by_car':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_reach_by_treno':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_reach_aereo':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_reach_nave':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_foto_piccola':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_foto_grande':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_testo_en':
+          type: string
+          nullable: true
+          maxLength: 4294967295
+        'hotel_testo_it':
+          type: string
+          nullable: true
+          maxLength: 4294967295
+        'hotel_disp_modo':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_limite_vendite_web':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_limite_vendite_xml':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_incremento_prezzo_xml':
+          type: number
+          format: float
+          nullable: true
+        'hotel_booking_attivazione':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_booking_url':
+          type: string
+          nullable: true
+          maxLength: 200
+        'hotel_booking_agenzia':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_tarif_cambia_gg':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_tarif_listino_nome_id':
+          type: integer
+          format: int32
+        'hotel_agenzia_attivazione':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_type_booking':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_check_in':
+          type: string
+          nullable: true
+          maxLength: 10
+        'hotel_check_out':
+          type: string
+          nullable: true
+          maxLength: 10
+        'hotel_serv_inclusi':
+          type: string
+          nullable: true
+          maxLength: 4294967295
+        'hotel_cancel_pol':
+          type: string
+          nullable: true
+          maxLength: 250
+        'facebook':
+          type: string
+          maxLength: 200
+        'google':
+          type: string
+          maxLength: 200
+        'instagram':
+          type: string
+          maxLength: 200
+        'twitter':
+          type: string
+          maxLength: 200
+        'linkedin':
+          type: string
+          maxLength: 200
+        'analytics':
+          type: string
+          maxLength: 200
+        'email_desk':
+          type: string
+          maxLength: 200
+        'tripadvisor':
+          type: string
+          maxLength: 250
+        'trip_rec_url':
+          type: string
+          maxLength: 250
+        'pec':
+          type: string
+          maxLength: 100
+        'sdi':
+          type: string
+          maxLength: 20
+        'ae_user':
+          type: string
+          maxLength: 100
+        'ae_password':
+          type: string
+          maxLength: 100
+        'ae_pin':
+          type: string
+          maxLength: 100
+        'ae_codice_fiscale':
+          type: string
+          maxLength: 100
+        'sa_nome':
+          type: string
+          maxLength: 100
+        'sa_chiave':
+          type: string
+          maxLength: 100
+        'ae_test':
+          type: integer
+          format: int32
+        'citytax':
+          type: number
+          format: double
+        'wifi_network':
+          type: string
+          maxLength: 100
+        'wifi_password':
+          type: string
+          maxLength: 100
+        'chek_email':
+          type: integer
+          format: int32
+          nullable: true
+        'chek_tel':
+          type: integer
+          format: int32
+          nullable: true
+        'nexi_alias':
+          type: string
+          nullable: true
+          maxLength: 100
+        'nexi_key':
+          type: string
+          nullable: true
+          maxLength: 100
+        'nexi_url':
+          type: string
+          maxLength: 250
+        'cir_bdsr':
+          type: string
+          maxLength: 50
+        'cin_bdsr':
+          type: string
+          maxLength: 50
+        'catastale_id':
+          type: string
+          maxLength: 50
+    HotelsPatch:
+      type: object
+      properties:
+        'nome_hotel':
+          type: string
+          maxLength: 100
+        'hotel_tipologia':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_categoria':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_citta':
+          type: string
+          maxLength: 100
+        'hotel_via':
+          type: string
+          maxLength: 100
+        'hotel_tel':
+          type: string
+          maxLength: 100
+        'hotel_fax':
+          type: string
+          maxLength: 100
+        'hotel_email':
+          type: string
+          maxLength: 100
+        'hotel_stato':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_cap':
+          type: string
+          nullable: true
+          maxLength: 10
+        'hotel_piva':
+          type: string
+          maxLength: 100
+        'hotel_numero_camere':
+          type: string
+          maxLength: 100
+        'hotels_utente_id':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_web':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_logo':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_mappa':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_reach_by_car':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_reach_by_treno':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_reach_aereo':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_reach_nave':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_foto_piccola':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_foto_grande':
+          type: string
+          nullable: true
+          maxLength: 250
+        'hotel_testo_en':
+          type: string
+          nullable: true
+          maxLength: 4294967295
+        'hotel_testo_it':
+          type: string
+          nullable: true
+          maxLength: 4294967295
+        'hotel_disp_modo':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_limite_vendite_web':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_limite_vendite_xml':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_incremento_prezzo_xml':
+          type: number
+          format: float
+          nullable: true
+        'hotel_booking_attivazione':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_booking_url':
+          type: string
+          nullable: true
+          maxLength: 200
+        'hotel_booking_agenzia':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_tarif_cambia_gg':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_tarif_listino_nome_id':
+          type: integer
+          format: int32
+        'hotel_agenzia_attivazione':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_type_booking':
+          type: integer
+          format: int32
+          nullable: true
+        'hotel_check_in':
+          type: string
+          nullable: true
+          maxLength: 10
+        'hotel_check_out':
+          type: string
+          nullable: true
+          maxLength: 10
+        'hotel_serv_inclusi':
+          type: string
+          nullable: true
+          maxLength: 4294967295
+        'hotel_cancel_pol':
+          type: string
+          nullable: true
+          maxLength: 250
+        'facebook':
+          type: string
+          maxLength: 200
+        'google':
+          type: string
+          maxLength: 200
+        'instagram':
+          type: string
+          maxLength: 200
+        'twitter':
+          type: string
+          maxLength: 200
+        'linkedin':
+          type: string
+          maxLength: 200
+        'analytics':
+          type: string
+          maxLength: 200
+        'email_desk':
+          type: string
+          maxLength: 200
+        'tripadvisor':
+          type: string
+          maxLength: 250
+        'trip_rec_url':
+          type: string
+          maxLength: 250
+        'pec':
+          type: string
+          maxLength: 100
+        'sdi':
+          type: string
+          maxLength: 20
+        'ae_user':
+          type: string
+          maxLength: 100
+        'ae_password':
+          type: string
+          maxLength: 100
+        'ae_pin':
+          type: string
+          maxLength: 100
+        'ae_codice_fiscale':
+          type: string
+          maxLength: 100
+        'sa_nome':
+          type: string
+          maxLength: 100
+        'sa_chiave':
+          type: string
+          maxLength: 100
+        'ae_test':
+          type: integer
+          format: int32
+        'citytax':
+          type: number
+          format: double
+        'wifi_network':
+          type: string
+          maxLength: 100
+        'wifi_password':
+          type: string
+          maxLength: 100
+        'chek_email':
+          type: integer
+          format: int32
+          nullable: true
+        'chek_tel':
+          type: integer
+          format: int32
+          nullable: true
+        'nexi_alias':
+          type: string
+          nullable: true
+          maxLength: 100
+        'nexi_key':
+          type: string
+          nullable: true
+          maxLength: 100
+        'nexi_url':
+          type: string
+          maxLength: 250
+        'cir_bdsr':
+          type: string
+          maxLength: 50
+        'cin_bdsr':
+          type: string
+          maxLength: 50
+        'catastale_id':
+          type: string
+          maxLength: 50
+    HotelsListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/HotelsRead'
+        meta: { type: object }
+        links: { type: object }
+    HotelsCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            'hotel_id':
+              type: integer
+              format: int32
+        meta: { type: object }
+        links: { type: object }

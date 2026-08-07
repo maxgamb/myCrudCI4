@@ -62,6 +62,13 @@
                         <div class="alert alert-warning small mt-3 mb-0 d-none" id="forceWarning">
                             La sovrascrittura può eliminare modifiche manuali nei file generati.
                         </div>
+
+
+                        <div class="alert alert-info small mt-3 mb-0">
+                            <i class="bi bi-save"></i>
+                            In myCrudGpt 2.8 ogni generazione reale salva anche la configurazione
+                            versionabile in <code>app/MyCrudConfig/</code>.
+                        </div>
                     </div>
                 </div>
             </div>

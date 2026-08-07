@@ -82,324 +82,155 @@ final class AgendaModel extends Model
     private const LIST_FILTERS = array (
   'preno_id' => 
   array (
-    'mode' => 'exact',
     'type' => 'int',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
   'hotel_id' => 
   array (
-    'mode' => 'exact',
     'type' => 'int',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
   'preno_in_data' => 
   array (
-    'mode' => 'range',
     'type' => 'datetime',
-  ),
-  'preno_importo' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'decimal',
-  ),
-  'preno_impoto_mod' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'decimal',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
   'preno_dal' => 
   array (
-    'mode' => 'range',
     'type' => 'date',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
   'preno_al' => 
   array (
-    'mode' => 'range',
     'type' => 'date',
-  ),
-  'preno_n_notti' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'smallint',
-  ),
-  'preno_arr_ore' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'varchar',
-  ),
-  'preno_trattamento' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'char',
-  ),
-  't1' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'smallint',
-  ),
-  'q1' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'smallint',
-  ),
-  'p1' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'decimal',
-  ),
-  't2' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'smallint',
-  ),
-  'q2' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'smallint',
-  ),
-  'p2' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'decimal',
-  ),
-  't3' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'smallint',
-  ),
-  'q3' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'smallint',
-  ),
-  'p3' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'decimal',
-  ),
-  't4' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'smallint',
-  ),
-  'q4' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'smallint',
-  ),
-  'p4' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'decimal',
-  ),
-  't5' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'smallint',
-  ),
-  'q5' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'smallint',
-  ),
-  'p5' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'decimal',
-  ),
-  't6' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'smallint',
-  ),
-  'q6' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'smallint',
-  ),
-  'p6' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'decimal',
-  ),
-  'preno_nome' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'varchar',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
   'preno_cogno' => 
   array (
-    'mode' => 'prefix',
     'type' => 'varchar',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'starts_with',
+      3 => 'contains',
+      4 => 'ends_with',
+      5 => 'is_null',
+      6 => 'not_null',
+    ),
   ),
   'preno_agenzia' => 
   array (
-    'mode' => 'exact',
     'type' => 'int',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
   'voucher_id' => 
   array (
-    'mode' => 'prefix',
     'type' => 'varchar',
-  ),
-  'ota_voucher' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'varchar',
-  ),
-  'allotment_id' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'int',
-  ),
-  'preno_cc_tip' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'varchar',
-  ),
-  'preno_cc_n' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'varchar',
-  ),
-  'preno_cc_scad' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'varchar',
-  ),
-  'preno_tel' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'varchar',
-  ),
-  'preno_fax' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'varchar',
-  ),
-  'preno_email' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'varchar',
-  ),
-  'preno_mercato' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'varchar',
-  ),
-  'nazione_iso2' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'char',
-  ),
-  'preno_doc_fax' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'char',
-  ),
-  'preno_doc_email' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'char',
-  ),
-  'preno_doc_form' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'char',
-  ),
-  'preno_doc_mail' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'char',
-  ),
-  'preno_doc_vaglia' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'char',
-  ),
-  'preno_doc_woucher' => 
-  array (
-    'mode' => 'prefix',
-    'type' => 'char',
-  ),
-  'preno_pag_modalita' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'smallint',
-  ),
-  'preno_caparra' => 
-  array (
-    'mode' => 'exact',
-    'type' => 'decimal',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'starts_with',
+      3 => 'contains',
+      4 => 'ends_with',
+      5 => 'is_null',
+      6 => 'not_null',
+    ),
   ),
   'preno_stato' => 
   array (
-    'mode' => 'exact',
     'type' => 'smallint',
-  ),
-  'data_opzione' => 
-  array (
-    'mode' => 'range',
-    'type' => 'date',
-  ),
-  'cancella_data_record' => 
-  array (
-    'mode' => 'range',
-    'type' => 'datetime',
+    'operators' => 
+    array (
+      0 => 'eq',
+      1 => 'neq',
+      2 => 'gt',
+      3 => 'gte',
+      4 => 'lt',
+      5 => 'lte',
+      6 => 'between',
+      7 => 'is_null',
+      8 => 'not_null',
+    ),
   ),
 );
     private const SORTABLE_FIELDS = array (
   0 => 'preno_id',
   1 => 'hotel_id',
   2 => 'preno_in_data',
-  3 => 'preno_importo',
-  4 => 'preno_impoto_mod',
-  5 => 'preno_dal',
-  6 => 'preno_al',
-  7 => 'preno_n_notti',
-  8 => 'preno_arr_ore',
-  9 => 'preno_trattamento',
-  10 => 't1',
-  11 => 'q1',
-  12 => 'p1',
-  13 => 't2',
-  14 => 'q2',
-  15 => 'p2',
-  16 => 't3',
-  17 => 'q3',
-  18 => 'p3',
-  19 => 't4',
-  20 => 'q4',
-  21 => 'p4',
-  22 => 't5',
-  23 => 'q5',
-  24 => 'p5',
-  25 => 't6',
-  26 => 'q6',
-  27 => 'p6',
-  28 => 'preno_nome',
-  29 => 'preno_cogno',
-  30 => 'preno_agenzia',
-  31 => 'voucher_id',
-  32 => 'ota_voucher',
-  33 => 'allotment_id',
-  34 => 'preno_cc_tip',
-  35 => 'preno_cc_n',
-  36 => 'preno_cc_scad',
-  37 => 'preno_tel',
-  38 => 'preno_fax',
-  39 => 'preno_email',
-  40 => 'preno_mercato',
-  41 => 'nazione_iso2',
-  42 => 'preno_doc_fax',
-  43 => 'preno_doc_email',
-  44 => 'preno_doc_form',
-  45 => 'preno_doc_mail',
-  46 => 'preno_doc_vaglia',
-  47 => 'preno_doc_woucher',
-  48 => 'preno_pag_modalita',
-  49 => 'preno_caparra',
-  50 => 'preno_stato',
-  51 => 'data_opzione',
-  52 => 'cancella_data_record',
+  3 => 'preno_dal',
+  4 => 'preno_al',
+  5 => 'preno_cogno',
+  6 => 'preno_agenzia',
+  7 => 'voucher_id',
+  8 => 'preno_stato',
 );
     private const EXPORT_FIELDS = array (
   0 => 'preno_id',
@@ -458,6 +289,15 @@ final class AgendaModel extends Model
   53 => 'cancella_user',
   54 => 'cancella_pass',
   55 => 'agenda_utente_id',
+);
+    private const RELATION_SEARCHES = array (
+  'preno_agenzia' => 
+  array (
+    'table' => 'agenzie',
+    'key' => 'agenzia_id',
+    'label' => 'agenzia_tipologia',
+    'mode' => 'select',
+  ),
 );
     private const COUNT_CACHE_SECONDS = 60;
 
@@ -536,58 +376,15 @@ final class AgendaModel extends Model
         $builder = $this->db->table('agenda');
         $builder->select([
             'agenda.preno_id AS preno_id',
-            'agenda.hotel_id AS hotel_id',
             'agenda.preno_in_data AS preno_in_data',
             'agenda.preno_importo AS preno_importo',
-            'agenda.preno_impoto_mod AS preno_impoto_mod',
-            'agenda.preno_dal AS preno_dal',
-            'agenda.preno_al AS preno_al',
-            'agenda.preno_n_notti AS preno_n_notti',
-            'agenda.preno_arr_ore AS preno_arr_ore',
-            'agenda.preno_trattamento AS preno_trattamento',
-            'agenda.t1 AS t1',
-            'agenda.q1 AS q1',
-            'agenda.p1 AS p1',
-            'agenda.t2 AS t2',
-            'agenda.q2 AS q2',
-            'agenda.p2 AS p2',
-            'agenda.t3 AS t3',
-            'agenda.q3 AS q3',
-            'agenda.p3 AS p3',
-            'agenda.t4 AS t4',
-            'agenda.q4 AS q4',
-            'agenda.p4 AS p4',
-            'agenda.t5 AS t5',
-            'agenda.q5 AS q5',
-            'agenda.p5 AS p5',
-            'agenda.t6 AS t6',
-            'agenda.q6 AS q6',
-            'agenda.p6 AS p6',
             'agenda.preno_nome AS preno_nome',
-            'agenda.preno_cogno AS preno_cogno',
             'agenda.preno_agenzia AS preno_agenzia',
-            'agenda.voucher_id AS voucher_id',
-            'agenda.ota_voucher AS ota_voucher',
-            'agenda.allotment_id AS allotment_id',
-            'agenda.preno_cc_tip AS preno_cc_tip',
-            'agenda.preno_cc_n AS preno_cc_n',
-            'agenda.preno_cc_scad AS preno_cc_scad',
             'agenda.preno_tel AS preno_tel',
-            'agenda.preno_fax AS preno_fax',
             'agenda.preno_email AS preno_email',
-            'agenda.preno_mercato AS preno_mercato',
-            'agenda.nazione_iso2 AS nazione_iso2',
-            'agenda.preno_doc_fax AS preno_doc_fax',
             'agenda.preno_doc_email AS preno_doc_email',
-            'agenda.preno_doc_form AS preno_doc_form',
-            'agenda.preno_doc_mail AS preno_doc_mail',
-            'agenda.preno_doc_vaglia AS preno_doc_vaglia',
-            'agenda.preno_doc_woucher AS preno_doc_woucher',
-            'agenda.preno_pag_modalita AS preno_pag_modalita',
-            'agenda.preno_caparra AS preno_caparra',
             'agenda.preno_stato AS preno_stato',
             'agenda.data_opzione AS data_opzione',
-            'agenda.cancella_data_record AS cancella_data_record',
             'agenzie__preno_agenzia.agenzia_tipologia AS agenzie_agenzia_tipologia'
         ]);
         $builder->join('agenzie AS agenzie__preno_agenzia', 'agenzie__preno_agenzia.agenzia_id = agenda.preno_agenzia', 'left');
@@ -642,7 +439,7 @@ final class AgendaModel extends Model
             $page,
             $perPage,
             $total,
-            'default_full'
+            'bootstrap_full'
         );
 
         return [
@@ -656,8 +453,8 @@ final class AgendaModel extends Model
         ];
     }
 
-    /** Legge il CSV a blocchi usando la chiave primaria come cursore. */
-    public function getCsvRows(array $filters, int $limit = 2000, int|string|null $after = null): array
+    /** Legge i record di export a blocchi usando la chiave primaria come cursore. */
+    public function getExportRows(array $filters, int $limit = 2000, int|string|null $after = null): array
     {
         $builder = $this->db->table('agenda');
         $builder->select([
@@ -733,7 +530,7 @@ final class AgendaModel extends Model
             ->getResultArray();
     }
 
-    public function countCsvRows(array $filters): int
+    public function countExportRows(array $filters): int
     {
         $builder = $this->listCountBuilder();
         $this->applyListFilters($builder, $filters, false);
@@ -742,7 +539,7 @@ final class AgendaModel extends Model
     }
 
     /** @return list<string> */
-    public function csvFields(): array
+    public function exportFields(): array
     {
         return self::EXPORT_FIELDS;
     }
@@ -768,16 +565,8 @@ final class AgendaModel extends Model
 
     private function hasActiveFilters(array $filters): bool
     {
-        foreach ($filters as $value) {
-            if (is_array($value)) {
-                foreach ($value as $item) {
-                    if (is_scalar($item) && trim((string) $item) !== '') {
-                        return true;
-                    }
-                }
-                continue;
-            }
-            if (is_scalar($value) && trim((string) $value) !== '') {
+        foreach ($filters as $filter) {
+            if (is_array($filter) && trim((string) ($filter['field'] ?? '')) !== '') {
                 return true;
             }
         }
@@ -790,45 +579,97 @@ final class AgendaModel extends Model
         service('cache')->delete('mycrud_list_total_' . md5($this->table));
     }
 
+    /**
+     * Applica il filtro dinamico costruito dall'interfaccia del sito.
+     * Campo e operatore vengono sempre verificati contro LIST_FILTERS.
+     */
     private function applyListFilters(BaseBuilder $builder, array $filters, bool $qualified): void
     {
-        foreach (self::LIST_FILTERS as $field => $definition) {
+        $applied = 0;
+        $nextLogic = 'and';
+        foreach (array_values($filters) as $filter) {
+            if (!is_array($filter)) {
+                continue;
+            }
+
+            $field = trim((string) ($filter['field'] ?? ''));
+            $operator = trim((string) ($filter['operator'] ?? ''));
+            if ($field === '' || !isset(self::LIST_FILTERS[$field])) {
+                continue;
+            }
+
+            $definition = self::LIST_FILTERS[$field];
+            $allowedOperators = (array) ($definition['operators'] ?? ['eq']);
+            if (!in_array($operator, $allowedOperators, true)) {
+                continue;
+            }
+
             $column = $qualified ? 'agenda.' . $field : $field;
-            $mode = (string) ($definition['mode'] ?? 'exact');
-            $value = $filters[$field] ?? null;
+            $value = is_scalar($filter['value'] ?? null) ? trim((string) $filter['value']) : '';
+            $valueTo = is_scalar($filter['value_to'] ?? null) ? trim((string) $filter['value_to']) : '';
+            // La logica appartiene alla riga precedente e collega la
+            // condizione appena applicata a quella successiva nell'interfaccia.
+            $logic = $applied > 0 ? $nextLogic : 'and';
 
-            if ($mode === 'range') {
-                if (!is_array($value)) {
-                    continue;
-                }
-                $from = trim((string) ($value['from'] ?? ''));
-                $to = trim((string) ($value['to'] ?? ''));
-                if ($from !== '') {
-                    $builder->where($column . ' >=', $from);
-                }
-                if ($to !== '') {
-                    $builder->where($column . ' <=', $to);
-                }
+            if (!in_array($operator, ['is_null', 'not_null'], true) && $value === '') {
+                continue;
+            }
+            if ($operator === 'between' && $valueTo === '') {
                 continue;
             }
 
-            if (!is_scalar($value)) {
-                continue;
+            // Ogni condizione è raggruppata: AND/OR resta prevedibile anche
+            // per operatori composti come BETWEEN.
+            if ($logic === 'or') {
+                $builder->orGroupStart();
+            } else {
+                $builder->groupStart();
             }
 
-            $value = trim((string) $value);
-            if ($value === '') {
-                continue;
-            }
-
-            if ($mode === 'prefix') {
-                if (strlen($value) >= 2) {
+            switch ($operator) {
+                case 'neq':
+                    $builder->where($column . ' !=', $value);
+                    break;
+                case 'gt':
+                    $builder->where($column . ' >', $value);
+                    break;
+                case 'gte':
+                    $builder->where($column . ' >=', $value);
+                    break;
+                case 'lt':
+                    $builder->where($column . ' <', $value);
+                    break;
+                case 'lte':
+                    $builder->where($column . ' <=', $value);
+                    break;
+                case 'between':
+                    $builder->where($column . ' >=', $value)
+                        ->where($column . ' <=', $valueTo);
+                    break;
+                case 'starts_with':
                     $builder->like($column, $value, 'after');
-                }
-                continue;
+                    break;
+                case 'contains':
+                    $builder->like($column, $value, 'both');
+                    break;
+                case 'ends_with':
+                    $builder->like($column, $value, 'before');
+                    break;
+                case 'is_null':
+                    $builder->where($column, null);
+                    break;
+                case 'not_null':
+                    $builder->where($column . ' IS NOT NULL', null, false);
+                    break;
+                case 'eq':
+                default:
+                    $builder->where($column, $value);
+                    break;
             }
 
-            $builder->where($column, $value);
+            $builder->groupEnd();
+            $applied++;
+            $nextLogic = strtolower((string) ($filter['logic'] ?? 'and')) === 'or' ? 'or' : 'and';
         }
     }
 
@@ -877,7 +718,7 @@ final class AgendaModel extends Model
         return current_url() . '?' . http_build_query($query);
     }
     /** Restituisce le opzioni della relazione preno_agenzia. */
-    public function getAgenziePrenoAgenziumOptions(): array
+    public function getAgenziePrenoAgenziaOptions(): array
     {
         return $this->db->table('agenzie')
             ->select(['agenzia_id', 'agenzia_tipologia'])
@@ -888,8 +729,44 @@ final class AgendaModel extends Model
     public function relationOptions(): array
     {
         return [
-            'preno_agenzia' => $this->toOptions($this->getAgenziePrenoAgenziumOptions(), 'agenzia_id', 'agenzia_tipologia'),
+            'preno_agenzia' => $this->toOptions($this->getAgenziePrenoAgenziaOptions(), 'agenzia_id', 'agenzia_tipologia'),
         ];
+    }
+
+    /**
+     * Ricerca server-side delle opzioni per relazioni grandi.
+     * Tabella, chiave e campo label arrivano solo dalla whitelist generata.
+     *
+     * @return list<array{id:string,text:string}>
+     */
+    public function searchRelationOptions(string $field, string $query, int $limit = 20): array
+    {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return [];
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $limit = max(1, min(100, $limit));
+        $builder = $this->db->table((string) $definition['table'])
+            ->select([(string) $definition['key'], (string) $definition['label']])
+            ->orderBy((string) $definition['label'], 'ASC')
+            ->limit($limit);
+
+        $query = trim($query);
+        if ($query !== '') {
+            $builder->like((string) $definition['label'], $query, 'after');
+        }
+
+        $rows = $builder->get()->getResultArray();
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = [
+                'id' => (string) ($row[(string) $definition['key']] ?? ''),
+                'text' => (string) ($row[(string) $definition['label']] ?? ''),
+            ];
+        }
+
+        return $result;
     }
 
     private function toOptions(array $rows, string $key, string $label): array

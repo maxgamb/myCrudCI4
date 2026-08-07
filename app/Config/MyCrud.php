@@ -6,7 +6,7 @@ use CodeIgniter\Config\BaseConfig;
 
 class MyCrud extends BaseConfig
 {
-    public string $version = '2.7.3';
+    public string $version = '2.8.0-dev1';
 
     /**
      * Directory base usata dal writer. Ogni generatore deve passare un percorso
@@ -24,6 +24,18 @@ class MyCrud extends BaseConfig
             . DIRECTORY_SEPARATOR;
     }
 
+
+
+    /**
+     * Configurazioni CRUD persistenti e versionabili introdotte nella 2.8.
+     * Non sono codice generato: descrivono le scelte dello sviluppatore e
+     * vengono riutilizzate per generate-all, diff e rigenerazione controllata.
+     */
+    public string $crudConfigPath = APPPATH . 'MyCrudConfig';
+
+    /** Compatibilità in lettura con le configurazioni JSON della linea 2.7.x. */
+    public string $legacyCrudConfigPath = WRITEPATH . 'mycrud';
+
     public string $defaultArchitecture = 'full';
     public bool $safeWrite = true;
     public int $defaultPerPage = 25;
@@ -33,6 +45,18 @@ class MyCrud extends BaseConfig
     public int $csvMaximumRows = 150000;
     public int $wordChunkSize = 1000;
     public int $wordMaximumRows = 50000;
+
+    /**
+     * Le relazioni con molte righe vengono proposte come select AJAX.
+     * La soglia usa TABLE_ROWS di information_schema come stima veloce.
+     */
+    public int $relationAjaxThreshold = 5000;
+    public int $relationAjaxLimit = 20;
+    public int $relationAjaxMinimumChars = 2;
+
+    /** Parametri predefiniti dei benchmark CLI. */
+    public int $benchmarkIterations = 5;
+    public int $benchmarkPerPage = 50;
     public string $defaultLocale = 'it';
     public string $softDeleteField = 'deleted_at';
 

@@ -127,25 +127,31 @@ final class {$class}
         return \$this->model->getListPage(\$filters, \$page, \$perPage, \$sort, \$direction);
     }
 
-    public function csvRows(array \$filters, int \$limit, int|string|null \$after = null): array
+    public function exportRows(array \$filters, int \$limit, int|string|null \$after = null): array
     {
-        return \$this->model->getCsvRows(\$filters, \$limit, \$after);
+        return \$this->model->getExportRows(\$filters, \$limit, \$after);
     }
 
-    public function countCsvRows(array \$filters): int
+    public function countExportRows(array \$filters): int
     {
-        return \$this->model->countCsvRows(\$filters);
+        return \$this->model->countExportRows(\$filters);
     }
 
     /** @return list<string> */
-    public function csvFields(): array
+    public function exportFields(): array
     {
-        return \$this->model->csvFields();
+        return \$this->model->exportFields();
     }
 
 {$apiMethodsCode}    public function relationOptions(): array
     {
         return \$this->model->relationOptions();
+    }
+
+    /** @return list<array{id:string,text:string}> */
+    public function searchRelationOptions(string \$field, string \$query, int \$limit = 20): array
+    {
+        return \$this->model->searchRelationOptions(\$field, \$query, \$limit);
     }
 
     public function loadHasMany(int|string \$parentId): array

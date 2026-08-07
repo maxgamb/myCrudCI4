@@ -1,0 +1,277 @@
+openapi: 3.0.3
+info:
+  title: 'comuni API'
+  version: 1.0.0
+paths:
+  /api/v1/comuni:
+    get:
+      summary: 'Elenco comuni'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[Comuni_Codice]'
+          in: query
+          schema:
+            type: string
+        - name: 'filter[Comuni_Nome]'
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['Comuni_Codice', 'Comuni_Nome'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComuniListResponse'
+    post:
+      summary: Crea record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComuniCreate'
+      responses:
+        '201':
+          description: Record creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComuniCreatedResponse'
+        '422': { description: Errore di validazione }
+  /api/v1/comuni/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Dettaglio record
+      responses:
+        '200':
+          description: Record trovato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ComuniRead'
+        '404': { description: Record non trovato }
+    put:
+      summary: Aggiornamento completo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComuniUpdate'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    patch:
+      summary: Aggiornamento parziale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComuniPatch'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    delete:
+      summary: Elimina record
+      responses:
+        '204': { description: Record eliminato }
+components:
+  schemas:
+    ComuniRead:
+      type: object
+      properties:
+        'Comuni_Codice':
+          type: string
+          maxLength: 250
+        'Comuni_Nome':
+          type: string
+          nullable: true
+          maxLength: 250
+        'Comuni_Prov':
+          type: string
+          nullable: true
+          maxLength: 250
+        'Comuni_CAP':
+          type: string
+          nullable: true
+          maxLength: 250
+        'Comuni_Prefisso':
+          type: string
+          nullable: true
+          maxLength: 250
+        'Comuni_ColExcel':
+          type: string
+          maxLength: 250
+        'Comuni_Nazione':
+          type: string
+          maxLength: 100
+        'Comuni_Lingua':
+          type: string
+          maxLength: 4
+        'nazione_iso2':
+          type: string
+          maxLength: 5
+        'nazione_iso3':
+          type: string
+          maxLength: 5
+    ComuniCreate:
+      type: object
+      required:
+        - 'Comuni_Nazione'
+        - 'Comuni_Lingua'
+        - 'nazione_iso2'
+        - 'nazione_iso3'
+      properties:
+        'Comuni_Codice':
+          type: string
+          maxLength: 250
+        'Comuni_Nome':
+          type: string
+          nullable: true
+          maxLength: 250
+        'Comuni_Prov':
+          type: string
+          nullable: true
+          maxLength: 250
+        'Comuni_CAP':
+          type: string
+          nullable: true
+          maxLength: 250
+        'Comuni_Prefisso':
+          type: string
+          nullable: true
+          maxLength: 250
+        'Comuni_ColExcel':
+          type: string
+          maxLength: 250
+        'Comuni_Nazione':
+          type: string
+          maxLength: 100
+        'Comuni_Lingua':
+          type: string
+          maxLength: 4
+        'nazione_iso2':
+          type: string
+          maxLength: 5
+        'nazione_iso3':
+          type: string
+          maxLength: 5
+    ComuniUpdate:
+      type: object
+      required:
+        - 'Comuni_Nazione'
+        - 'Comuni_Lingua'
+        - 'nazione_iso2'
+        - 'nazione_iso3'
+      properties:
+        'Comuni_Codice':
+          type: string
+          maxLength: 250
+        'Comuni_Nome':
+          type: string
+          nullable: true
+          maxLength: 250
+        'Comuni_Prov':
+          type: string
+          nullable: true
+          maxLength: 250
+        'Comuni_CAP':
+          type: string
+          nullable: true
+          maxLength: 250
+        'Comuni_Prefisso':
+          type: string
+          nullable: true
+          maxLength: 250
+        'Comuni_ColExcel':
+          type: string
+          maxLength: 250
+        'Comuni_Nazione':
+          type: string
+          maxLength: 100
+        'Comuni_Lingua':
+          type: string
+          maxLength: 4
+        'nazione_iso2':
+          type: string
+          maxLength: 5
+        'nazione_iso3':
+          type: string
+          maxLength: 5
+    ComuniPatch:
+      type: object
+      properties:
+        'Comuni_Codice':
+          type: string
+          maxLength: 250
+        'Comuni_Nome':
+          type: string
+          nullable: true
+          maxLength: 250
+        'Comuni_Prov':
+          type: string
+          nullable: true
+          maxLength: 250
+        'Comuni_CAP':
+          type: string
+          nullable: true
+          maxLength: 250
+        'Comuni_Prefisso':
+          type: string
+          nullable: true
+          maxLength: 250
+        'Comuni_ColExcel':
+          type: string
+          maxLength: 250
+        'Comuni_Nazione':
+          type: string
+          maxLength: 100
+        'Comuni_Lingua':
+          type: string
+          maxLength: 4
+        'nazione_iso2':
+          type: string
+          maxLength: 5
+        'nazione_iso3':
+          type: string
+          maxLength: 5
+    ComuniListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComuniRead'
+        meta: { type: object }
+        links: { type: object }
+    ComuniCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            'Comuni_Codice':
+              type: string
+              maxLength: 250
+        meta: { type: object }
+        links: { type: object }

@@ -1,0 +1,422 @@
+openapi: 3.0.3
+info:
+  title: 'cassa API'
+  version: 1.0.0
+paths:
+  /api/v1/cassa:
+    get:
+      summary: 'Elenco cassa'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[cassa_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[hotel_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[preno_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[out_conto]'
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: 'filter[conto_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['cassa_id', 'hotel_id', 'preno_id', 'out_conto', 'conto_id'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CassaListResponse'
+    post:
+      summary: Crea record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CassaCreate'
+      responses:
+        '201':
+          description: Record creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CassaCreatedResponse'
+        '422': { description: Errore di validazione }
+  /api/v1/cassa/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Dettaglio record
+      responses:
+        '200':
+          description: Record trovato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CassaRead'
+        '404': { description: Record non trovato }
+    put:
+      summary: Aggiornamento completo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CassaUpdate'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    patch:
+      summary: Aggiornamento parziale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CassaPatch'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    delete:
+      summary: Elimina record
+      responses:
+        '204': { description: Record eliminato }
+components:
+  schemas:
+    CassaRead:
+      type: object
+      properties:
+        'cassa_id':
+          type: integer
+          format: int32
+        'hotel_id':
+          type: integer
+          format: int32
+        'preno_id':
+          type: integer
+          format: int32
+          nullable: true
+        'out_conto':
+          type: string
+          format: date
+          nullable: true
+        'conto_id':
+          type: integer
+          format: int32
+          nullable: true
+        'totale_importo':
+          type: number
+          format: double
+          nullable: true
+        'totale_modificato':
+          type: number
+          format: double
+          nullable: true
+        'pagamento_importo_pag':
+          type: number
+          format: double
+          nullable: true
+        'pagamento_forma':
+          type: string
+          nullable: true
+          maxLength: 3
+        'cassa_stato_camera':
+          type: string
+          nullable: true
+          maxLength: 3
+        'sospeso':
+          type: string
+          nullable: true
+          maxLength: 2
+        'fattura_numero':
+          type: integer
+          format: int32
+          nullable: true
+        'nome_pagante':
+          type: string
+          nullable: true
+          maxLength: 100
+        'cassa_utente_id':
+          type: integer
+          format: int32
+          nullable: true
+        'divisa':
+          type: string
+          nullable: true
+          maxLength: 50
+        'nexi_cod_aut':
+          type: string
+          nullable: true
+          maxLength: 50
+        'nexi_codTrans':
+          type: string
+          nullable: true
+          maxLength: 100
+        'nexi_pan':
+          type: string
+          nullable: true
+          maxLength: 100
+        'agenda_preno_arr_ore':
+          type: string
+          nullable: true
+    CassaCreate:
+      type: object
+      properties:
+        'hotel_id':
+          type: integer
+          format: int32
+        'preno_id':
+          type: integer
+          format: int32
+          nullable: true
+        'out_conto':
+          type: string
+          format: date
+          nullable: true
+        'conto_id':
+          type: integer
+          format: int32
+          nullable: true
+        'totale_importo':
+          type: number
+          format: double
+          nullable: true
+        'totale_modificato':
+          type: number
+          format: double
+          nullable: true
+        'pagamento_importo_pag':
+          type: number
+          format: double
+          nullable: true
+        'pagamento_forma':
+          type: string
+          nullable: true
+          maxLength: 3
+        'cassa_stato_camera':
+          type: string
+          nullable: true
+          maxLength: 3
+        'sospeso':
+          type: string
+          nullable: true
+          maxLength: 2
+        'fattura_numero':
+          type: integer
+          format: int32
+          nullable: true
+        'nome_pagante':
+          type: string
+          nullable: true
+          maxLength: 100
+        'cassa_utente_id':
+          type: integer
+          format: int32
+          nullable: true
+        'divisa':
+          type: string
+          nullable: true
+          maxLength: 50
+        'nexi_cod_aut':
+          type: string
+          nullable: true
+          maxLength: 50
+        'nexi_codTrans':
+          type: string
+          nullable: true
+          maxLength: 100
+        'nexi_pan':
+          type: string
+          nullable: true
+          maxLength: 100
+    CassaUpdate:
+      type: object
+      properties:
+        'hotel_id':
+          type: integer
+          format: int32
+        'preno_id':
+          type: integer
+          format: int32
+          nullable: true
+        'out_conto':
+          type: string
+          format: date
+          nullable: true
+        'conto_id':
+          type: integer
+          format: int32
+          nullable: true
+        'totale_importo':
+          type: number
+          format: double
+          nullable: true
+        'totale_modificato':
+          type: number
+          format: double
+          nullable: true
+        'pagamento_importo_pag':
+          type: number
+          format: double
+          nullable: true
+        'pagamento_forma':
+          type: string
+          nullable: true
+          maxLength: 3
+        'cassa_stato_camera':
+          type: string
+          nullable: true
+          maxLength: 3
+        'sospeso':
+          type: string
+          nullable: true
+          maxLength: 2
+        'fattura_numero':
+          type: integer
+          format: int32
+          nullable: true
+        'nome_pagante':
+          type: string
+          nullable: true
+          maxLength: 100
+        'cassa_utente_id':
+          type: integer
+          format: int32
+          nullable: true
+        'divisa':
+          type: string
+          nullable: true
+          maxLength: 50
+        'nexi_cod_aut':
+          type: string
+          nullable: true
+          maxLength: 50
+        'nexi_codTrans':
+          type: string
+          nullable: true
+          maxLength: 100
+        'nexi_pan':
+          type: string
+          nullable: true
+          maxLength: 100
+    CassaPatch:
+      type: object
+      properties:
+        'hotel_id':
+          type: integer
+          format: int32
+        'preno_id':
+          type: integer
+          format: int32
+          nullable: true
+        'out_conto':
+          type: string
+          format: date
+          nullable: true
+        'conto_id':
+          type: integer
+          format: int32
+          nullable: true
+        'totale_importo':
+          type: number
+          format: double
+          nullable: true
+        'totale_modificato':
+          type: number
+          format: double
+          nullable: true
+        'pagamento_importo_pag':
+          type: number
+          format: double
+          nullable: true
+        'pagamento_forma':
+          type: string
+          nullable: true
+          maxLength: 3
+        'cassa_stato_camera':
+          type: string
+          nullable: true
+          maxLength: 3
+        'sospeso':
+          type: string
+          nullable: true
+          maxLength: 2
+        'fattura_numero':
+          type: integer
+          format: int32
+          nullable: true
+        'nome_pagante':
+          type: string
+          nullable: true
+          maxLength: 100
+        'cassa_utente_id':
+          type: integer
+          format: int32
+          nullable: true
+        'divisa':
+          type: string
+          nullable: true
+          maxLength: 50
+        'nexi_cod_aut':
+          type: string
+          nullable: true
+          maxLength: 50
+        'nexi_codTrans':
+          type: string
+          nullable: true
+          maxLength: 100
+        'nexi_pan':
+          type: string
+          nullable: true
+          maxLength: 100
+    CassaListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CassaRead'
+        meta: { type: object }
+        links: { type: object }
+    CassaCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            'cassa_id':
+              type: integer
+              format: int32
+        meta: { type: object }
+        links: { type: object }

@@ -39,11 +39,18 @@ PHP : '';
 
 use CodeIgniter\Router\RouteCollection;
 
+/*
+ * Route modulari del CRUD {$table}.
+ * myCrudGpt genera volutamente un file per tabella: app/Config/Routes.php
+ * può caricare app/Routes/*.php senza concentrare tutte le route in un unico file.
+ */
+
 /** @var RouteCollection \$routes */
 \$routes->group('{$table}', static function (RouteCollection \$routes): void {
     \$routes->get('/', '{$controller}::index');
     \$routes->get('export-csv', '{$controller}::exportCsv');
     \$routes->get('export-word', '{$controller}::exportWord');
+    \$routes->get('relation-options/(:segment)', '{$controller}::relationOptions/\$1');
 {$softRoutes}    \$routes->get('view/(:segment)', '{$controller}::view/\$1');
     \$routes->get('create', '{$controller}::create');
     \$routes->post('store', '{$controller}::store');

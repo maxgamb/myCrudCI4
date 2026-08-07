@@ -1,7 +1,9 @@
 <?= $this->extend('layouts/default_app') ?>
 <?= $this->section('content') ?>
 
-<div class="container-fluid py-4">
+<?php /* Vista elenco del sito: filtri dinamici, AJAX progressivo, export e Pager CI4. */ ?>
+
+<div class="container-fluid px-0">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
         <div>
             <h1 class="h3 mb-0">{{TABLE}}</h1>
@@ -19,20 +21,6 @@
             </a>
 {{TRASH_BUTTON}}        </div>
     </div>
-
-    <?php if (session('message')): ?>
-        <div class="alert alert-success alert-dismissible fade show">
-            <?= esc(session('message')) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Chiudi"></button>
-        </div>
-    <?php endif; ?>
-
-    <?php if (session('error')): ?>
-        <div class="alert alert-danger alert-dismissible fade show">
-            <?= esc(session('error')) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Chiudi"></button>
-        </div>
-    <?php endif; ?>
 
     <?php
     $hasActiveFilters = array_filter(

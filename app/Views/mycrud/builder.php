@@ -577,6 +577,14 @@ ksort($childTables);
 
 <?php endif; ?>
 
+        <?php $tableStats = (array) ($config['tableStats'] ?? []); ?>
+        <div class="alert alert-light border d-flex flex-wrap gap-3 align-items-center">
+            <strong>Schema:</strong>
+            <span>Righe stimate: <?= number_format((int) ($tableStats['rowEstimate'] ?? 0), 0, ',', '.') ?></span>
+            <span>Campi: <?= count($config['fields'] ?? []) ?></span>
+            <span class="text-muted">Gli indici sono mostrati su ogni campo; mycrud:doctor fornisce l'analisi completa.</span>
+        </div>
+
         <div id="sortableFields">
 <?php foreach ($config['order'] as $fieldName): ?>
     <?php
@@ -605,7 +613,25 @@ ksort($childTables);
                                 <span class="badge bg-warning text-dark">
                                     FK → <?= esc($fk['parentTable']) ?>
                                 </span>
-                                        <?php endif; ?>
+                                <?php if ((int) ($field['relationRowEstimate'] ?? 0) > 0): ?>
+                                    <span class="badge text-bg-light">
+                                        ~<?= number_format((int) $field['relationRowEstimate'], 0, ',', '.') ?> righe
+                                    </span>
+                                <?php endif; ?>
+    <?php endif; ?>
+
+    <?php $indexInfo = (array) ($field['index'] ?? []); ?>
+    <?php if (!empty($indexInfo['primary'])): ?>
+                                <span class="badge text-bg-dark">PRIMARY</span>
+    <?php elseif (!empty($indexInfo['unique'])): ?>
+                                <span class="badge text-bg-success">UNIQUE</span>
+    <?php elseif (!empty($indexInfo['leading'])): ?>
+                                <span class="badge text-bg-primary">INDEX</span>
+    <?php elseif (!empty($indexInfo['indexed'])): ?>
+                                <span class="badge text-bg-secondary">INDEX non-leading</span>
+    <?php else: ?>
+                                <span class="badge text-bg-light">No index</span>
+    <?php endif; ?>
                         </div>
 
                         <button type="button"
@@ -642,6 +668,23 @@ ksort($childTables);
     <?php endforeach; ?>
                                 </select>
                             </div>
+
+                            <?php if ($fk): ?>
+                                <div class="col-lg-4">
+                                    <label class="form-label">Caricamento relazione</label>
+                                    <select name="relationMode[<?= esc($fieldName) ?>]" class="form-select">
+                                        <option value="select" <?= ($field['relationMode'] ?? 'select') === 'select' ? 'selected' : '' ?>>Select completa</option>
+                                        <option value="ajax" <?= ($field['relationMode'] ?? '') === 'ajax' ? 'selected' : '' ?>>Select AJAX</option>
+                                    </select>
+                                    <div class="form-text">
+                                        <?php if (($field['relationMode'] ?? '') === 'ajax'): ?>
+                                            Suggerita AJAX per la dimensione della tabella collegata.
+                                        <?php else: ?>
+                                            AJAX evita di caricare tutte le opzioni quando la tabella collegata è grande.
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
 
                             <div class="col-lg-4">
                                 <label class="form-label">Label</label>
@@ -712,7 +755,8 @@ ksort($childTables);
                                     'visibleForm' => '🧾 Visibile form',
                                     'visibleView' => '👁️ Visibile dettaglio',
                                     'sensitive' => '🔐 Sensibile',
-                                    'exportable' => '📄 Esportabile CSV',
+                                    'exportable' => '📄 Esportabile CSV/Word',
+                                    'apiVisible' => '🔌 Visibile API',
                                 ];
                                 ?>
                                 <?php foreach ($uiFlags as $flag => $flagLabel): ?>
@@ -730,6 +774,10 @@ ksort($childTables);
                                         </label>
                                     </div>
                                 <?php endforeach; ?>
+                                <div class="form-text">
+                                    “Ricercabile” rende il campo disponibile nel filtro dinamico Campo/Criterio/Valore quando l'indice lo consente.
+                                    Le opzioni di visibilità ed export vengono rispettate dal codice generato lato sito.
+                                </div>
                             </div>
 
                             <div class="col-lg-8">
@@ -876,7 +924,7 @@ ksort($childTables);
             }
         }
 
-        // Architettura unica Full: nessun cambio di struttura lato client.
+        // Le architetture Basic, Standard e Full condividono lo stesso Builder dei campi.
 
         document.querySelectorAll('.field-block').forEach(function (block) {
             const disabled = block.querySelector('input[value="disabled"]');

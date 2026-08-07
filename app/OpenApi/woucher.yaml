@@ -1,0 +1,457 @@
+openapi: 3.0.3
+info:
+  title: 'woucher API'
+  version: 1.0.0
+paths:
+  /api/v1/woucher:
+    get:
+      summary: 'Elenco woucher'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[woucher_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['woucher_id'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WoucherListResponse'
+    post:
+      summary: Crea record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WoucherCreate'
+      responses:
+        '201':
+          description: Record creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WoucherCreatedResponse'
+        '422': { description: Errore di validazione }
+  /api/v1/woucher/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Dettaglio record
+      responses:
+        '200':
+          description: Record trovato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/WoucherRead'
+        '404': { description: Record non trovato }
+    put:
+      summary: Aggiornamento completo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WoucherUpdate'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    patch:
+      summary: Aggiornamento parziale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WoucherPatch'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    delete:
+      summary: Elimina record
+      responses:
+        '204': { description: Record eliminato }
+components:
+  schemas:
+    WoucherRead:
+      type: object
+      properties:
+        'woucher_id':
+          type: integer
+          format: int32
+        'woucher_agenzia_id':
+          type: integer
+          format: int32
+        'woucher_preno_id':
+          type: integer
+          format: int32
+        'woucher_hotel_id':
+          type: integer
+          format: int32
+        'woucher_in':
+          type: string
+          format: date
+        'woucher_notti':
+          type: integer
+          format: int32
+        'woucher_out':
+          type: string
+          format: date
+        'woucher_numero':
+          type: string
+          maxLength: 100
+        'woucher_serie':
+          type: string
+          nullable: true
+          maxLength: 100
+        'woucher_singole':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_singole_staff':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_doppia':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_tripla':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_quadrupla':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_cildren_n':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_doppia_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_tripla_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_quadrupla_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_quintupla_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_tot_pax':
+          type: integer
+          format: int32
+        'woucher_tot_adulti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_tot_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_note':
+          type: string
+          nullable: true
+          maxLength: 4294967295
+    WoucherCreate:
+      type: object
+      required:
+        - 'woucher_in'
+        - 'woucher_out'
+      properties:
+        'woucher_agenzia_id':
+          type: integer
+          format: int32
+        'woucher_preno_id':
+          type: integer
+          format: int32
+        'woucher_hotel_id':
+          type: integer
+          format: int32
+        'woucher_in':
+          type: string
+          format: date
+        'woucher_notti':
+          type: integer
+          format: int32
+        'woucher_out':
+          type: string
+          format: date
+        'woucher_numero':
+          type: string
+          maxLength: 100
+        'woucher_serie':
+          type: string
+          nullable: true
+          maxLength: 100
+        'woucher_singole':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_singole_staff':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_doppia':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_tripla':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_quadrupla':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_cildren_n':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_doppia_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_tripla_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_quadrupla_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_quintupla_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_tot_pax':
+          type: integer
+          format: int32
+        'woucher_tot_adulti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_tot_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_note':
+          type: string
+          nullable: true
+          maxLength: 4294967295
+    WoucherUpdate:
+      type: object
+      required:
+        - 'woucher_in'
+        - 'woucher_out'
+      properties:
+        'woucher_agenzia_id':
+          type: integer
+          format: int32
+        'woucher_preno_id':
+          type: integer
+          format: int32
+        'woucher_hotel_id':
+          type: integer
+          format: int32
+        'woucher_in':
+          type: string
+          format: date
+        'woucher_notti':
+          type: integer
+          format: int32
+        'woucher_out':
+          type: string
+          format: date
+        'woucher_numero':
+          type: string
+          maxLength: 100
+        'woucher_serie':
+          type: string
+          nullable: true
+          maxLength: 100
+        'woucher_singole':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_singole_staff':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_doppia':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_tripla':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_quadrupla':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_cildren_n':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_doppia_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_tripla_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_quadrupla_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_quintupla_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_tot_pax':
+          type: integer
+          format: int32
+        'woucher_tot_adulti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_tot_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_note':
+          type: string
+          nullable: true
+          maxLength: 4294967295
+    WoucherPatch:
+      type: object
+      properties:
+        'woucher_agenzia_id':
+          type: integer
+          format: int32
+        'woucher_preno_id':
+          type: integer
+          format: int32
+        'woucher_hotel_id':
+          type: integer
+          format: int32
+        'woucher_in':
+          type: string
+          format: date
+        'woucher_notti':
+          type: integer
+          format: int32
+        'woucher_out':
+          type: string
+          format: date
+        'woucher_numero':
+          type: string
+          maxLength: 100
+        'woucher_serie':
+          type: string
+          nullable: true
+          maxLength: 100
+        'woucher_singole':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_singole_staff':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_doppia':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_tripla':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_quadrupla':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_cildren_n':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_doppia_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_tripla_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_quadrupla_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_quintupla_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_tot_pax':
+          type: integer
+          format: int32
+        'woucher_tot_adulti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_tot_studenti':
+          type: integer
+          format: int32
+          nullable: true
+        'woucher_note':
+          type: string
+          nullable: true
+          maxLength: 4294967295
+    WoucherListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/WoucherRead'
+        meta: { type: object }
+        links: { type: object }
+    WoucherCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            'woucher_id':
+              type: integer
+              format: int32
+        meta: { type: object }
+        links: { type: object }
