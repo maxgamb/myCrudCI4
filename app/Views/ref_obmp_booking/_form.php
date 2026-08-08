@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="datetime-local"
                         name="ref_obm_data"
                         id="ref_obm_data"
-                        value="<?= esc(old('ref_obm_data', isset($row->ref_obm_data) ? str_replace(' ', 'T', substr((string) $row->ref_obm_data, 0, 16)) : '')) ?>"
+                        value="<?= esc(old('ref_obm_data', isset($row->ref_obm_data) ? str_replace(' ', 'T', substr((string) $row->ref_obm_data, 0, 16)) : ($context['ref_obm_data'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['ref_obm_data']) ? 'is-invalid' : '' ?>"
                         aria-describedby="ref_obm_data-error"
                         aria-invalid="<?= isset($errors['ref_obm_data']) ? 'true' : 'false' ?>"
@@ -68,12 +70,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['preno_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('preno_id', $row->preno_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('preno_id', $row->preno_id ?? ($context['preno_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="preno_id"
+                            data-base-url="<?= site_url('agenda/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('agenda/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['preno_id'])): ?>
                         <div id="preno_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_id']) ?>
@@ -95,12 +118,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['obm_cliente_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('obm_cliente_id', $row->obm_cliente_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('obm_cliente_id', $row->obm_cliente_id ?? ($context['obm_cliente_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="obm_cliente_id"
+                            data-base-url="<?= site_url('obmp_clienti/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('obmp_clienti/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['obm_cliente_id'])): ?>
                         <div id="obm_cliente_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['obm_cliente_id']) ?>
@@ -115,7 +159,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -141,12 +185,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['ref_site'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('ref_site', $row->ref_site ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('ref_site', $row->ref_site ?? ($context['ref_site'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="ref_site"
+                            data-base-url="<?= site_url('obmp_ref_site/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('obmp_ref_site/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['ref_site'])): ?>
                         <div id="ref_site-error" class="invalid-feedback d-block">
                             <?= esc($errors['ref_site']) ?>
@@ -161,7 +226,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="ref_agency"
                         id="ref_agency"
-                        value="<?= esc(old('ref_agency', $row->ref_agency ?? '')) ?>"
+                        value="<?= esc(old('ref_agency', $row->ref_agency ?? ($context['ref_agency'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['ref_agency']) ? 'is-invalid' : '' ?>"
                         aria-describedby="ref_agency-error"
                         aria-invalid="<?= isset($errors['ref_agency']) ? 'true' : 'false' ?>"
@@ -180,7 +245,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="ref_event"
                         id="ref_event"
-                        value="<?= esc(old('ref_event', $row->ref_event ?? '')) ?>"
+                        value="<?= esc(old('ref_event', $row->ref_event ?? ($context['ref_event'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['ref_event']) ? 'is-invalid' : '' ?>"
                         aria-describedby="ref_event-error"
                         aria-invalid="<?= isset($errors['ref_event']) ? 'true' : 'false' ?>"
@@ -199,7 +264,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="ref_session"
                         id="ref_session"
-                        value="<?= esc(old('ref_session', $row->ref_session ?? '')) ?>"
+                        value="<?= esc(old('ref_session', $row->ref_session ?? ($context['ref_session'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['ref_session']) ? 'is-invalid' : '' ?>"
                         aria-describedby="ref_session-error"
                         aria-invalid="<?= isset($errors['ref_session']) ? 'true' : 'false' ?>"
@@ -219,7 +284,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="ref_cookie"
                         id="ref_cookie"
-                        value="<?= esc(old('ref_cookie', $row->ref_cookie ?? '')) ?>"
+                        value="<?= esc(old('ref_cookie', $row->ref_cookie ?? ($context['ref_cookie'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['ref_cookie']) ? 'is-invalid' : '' ?>"
                         aria-describedby="ref_cookie-error"
                         aria-invalid="<?= isset($errors['ref_cookie']) ? 'true' : 'false' ?>"
@@ -239,7 +304,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="room_obmp_string"
                         id="room_obmp_string"
-                        value="<?= esc(old('room_obmp_string', $row->room_obmp_string ?? '')) ?>"
+                        value="<?= esc(old('room_obmp_string', $row->room_obmp_string ?? ($context['room_obmp_string'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['room_obmp_string']) ? 'is-invalid' : '' ?>"
                         aria-describedby="room_obmp_string-error"
                         aria-invalid="<?= isset($errors['room_obmp_string']) ? 'true' : 'false' ?>"
@@ -266,12 +331,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['quote_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('quote_id', $row->quote_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('quote_id', $row->quote_id ?? ($context['quote_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="quote_id"
+                            data-base-url="<?= site_url('obmp_quote/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('obmp_quote/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['quote_id'])): ?>
                         <div id="quote_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['quote_id']) ?>
@@ -319,6 +405,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -363,6 +450,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -370,6 +458,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

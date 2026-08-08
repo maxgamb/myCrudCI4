@@ -71,6 +71,16 @@ class ConfigBuilder
                 'foreignKey' => $relations['belongsTo'][$name] ?? null,
                 'relationMode' => (string) (($relations['belongsTo'][$name]['optionMode'] ?? '') ?: ''),
                 'relationRowEstimate' => max(0, (int) ($relations['belongsTo'][$name]['rowEstimate'] ?? 0)),
+                'relationDisplayField' => (string) ($relations['belongsTo'][$name]['displayField'] ?? ''),
+                'relationDisplayTemplate' => '',
+                'relationNavigation' => isset($relations['belongsTo'][$name]) ? [
+                    // Le opzioni di navigazione sono scelte applicative: il DB
+                    // certifica la FK, ma non può sapere come deve comportarsi la UI.
+                    'quickFilter' => false,
+                    'parentLink' => false,
+                    'acceptContext' => false,
+                    'createParentLink' => false,
+                ] : [],
                 'inputType' => $this->inferInputType(
                     $column,
                     isset($relations['belongsTo'][$name])
@@ -152,6 +162,40 @@ class ConfigBuilder
                 $field['relationMode'] = in_array($requestedRelationMode, ['select', 'ajax'], true)
                     ? $requestedRelationMode
                     : 'select';
+
+                $foreignKey = (array) $field['foreignKey'];
+                $availableDisplayFields = array_values(array_unique(array_filter(
+                    (array) ($foreignKey['availableDisplayFields'] ?? []),
+                    static fn ($value): bool => is_string($value) && $value !== ''
+                )));
+                $requestedDisplayField = trim((string) (
+                    $post['relationDisplayField'][$name]
+                    ?? $field['relationDisplayField']
+                    ?? $foreignKey['displayField']
+                    ?? ''
+                ));
+                if ($requestedDisplayField === '' || !in_array($requestedDisplayField, $availableDisplayFields, true)) {
+                    $requestedDisplayField = (string) ($foreignKey['displayField'] ?? $foreignKey['parentKey'] ?? '');
+                }
+                $field['relationDisplayField'] = $requestedDisplayField;
+
+                $requestedTemplate = trim((string) (
+                    $post['relationDisplayTemplate'][$name]
+                    ?? $field['relationDisplayTemplate']
+                    ?? ''
+                ));
+                $field['relationDisplayTemplate'] = $this->sanitizeDisplayTemplate(
+                    $requestedTemplate,
+                    $availableDisplayFields
+                );
+
+                $postedNavigation = array_values(array_intersect(
+                    (array) ($post['relationNavigation'][$name] ?? []),
+                    ['quickFilter', 'parentLink', 'acceptContext', 'createParentLink']
+                ));
+                foreach (['quickFilter', 'parentLink', 'acceptContext', 'createParentLink'] as $flag) {
+                    $field['relationNavigation'][$flag] = in_array($flag, $postedNavigation, true);
+                }
             }
 
             $boolean = array_values(array_intersect(
@@ -218,6 +262,38 @@ class ConfigBuilder
         $savedMeta = (array) ($saved['_meta'] ?? []);
         unset($saved['_meta']);
         $saved['table'] = $base['table'];
+
+        /*
+         * Lo schema corrente resta sempre autorevole.
+         *
+         * Una configurazione persistente può contenere riferimenti a campi o
+         * relazioni che nel frattempo sono stati rimossi/rinominati nel DB.
+         * array_replace_recursive() aggiungerebbe tali chiavi obsolete al
+         * risultato finale, producendo relazioni prive dei metadati di schema
+         * (per esempio childTable/foreignKey). Conserviamo quindi soltanto le
+         * personalizzazioni ancora compatibili con lo schema corrente.
+         */
+        $savedFields = (array) ($saved['fields'] ?? []);
+        $saved['fields'] = array_intersect_key($savedFields, (array) ($base['fields'] ?? []));
+
+        $baseHasMany = (array) ($base['relationsConfig']['hasMany'] ?? []);
+        $savedHasMany = (array) ($saved['relationsConfig']['hasMany'] ?? []);
+        $saved['relationsConfig']['hasMany'] = array_intersect_key($savedHasMany, $baseHasMany);
+
+        /*
+         * L'ordine salvato conserva le preferenze dello sviluppatore, ma non
+         * deve reintrodurre campi eliminati. I nuovi campi DB vengono aggiunti
+         * in coda così restano immediatamente disponibili nel Builder.
+         */
+        $baseOrder = array_keys((array) ($base['fields'] ?? []));
+        $savedOrder = array_values(array_filter(
+            (array) ($saved['order'] ?? []),
+            static fn (mixed $field): bool => is_string($field) && isset($base['fields'][$field])
+        ));
+        $saved['order'] = array_values(array_unique(array_merge(
+            $savedOrder,
+            array_values(array_diff($baseOrder, $savedOrder))
+        )));
 
         /*
          * Migrazione delle vecchie configurazioni:
@@ -301,6 +377,44 @@ class ConfigBuilder
             if (!empty($field['foreignKey'])) {
                 $mode = strtolower(trim((string) ($field['relationMode'] ?? 'select')));
                 $field['relationMode'] = in_array($mode, ['select', 'ajax'], true) ? $mode : 'select';
+
+                $relation = (array) $field['foreignKey'];
+                $availableDisplayFields = array_values((array) ($relation['availableDisplayFields'] ?? []));
+                $displayField = trim((string) ($field['relationDisplayField'] ?? $relation['displayField'] ?? ''));
+                if ($displayField === '' || ($availableDisplayFields !== [] && !in_array($displayField, $availableDisplayFields, true))) {
+                    $displayField = (string) ($relation['displayField'] ?? $relation['parentKey'] ?? '');
+                }
+                $displayTemplate = $this->sanitizeDisplayTemplate(
+                    (string) ($field['relationDisplayTemplate'] ?? ''),
+                    $availableDisplayFields
+                );
+
+                $navigation = (array) ($field['relationNavigation'] ?? []);
+                $navigation += [
+                    'quickFilter' => false,
+                    'parentLink' => false,
+                    'acceptContext' => false,
+                    'createParentLink' => false,
+                ];
+                foreach ($navigation as $flag => $enabled) {
+                    $navigation[$flag] = (bool) $enabled;
+                }
+
+                $field['relationDisplayField'] = $displayField;
+                $field['relationDisplayTemplate'] = $displayTemplate;
+                $field['relationNavigation'] = $navigation;
+                $field['foreignKey']['displayField'] = $displayField;
+                $field['foreignKey']['displayTemplate'] = $displayTemplate;
+
+                if (isset($config['relations']['belongsTo'][$name])) {
+                    $config['relations']['belongsTo'][$name]['displayField'] = $displayField;
+                    $config['relations']['belongsTo'][$name]['displayTemplate'] = $displayTemplate;
+                    $config['relations']['belongsTo'][$name]['alias'] = (string) (
+                        $field['foreignKey']['alias']
+                        ?? $config['relations']['belongsTo'][$name]['alias']
+                        ?? (($field['foreignKey']['parentTable'] ?? 'parent') . '__' . $name . '__label')
+                    );
+                }
             }
         }
         unset($field);
@@ -321,6 +435,29 @@ class ConfigBuilder
         $config['dataStyle'] = 'object';
 
         return $config;
+    }
+
+    /**
+     * Mantiene nel template descrittivo solo placeholder riferiti a colonne
+     * realmente disponibili nella tabella padre. Il testo libero resta intatto.
+     */
+    private function sanitizeDisplayTemplate(string $template, array $allowedFields): string
+    {
+        $template = trim($template);
+        if ($template === '') {
+            return '';
+        }
+
+        $allowed = array_fill_keys(array_values(array_filter(
+            $allowedFields,
+            static fn ($value): bool => is_string($value) && $value !== ''
+        )), true);
+
+        return (string) preg_replace_callback(
+            '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+            static fn (array $match): string => isset($allowed[$match[1]]) ? $match[0] : '',
+            $template
+        );
     }
 
     private function normalizeArchitecture(string $architecture): string

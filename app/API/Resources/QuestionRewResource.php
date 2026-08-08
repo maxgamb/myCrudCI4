@@ -15,7 +15,7 @@ final class QuestionRewResource
   4 => 'clienti_id',
   5 => 'valore',
   6 => 'data',
-  7 => 'question_title',
+  7 => 'question__question_id__label',
 );
     private const WRITABLE = array (
   0 => 'question_id',

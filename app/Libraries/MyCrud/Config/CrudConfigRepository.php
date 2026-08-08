@@ -257,6 +257,14 @@ final class CrudConfigRepository
                 'inputType'    => (string) ($field['inputType'] ?? 'text'),
                 'width'        => (int) ($field['width'] ?? 6),
                 'relationMode' => (string) ($field['relationMode'] ?? ''),
+                'relationDisplayField' => (string) ($field['relationDisplayField'] ?? ''),
+                'relationDisplayTemplate' => (string) ($field['relationDisplayTemplate'] ?? ''),
+                'relationNavigation' => [
+                    'quickFilter' => !empty($field['relationNavigation']['quickFilter']),
+                    'parentLink' => !empty($field['relationNavigation']['parentLink']),
+                    'acceptContext' => !empty($field['relationNavigation']['acceptContext']),
+                    'createParentLink' => !empty($field['relationNavigation']['createParentLink']),
+                ],
                 'attributes'   => [
                     'boolean' => array_values((array) ($field['attributes']['boolean'] ?? [])),
                     'values'  => (array) ($field['attributes']['values'] ?? []),

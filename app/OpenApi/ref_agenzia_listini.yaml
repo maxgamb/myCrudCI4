@@ -138,10 +138,10 @@ components:
         'ref_agenzia_datarecord':
           type: string
           format: date-time
-        'agenzia_listini_agenzia_listini_nome':
+        'agenzia_listini__agenzia_listini_id__label':
           type: string
           nullable: true
-        'agenzie_agenzia_tipologia':
+        'agenzie__agenzia_id__label':
           type: string
           nullable: true
     RefAgenziaListiniCreate:

@@ -15,15 +15,16 @@ final class MyCrudDiff extends BaseCommand
     protected $group       = 'myCrudGpt';
     protected $name        = 'mycrud:diff';
     protected $description = 'Confronta la nuova generazione con app/ o app/Generated/ senza modificare file.';
-    protected $usage       = 'mycrud:diff <table> [--target app|generated] [--all]';
+    protected $usage       = 'mycrud:diff <table> [--target app|generated] [--all] [--details]';
 
     protected $arguments = [
         'table' => 'Nome della tabella configurata.',
     ];
 
     protected $options = [
-        '--target' => 'Target del confronto: app (default) oppure generated.',
-        '--all'    => 'Mostra anche i file invariati.',
+        '--target'  => 'Target del confronto: app (default) oppure generated.',
+        '--all'     => 'Mostra anche i file invariati.',
+        '--details' => 'Mostra il numero di righe aggiunte/rimosse per i file nuovi o modificati.',
     ];
 
     public function run(array $params)
@@ -31,7 +32,7 @@ final class MyCrudDiff extends BaseCommand
         $table = trim((string) ($params[0] ?? ''));
         if ($table === '') {
             CLI::error('Specificare il nome della tabella.');
-            return;
+            return EXIT_ERROR;
         }
 
         $target = (string) (CLI::getOption('target') ?: 'app');
@@ -40,7 +41,7 @@ final class MyCrudDiff extends BaseCommand
             $report = (new GenerationDiffService())->compare($table, $target);
         } catch (Throwable $e) {
             CLI::error($e->getMessage());
-            return;
+            return EXIT_ERROR;
         }
 
         CLI::write('myCrudGpt diff: ' . $table, 'cyan');
@@ -52,15 +53,56 @@ final class MyCrudDiff extends BaseCommand
             CLI::write('! Schema drift rilevato rispetto al salvataggio della configurazione.', 'yellow');
         }
 
-        CLI::newLine();
         $showAll = (bool) CLI::getOption('all');
+        $showDetails = (bool) CLI::getOption('details');
 
-        foreach ($report['files'] as $relative => $row) {
-            $status = (string) $row['status'];
-            if ($status === 'unchanged' && !$showAll) {
+        $this->printCategory('CRUD FILES', 'crud', $report['files'], $showAll, $showDetails);
+        $this->printCategory('SHARED FILES', 'shared', $report['files'], $showAll, $showDetails);
+
+        CLI::newLine();
+        $this->printSummary('CRUD', $report['summaryByCategory']['crud']);
+        $this->printSummary('SHARED', $report['summaryByCategory']['shared']);
+        $this->printSummary('TOTAL', $report['summary']);
+
+        CLI::write('Nessun file è stato modificato.', 'cyan');
+
+        return EXIT_SUCCESS;
+    }
+
+    /**
+     * @param array<string,array<string,mixed>> $files
+     */
+    private function printCategory(
+        string $title,
+        string $category,
+        array $files,
+        bool $showAll,
+        bool $showDetails
+    ): void {
+        $visible = [];
+
+        foreach ($files as $relative => $row) {
+            if (($row['category'] ?? 'crud') !== $category) {
                 continue;
             }
 
+            if (($row['status'] ?? '') === 'unchanged' && !$showAll) {
+                continue;
+            }
+
+            $visible[$relative] = $row;
+        }
+
+        if ($visible === []) {
+            return;
+        }
+
+        CLI::newLine();
+        CLI::write($title, 'yellow');
+        CLI::write(str_repeat('-', strlen($title)), 'light_gray');
+
+        foreach ($visible as $relative => $row) {
+            $status = (string) $row['status'];
             $prefix = match ($status) {
                 'new' => '+',
                 'changed' => '~',
@@ -73,14 +115,26 @@ final class MyCrudDiff extends BaseCommand
             };
 
             CLI::write($prefix . ' ' . strtoupper($status) . '  ' . $relative, $color);
-        }
 
-        CLI::newLine();
+            if ($showDetails && $status !== 'unchanged') {
+                $details = (array) ($row['details'] ?? []);
+                CLI::write(
+                    '    +' . (int) ($details['added'] ?? 0)
+                    . ' / -' . (int) ($details['removed'] ?? 0)
+                    . ' righe',
+                    'light_gray'
+                );
+            }
+        }
+    }
+
+    /** @param array{new:int,changed:int,unchanged:int} $summary */
+    private function printSummary(string $label, array $summary): void
+    {
         CLI::write(
-            'NEW ' . $report['summary']['new']
-            . ' | CHANGED ' . $report['summary']['changed']
-            . ' | UNCHANGED ' . $report['summary']['unchanged']
+            $label . ': NEW ' . $summary['new']
+            . ' | CHANGED ' . $summary['changed']
+            . ' | UNCHANGED ' . $summary['unchanged']
         );
-        CLI::write('Nessun file è stato modificato.', 'cyan');
     }
 }

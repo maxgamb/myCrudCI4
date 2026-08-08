@@ -86,10 +86,70 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->ref_site_id ?? '') ?></td>
-                                <td><?= esc($row->hotel_id ?? '') ?></td>
-                                <td><?= esc($row->obmp_affiliati_id ?? '') ?></td>
-                                <td><?= esc($row->ref_site_nome ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->ref_site_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'ref_site_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->ref_site_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->ref_site_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->hotel_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'hotel_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->hotel_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->hotel_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->obmp_affiliati_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'obmp_affiliati_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->obmp_affiliati_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->obmp_affiliati_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->ref_site_nome ?? '') ?></td>
                                 <td><?= esc($row->ref_site_date_record ?? '') ?></td>
                                 <td class="text-end text-nowrap">
                                     <?php $id = $row->ref_site_id ?? ''; ?>

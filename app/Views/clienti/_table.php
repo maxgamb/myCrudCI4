@@ -148,17 +148,138 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->refer_clienti_conto_id ?? $row->clienti_id ?? '') ?></td>
-                                <td><?= esc($row->preno_id ?? '') ?></td>
-                                <td><?= esc($row->hotel_id ?? '') ?></td>
-                                <td><?= esc($row->camera_id ?? '') ?></td>
-                                <td><?= esc($row->camera_numero ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->clienti_id ?? '') !== ''): ?><a href="<?= site_url('refer_clienti/view/' . rawurlencode((string) $row->clienti_id)) ?>" class="text-decoration-none"><?= esc($row->refer_clienti__clienti_id__label ?? $row->clienti_id ?? '') ?></a><?php else: ?><?= esc($row->refer_clienti__clienti_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'clienti_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->clienti_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->clienti_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td>
+                                    <?php if ((string) ($row->preno_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'preno_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->preno_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->preno_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->hotel_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'hotel_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->hotel_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->hotel_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->camera_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'camera_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->camera_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->camera_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->camera_numero ?? '') ?></td>
                                 <td><?= esc($row->camara_tipologia ?? '') ?></td>
-                                <td><?= esc($row->clienti_nome ?? '') ?></td>
-                                <td><?= esc($row->cliente_cocumento_tipo ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->clienti_nome ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'clienti_nome',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->clienti_nome,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->clienti_nome) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->cliente_cocumento_tipo ?? '') ?></td>
                                 <td><?= esc($row->clienti_tel ?? '') ?></td>
-                                <td><?= esc($row->clienti_email ?? '') ?></td>
-                                <td class="text-end text-nowrap">
+                                <td>
+                                    <?php if ((string) ($row->clienti_email ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'clienti_email',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->clienti_email,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->clienti_email) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td class="text-end text-nowrap">
                                     <?php $id = $row->clienti_id ?? ''; ?>
                                     <div class="btn-group btn-group-sm" role="group" aria-label="Azioni record">
                                         <a href="<?= site_url('clienti/view/' . rawurlencode((string) $id)) ?>" class="btn btn-outline-info" title="Visualizza">

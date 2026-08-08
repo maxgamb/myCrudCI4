@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="title"
                         id="title"
-                        value="<?= esc(old('title', $row->title ?? '')) ?>"
+                        value="<?= esc(old('title', $row->title ?? ($context['title'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['title']) ? 'is-invalid' : '' ?>"
                         aria-describedby="title-error"
                         aria-invalid="<?= isset($errors['title']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="tex_lingue_id_pro"
                         id="tex_lingue_id_pro"
-                        value="<?= esc(old('tex_lingue_id_pro', $row->tex_lingue_id_pro ?? '')) ?>"
+                        value="<?= esc(old('tex_lingue_id_pro', $row->tex_lingue_id_pro ?? ($context['tex_lingue_id_pro'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['tex_lingue_id_pro']) ? 'is-invalid' : '' ?>"
                         aria-describedby="tex_lingue_id_pro-error"
                         aria-invalid="<?= isset($errors['tex_lingue_id_pro']) ? 'true' : 'false' ?>"
@@ -81,7 +83,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="tex_lingue_id_con"
                         id="tex_lingue_id_con"
-                        value="<?= esc(old('tex_lingue_id_con', $row->tex_lingue_id_con ?? '')) ?>"
+                        value="<?= esc(old('tex_lingue_id_con', $row->tex_lingue_id_con ?? ($context['tex_lingue_id_con'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['tex_lingue_id_con']) ? 'is-invalid' : '' ?>"
                         aria-describedby="tex_lingue_id_con-error"
                         aria-invalid="<?= isset($errors['tex_lingue_id_con']) ? 'true' : 'false' ?>"
@@ -100,7 +102,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="tex_pro"
                         id="tex_pro"
-                        value="<?= esc(old('tex_pro', $row->tex_pro ?? '')) ?>"
+                        value="<?= esc(old('tex_pro', $row->tex_pro ?? ($context['tex_pro'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['tex_pro']) ? 'is-invalid' : '' ?>"
                         aria-describedby="tex_pro-error"
                         aria-invalid="<?= isset($errors['tex_pro']) ? 'true' : 'false' ?>"
@@ -120,7 +122,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="tex_no"
                         id="tex_no"
-                        value="<?= esc(old('tex_no', $row->tex_no ?? '')) ?>"
+                        value="<?= esc(old('tex_no', $row->tex_no ?? ($context['tex_no'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['tex_no']) ? 'is-invalid' : '' ?>"
                         aria-describedby="tex_no-error"
                         aria-invalid="<?= isset($errors['tex_no']) ? 'true' : 'false' ?>"
@@ -173,6 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -217,6 +220,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -224,6 +228,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

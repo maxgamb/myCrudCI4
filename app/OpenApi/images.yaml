@@ -145,7 +145,7 @@ components:
           type: integer
           format: int32
           nullable: true
-        'obmp_cm_rooms_obmp_cm_rooms_room_note':
+        'obmp_cm_rooms__obmp_cm_rooms_id__label':
           type: string
           nullable: true
     ImagesCreate:

@@ -97,7 +97,12 @@ final class ListinoPeriodiObmpModel extends Model
   array (
     'table' => 'listino_nome_obmp',
     'key' => 'listino_nome_id',
-    'label' => 'listino_nome',
+    'displayField' => 'listino_nome',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'listino_nome',
+    ),
     'mode' => 'select',
   ),
 );
@@ -115,7 +120,7 @@ final class ListinoPeriodiObmpModel extends Model
             'listino_periodi_obmp.listino_al AS listino_al',
             'listino_periodi_obmp.hotel_id AS hotel_id',
             'listino_periodi_obmp.listino_periodi AS listino_periodi',
-            'listino_nome_obmp__listino_nome_id.listino_nome AS listino_nome_obmp_listino_nome'
+            'listino_nome_obmp__listino_nome_id.listino_nome AS listino_nome_obmp__listino_nome_id__label'
         ]);
         $builder->join('listino_nome_obmp AS listino_nome_obmp__listino_nome_id', 'listino_nome_obmp__listino_nome_id.listino_nome_id = listino_periodi_obmp.listino_nome_id', 'left');
         return $builder;
@@ -133,7 +138,7 @@ final class ListinoPeriodiObmpModel extends Model
             'listino_periodi_obmp.listino_al AS listino_al',
             'listino_periodi_obmp.hotel_id AS hotel_id',
             'listino_periodi_obmp.listino_periodi AS listino_periodi',
-            'listino_nome_obmp__listino_nome_id.listino_nome AS listino_nome_obmp_listino_nome'
+            'listino_nome_obmp__listino_nome_id.listino_nome AS listino_nome_obmp__listino_nome_id__label'
         ]);
         $builder->join('listino_nome_obmp AS listino_nome_obmp__listino_nome_id', 'listino_nome_obmp__listino_nome_id.listino_nome_id = listino_periodi_obmp.listino_nome_id', 'left');
         return $builder;
@@ -213,7 +218,7 @@ final class ListinoPeriodiObmpModel extends Model
             'listino_periodi_obmp.listino_al AS listino_al',
             'listino_periodi_obmp.hotel_id AS hotel_id',
             'listino_periodi_obmp.listino_periodi AS listino_periodi',
-            'listino_nome_obmp__listino_nome_id.listino_nome AS listino_nome_obmp_listino_nome'
+            'listino_nome_obmp__listino_nome_id.listino_nome AS listino_nome_obmp__listino_nome_id__label'
         ]);
         $builder->join('listino_nome_obmp AS listino_nome_obmp__listino_nome_id', 'listino_nome_obmp__listino_nome_id.listino_nome_id = listino_periodi_obmp.listino_nome_id', 'left');
         $this->applyListFilters($builder, $filters, true);
@@ -420,21 +425,24 @@ final class ListinoPeriodiObmpModel extends Model
     public function getListinoNomeObmpListinoNomeIdOptions(): array
     {
         return $this->db->table('listino_nome_obmp')
-            ->select(['listino_nome_id', 'listino_nome'])
+            ->select(array (
+  0 => 'listino_nome_id',
+  1 => 'listino_nome',
+))
             ->orderBy('listino_nome', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     public function relationOptions(): array
     {
         return [
-            'listino_nome_id' => $this->toOptions($this->getListinoNomeObmpListinoNomeIdOptions(), 'listino_nome_id', 'listino_nome'),
+            'listino_nome_id' => $this->toRelationOptions($this->getListinoNomeObmpListinoNomeIdOptions(), 'listino_nome_id'),
         ];
     }
 
     /**
      * Ricerca server-side delle opzioni per relazioni grandi.
-     * Tabella, chiave e campo label arrivano solo dalla whitelist generata.
+     * Tabella, chiave e campi descrittivi arrivano solo dalla whitelist generata.
      *
      * @return list<array{id:string,text:string}>
      */
@@ -445,36 +453,100 @@ final class ListinoPeriodiObmpModel extends Model
         }
 
         $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
         $limit = max(1, min(100, $limit));
         $builder = $this->db->table((string) $definition['table'])
-            ->select([(string) $definition['key'], (string) $definition['label']])
-            ->orderBy((string) $definition['label'], 'ASC')
+            ->select($selectFields)
+            ->orderBy((string) $definition['displayField'], 'ASC')
             ->limit($limit);
 
         $query = trim($query);
-        if ($query !== '') {
-            $builder->like((string) $definition['label'], $query, 'after');
+        if ($query !== '' && $displayFields !== []) {
+            $builder->groupStart();
+            foreach ($displayFields as $index => $displayColumn) {
+                if ($index === 0) {
+                    $builder->like((string) $displayColumn, $query, 'after');
+                } else {
+                    $builder->orLike((string) $displayColumn, $query, 'after');
+                }
+            }
+            $builder->groupEnd();
         }
 
         $rows = $builder->get()->getResultArray();
         $result = [];
         foreach ($rows as $row) {
             $result[] = [
-                'id' => (string) ($row[(string) $definition['key']] ?? ''),
-                'text' => (string) ($row[(string) $definition['label']] ?? ''),
+                'id' => (string) ($row[$key] ?? ''),
+                'text' => $this->formatRelationLabel($row, $definition),
             ];
         }
 
         return $result;
     }
 
-    private function toOptions(array $rows, string $key, string $label): array
+    /** Restituisce una FK valida e la sua descrizione; usato dal Create contestuale. */
+    public function relationOptionById(string $field, int|string $id): ?array
     {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return null;
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
+        $row = $this->db->table((string) $definition['table'])
+            ->select($selectFields)
+            ->where($key, $id)
+            ->limit(1)
+            ->get()
+            ->getRowArray();
+
+        if (!is_array($row)) {
+            return null;
+        }
+
+        return [
+            'id' => (string) ($row[$key] ?? ''),
+            'text' => $this->formatRelationLabel($row, $definition),
+        ];
+    }
+
+    private function toRelationOptions(array $rows, string $field): array
+    {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return [];
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
         $options = [];
         foreach ($rows as $row) {
-            $options[(string) $row->{$key}] = (string) $row->{$label};
+            if (!is_array($row)) {
+                continue;
+            }
+            $options[(string) ($row[$key] ?? '')] = $this->formatRelationLabel($row, $definition);
         }
         return $options;
+    }
+
+    private function formatRelationLabel(array $row, array $definition): string
+    {
+        $template = trim((string) ($definition['displayTemplate'] ?? ''));
+        if ($template === '') {
+            return trim((string) ($row[(string) $definition['displayField']] ?? ''));
+        }
+
+        $label = preg_replace_callback(
+            '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+            static fn (array $match): string => (string) ($row[$match[1]] ?? ''),
+            $template
+        );
+
+        return trim((string) $label);
     }
 
     public function loadHasMany(int|string $parentId): array

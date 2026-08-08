@@ -17,9 +17,9 @@ final class ObmpRefEventResource
   6 => 'event_dal',
   7 => 'event_al',
   8 => 'ref_event_note',
-  9 => 'agenzie_agenzia_tipologia',
-  10 => 'listino_nome_obmp_listino_nome',
-  11 => 'obmp_ref_site_ref_site_nome',
+  9 => 'agenzie__agenzia_id__label',
+  10 => 'listino_nome_obmp__listino_nome_id__label',
+  11 => 'obmp_ref_site__ref_site_id__label',
 );
     private const WRITABLE = array (
   0 => 'ref_site_id',

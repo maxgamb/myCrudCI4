@@ -21,7 +21,7 @@ final class ObmpCmLingueResource
   10 => 'obmp_cm_lingue_politiche',
   11 => 'obmp_cm_lingue_condizioni',
   12 => 'obmp_cm_lingue_utente_id',
-  13 => 'obmp_cm_rooms_obmp_cm_rooms_room_note',
+  13 => 'obmp_cm_rooms__obmp_cm_rooms_id__label',
 );
     private const WRITABLE = array (
   0 => 'obmp_cm_rooms_id',

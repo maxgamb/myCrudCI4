@@ -30,6 +30,15 @@ return array (
       'inputType' => 'select',
       'width' => 6,
       'relationMode' => 'select',
+      'relationDisplayField' => 'prodotto_id',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => true,
+        'parentLink' => true,
+        'acceptContext' => true,
+        'createParentLink' => true,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -58,6 +67,15 @@ return array (
       'inputType' => 'text',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -88,6 +106,15 @@ return array (
       'inputType' => 'text',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -117,6 +144,15 @@ return array (
       'inputType' => 'text',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -146,6 +182,15 @@ return array (
       'inputType' => 'number',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -174,6 +219,15 @@ return array (
       'inputType' => 'text',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -203,6 +257,15 @@ return array (
       'inputType' => 'date',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -231,6 +294,15 @@ return array (
       'inputType' => 'number',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -272,9 +344,9 @@ return array (
   ),
   '_meta' => 
   array (
-    'generatorVersion' => '2.8.0-dev1',
-    'savedAt' => '2026-08-07T16:52:54+00:00',
+    'generatorVersion' => '2.8.0-dev9',
+    'savedAt' => '2026-08-08T15:46:31+00:00',
     'schemaFingerprint' => '6cf411ae0dfc926f1164418933997cecbb256b0a919e332c12f6da46433f0011',
-    'configHash' => '3ef86ec3c77d59f4054c53a2e0425729e0ce8527971331ce2c86fe362018029d',
+    'configHash' => 'ad583b60c3d4649f1dcd67f13a02c7fd6f0c2fec75acb92bc88923b7ab5e1d99',
   ),
 );

@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="costi_area_nome"
                         id="costi_area_nome"
-                        value="<?= esc(old('costi_area_nome', $row->costi_area_nome ?? '')) ?>"
+                        value="<?= esc(old('costi_area_nome', $row->costi_area_nome ?? ($context['costi_area_nome'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['costi_area_nome']) ? 'is-invalid' : '' ?>"
                         aria-describedby="costi_area_nome-error"
                         aria-invalid="<?= isset($errors['costi_area_nome']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="costi_area"
                         id="costi_area"
-                        value="<?= esc(old('costi_area', $row->costi_area ?? '')) ?>"
+                        value="<?= esc(old('costi_area', $row->costi_area ?? ($context['costi_area'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['costi_area']) ? 'is-invalid' : '' ?>"
                         aria-describedby="costi_area-error"
                         aria-invalid="<?= isset($errors['costi_area']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="utente_id"
                         id="utente_id"
-                        value="<?= esc(old('utente_id', $row->utente_id ?? '')) ?>"
+                        value="<?= esc(old('utente_id', $row->utente_id ?? ($context['utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="utente_id-error"
                         aria-invalid="<?= isset($errors['utente_id']) ? 'true' : 'false' ?>"
@@ -134,6 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -178,6 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -185,6 +189,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

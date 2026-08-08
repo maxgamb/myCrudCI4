@@ -17,7 +17,7 @@ final class PraticheRifResource
   6 => 'pratica_rif_note',
   7 => 'pratica_rif_out_conto',
   8 => 'pratiche_rif_id',
-  9 => 'pratiche_pratica_nome',
+  9 => 'pratiche__pratiche_rif_id__label',
 );
     private const WRITABLE = array (
   0 => 'pratica_rif_pratica_id',

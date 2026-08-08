@@ -72,9 +72,49 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->Comuni_Codice ?? '') ?></td>
-                                <td><?= esc($row->Comuni_Nome ?? '') ?></td>
-                                <td><?= esc($row->Comuni_Prov ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->Comuni_Codice ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'Comuni_Codice',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->Comuni_Codice,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->Comuni_Codice) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->Comuni_Nome ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'Comuni_Nome',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->Comuni_Nome,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->Comuni_Nome) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->Comuni_Prov ?? '') ?></td>
                                 <td><?= esc($row->Comuni_CAP ?? '') ?></td>
                                 <td><?= esc($row->Comuni_Prefisso ?? '') ?></td>
                                 <td><?= esc($row->Comuni_ColExcel ?? '') ?></td>

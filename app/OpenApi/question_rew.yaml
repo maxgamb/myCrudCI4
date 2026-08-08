@@ -129,7 +129,7 @@ components:
           type: string
           format: date-time
           nullable: true
-        'question_title':
+        'question__question_id__label':
           type: string
           nullable: true
     QuestionRewCreate:

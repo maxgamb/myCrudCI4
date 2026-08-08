@@ -128,10 +128,10 @@ components:
           type: integer
           format: int32
           nullable: true
-        'wreh_orders_status':
+        'wreh_orders__order_id__label':
           type: string
           nullable: true
-        'wreh_products_name':
+        'wreh_products__product_id__label':
           type: string
           nullable: true
     WrehOrderDetailsCreate:

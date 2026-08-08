@@ -151,7 +151,7 @@ components:
           type: string
           nullable: true
           maxLength: 250
-        'obmp_cm_rooms_obmp_cm_rooms_room_note':
+        'obmp_cm_rooms__obmp_cm_rooms_id__label':
           type: string
           nullable: true
     ObmpCmLingueCreate:

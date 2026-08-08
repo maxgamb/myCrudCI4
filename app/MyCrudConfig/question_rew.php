@@ -29,6 +29,15 @@ return array (
       'inputType' => 'number',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -57,6 +66,15 @@ return array (
       'inputType' => 'select',
       'width' => 6,
       'relationMode' => 'select',
+      'relationDisplayField' => 'question_id',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => true,
+        'parentLink' => true,
+        'acceptContext' => true,
+        'createParentLink' => true,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -85,6 +103,15 @@ return array (
       'inputType' => 'number',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -113,6 +140,15 @@ return array (
       'inputType' => 'number',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -141,6 +177,15 @@ return array (
       'inputType' => 'number',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -169,6 +214,15 @@ return array (
       'inputType' => 'text',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -198,6 +252,15 @@ return array (
       'inputType' => 'datetime-local',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -239,9 +302,9 @@ return array (
   ),
   '_meta' => 
   array (
-    'generatorVersion' => '2.8.0-dev1',
-    'savedAt' => '2026-08-07T16:52:54+00:00',
+    'generatorVersion' => '2.8.0-dev9',
+    'savedAt' => '2026-08-08T15:46:31+00:00',
     'schemaFingerprint' => 'db18044b73148bf3e38d787d7592ce4f87b2ad295d60590f95bdc5e9eb2b4409',
-    'configHash' => '66be3e6882490ffd0da844e6e50fb0329b3979e884c812d9e44aa8e4de205b27',
+    'configHash' => '6b824b7840d98fdc48f80dd5fb140f726ffcb17256191a373d17ddd7a6fb2776',
   ),
 );

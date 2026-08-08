@@ -39,6 +39,15 @@ return array (
       'inputType' => 'number',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -67,6 +76,15 @@ return array (
       'inputType' => 'text',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -96,6 +114,15 @@ return array (
       'inputType' => 'text',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -126,6 +153,15 @@ return array (
       'inputType' => 'text',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -155,6 +191,15 @@ return array (
       'inputType' => 'text',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -184,6 +229,15 @@ return array (
       'inputType' => 'textarea',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -213,6 +267,15 @@ return array (
       'inputType' => 'email',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -242,6 +305,15 @@ return array (
       'inputType' => 'text',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -271,6 +343,15 @@ return array (
       'inputType' => 'text',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -300,6 +381,15 @@ return array (
       'inputType' => 'textarea',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -329,6 +419,15 @@ return array (
       'inputType' => 'textarea',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -358,6 +457,15 @@ return array (
       'inputType' => 'text',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -387,6 +495,15 @@ return array (
       'inputType' => 'text',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -416,6 +533,15 @@ return array (
       'inputType' => 'textarea',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -445,6 +571,15 @@ return array (
       'inputType' => 'textarea',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -474,6 +609,15 @@ return array (
       'inputType' => 'checkbox',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -502,6 +646,15 @@ return array (
       'inputType' => 'datetime-local',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -543,9 +696,9 @@ return array (
   ),
   '_meta' => 
   array (
-    'generatorVersion' => '2.8.0-dev1',
-    'savedAt' => '2026-08-07T16:52:53+00:00',
+    'generatorVersion' => '2.8.0-dev9',
+    'savedAt' => '2026-08-08T15:46:31+00:00',
     'schemaFingerprint' => 'bf6655b46926670ad204fd3c39a1f10ffcfb9ffac6f29dbcd11346b19878edac',
-    'configHash' => '6c3457a9450037dbb4fbf9cc881138280a2e83ee3e271a68ec118b38c0772cf0',
+    'configHash' => '81832e6cea80304ff41d2b9a40d32211d830f95d6513a5f5359a43eaae621b3c',
   ),
 );

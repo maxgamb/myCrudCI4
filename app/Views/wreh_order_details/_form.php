@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -49,12 +51,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['order_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('order_id', $row->order_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('order_id', $row->order_id ?? ($context['order_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="order_id"
+                            data-base-url="<?= site_url('wreh_orders/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('wreh_orders/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['order_id'])): ?>
                         <div id="order_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['order_id']) ?>
@@ -76,12 +99,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['product_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('product_id', $row->product_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('product_id', $row->product_id ?? ($context['product_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="product_id"
+                            data-base-url="<?= site_url('wreh_products/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('wreh_products/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['product_id'])): ?>
                         <div id="product_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['product_id']) ?>
@@ -96,7 +140,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="quantity"
                         id="quantity"
-                        value="<?= esc(old('quantity', $row->quantity ?? '')) ?>"
+                        value="<?= esc(old('quantity', $row->quantity ?? ($context['quantity'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['quantity']) ? 'is-invalid' : '' ?>"
                         aria-describedby="quantity-error"
                         aria-invalid="<?= isset($errors['quantity']) ? 'true' : 'false' ?>"
@@ -116,7 +160,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="price"
                         id="price"
-                        value="<?= esc(old('price', $row->price ?? '')) ?>"
+                        value="<?= esc(old('price', $row->price ?? ($context['price'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['price']) ? 'is-invalid' : '' ?>"
                         aria-describedby="price-error"
                         aria-invalid="<?= isset($errors['price']) ? 'true' : 'false' ?>"
@@ -136,7 +180,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="utente_id"
                         id="utente_id"
-                        value="<?= esc(old('utente_id', $row->utente_id ?? '')) ?>"
+                        value="<?= esc(old('utente_id', $row->utente_id ?? ($context['utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="utente_id-error"
                         aria-invalid="<?= isset($errors['utente_id']) ? 'true' : 'false' ?>"
@@ -188,6 +232,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -232,6 +277,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -239,6 +285,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

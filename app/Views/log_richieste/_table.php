@@ -70,9 +70,49 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->log_ric_id ?? '') ?></td>
-                                <td><?= esc($row->log_ric_hotel_id ?? '') ?></td>
-                                <td><?= esc($row->log_ric_dal ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->log_ric_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'log_ric_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->log_ric_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->log_ric_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->log_ric_hotel_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'log_ric_hotel_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->log_ric_hotel_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->log_ric_hotel_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->log_ric_dal ?? '') ?></td>
                                 <td><?= esc($row->log_ric_al ?? '') ?></td>
                                 <td><?= esc($row->log_ric_data ?? '') ?></td>
                                 <td><?= esc($row->log_ric_notti ?? '') ?></td>

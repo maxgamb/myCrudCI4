@@ -15,7 +15,7 @@
                             <td><?= esc($row->id_mod_conto ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ModificaConti.mod_conto_id')) ?></th>
-                            <td><?= esc($row->mod_conto_id ?? '') ?></td>
+                            <td><a href="<?= site_url('conti/view/' . rawurlencode((string) ($row->mod_conto_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->conti__mod_conto_id__label ?? $row->mod_conto_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ModificaConti.mod_hotel_id')) ?></th>
                             <td><?= esc($row->mod_hotel_id ?? '') ?></td>

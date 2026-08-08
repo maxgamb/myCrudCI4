@@ -129,12 +129,113 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->cassa_id ?? '') ?></td>
-                                <td><?= esc($row->hotel_id ?? '') ?></td>
-                                <td><?= esc($row->agenda_preno_arr_ore ?? $row->preno_id ?? '') ?></td>
-                                <td><?= esc($row->out_conto ?? '') ?></td>
-                                <td><?= esc($row->conto_id ?? '') ?></td>
-                                <td><?= esc($row->totale_importo ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->cassa_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'cassa_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->cassa_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->cassa_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->hotel_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'hotel_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->hotel_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->hotel_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->preno_id ?? '') !== ''): ?><a href="<?= site_url('agenda/view/' . rawurlencode((string) $row->preno_id)) ?>" class="text-decoration-none"><?= esc($row->agenda__preno_id__label ?? $row->preno_id ?? '') ?></a><?php else: ?><?= esc($row->agenda__preno_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'preno_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->preno_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->preno_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td>
+                                    <?php if ((string) ($row->out_conto ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'out_conto',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->out_conto,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->out_conto) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->conto_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'conto_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->conto_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->conto_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->totale_importo ?? '') ?></td>
                                 <td><?= esc($row->totale_modificato ?? '') ?></td>
                                 <td><?= esc($row->pagamento_importo_pag ?? '') ?></td>
                                 <td><?= esc($row->cassa_stato_camera ?? '') ?></td>

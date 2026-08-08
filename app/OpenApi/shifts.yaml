@@ -129,7 +129,7 @@ components:
           format: int32
         'shift_time':
           type: string
-        'staff_nome':
+        'staff__staff_id__label':
           type: string
           nullable: true
     ShiftsCreate:

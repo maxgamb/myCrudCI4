@@ -154,10 +154,10 @@ components:
         'guasto_utente_id':
           type: integer
           format: int32
-        'camere_tipologia_camera':
+        'camere__camera_id__label':
           type: string
           nullable: true
-        'hotels_nome_hotel':
+        'hotels__hotel_id__label':
           type: string
           nullable: true
     GuastiCreate:

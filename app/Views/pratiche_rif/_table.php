@@ -108,15 +108,96 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->pratica_rif_pratica_id ?? '') ?></td>
-                                <td><?= esc($row->hotel_id ?? '') ?></td>
-                                <td><?= esc($row->pratica_rif_conto_id ?? '') ?></td>
-                                <td><?= esc($row->pratica_rif_totale_modificato ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->pratica_rif_pratica_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'pratica_rif_pratica_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->pratica_rif_pratica_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->pratica_rif_pratica_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->hotel_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'hotel_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->hotel_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->hotel_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->pratica_rif_conto_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'pratica_rif_conto_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->pratica_rif_conto_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->pratica_rif_conto_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->pratica_rif_totale_modificato ?? '') ?></td>
                                 <td><?= esc($row->pratica_rif_totale_importo ?? '') ?></td>
                                 <td><?= esc($row->pratica_rif_pagamento_importo_pag ?? '') ?></td>
                                 <td><?= esc($row->pratica_rif_out_conto ?? '') ?></td>
-                                <td><?= esc($row->pratiche_pratica_nome ?? $row->pratiche_rif_id ?? '') ?></td>
-                                <td class="text-end text-nowrap">
+                                <td>
+                                    <?php if ((string) ($row->pratiche_rif_id ?? '') !== ''): ?><a href="<?= site_url('pratiche/view/' . rawurlencode((string) $row->pratiche_rif_id)) ?>" class="text-decoration-none"><?= esc($row->pratiche__pratiche_rif_id__label ?? $row->pratiche_rif_id ?? '') ?></a><?php else: ?><?= esc($row->pratiche__pratiche_rif_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'pratiche_rif_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->pratiche_rif_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->pratiche_rif_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td class="text-end text-nowrap">
                                     <?php $id = $row->pratica_rif_pratica_id ?? ''; ?>
                                     <div class="btn-group btn-group-sm" role="group" aria-label="Azioni record">
                                         <a href="<?= site_url('pratiche_rif/view/' . rawurlencode((string) $id)) ?>" class="btn btn-outline-info" title="Visualizza">

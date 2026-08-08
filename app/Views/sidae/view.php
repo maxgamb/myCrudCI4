@@ -18,7 +18,7 @@
                             <td><?= esc($row->hotel_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Sidae.conto_id')) ?></th>
-                            <td><?= esc($row->conto_id ?? '') ?></td>
+                            <td><a href="<?= site_url('conti/view/' . rawurlencode((string) ($row->conto_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->conti__conto_id__label ?? $row->conto_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Sidae.foglio_id')) ?></th>
                             <td><?= esc($row->foglio_id ?? '') ?></td>

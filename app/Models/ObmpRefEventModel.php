@@ -136,21 +136,36 @@ final class ObmpRefEventModel extends Model
   array (
     'table' => 'agenzie',
     'key' => 'agenzia_id',
-    'label' => 'agenzia_tipologia',
+    'displayField' => 'agenzia_tipologia',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'agenzia_tipologia',
+    ),
     'mode' => 'select',
   ),
   'listino_nome_id' => 
   array (
     'table' => 'listino_nome_obmp',
     'key' => 'listino_nome_id',
-    'label' => 'listino_nome',
+    'displayField' => 'listino_nome',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'listino_nome',
+    ),
     'mode' => 'select',
   ),
   'ref_site_id' => 
   array (
     'table' => 'obmp_ref_site',
     'key' => 'ref_site_id',
-    'label' => 'ref_site_nome',
+    'displayField' => 'ref_site_nome',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'ref_site_nome',
+    ),
     'mode' => 'select',
   ),
 );
@@ -171,9 +186,9 @@ final class ObmpRefEventModel extends Model
             'obmp_ref_event.event_al AS event_al',
             'obmp_ref_event.ref_event_note AS ref_event_note',
             'obmp_ref_event.ref_event_data_record AS ref_event_data_record',
-            'agenzie__agenzia_id.agenzia_tipologia AS agenzie_agenzia_tipologia',
-            'listino_nome_obmp__listino_nome_id.listino_nome AS listino_nome_obmp_listino_nome',
-            'obmp_ref_site__ref_site_id.ref_site_nome AS obmp_ref_site_ref_site_nome'
+            'agenzie__agenzia_id.agenzia_tipologia AS agenzie__agenzia_id__label',
+            'listino_nome_obmp__listino_nome_id.listino_nome AS listino_nome_obmp__listino_nome_id__label',
+            'obmp_ref_site__ref_site_id.ref_site_nome AS obmp_ref_site__ref_site_id__label'
         ]);
         $builder->join('agenzie AS agenzie__agenzia_id', 'agenzie__agenzia_id.agenzia_id = obmp_ref_event.agenzia_id', 'left');
         $builder->join('listino_nome_obmp AS listino_nome_obmp__listino_nome_id', 'listino_nome_obmp__listino_nome_id.listino_nome_id = obmp_ref_event.listino_nome_id', 'left');
@@ -195,9 +210,9 @@ final class ObmpRefEventModel extends Model
             'obmp_ref_event.event_dal AS event_dal',
             'obmp_ref_event.event_al AS event_al',
             'obmp_ref_event.ref_event_note AS ref_event_note',
-            'agenzie__agenzia_id.agenzia_tipologia AS agenzie_agenzia_tipologia',
-            'listino_nome_obmp__listino_nome_id.listino_nome AS listino_nome_obmp_listino_nome',
-            'obmp_ref_site__ref_site_id.ref_site_nome AS obmp_ref_site_ref_site_nome'
+            'agenzie__agenzia_id.agenzia_tipologia AS agenzie__agenzia_id__label',
+            'listino_nome_obmp__listino_nome_id.listino_nome AS listino_nome_obmp__listino_nome_id__label',
+            'obmp_ref_site__ref_site_id.ref_site_nome AS obmp_ref_site__ref_site_id__label'
         ]);
         $builder->join('agenzie AS agenzie__agenzia_id', 'agenzie__agenzia_id.agenzia_id = obmp_ref_event.agenzia_id', 'left');
         $builder->join('listino_nome_obmp AS listino_nome_obmp__listino_nome_id', 'listino_nome_obmp__listino_nome_id.listino_nome_id = obmp_ref_event.listino_nome_id', 'left');
@@ -281,9 +296,9 @@ final class ObmpRefEventModel extends Model
             'obmp_ref_event.event_dal AS event_dal',
             'obmp_ref_event.event_al AS event_al',
             'obmp_ref_event.ref_event_note AS ref_event_note',
-            'agenzie__agenzia_id.agenzia_tipologia AS agenzie_agenzia_tipologia',
-            'listino_nome_obmp__listino_nome_id.listino_nome AS listino_nome_obmp_listino_nome',
-            'obmp_ref_site__ref_site_id.ref_site_nome AS obmp_ref_site_ref_site_nome'
+            'agenzie__agenzia_id.agenzia_tipologia AS agenzie__agenzia_id__label',
+            'listino_nome_obmp__listino_nome_id.listino_nome AS listino_nome_obmp__listino_nome_id__label',
+            'obmp_ref_site__ref_site_id.ref_site_nome AS obmp_ref_site__ref_site_id__label'
         ]);
         $builder->join('agenzie AS agenzie__agenzia_id', 'agenzie__agenzia_id.agenzia_id = obmp_ref_event.agenzia_id', 'left');
         $builder->join('listino_nome_obmp AS listino_nome_obmp__listino_nome_id', 'listino_nome_obmp__listino_nome_id.listino_nome_id = obmp_ref_event.listino_nome_id', 'left');
@@ -492,41 +507,50 @@ final class ObmpRefEventModel extends Model
     public function getAgenzieAgenziaIdOptions(): array
     {
         return $this->db->table('agenzie')
-            ->select(['agenzia_id', 'agenzia_tipologia'])
+            ->select(array (
+  0 => 'agenzia_id',
+  1 => 'agenzia_tipologia',
+))
             ->orderBy('agenzia_tipologia', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     /** Restituisce le opzioni della relazione listino_nome_id. */
     public function getListinoNomeObmpListinoNomeIdOptions(): array
     {
         return $this->db->table('listino_nome_obmp')
-            ->select(['listino_nome_id', 'listino_nome'])
+            ->select(array (
+  0 => 'listino_nome_id',
+  1 => 'listino_nome',
+))
             ->orderBy('listino_nome', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     /** Restituisce le opzioni della relazione ref_site_id. */
     public function getObmpRefSiteRefSiteIdOptions(): array
     {
         return $this->db->table('obmp_ref_site')
-            ->select(['ref_site_id', 'ref_site_nome'])
+            ->select(array (
+  0 => 'ref_site_id',
+  1 => 'ref_site_nome',
+))
             ->orderBy('ref_site_nome', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     public function relationOptions(): array
     {
         return [
-            'agenzia_id' => $this->toOptions($this->getAgenzieAgenziaIdOptions(), 'agenzia_id', 'agenzia_tipologia'),
-            'listino_nome_id' => $this->toOptions($this->getListinoNomeObmpListinoNomeIdOptions(), 'listino_nome_id', 'listino_nome'),
-            'ref_site_id' => $this->toOptions($this->getObmpRefSiteRefSiteIdOptions(), 'ref_site_id', 'ref_site_nome'),
+            'agenzia_id' => $this->toRelationOptions($this->getAgenzieAgenziaIdOptions(), 'agenzia_id'),
+            'listino_nome_id' => $this->toRelationOptions($this->getListinoNomeObmpListinoNomeIdOptions(), 'listino_nome_id'),
+            'ref_site_id' => $this->toRelationOptions($this->getObmpRefSiteRefSiteIdOptions(), 'ref_site_id'),
         ];
     }
 
     /**
      * Ricerca server-side delle opzioni per relazioni grandi.
-     * Tabella, chiave e campo label arrivano solo dalla whitelist generata.
+     * Tabella, chiave e campi descrittivi arrivano solo dalla whitelist generata.
      *
      * @return list<array{id:string,text:string}>
      */
@@ -537,36 +561,100 @@ final class ObmpRefEventModel extends Model
         }
 
         $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
         $limit = max(1, min(100, $limit));
         $builder = $this->db->table((string) $definition['table'])
-            ->select([(string) $definition['key'], (string) $definition['label']])
-            ->orderBy((string) $definition['label'], 'ASC')
+            ->select($selectFields)
+            ->orderBy((string) $definition['displayField'], 'ASC')
             ->limit($limit);
 
         $query = trim($query);
-        if ($query !== '') {
-            $builder->like((string) $definition['label'], $query, 'after');
+        if ($query !== '' && $displayFields !== []) {
+            $builder->groupStart();
+            foreach ($displayFields as $index => $displayColumn) {
+                if ($index === 0) {
+                    $builder->like((string) $displayColumn, $query, 'after');
+                } else {
+                    $builder->orLike((string) $displayColumn, $query, 'after');
+                }
+            }
+            $builder->groupEnd();
         }
 
         $rows = $builder->get()->getResultArray();
         $result = [];
         foreach ($rows as $row) {
             $result[] = [
-                'id' => (string) ($row[(string) $definition['key']] ?? ''),
-                'text' => (string) ($row[(string) $definition['label']] ?? ''),
+                'id' => (string) ($row[$key] ?? ''),
+                'text' => $this->formatRelationLabel($row, $definition),
             ];
         }
 
         return $result;
     }
 
-    private function toOptions(array $rows, string $key, string $label): array
+    /** Restituisce una FK valida e la sua descrizione; usato dal Create contestuale. */
+    public function relationOptionById(string $field, int|string $id): ?array
     {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return null;
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
+        $row = $this->db->table((string) $definition['table'])
+            ->select($selectFields)
+            ->where($key, $id)
+            ->limit(1)
+            ->get()
+            ->getRowArray();
+
+        if (!is_array($row)) {
+            return null;
+        }
+
+        return [
+            'id' => (string) ($row[$key] ?? ''),
+            'text' => $this->formatRelationLabel($row, $definition),
+        ];
+    }
+
+    private function toRelationOptions(array $rows, string $field): array
+    {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return [];
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
         $options = [];
         foreach ($rows as $row) {
-            $options[(string) $row->{$key}] = (string) $row->{$label};
+            if (!is_array($row)) {
+                continue;
+            }
+            $options[(string) ($row[$key] ?? '')] = $this->formatRelationLabel($row, $definition);
         }
         return $options;
+    }
+
+    private function formatRelationLabel(array $row, array $definition): string
+    {
+        $template = trim((string) ($definition['displayTemplate'] ?? ''));
+        if ($template === '') {
+            return trim((string) ($row[(string) $definition['displayField']] ?? ''));
+        }
+
+        $label = preg_replace_callback(
+            '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+            static fn (array $match): string => (string) ($row[$match[1]] ?? ''),
+            $template
+        );
+
+        return trim((string) $label);
     }
 
     public function loadHasMany(int|string $parentId): array

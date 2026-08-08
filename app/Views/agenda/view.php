@@ -102,7 +102,7 @@
                             <td><?= esc($row->preno_cogno ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Agenda.preno_agenzia')) ?></th>
-                            <td><?= esc($row->preno_agenzia ?? '') ?></td>
+                            <td><a href="<?= site_url('agenzie/view/' . rawurlencode((string) ($row->preno_agenzia ?? ''))) ?>" class="text-decoration-none"><?= esc($row->agenzie__preno_agenzia__label ?? $row->preno_agenzia ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Agenda.voucher_id')) ?></th>
                             <td><?= esc($row->voucher_id ?? '') ?></td>

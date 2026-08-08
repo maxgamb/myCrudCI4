@@ -148,35 +148,60 @@ final class ObmpRatesModel extends Model
   array (
     'table' => 'obmp_board',
     'key' => 'obmp_board_cod',
-    'label' => 'obmp_board_title',
+    'displayField' => 'obmp_board_title',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'obmp_board_title',
+    ),
     'mode' => 'select',
   ),
   'obmp_cancellation_cod' => 
   array (
     'table' => 'obmp_cancellations',
     'key' => 'obmp_cancellation_cod',
-    'label' => 'obmp_cancellation_title',
+    'displayField' => 'obmp_cancellation_title',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'obmp_cancellation_title',
+    ),
     'mode' => 'select',
   ),
   'obmp_cm_rooms_id' => 
   array (
     'table' => 'obmp_cm_rooms',
     'key' => 'obmp_cm_rooms_id',
-    'label' => 'obmp_cm_rooms_room_note',
+    'displayField' => 'obmp_cm_rooms_room_note',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'obmp_cm_rooms_room_note',
+    ),
     'mode' => 'select',
   ),
   'obmp_payment_cod' => 
   array (
     'table' => 'obmp_payments',
     'key' => 'obmp_payment_cod',
-    'label' => 'obmp_payment_title',
+    'displayField' => 'obmp_payment_title',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'obmp_payment_title',
+    ),
     'mode' => 'select',
   ),
   'obmp_restriction_id' => 
   array (
     'table' => 'obmp_restrictions',
     'key' => 'obmp_restriction_id',
-    'label' => 'hotel_id',
+    'displayField' => 'hotel_id',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'hotel_id',
+    ),
     'mode' => 'select',
   ),
 );
@@ -197,11 +222,11 @@ final class ObmpRatesModel extends Model
             'obmp_rates.rate_sum AS rate_sum',
             'obmp_rates.rate_mol AS rate_mol',
             'obmp_rates.rate_stato AS rate_stato',
-            'obmp_board__obmp_board_cod.obmp_board_title AS obmp_board_obmp_board_title',
-            'obmp_cancellations__obmp_cancellation_cod.obmp_cancellation_title AS obmp_cancellations_obmp_cancellation_title',
-            'obmp_cm_rooms__obmp_cm_rooms_id.obmp_cm_rooms_room_note AS obmp_cm_rooms_obmp_cm_rooms_room_note',
-            'obmp_payments__obmp_payment_cod.obmp_payment_title AS obmp_payments_obmp_payment_title',
-            'obmp_restrictions__obmp_restriction_id.hotel_id AS obmp_restrictions_hotel_id'
+            'obmp_board__obmp_board_cod.obmp_board_title AS obmp_board__obmp_board_cod__label',
+            'obmp_cancellations__obmp_cancellation_cod.obmp_cancellation_title AS obmp_cancellations__obmp_cancellation_cod__label',
+            'obmp_cm_rooms__obmp_cm_rooms_id.obmp_cm_rooms_room_note AS obmp_cm_rooms__obmp_cm_rooms_id__label',
+            'obmp_payments__obmp_payment_cod.obmp_payment_title AS obmp_payments__obmp_payment_cod__label',
+            'obmp_restrictions__obmp_restriction_id.hotel_id AS obmp_restrictions__obmp_restriction_id__label'
         ]);
         $builder->join('obmp_board AS obmp_board__obmp_board_cod', 'obmp_board__obmp_board_cod.obmp_board_cod = obmp_rates.obmp_board_cod', 'left');
         $builder->join('obmp_cancellations AS obmp_cancellations__obmp_cancellation_cod', 'obmp_cancellations__obmp_cancellation_cod.obmp_cancellation_cod = obmp_rates.obmp_cancellation_cod', 'left');
@@ -226,11 +251,11 @@ final class ObmpRatesModel extends Model
             'obmp_rates.rate_sum AS rate_sum',
             'obmp_rates.rate_mol AS rate_mol',
             'obmp_rates.rate_stato AS rate_stato',
-            'obmp_board__obmp_board_cod.obmp_board_title AS obmp_board_obmp_board_title',
-            'obmp_cancellations__obmp_cancellation_cod.obmp_cancellation_title AS obmp_cancellations_obmp_cancellation_title',
-            'obmp_cm_rooms__obmp_cm_rooms_id.obmp_cm_rooms_room_note AS obmp_cm_rooms_obmp_cm_rooms_room_note',
-            'obmp_payments__obmp_payment_cod.obmp_payment_title AS obmp_payments_obmp_payment_title',
-            'obmp_restrictions__obmp_restriction_id.hotel_id AS obmp_restrictions_hotel_id'
+            'obmp_board__obmp_board_cod.obmp_board_title AS obmp_board__obmp_board_cod__label',
+            'obmp_cancellations__obmp_cancellation_cod.obmp_cancellation_title AS obmp_cancellations__obmp_cancellation_cod__label',
+            'obmp_cm_rooms__obmp_cm_rooms_id.obmp_cm_rooms_room_note AS obmp_cm_rooms__obmp_cm_rooms_id__label',
+            'obmp_payments__obmp_payment_cod.obmp_payment_title AS obmp_payments__obmp_payment_cod__label',
+            'obmp_restrictions__obmp_restriction_id.hotel_id AS obmp_restrictions__obmp_restriction_id__label'
         ]);
         $builder->join('obmp_board AS obmp_board__obmp_board_cod', 'obmp_board__obmp_board_cod.obmp_board_cod = obmp_rates.obmp_board_cod', 'left');
         $builder->join('obmp_cancellations AS obmp_cancellations__obmp_cancellation_cod', 'obmp_cancellations__obmp_cancellation_cod.obmp_cancellation_cod = obmp_rates.obmp_cancellation_cod', 'left');
@@ -317,11 +342,11 @@ final class ObmpRatesModel extends Model
             'obmp_rates.rate_sum AS rate_sum',
             'obmp_rates.rate_mol AS rate_mol',
             'obmp_rates.rate_stato AS rate_stato',
-            'obmp_board__obmp_board_cod.obmp_board_title AS obmp_board_obmp_board_title',
-            'obmp_cancellations__obmp_cancellation_cod.obmp_cancellation_title AS obmp_cancellations_obmp_cancellation_title',
-            'obmp_cm_rooms__obmp_cm_rooms_id.obmp_cm_rooms_room_note AS obmp_cm_rooms_obmp_cm_rooms_room_note',
-            'obmp_payments__obmp_payment_cod.obmp_payment_title AS obmp_payments_obmp_payment_title',
-            'obmp_restrictions__obmp_restriction_id.hotel_id AS obmp_restrictions_hotel_id'
+            'obmp_board__obmp_board_cod.obmp_board_title AS obmp_board__obmp_board_cod__label',
+            'obmp_cancellations__obmp_cancellation_cod.obmp_cancellation_title AS obmp_cancellations__obmp_cancellation_cod__label',
+            'obmp_cm_rooms__obmp_cm_rooms_id.obmp_cm_rooms_room_note AS obmp_cm_rooms__obmp_cm_rooms_id__label',
+            'obmp_payments__obmp_payment_cod.obmp_payment_title AS obmp_payments__obmp_payment_cod__label',
+            'obmp_restrictions__obmp_restriction_id.hotel_id AS obmp_restrictions__obmp_restriction_id__label'
         ]);
         $builder->join('obmp_board AS obmp_board__obmp_board_cod', 'obmp_board__obmp_board_cod.obmp_board_cod = obmp_rates.obmp_board_cod', 'left');
         $builder->join('obmp_cancellations AS obmp_cancellations__obmp_cancellation_cod', 'obmp_cancellations__obmp_cancellation_cod.obmp_cancellation_cod = obmp_rates.obmp_cancellation_cod', 'left');
@@ -532,61 +557,76 @@ final class ObmpRatesModel extends Model
     public function getObmpBoardObmpBoardCodOptions(): array
     {
         return $this->db->table('obmp_board')
-            ->select(['obmp_board_cod', 'obmp_board_title'])
+            ->select(array (
+  0 => 'obmp_board_cod',
+  1 => 'obmp_board_title',
+))
             ->orderBy('obmp_board_title', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     /** Restituisce le opzioni della relazione obmp_cancellation_cod. */
     public function getObmpCancellationsObmpCancellationCodOptions(): array
     {
         return $this->db->table('obmp_cancellations')
-            ->select(['obmp_cancellation_cod', 'obmp_cancellation_title'])
+            ->select(array (
+  0 => 'obmp_cancellation_cod',
+  1 => 'obmp_cancellation_title',
+))
             ->orderBy('obmp_cancellation_title', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     /** Restituisce le opzioni della relazione obmp_cm_rooms_id. */
     public function getObmpCmRoomsObmpCmRoomsIdOptions(): array
     {
         return $this->db->table('obmp_cm_rooms')
-            ->select(['obmp_cm_rooms_id', 'obmp_cm_rooms_room_note'])
+            ->select(array (
+  0 => 'obmp_cm_rooms_id',
+  1 => 'obmp_cm_rooms_room_note',
+))
             ->orderBy('obmp_cm_rooms_room_note', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     /** Restituisce le opzioni della relazione obmp_payment_cod. */
     public function getObmpPaymentsObmpPaymentCodOptions(): array
     {
         return $this->db->table('obmp_payments')
-            ->select(['obmp_payment_cod', 'obmp_payment_title'])
+            ->select(array (
+  0 => 'obmp_payment_cod',
+  1 => 'obmp_payment_title',
+))
             ->orderBy('obmp_payment_title', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     /** Restituisce le opzioni della relazione obmp_restriction_id. */
     public function getObmpRestrictionsObmpRestrictionIdOptions(): array
     {
         return $this->db->table('obmp_restrictions')
-            ->select(['obmp_restriction_id', 'hotel_id'])
+            ->select(array (
+  0 => 'obmp_restriction_id',
+  1 => 'hotel_id',
+))
             ->orderBy('hotel_id', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     public function relationOptions(): array
     {
         return [
-            'obmp_board_cod' => $this->toOptions($this->getObmpBoardObmpBoardCodOptions(), 'obmp_board_cod', 'obmp_board_title'),
-            'obmp_cancellation_cod' => $this->toOptions($this->getObmpCancellationsObmpCancellationCodOptions(), 'obmp_cancellation_cod', 'obmp_cancellation_title'),
-            'obmp_cm_rooms_id' => $this->toOptions($this->getObmpCmRoomsObmpCmRoomsIdOptions(), 'obmp_cm_rooms_id', 'obmp_cm_rooms_room_note'),
-            'obmp_payment_cod' => $this->toOptions($this->getObmpPaymentsObmpPaymentCodOptions(), 'obmp_payment_cod', 'obmp_payment_title'),
-            'obmp_restriction_id' => $this->toOptions($this->getObmpRestrictionsObmpRestrictionIdOptions(), 'obmp_restriction_id', 'hotel_id'),
+            'obmp_board_cod' => $this->toRelationOptions($this->getObmpBoardObmpBoardCodOptions(), 'obmp_board_cod'),
+            'obmp_cancellation_cod' => $this->toRelationOptions($this->getObmpCancellationsObmpCancellationCodOptions(), 'obmp_cancellation_cod'),
+            'obmp_cm_rooms_id' => $this->toRelationOptions($this->getObmpCmRoomsObmpCmRoomsIdOptions(), 'obmp_cm_rooms_id'),
+            'obmp_payment_cod' => $this->toRelationOptions($this->getObmpPaymentsObmpPaymentCodOptions(), 'obmp_payment_cod'),
+            'obmp_restriction_id' => $this->toRelationOptions($this->getObmpRestrictionsObmpRestrictionIdOptions(), 'obmp_restriction_id'),
         ];
     }
 
     /**
      * Ricerca server-side delle opzioni per relazioni grandi.
-     * Tabella, chiave e campo label arrivano solo dalla whitelist generata.
+     * Tabella, chiave e campi descrittivi arrivano solo dalla whitelist generata.
      *
      * @return list<array{id:string,text:string}>
      */
@@ -597,36 +637,100 @@ final class ObmpRatesModel extends Model
         }
 
         $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
         $limit = max(1, min(100, $limit));
         $builder = $this->db->table((string) $definition['table'])
-            ->select([(string) $definition['key'], (string) $definition['label']])
-            ->orderBy((string) $definition['label'], 'ASC')
+            ->select($selectFields)
+            ->orderBy((string) $definition['displayField'], 'ASC')
             ->limit($limit);
 
         $query = trim($query);
-        if ($query !== '') {
-            $builder->like((string) $definition['label'], $query, 'after');
+        if ($query !== '' && $displayFields !== []) {
+            $builder->groupStart();
+            foreach ($displayFields as $index => $displayColumn) {
+                if ($index === 0) {
+                    $builder->like((string) $displayColumn, $query, 'after');
+                } else {
+                    $builder->orLike((string) $displayColumn, $query, 'after');
+                }
+            }
+            $builder->groupEnd();
         }
 
         $rows = $builder->get()->getResultArray();
         $result = [];
         foreach ($rows as $row) {
             $result[] = [
-                'id' => (string) ($row[(string) $definition['key']] ?? ''),
-                'text' => (string) ($row[(string) $definition['label']] ?? ''),
+                'id' => (string) ($row[$key] ?? ''),
+                'text' => $this->formatRelationLabel($row, $definition),
             ];
         }
 
         return $result;
     }
 
-    private function toOptions(array $rows, string $key, string $label): array
+    /** Restituisce una FK valida e la sua descrizione; usato dal Create contestuale. */
+    public function relationOptionById(string $field, int|string $id): ?array
     {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return null;
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
+        $row = $this->db->table((string) $definition['table'])
+            ->select($selectFields)
+            ->where($key, $id)
+            ->limit(1)
+            ->get()
+            ->getRowArray();
+
+        if (!is_array($row)) {
+            return null;
+        }
+
+        return [
+            'id' => (string) ($row[$key] ?? ''),
+            'text' => $this->formatRelationLabel($row, $definition),
+        ];
+    }
+
+    private function toRelationOptions(array $rows, string $field): array
+    {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return [];
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
         $options = [];
         foreach ($rows as $row) {
-            $options[(string) $row->{$key}] = (string) $row->{$label};
+            if (!is_array($row)) {
+                continue;
+            }
+            $options[(string) ($row[$key] ?? '')] = $this->formatRelationLabel($row, $definition);
         }
         return $options;
+    }
+
+    private function formatRelationLabel(array $row, array $definition): string
+    {
+        $template = trim((string) ($definition['displayTemplate'] ?? ''));
+        if ($template === '') {
+            return trim((string) ($row[(string) $definition['displayField']] ?? ''));
+        }
+
+        $label = preg_replace_callback(
+            '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+            static fn (array $match): string => (string) ($row[$match[1]] ?? ''),
+            $template
+        );
+
+        return trim((string) $label);
     }
 
     public function loadHasMany(int|string $parentId): array

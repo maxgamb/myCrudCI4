@@ -15,7 +15,7 @@
                             <td><?= esc($row->id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Shifts.staff_id')) ?></th>
-                            <td><?= esc($row->staff_id ?? '') ?></td>
+                            <td><a href="<?= site_url('staff/view/' . rawurlencode((string) ($row->staff_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->staff__staff_id__label ?? $row->staff_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Shifts.hotel_id')) ?></th>
                             <td><?= esc($row->hotel_id ?? '') ?></td>

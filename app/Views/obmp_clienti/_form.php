@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obm_cliente_first_name"
                         id="obm_cliente_first_name"
-                        value="<?= esc(old('obm_cliente_first_name', $row->obm_cliente_first_name ?? '')) ?>"
+                        value="<?= esc(old('obm_cliente_first_name', $row->obm_cliente_first_name ?? ($context['obm_cliente_first_name'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obm_cliente_first_name']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obm_cliente_first_name-error"
                         aria-invalid="<?= isset($errors['obm_cliente_first_name']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obm_cliente_last_name"
                         id="obm_cliente_last_name"
-                        value="<?= esc(old('obm_cliente_last_name', $row->obm_cliente_last_name ?? '')) ?>"
+                        value="<?= esc(old('obm_cliente_last_name', $row->obm_cliente_last_name ?? ($context['obm_cliente_last_name'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obm_cliente_last_name']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obm_cliente_last_name-error"
                         aria-invalid="<?= isset($errors['obm_cliente_last_name']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="email"
                         name="obm_cliente_email"
                         id="obm_cliente_email"
-                        value="<?= esc(old('obm_cliente_email', $row->obm_cliente_email ?? '')) ?>"
+                        value="<?= esc(old('obm_cliente_email', $row->obm_cliente_email ?? ($context['obm_cliente_email'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obm_cliente_email']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obm_cliente_email-error"
                         aria-invalid="<?= isset($errors['obm_cliente_email']) ? 'true' : 'false' ?>"
@@ -102,7 +104,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obm_cliente_city"
                         id="obm_cliente_city"
-                        value="<?= esc(old('obm_cliente_city', $row->obm_cliente_city ?? '')) ?>"
+                        value="<?= esc(old('obm_cliente_city', $row->obm_cliente_city ?? ($context['obm_cliente_city'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obm_cliente_city']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obm_cliente_city-error"
                         aria-invalid="<?= isset($errors['obm_cliente_city']) ? 'true' : 'false' ?>"
@@ -122,7 +124,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obm_cliente_country"
                         id="obm_cliente_country"
-                        value="<?= esc(old('obm_cliente_country', $row->obm_cliente_country ?? '')) ?>"
+                        value="<?= esc(old('obm_cliente_country', $row->obm_cliente_country ?? ($context['obm_cliente_country'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obm_cliente_country']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obm_cliente_country-error"
                         aria-invalid="<?= isset($errors['obm_cliente_country']) ? 'true' : 'false' ?>"
@@ -142,7 +144,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="lingua"
                         id="lingua"
-                        value="<?= esc(old('lingua', $row->lingua ?? '')) ?>"
+                        value="<?= esc(old('lingua', $row->lingua ?? ($context['lingua'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['lingua']) ? 'is-invalid' : '' ?>"
                         aria-describedby="lingua-error"
                         aria-invalid="<?= isset($errors['lingua']) ? 'true' : 'false' ?>"
@@ -162,7 +164,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obm_cliente_phone"
                         id="obm_cliente_phone"
-                        value="<?= esc(old('obm_cliente_phone', $row->obm_cliente_phone ?? '')) ?>"
+                        value="<?= esc(old('obm_cliente_phone', $row->obm_cliente_phone ?? ($context['obm_cliente_phone'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obm_cliente_phone']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obm_cliente_phone-error"
                         aria-invalid="<?= isset($errors['obm_cliente_phone']) ? 'true' : 'false' ?>"
@@ -182,7 +184,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obm_cliente_newsletter"
                         id="obm_cliente_newsletter"
-                        value="<?= esc(old('obm_cliente_newsletter', $row->obm_cliente_newsletter ?? '')) ?>"
+                        value="<?= esc(old('obm_cliente_newsletter', $row->obm_cliente_newsletter ?? ($context['obm_cliente_newsletter'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obm_cliente_newsletter']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obm_cliente_newsletter-error"
                         aria-invalid="<?= isset($errors['obm_cliente_newsletter']) ? 'true' : 'false' ?>"
@@ -202,7 +204,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obm_cliente_pass"
                         id="obm_cliente_pass"
-                        value="<?= esc(old('obm_cliente_pass', $row->obm_cliente_pass ?? '')) ?>"
+                        value="<?= esc(old('obm_cliente_pass', $row->obm_cliente_pass ?? ($context['obm_cliente_pass'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obm_cliente_pass']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obm_cliente_pass-error"
                         aria-invalid="<?= isset($errors['obm_cliente_pass']) ? 'true' : 'false' ?>"
@@ -222,7 +224,7 @@ $submissionToken = $submissionToken ?? '';
                         type="datetime-local"
                         name="obm_cliente_data_insert"
                         id="obm_cliente_data_insert"
-                        value="<?= esc(old('obm_cliente_data_insert', isset($row->obm_cliente_data_insert) ? str_replace(' ', 'T', substr((string) $row->obm_cliente_data_insert, 0, 16)) : '')) ?>"
+                        value="<?= esc(old('obm_cliente_data_insert', isset($row->obm_cliente_data_insert) ? str_replace(' ', 'T', substr((string) $row->obm_cliente_data_insert, 0, 16)) : ($context['obm_cliente_data_insert'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obm_cliente_data_insert']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obm_cliente_data_insert-error"
                         aria-invalid="<?= isset($errors['obm_cliente_data_insert']) ? 'true' : 'false' ?>"
@@ -241,7 +243,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obm_cliente_cc_type"
                         id="obm_cliente_cc_type"
-                        value="<?= esc(old('obm_cliente_cc_type', $row->obm_cliente_cc_type ?? '')) ?>"
+                        value="<?= esc(old('obm_cliente_cc_type', $row->obm_cliente_cc_type ?? ($context['obm_cliente_cc_type'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obm_cliente_cc_type']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obm_cliente_cc_type-error"
                         aria-invalid="<?= isset($errors['obm_cliente_cc_type']) ? 'true' : 'false' ?>"
@@ -261,7 +263,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obm_cliente_cc_number"
                         id="obm_cliente_cc_number"
-                        value="<?= esc(old('obm_cliente_cc_number', $row->obm_cliente_cc_number ?? '')) ?>"
+                        value="<?= esc(old('obm_cliente_cc_number', $row->obm_cliente_cc_number ?? ($context['obm_cliente_cc_number'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obm_cliente_cc_number']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obm_cliente_cc_number-error"
                         aria-invalid="<?= isset($errors['obm_cliente_cc_number']) ? 'true' : 'false' ?>"
@@ -281,7 +283,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obm_cliente_holder"
                         id="obm_cliente_holder"
-                        value="<?= esc(old('obm_cliente_holder', $row->obm_cliente_holder ?? '')) ?>"
+                        value="<?= esc(old('obm_cliente_holder', $row->obm_cliente_holder ?? ($context['obm_cliente_holder'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obm_cliente_holder']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obm_cliente_holder-error"
                         aria-invalid="<?= isset($errors['obm_cliente_holder']) ? 'true' : 'false' ?>"
@@ -301,7 +303,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obm_cliente_cc_expire"
                         id="obm_cliente_cc_expire"
-                        value="<?= esc(old('obm_cliente_cc_expire', $row->obm_cliente_cc_expire ?? '')) ?>"
+                        value="<?= esc(old('obm_cliente_cc_expire', $row->obm_cliente_cc_expire ?? ($context['obm_cliente_cc_expire'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obm_cliente_cc_expire']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obm_cliente_cc_expire-error"
                         aria-invalid="<?= isset($errors['obm_cliente_cc_expire']) ? 'true' : 'false' ?>"
@@ -321,7 +323,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obm_cliente_cc_security"
                         id="obm_cliente_cc_security"
-                        value="<?= esc(old('obm_cliente_cc_security', $row->obm_cliente_cc_security ?? '')) ?>"
+                        value="<?= esc(old('obm_cliente_cc_security', $row->obm_cliente_cc_security ?? ($context['obm_cliente_cc_security'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obm_cliente_cc_security']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obm_cliente_cc_security-error"
                         aria-invalid="<?= isset($errors['obm_cliente_cc_security']) ? 'true' : 'false' ?>"
@@ -374,6 +376,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -418,6 +421,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -425,6 +429,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

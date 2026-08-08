@@ -113,6 +113,42 @@ class DbSchema
         ];
     }
 
+    /**
+     * Restituisce tutte le tabelle del database che sono destinazione di
+     * almeno una foreign key. L'elenco e' globale, deduplicato e limitato
+     * alle tabelle configurabili dal Builder, cosi' ogni voce puo' essere
+     * aperta direttamente con /mycrud/builder/configure/<tabella>.
+     */
+    public function parentTables(): array
+    {
+        $rows = $this->db->query(
+            'SELECT DISTINCT REFERENCED_TABLE_NAME AS parentTable
+             FROM information_schema.KEY_COLUMN_USAGE
+             WHERE TABLE_SCHEMA = DATABASE()
+               AND REFERENCED_TABLE_NAME IS NOT NULL
+             ORDER BY REFERENCED_TABLE_NAME'
+        )->getResultArray();
+
+        $validTables = array_fill_keys(
+            TableFilter::validTables($this->db, $this->config),
+            true
+        );
+
+        $parents = [];
+        foreach ($rows as $row) {
+            $parentTable = trim((string) ($row['parentTable'] ?? ''));
+            if ($parentTable === '' || !isset($validTables[$parentTable])) {
+                continue;
+            }
+
+            $parents[$parentTable] = $parentTable;
+        }
+
+        ksort($parents, SORT_NATURAL | SORT_FLAG_CASE);
+
+        return array_values($parents);
+    }
+
     private function relationsFor(?string $table): array
     {
         $sql = 'SELECT TABLE_NAME AS childTable,

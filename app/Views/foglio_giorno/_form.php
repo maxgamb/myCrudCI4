@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -61,7 +63,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="conto_id"
                         id="conto_id"
-                        value="<?= esc(old('conto_id', $row->conto_id ?? '')) ?>"
+                        value="<?= esc(old('conto_id', $row->conto_id ?? ($context['conto_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['conto_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="conto_id-error"
                         aria-invalid="<?= isset($errors['conto_id']) ? 'true' : 'false' ?>"
@@ -87,12 +89,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['camera_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('camera_id', $row->camera_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('camera_id', $row->camera_id ?? ($context['camera_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="camera_id"
+                            data-base-url="<?= site_url('camere/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('camere/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['camera_id'])): ?>
                         <div id="camera_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['camera_id']) ?>
@@ -114,12 +137,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['preno_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('preno_id', $row->preno_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('preno_id', $row->preno_id ?? ($context['preno_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="preno_id"
+                            data-base-url="<?= site_url('agenda/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('agenda/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['preno_id'])): ?>
                         <div id="preno_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_id']) ?>
@@ -142,12 +186,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['tipologia_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('tipologia_id', $row->tipologia_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('tipologia_id', $row->tipologia_id ?? ($context['tipologia_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="tipologia_id"
+                            data-base-url="<?= site_url('tipologia_camera/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('tipologia_camera/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['tipologia_id'])): ?>
                         <div id="tipologia_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['tipologia_id']) ?>
@@ -162,7 +227,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="numero_camera"
                         id="numero_camera"
-                        value="<?= esc(old('numero_camera', $row->numero_camera ?? '')) ?>"
+                        value="<?= esc(old('numero_camera', $row->numero_camera ?? ($context['numero_camera'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['numero_camera']) ? 'is-invalid' : '' ?>"
                         aria-describedby="numero_camera-error"
                         aria-invalid="<?= isset($errors['numero_camera']) ? 'true' : 'false' ?>"
@@ -181,7 +246,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="foglio_prezzo_camera"
                         id="foglio_prezzo_camera"
-                        value="<?= esc(old('foglio_prezzo_camera', $row->foglio_prezzo_camera ?? '')) ?>"
+                        value="<?= esc(old('foglio_prezzo_camera', $row->foglio_prezzo_camera ?? ($context['foglio_prezzo_camera'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['foglio_prezzo_camera']) ? 'is-invalid' : '' ?>"
                         aria-describedby="foglio_prezzo_camera-error"
                         aria-invalid="<?= isset($errors['foglio_prezzo_camera']) ? 'true' : 'false' ?>"
@@ -200,7 +265,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="date_foglio"
                         id="date_foglio"
-                        value="<?= esc(old('date_foglio', $row->date_foglio ?? '')) ?>"
+                        value="<?= esc(old('date_foglio', $row->date_foglio ?? ($context['date_foglio'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['date_foglio']) ? 'is-invalid' : '' ?>"
                         aria-describedby="date_foglio-error"
                         aria-invalid="<?= isset($errors['date_foglio']) ? 'true' : 'false' ?>"
@@ -220,7 +285,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nome_cliente"
                         id="nome_cliente"
-                        value="<?= esc(old('nome_cliente', $row->nome_cliente ?? '')) ?>"
+                        value="<?= esc(old('nome_cliente', $row->nome_cliente ?? ($context['nome_cliente'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nome_cliente']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nome_cliente-error"
                         aria-invalid="<?= isset($errors['nome_cliente']) ? 'true' : 'false' ?>"
@@ -240,7 +305,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="cognome_cliente"
                         id="cognome_cliente"
-                        value="<?= esc(old('cognome_cliente', $row->cognome_cliente ?? '')) ?>"
+                        value="<?= esc(old('cognome_cliente', $row->cognome_cliente ?? ($context['cognome_cliente'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['cognome_cliente']) ? 'is-invalid' : '' ?>"
                         aria-describedby="cognome_cliente-error"
                         aria-invalid="<?= isset($errors['cognome_cliente']) ? 'true' : 'false' ?>"
@@ -260,7 +325,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="in_conto"
                         id="in_conto"
-                        value="<?= esc(old('in_conto', $row->in_conto ?? '')) ?>"
+                        value="<?= esc(old('in_conto', $row->in_conto ?? ($context['in_conto'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['in_conto']) ? 'is-invalid' : '' ?>"
                         aria-describedby="in_conto-error"
                         aria-invalid="<?= isset($errors['in_conto']) ? 'true' : 'false' ?>"
@@ -280,7 +345,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="out_preno"
                         id="out_preno"
-                        value="<?= esc(old('out_preno', $row->out_preno ?? '')) ?>"
+                        value="<?= esc(old('out_preno', $row->out_preno ?? ($context['out_preno'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['out_preno']) ? 'is-invalid' : '' ?>"
                         aria-describedby="out_preno-error"
                         aria-invalid="<?= isset($errors['out_preno']) ? 'true' : 'false' ?>"
@@ -300,7 +365,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="stato_camera"
                         id="stato_camera"
-                        value="<?= esc(old('stato_camera', $row->stato_camera ?? '')) ?>"
+                        value="<?= esc(old('stato_camera', $row->stato_camera ?? ($context['stato_camera'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['stato_camera']) ? 'is-invalid' : '' ?>"
                         aria-describedby="stato_camera-error"
                         aria-invalid="<?= isset($errors['stato_camera']) ? 'true' : 'false' ?>"
@@ -327,12 +392,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['preno_agenzia'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('preno_agenzia', $row->preno_agenzia ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('preno_agenzia', $row->preno_agenzia ?? ($context['preno_agenzia'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="preno_agenzia"
+                            data-base-url="<?= site_url('agenzie/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('agenzie/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['preno_agenzia'])): ?>
                         <div id="preno_agenzia-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_agenzia']) ?>
@@ -347,7 +433,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="foglio_utente_id"
                         id="foglio_utente_id"
-                        value="<?= esc(old('foglio_utente_id', $row->foglio_utente_id ?? '')) ?>"
+                        value="<?= esc(old('foglio_utente_id', $row->foglio_utente_id ?? ($context['foglio_utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['foglio_utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="foglio_utente_id-error"
                         aria-invalid="<?= isset($errors['foglio_utente_id']) ? 'true' : 'false' ?>"
@@ -399,6 +485,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -443,6 +530,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -450,6 +538,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

@@ -84,10 +84,70 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->tip_doc_id ?? '') ?></td>
-                                <td><?= esc($row->Doc_CodMin ?? '') ?></td>
-                                <td><?= esc($row->Doc_Descrizione ?? '') ?></td>
-                                <td class="text-end text-nowrap">
+                                <td>
+                                    <?php if ((string) ($row->tip_doc_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'tip_doc_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->tip_doc_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->tip_doc_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->Doc_CodMin ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'Doc_CodMin',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->Doc_CodMin,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->Doc_CodMin) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->Doc_Descrizione ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'Doc_Descrizione',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->Doc_Descrizione,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->Doc_Descrizione) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td class="text-end text-nowrap">
                                     <?php $id = $row->tip_doc_id ?? ''; ?>
                                     <div class="btn-group btn-group-sm" role="group" aria-label="Azioni record">
                                         <a href="<?= site_url('tip_doc/view/' . rawurlencode((string) $id)) ?>" class="btn btn-outline-info" title="Visualizza">

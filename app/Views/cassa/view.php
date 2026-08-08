@@ -18,7 +18,7 @@
                             <td><?= esc($row->hotel_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Cassa.preno_id')) ?></th>
-                            <td><?= esc($row->preno_id ?? '') ?></td>
+                            <td><a href="<?= site_url('agenda/view/' . rawurlencode((string) ($row->preno_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->agenda__preno_id__label ?? $row->preno_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Cassa.out_conto')) ?></th>
                             <td><?= esc($row->out_conto ?? '') ?></td>

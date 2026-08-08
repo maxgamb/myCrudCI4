@@ -24,7 +24,7 @@
                             <td><?= esc($row->tipologia_camera ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Camere.tipologia_id')) ?></th>
-                            <td><?= esc($row->tipologia_id ?? '') ?></td>
+                            <td><a href="<?= site_url('tipologia_camera/view/' . rawurlencode((string) ($row->tipologia_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->tipologia_camera__tipologia_id__label ?? $row->tipologia_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Camere.camere_max_pax')) ?></th>
                             <td><?= esc($row->camere_max_pax ?? '') ?></td>

@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="prodotti_lista_id"
                         id="prodotti_lista_id"
-                        value="<?= esc(old('prodotti_lista_id', $row->prodotti_lista_id ?? '')) ?>"
+                        value="<?= esc(old('prodotti_lista_id', $row->prodotti_lista_id ?? ($context['prodotti_lista_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['prodotti_lista_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="prodotti_lista_id-error"
                         aria-invalid="<?= isset($errors['prodotti_lista_id']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -81,7 +83,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nome_prodotto"
                         id="nome_prodotto"
-                        value="<?= esc(old('nome_prodotto', $row->nome_prodotto ?? '')) ?>"
+                        value="<?= esc(old('nome_prodotto', $row->nome_prodotto ?? ($context['nome_prodotto'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nome_prodotto']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nome_prodotto-error"
                         aria-invalid="<?= isset($errors['nome_prodotto']) ? 'true' : 'false' ?>"
@@ -101,7 +103,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="prezzo_prodotto"
                         id="prezzo_prodotto"
-                        value="<?= esc(old('prezzo_prodotto', $row->prezzo_prodotto ?? '')) ?>"
+                        value="<?= esc(old('prezzo_prodotto', $row->prezzo_prodotto ?? ($context['prezzo_prodotto'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['prezzo_prodotto']) ? 'is-invalid' : '' ?>"
                         aria-describedby="prezzo_prodotto-error"
                         aria-invalid="<?= isset($errors['prezzo_prodotto']) ? 'true' : 'false' ?>"
@@ -120,7 +122,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="tipologia_prodotto"
                         id="tipologia_prodotto"
-                        value="<?= esc(old('tipologia_prodotto', $row->tipologia_prodotto ?? '')) ?>"
+                        value="<?= esc(old('tipologia_prodotto', $row->tipologia_prodotto ?? ($context['tipologia_prodotto'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['tipologia_prodotto']) ? 'is-invalid' : '' ?>"
                         aria-describedby="tipologia_prodotto-error"
                         aria-invalid="<?= isset($errors['tipologia_prodotto']) ? 'true' : 'false' ?>"
@@ -140,7 +142,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="reparto_prodotto"
                         id="reparto_prodotto"
-                        value="<?= esc(old('reparto_prodotto', $row->reparto_prodotto ?? '')) ?>"
+                        value="<?= esc(old('reparto_prodotto', $row->reparto_prodotto ?? ($context['reparto_prodotto'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['reparto_prodotto']) ? 'is-invalid' : '' ?>"
                         aria-describedby="reparto_prodotto-error"
                         aria-invalid="<?= isset($errors['reparto_prodotto']) ? 'true' : 'false' ?>"
@@ -160,7 +162,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="cent_costo_prodotto"
                         id="cent_costo_prodotto"
-                        value="<?= esc(old('cent_costo_prodotto', $row->cent_costo_prodotto ?? '')) ?>"
+                        value="<?= esc(old('cent_costo_prodotto', $row->cent_costo_prodotto ?? ($context['cent_costo_prodotto'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['cent_costo_prodotto']) ? 'is-invalid' : '' ?>"
                         aria-describedby="cent_costo_prodotto-error"
                         aria-invalid="<?= isset($errors['cent_costo_prodotto']) ? 'true' : 'false' ?>"
@@ -179,7 +181,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="prodotti_utente_id"
                         id="prodotti_utente_id"
-                        value="<?= esc(old('prodotti_utente_id', $row->prodotti_utente_id ?? '')) ?>"
+                        value="<?= esc(old('prodotti_utente_id', $row->prodotti_utente_id ?? ($context['prodotti_utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['prodotti_utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="prodotti_utente_id-error"
                         aria-invalid="<?= isset($errors['prodotti_utente_id']) ? 'true' : 'false' ?>"
@@ -231,6 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -275,6 +278,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -282,6 +286,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

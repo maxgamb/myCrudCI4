@@ -120,7 +120,7 @@ components:
         'randomd_string':
           type: string
           maxLength: 100
-        'obmp_quote_quote_lg':
+        'obmp_quote__obmp_quote_id__label':
           type: string
           nullable: true
     ObmpQuoteSubCreate:

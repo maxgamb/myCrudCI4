@@ -89,10 +89,72 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->ref_costi_tipologia_id ?? '') ?></td>
-                                <td><?= esc($row->costi_var_costi_var_sub_1 ?? $row->costi_var_id ?? '') ?></td>
-                                <td><?= esc($row->tipologia_camera_nome_tipologia ?? $row->tipologia_id ?? '') ?></td>
-                                <td><?= esc($row->hotel_id ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->ref_costi_tipologia_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'ref_costi_tipologia_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->ref_costi_tipologia_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->ref_costi_tipologia_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->costi_var_id ?? '') !== ''): ?><a href="<?= site_url('costi_var/view/' . rawurlencode((string) $row->costi_var_id)) ?>" class="text-decoration-none"><?= esc($row->costi_var__costi_var_id__label ?? $row->costi_var_id ?? '') ?></a><?php else: ?><?= esc($row->costi_var__costi_var_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'costi_var_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->costi_var_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->costi_var_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td>
+                                    <?php if ((string) ($row->tipologia_id ?? '') !== ''): ?><a href="<?= site_url('tipologia_camera/view/' . rawurlencode((string) $row->tipologia_id)) ?>" class="text-decoration-none"><?= esc($row->tipologia_camera__tipologia_id__label ?? $row->tipologia_id ?? '') ?></a><?php else: ?><?= esc($row->tipologia_camera__tipologia_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'tipologia_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->tipologia_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->tipologia_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td><?= esc($row->hotel_id ?? '') ?></td>
                                 <td><?= esc($row->stay ?? '') ?></td>
                                 <td><?= esc($row->days ?? '') ?></td>
                                 <td><?= esc($row->check_out ?? '') ?></td>

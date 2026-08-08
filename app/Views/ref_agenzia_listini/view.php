@@ -15,10 +15,10 @@
                             <td><?= esc($row->ref_agenzia_listini_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('RefAgenziaListini.agenzia_listini_id')) ?></th>
-                            <td><?= esc($row->agenzia_listini_id ?? '') ?></td>
+                            <td><a href="<?= site_url('agenzia_listini/view/' . rawurlencode((string) ($row->agenzia_listini_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->agenzia_listini__agenzia_listini_id__label ?? $row->agenzia_listini_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('RefAgenziaListini.agenzia_id')) ?></th>
-                            <td><?= esc($row->agenzia_id ?? '') ?></td>
+                            <td><a href="<?= site_url('agenzie/view/' . rawurlencode((string) ($row->agenzia_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->agenzie__agenzia_id__label ?? $row->agenzia_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('RefAgenziaListini.hotel_id')) ?></th>
                             <td><?= esc($row->hotel_id ?? '') ?></td>

@@ -9,7 +9,7 @@
                 Quick globale
             </h1>
             <p class="text-muted mb-0">
-                Seleziona le tabelle e l’architettura da generare.
+                Generazione rapida basata solo su informazioni certe del database.
             </p>
         </div>
         <span class="badge text-bg-primary fs-6"><?= count($tables) ?> tabelle disponibili</span>
@@ -68,6 +68,13 @@
                             <i class="bi bi-save"></i>
                             In myCrudGpt 2.8 ogni generazione reale salva anche la configurazione
                             versionabile in <code>app/MyCrudConfig/</code>.
+                        </div>
+
+                        <div class="alert alert-light border small mt-3 mb-0">
+                            <i class="bi bi-diagram-3"></i>
+                            <strong>Quick = DB-driven.</strong> Le FK vengono riconosciute e usano
+                            inizialmente la chiave referenziata. Descrizioni, navigazione, filtri rapidi
+                            e comportamento applicativo si configurano nel Builder.
                         </div>
                     </div>
                 </div>

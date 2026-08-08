@@ -50,8 +50,28 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->obmp_restriction_id ?? '') ?></td>
-                                <td><?= esc($row->hotel_id ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->obmp_restriction_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'obmp_restriction_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->obmp_restriction_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->obmp_restriction_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->hotel_id ?? '') ?></td>
                                 <td><?= esc($row->restr_nama ?? '') ?></td>
                                 <td><?= esc($row->restr_min_stay ?? '') ?></td>
                                 <td><?= esc($row->restr_max_stay ?? '') ?></td>

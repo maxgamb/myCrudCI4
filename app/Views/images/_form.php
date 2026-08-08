@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="camera_id"
                         id="camera_id"
-                        value="<?= esc(old('camera_id', $row->camera_id ?? '')) ?>"
+                        value="<?= esc(old('camera_id', $row->camera_id ?? ($context['camera_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['camera_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="camera_id-error"
                         aria-invalid="<?= isset($errors['camera_id']) ? 'true' : 'false' ?>"
@@ -88,12 +90,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['obmp_cm_rooms_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('obmp_cm_rooms_id', $row->obmp_cm_rooms_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('obmp_cm_rooms_id', $row->obmp_cm_rooms_id ?? ($context['obmp_cm_rooms_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="obmp_cm_rooms_id"
+                            data-base-url="<?= site_url('obmp_cm_rooms/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('obmp_cm_rooms/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['obmp_cm_rooms_id'])): ?>
                         <div id="obmp_cm_rooms_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['obmp_cm_rooms_id']) ?>
@@ -108,7 +131,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="tipologia_id"
                         id="tipologia_id"
-                        value="<?= esc(old('tipologia_id', $row->tipologia_id ?? '')) ?>"
+                        value="<?= esc(old('tipologia_id', $row->tipologia_id ?? ($context['tipologia_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['tipologia_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="tipologia_id-error"
                         aria-invalid="<?= isset($errors['tipologia_id']) ? 'true' : 'false' ?>"
@@ -127,7 +150,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="img_small"
                         id="img_small"
-                        value="<?= esc(old('img_small', $row->img_small ?? '')) ?>"
+                        value="<?= esc(old('img_small', $row->img_small ?? ($context['img_small'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['img_small']) ? 'is-invalid' : '' ?>"
                         aria-describedby="img_small-error"
                         aria-invalid="<?= isset($errors['img_small']) ? 'true' : 'false' ?>"
@@ -147,7 +170,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="img_medium"
                         id="img_medium"
-                        value="<?= esc(old('img_medium', $row->img_medium ?? '')) ?>"
+                        value="<?= esc(old('img_medium', $row->img_medium ?? ($context['img_medium'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['img_medium']) ? 'is-invalid' : '' ?>"
                         aria-describedby="img_medium-error"
                         aria-invalid="<?= isset($errors['img_medium']) ? 'true' : 'false' ?>"
@@ -167,7 +190,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="img_large"
                         id="img_large"
-                        value="<?= esc(old('img_large', $row->img_large ?? '')) ?>"
+                        value="<?= esc(old('img_large', $row->img_large ?? ($context['img_large'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['img_large']) ? 'is-invalid' : '' ?>"
                         aria-describedby="img_large-error"
                         aria-invalid="<?= isset($errors['img_large']) ? 'true' : 'false' ?>"
@@ -187,7 +210,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="titolo"
                         id="titolo"
-                        value="<?= esc(old('titolo', $row->titolo ?? '')) ?>"
+                        value="<?= esc(old('titolo', $row->titolo ?? ($context['titolo'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['titolo']) ? 'is-invalid' : '' ?>"
                         aria-describedby="titolo-error"
                         aria-invalid="<?= isset($errors['titolo']) ? 'true' : 'false' ?>"
@@ -207,7 +230,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="utente_id"
                         id="utente_id"
-                        value="<?= esc(old('utente_id', $row->utente_id ?? '')) ?>"
+                        value="<?= esc(old('utente_id', $row->utente_id ?? ($context['utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="utente_id-error"
                         aria-invalid="<?= isset($errors['utente_id']) ? 'true' : 'false' ?>"
@@ -259,6 +282,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -303,6 +327,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -310,6 +335,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

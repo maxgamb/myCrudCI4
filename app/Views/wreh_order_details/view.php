@@ -15,10 +15,10 @@
                             <td><?= esc($row->order_detail_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('WrehOrderDetails.order_id')) ?></th>
-                            <td><?= esc($row->order_id ?? '') ?></td>
+                            <td><a href="<?= site_url('wreh_orders/view/' . rawurlencode((string) ($row->order_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->wreh_orders__order_id__label ?? $row->order_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('WrehOrderDetails.product_id')) ?></th>
-                            <td><?= esc($row->product_id ?? '') ?></td>
+                            <td><a href="<?= site_url('wreh_products/view/' . rawurlencode((string) ($row->product_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->wreh_products__product_id__label ?? $row->product_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('WrehOrderDetails.quantity')) ?></th>
                             <td><?= esc($row->quantity ?? '') ?></td>

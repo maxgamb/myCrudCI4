@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nome_tipologia"
                         id="nome_tipologia"
-                        value="<?= esc(old('nome_tipologia', $row->nome_tipologia ?? '')) ?>"
+                        value="<?= esc(old('nome_tipologia', $row->nome_tipologia ?? ($context['nome_tipologia'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nome_tipologia']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nome_tipologia-error"
                         aria-invalid="<?= isset($errors['nome_tipologia']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nome_tipologia_en"
                         id="nome_tipologia_en"
-                        value="<?= esc(old('nome_tipologia_en', $row->nome_tipologia_en ?? '')) ?>"
+                        value="<?= esc(old('nome_tipologia_en', $row->nome_tipologia_en ?? ($context['nome_tipologia_en'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nome_tipologia_en']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nome_tipologia_en-error"
                         aria-invalid="<?= isset($errors['nome_tipologia_en']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nome_tipologia_fr"
                         id="nome_tipologia_fr"
-                        value="<?= esc(old('nome_tipologia_fr', $row->nome_tipologia_fr ?? '')) ?>"
+                        value="<?= esc(old('nome_tipologia_fr', $row->nome_tipologia_fr ?? ($context['nome_tipologia_fr'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nome_tipologia_fr']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nome_tipologia_fr-error"
                         aria-invalid="<?= isset($errors['nome_tipologia_fr']) ? 'true' : 'false' ?>"
@@ -102,7 +104,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nome_tipologia_de"
                         id="nome_tipologia_de"
-                        value="<?= esc(old('nome_tipologia_de', $row->nome_tipologia_de ?? '')) ?>"
+                        value="<?= esc(old('nome_tipologia_de', $row->nome_tipologia_de ?? ($context['nome_tipologia_de'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nome_tipologia_de']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nome_tipologia_de-error"
                         aria-invalid="<?= isset($errors['nome_tipologia_de']) ? 'true' : 'false' ?>"
@@ -122,7 +124,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nome_tipologia_sp"
                         id="nome_tipologia_sp"
-                        value="<?= esc(old('nome_tipologia_sp', $row->nome_tipologia_sp ?? '')) ?>"
+                        value="<?= esc(old('nome_tipologia_sp', $row->nome_tipologia_sp ?? ($context['nome_tipologia_sp'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nome_tipologia_sp']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nome_tipologia_sp-error"
                         aria-invalid="<?= isset($errors['nome_tipologia_sp']) ? 'true' : 'false' ?>"
@@ -142,7 +144,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nome_tipologia_jp"
                         id="nome_tipologia_jp"
-                        value="<?= esc(old('nome_tipologia_jp', $row->nome_tipologia_jp ?? '')) ?>"
+                        value="<?= esc(old('nome_tipologia_jp', $row->nome_tipologia_jp ?? ($context['nome_tipologia_jp'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nome_tipologia_jp']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nome_tipologia_jp-error"
                         aria-invalid="<?= isset($errors['nome_tipologia_jp']) ? 'true' : 'false' ?>"
@@ -162,7 +164,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="tipologia_sigla"
                         id="tipologia_sigla"
-                        value="<?= esc(old('tipologia_sigla', $row->tipologia_sigla ?? '')) ?>"
+                        value="<?= esc(old('tipologia_sigla', $row->tipologia_sigla ?? ($context['tipologia_sigla'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['tipologia_sigla']) ? 'is-invalid' : '' ?>"
                         aria-describedby="tipologia_sigla-error"
                         aria-invalid="<?= isset($errors['tipologia_sigla']) ? 'true' : 'false' ?>"
@@ -182,7 +184,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="numero_pax"
                         id="numero_pax"
-                        value="<?= esc(old('numero_pax', $row->numero_pax ?? '')) ?>"
+                        value="<?= esc(old('numero_pax', $row->numero_pax ?? ($context['numero_pax'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['numero_pax']) ? 'is-invalid' : '' ?>"
                         aria-describedby="numero_pax-error"
                         aria-invalid="<?= isset($errors['numero_pax']) ? 'true' : 'false' ?>"
@@ -202,7 +204,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="tipologia_camera_utente_id"
                         id="tipologia_camera_utente_id"
-                        value="<?= esc(old('tipologia_camera_utente_id', $row->tipologia_camera_utente_id ?? '')) ?>"
+                        value="<?= esc(old('tipologia_camera_utente_id', $row->tipologia_camera_utente_id ?? ($context['tipologia_camera_utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['tipologia_camera_utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="tipologia_camera_utente_id-error"
                         aria-invalid="<?= isset($errors['tipologia_camera_utente_id']) ? 'true' : 'false' ?>"
@@ -221,7 +223,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="perc_prezzo"
                         id="perc_prezzo"
-                        value="<?= esc(old('perc_prezzo', $row->perc_prezzo ?? '')) ?>"
+                        value="<?= esc(old('perc_prezzo', $row->perc_prezzo ?? ($context['perc_prezzo'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['perc_prezzo']) ? 'is-invalid' : '' ?>"
                         aria-describedby="perc_prezzo-error"
                         aria-invalid="<?= isset($errors['perc_prezzo']) ? 'true' : 'false' ?>"
@@ -274,6 +276,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -318,6 +321,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -325,6 +329,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

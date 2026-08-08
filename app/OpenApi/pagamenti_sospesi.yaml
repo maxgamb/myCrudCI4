@@ -133,7 +133,7 @@ components:
           type: integer
           format: int32
           nullable: true
-        'sospesi_sospeso_id':
+        'sospesi__sospeso_id__label':
           type: string
           nullable: true
     PagamentiSospesiCreate:

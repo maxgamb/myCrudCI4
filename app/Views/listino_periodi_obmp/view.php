@@ -15,7 +15,7 @@
                             <td><?= esc($row->listino_periodi_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ListinoPeriodiObmp.listino_nome_id')) ?></th>
-                            <td><?= esc($row->listino_nome_id ?? '') ?></td>
+                            <td><a href="<?= site_url('listino_nome_obmp/view/' . rawurlencode((string) ($row->listino_nome_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->listino_nome_obmp__listino_nome_id__label ?? $row->listino_nome_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ListinoPeriodiObmp.listino_periodi_flex')) ?></th>
                             <td><?= esc($row->listino_periodi_flex ?? '') ?></td>

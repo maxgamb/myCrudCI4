@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nazione_iso2"
                         id="nazione_iso2"
-                        value="<?= esc(old('nazione_iso2', $row->nazione_iso2 ?? '')) ?>"
+                        value="<?= esc(old('nazione_iso2', $row->nazione_iso2 ?? ($context['nazione_iso2'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nazione_iso2']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nazione_iso2-error"
                         aria-invalid="<?= isset($errors['nazione_iso2']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="Nazioni_Codice"
                         id="Nazioni_Codice"
-                        value="<?= esc(old('Nazioni_Codice', $row->Nazioni_Codice ?? '')) ?>"
+                        value="<?= esc(old('Nazioni_Codice', $row->Nazioni_Codice ?? ($context['Nazioni_Codice'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['Nazioni_Codice']) ? 'is-invalid' : '' ?>"
                         aria-describedby="Nazioni_Codice-error"
                         aria-invalid="<?= isset($errors['Nazioni_Codice']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="emoji"
                         id="emoji"
-                        value="<?= esc(old('emoji', $row->emoji ?? '')) ?>"
+                        value="<?= esc(old('emoji', $row->emoji ?? ($context['emoji'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['emoji']) ? 'is-invalid' : '' ?>"
                         aria-describedby="emoji-error"
                         aria-invalid="<?= isset($errors['emoji']) ? 'true' : 'false' ?>"
@@ -102,7 +104,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="cod_emoji"
                         id="cod_emoji"
-                        value="<?= esc(old('cod_emoji', $row->cod_emoji ?? '')) ?>"
+                        value="<?= esc(old('cod_emoji', $row->cod_emoji ?? ($context['cod_emoji'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['cod_emoji']) ? 'is-invalid' : '' ?>"
                         aria-describedby="cod_emoji-error"
                         aria-invalid="<?= isset($errors['cod_emoji']) ? 'true' : 'false' ?>"
@@ -155,6 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -199,6 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -206,6 +210,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

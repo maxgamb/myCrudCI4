@@ -18,10 +18,10 @@
                             <td><?= esc($row->hotel_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ListinoObmp.listino_nome_id')) ?></th>
-                            <td><?= esc($row->listino_nome_id ?? '') ?></td>
+                            <td><a href="<?= site_url('listino_nome_obmp/view/' . rawurlencode((string) ($row->listino_nome_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->listino_nome_obmp__listino_nome_id__label ?? $row->listino_nome_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ListinoObmp.tipologia_id')) ?></th>
-                            <td><?= esc($row->tipologia_id ?? '') ?></td>
+                            <td><a href="<?= site_url('obmp_cm_rooms/view/' . rawurlencode((string) ($row->tipologia_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->obmp_cm_rooms__tipologia_id__label ?? $row->tipologia_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ListinoObmp.listino_prezzo')) ?></th>
                             <td><?= esc($row->listino_prezzo ?? '') ?></td>

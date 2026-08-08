@@ -124,7 +124,7 @@ components:
         'doc_utente_id':
           type: integer
           format: int32
-        'hotels_nome_hotel':
+        'hotels__hotel_id__label':
           type: string
           nullable: true
     DocFileCreate:

@@ -29,7 +29,7 @@ final class ModificaContiResource
   18 => 'mod_conti_stato_camere',
   19 => 'mod_acconto',
   20 => 'modifica_conti_adebiti_utente_id',
-  21 => 'conti_trattamento_sog',
+  21 => 'conti__mod_conto_id__label',
 );
     private const WRITABLE = array (
   0 => 'mod_conto_id',

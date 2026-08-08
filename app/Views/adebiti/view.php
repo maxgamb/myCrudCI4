@@ -21,7 +21,7 @@
                             <td><?= esc($row->hotel_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Adebiti.prodotto_id')) ?></th>
-                            <td><?= esc($row->prodotto_id ?? '') ?></td>
+                            <td><a href="<?= site_url('prodotti/view/' . rawurlencode((string) ($row->prodotto_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->prodotti__prodotto_id__label ?? $row->prodotto_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Adebiti.descrizione')) ?></th>
                             <td><?= esc($row->descrizione ?? '') ?></td>

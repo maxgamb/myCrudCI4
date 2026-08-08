@@ -72,9 +72,49 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->id ?? '') ?></td>
-                                <td><?= esc($row->direction ?? '') ?></td>
-                                <td><?= esc($row->uid ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->direction ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'direction',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->direction,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->direction) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->uid ?? '') ?></td>
                                 <td><?= esc($row->message_id ?? '') ?></td>
                                 <td><?= esc($row->in_reply_to ?? '') ?></td>
                                 <td><?= esc($row->email_from ?? '') ?></td>

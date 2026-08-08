@@ -53,8 +53,28 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->woucher_id ?? '') ?></td>
-                                <td><?= esc($row->woucher_agenzia_id ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->woucher_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'woucher_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->woucher_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->woucher_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->woucher_agenzia_id ?? '') ?></td>
                                 <td><?= esc($row->woucher_preno_id ?? '') ?></td>
                                 <td><?= esc($row->woucher_hotel_id ?? '') ?></td>
                                 <td><?= esc($row->woucher_in ?? '') ?></td>

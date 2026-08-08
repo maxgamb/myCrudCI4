@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="Comuni_Codice"
                         id="Comuni_Codice"
-                        value="<?= esc(old('Comuni_Codice', $row->Comuni_Codice ?? '')) ?>"
+                        value="<?= esc(old('Comuni_Codice', $row->Comuni_Codice ?? ($context['Comuni_Codice'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['Comuni_Codice']) ? 'is-invalid' : '' ?>"
                         aria-describedby="Comuni_Codice-error"
                         aria-invalid="<?= isset($errors['Comuni_Codice']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="Comuni_Nome"
                         id="Comuni_Nome"
-                        value="<?= esc(old('Comuni_Nome', $row->Comuni_Nome ?? '')) ?>"
+                        value="<?= esc(old('Comuni_Nome', $row->Comuni_Nome ?? ($context['Comuni_Nome'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['Comuni_Nome']) ? 'is-invalid' : '' ?>"
                         aria-describedby="Comuni_Nome-error"
                         aria-invalid="<?= isset($errors['Comuni_Nome']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="Comuni_Prov"
                         id="Comuni_Prov"
-                        value="<?= esc(old('Comuni_Prov', $row->Comuni_Prov ?? '')) ?>"
+                        value="<?= esc(old('Comuni_Prov', $row->Comuni_Prov ?? ($context['Comuni_Prov'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['Comuni_Prov']) ? 'is-invalid' : '' ?>"
                         aria-describedby="Comuni_Prov-error"
                         aria-invalid="<?= isset($errors['Comuni_Prov']) ? 'true' : 'false' ?>"
@@ -102,7 +104,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="Comuni_CAP"
                         id="Comuni_CAP"
-                        value="<?= esc(old('Comuni_CAP', $row->Comuni_CAP ?? '')) ?>"
+                        value="<?= esc(old('Comuni_CAP', $row->Comuni_CAP ?? ($context['Comuni_CAP'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['Comuni_CAP']) ? 'is-invalid' : '' ?>"
                         aria-describedby="Comuni_CAP-error"
                         aria-invalid="<?= isset($errors['Comuni_CAP']) ? 'true' : 'false' ?>"
@@ -122,7 +124,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="Comuni_Prefisso"
                         id="Comuni_Prefisso"
-                        value="<?= esc(old('Comuni_Prefisso', $row->Comuni_Prefisso ?? '')) ?>"
+                        value="<?= esc(old('Comuni_Prefisso', $row->Comuni_Prefisso ?? ($context['Comuni_Prefisso'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['Comuni_Prefisso']) ? 'is-invalid' : '' ?>"
                         aria-describedby="Comuni_Prefisso-error"
                         aria-invalid="<?= isset($errors['Comuni_Prefisso']) ? 'true' : 'false' ?>"
@@ -142,7 +144,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="Comuni_ColExcel"
                         id="Comuni_ColExcel"
-                        value="<?= esc(old('Comuni_ColExcel', $row->Comuni_ColExcel ?? '')) ?>"
+                        value="<?= esc(old('Comuni_ColExcel', $row->Comuni_ColExcel ?? ($context['Comuni_ColExcel'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['Comuni_ColExcel']) ? 'is-invalid' : '' ?>"
                         aria-describedby="Comuni_ColExcel-error"
                         aria-invalid="<?= isset($errors['Comuni_ColExcel']) ? 'true' : 'false' ?>"
@@ -162,7 +164,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="Comuni_Nazione"
                         id="Comuni_Nazione"
-                        value="<?= esc(old('Comuni_Nazione', $row->Comuni_Nazione ?? '')) ?>"
+                        value="<?= esc(old('Comuni_Nazione', $row->Comuni_Nazione ?? ($context['Comuni_Nazione'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['Comuni_Nazione']) ? 'is-invalid' : '' ?>"
                         aria-describedby="Comuni_Nazione-error"
                         aria-invalid="<?= isset($errors['Comuni_Nazione']) ? 'true' : 'false' ?>"
@@ -182,7 +184,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="Comuni_Lingua"
                         id="Comuni_Lingua"
-                        value="<?= esc(old('Comuni_Lingua', $row->Comuni_Lingua ?? '')) ?>"
+                        value="<?= esc(old('Comuni_Lingua', $row->Comuni_Lingua ?? ($context['Comuni_Lingua'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['Comuni_Lingua']) ? 'is-invalid' : '' ?>"
                         aria-describedby="Comuni_Lingua-error"
                         aria-invalid="<?= isset($errors['Comuni_Lingua']) ? 'true' : 'false' ?>"
@@ -202,7 +204,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nazione_iso2"
                         id="nazione_iso2"
-                        value="<?= esc(old('nazione_iso2', $row->nazione_iso2 ?? '')) ?>"
+                        value="<?= esc(old('nazione_iso2', $row->nazione_iso2 ?? ($context['nazione_iso2'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nazione_iso2']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nazione_iso2-error"
                         aria-invalid="<?= isset($errors['nazione_iso2']) ? 'true' : 'false' ?>"
@@ -222,7 +224,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nazione_iso3"
                         id="nazione_iso3"
-                        value="<?= esc(old('nazione_iso3', $row->nazione_iso3 ?? '')) ?>"
+                        value="<?= esc(old('nazione_iso3', $row->nazione_iso3 ?? ($context['nazione_iso3'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nazione_iso3']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nazione_iso3-error"
                         aria-invalid="<?= isset($errors['nazione_iso3']) ? 'true' : 'false' ?>"
@@ -275,6 +277,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -319,6 +322,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -326,6 +330,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

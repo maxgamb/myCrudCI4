@@ -13,6 +13,8 @@ $formAction = site_url('ci_sessions/update/' . ($row->{$primaryKey} ?? ''));
     'row'             => $row ?? null,
     'errors'          => $errors ?? [],
     'options'         => $options ?? [],
+    'context'         => [],
+    'contextLabels'   => [],
     'submissionToken' => $submissionToken ?? '',
 ]) ?>
 

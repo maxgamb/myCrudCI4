@@ -69,9 +69,50 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->question_rew_id ?? '') ?></td>
-                                <td><?= esc($row->question_title ?? $row->question_id ?? '') ?></td>
-                                <td><?= esc($row->hotel_id ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->question_rew_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'question_rew_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->question_rew_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->question_rew_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->question_id ?? '') !== ''): ?><a href="<?= site_url('question/view/' . rawurlencode((string) $row->question_id)) ?>" class="text-decoration-none"><?= esc($row->question__question_id__label ?? $row->question_id ?? '') ?></a><?php else: ?><?= esc($row->question__question_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'question_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->question_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->question_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td><?= esc($row->hotel_id ?? '') ?></td>
                                 <td><?= esc($row->conto_id ?? '') ?></td>
                                 <td><?= esc($row->clienti_id ?? '') ?></td>
                                 <td><?= esc($row->valore ?? '') ?></td>

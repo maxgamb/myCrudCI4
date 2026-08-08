@@ -137,10 +137,10 @@ components:
           type: integer
           format: int32
           nullable: true
-        'costi_var_costi_var_sub_1':
+        'costi_var__costi_var_id__label':
           type: string
           nullable: true
-        'tipologia_camera_nome_tipologia':
+        'tipologia_camera__tipologia_id__label':
           type: string
           nullable: true
     RefCostiTipologiaCreate:

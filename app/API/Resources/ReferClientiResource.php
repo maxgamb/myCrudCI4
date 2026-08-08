@@ -14,7 +14,7 @@ final class ReferClientiResource
   3 => 'ps_valore',
   4 => 'refer_clienti_utente_id',
   5 => 'refer_clienti_conto_id',
-  6 => 'conti_trattamento_sog',
+  6 => 'conti__conto_id__label',
 );
     private const WRITABLE = array (
   0 => 'conto_id',

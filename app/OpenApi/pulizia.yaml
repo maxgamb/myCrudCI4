@@ -147,7 +147,7 @@ components:
         'utente_id':
           type: integer
           format: int32
-        'conti_trattamento_sog':
+        'conti__conto_id__label':
           type: string
           nullable: true
     PuliziaCreate:

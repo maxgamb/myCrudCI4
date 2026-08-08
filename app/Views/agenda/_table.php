@@ -110,16 +110,97 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->preno_id ?? '') ?></td>
-                                <td><?= esc($row->preno_in_data ?? '') ?></td>
-                                <td><?= esc($row->preno_importo ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->preno_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'preno_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->preno_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->preno_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->preno_in_data ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'preno_in_data',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->preno_in_data,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->preno_in_data) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->preno_importo ?? '') ?></td>
                                 <td><?= esc($row->preno_nome ?? '') ?></td>
-                                <td><?= esc($row->agenzie_agenzia_tipologia ?? $row->preno_agenzia ?? '') ?></td>
-                                <td><?= esc($row->preno_tel ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->preno_agenzia ?? '') !== ''): ?><a href="<?= site_url('agenzie/view/' . rawurlencode((string) $row->preno_agenzia)) ?>" class="text-decoration-none"><?= esc($row->agenzie__preno_agenzia__label ?? $row->preno_agenzia ?? '') ?></a><?php else: ?><?= esc($row->agenzie__preno_agenzia__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'preno_agenzia',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->preno_agenzia ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->preno_agenzia ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td><?= esc($row->preno_tel ?? '') ?></td>
                                 <td><?= esc($row->preno_email ?? '') ?></td>
                                 <td><?= esc($row->preno_doc_email ?? '') ?></td>
-                                <td><?= esc($row->preno_stato ?? '') ?></td>
-                                <td><?= esc($row->data_opzione ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->preno_stato ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'preno_stato',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->preno_stato,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->preno_stato) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->data_opzione ?? '') ?></td>
                                 <td class="text-end text-nowrap">
                                     <?php $id = $row->preno_id ?? ''; ?>
                                     <div class="btn-group btn-group-sm" role="group" aria-label="Azioni record">

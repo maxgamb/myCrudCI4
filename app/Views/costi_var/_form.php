@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -50,12 +52,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['costi_area_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('costi_area_id', $row->costi_area_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('costi_area_id', $row->costi_area_id ?? ($context['costi_area_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="costi_area_id"
+                            data-base-url="<?= site_url('costi_area/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('costi_area/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['costi_area_id'])): ?>
                         <div id="costi_area_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['costi_area_id']) ?>
@@ -70,7 +93,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="costi_var_sub_1"
                         id="costi_var_sub_1"
-                        value="<?= esc(old('costi_var_sub_1', $row->costi_var_sub_1 ?? '')) ?>"
+                        value="<?= esc(old('costi_var_sub_1', $row->costi_var_sub_1 ?? ($context['costi_var_sub_1'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['costi_var_sub_1']) ? 'is-invalid' : '' ?>"
                         aria-describedby="costi_var_sub_1-error"
                         aria-invalid="<?= isset($errors['costi_var_sub_1']) ? 'true' : 'false' ?>"
@@ -90,7 +113,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="costi_var_sub_2"
                         id="costi_var_sub_2"
-                        value="<?= esc(old('costi_var_sub_2', $row->costi_var_sub_2 ?? '')) ?>"
+                        value="<?= esc(old('costi_var_sub_2', $row->costi_var_sub_2 ?? ($context['costi_var_sub_2'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['costi_var_sub_2']) ? 'is-invalid' : '' ?>"
                         aria-describedby="costi_var_sub_2-error"
                         aria-invalid="<?= isset($errors['costi_var_sub_2']) ? 'true' : 'false' ?>"
@@ -110,7 +133,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -130,7 +153,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="costi_var_codice"
                         id="costi_var_codice"
-                        value="<?= esc(old('costi_var_codice', $row->costi_var_codice ?? '')) ?>"
+                        value="<?= esc(old('costi_var_codice', $row->costi_var_codice ?? ($context['costi_var_codice'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['costi_var_codice']) ? 'is-invalid' : '' ?>"
                         aria-describedby="costi_var_codice-error"
                         aria-invalid="<?= isset($errors['costi_var_codice']) ? 'true' : 'false' ?>"
@@ -150,7 +173,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="costi_var_nome"
                         id="costi_var_nome"
-                        value="<?= esc(old('costi_var_nome', $row->costi_var_nome ?? '')) ?>"
+                        value="<?= esc(old('costi_var_nome', $row->costi_var_nome ?? ($context['costi_var_nome'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['costi_var_nome']) ? 'is-invalid' : '' ?>"
                         aria-describedby="costi_var_nome-error"
                         aria-invalid="<?= isset($errors['costi_var_nome']) ? 'true' : 'false' ?>"
@@ -170,7 +193,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="costi_var_deposito"
                         id="costi_var_deposito"
-                        value="<?= esc(old('costi_var_deposito', $row->costi_var_deposito ?? '')) ?>"
+                        value="<?= esc(old('costi_var_deposito', $row->costi_var_deposito ?? ($context['costi_var_deposito'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['costi_var_deposito']) ? 'is-invalid' : '' ?>"
                         aria-describedby="costi_var_deposito-error"
                         aria-invalid="<?= isset($errors['costi_var_deposito']) ? 'true' : 'false' ?>"
@@ -189,7 +212,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="mag_quantita"
                         id="mag_quantita"
-                        value="<?= esc(old('mag_quantita', $row->mag_quantita ?? '')) ?>"
+                        value="<?= esc(old('mag_quantita', $row->mag_quantita ?? ($context['mag_quantita'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['mag_quantita']) ? 'is-invalid' : '' ?>"
                         aria-describedby="mag_quantita-error"
                         aria-invalid="<?= isset($errors['mag_quantita']) ? 'true' : 'false' ?>"
@@ -208,7 +231,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="costi_var_prezzo_uso"
                         id="costi_var_prezzo_uso"
-                        value="<?= esc(old('costi_var_prezzo_uso', $row->costi_var_prezzo_uso ?? '')) ?>"
+                        value="<?= esc(old('costi_var_prezzo_uso', $row->costi_var_prezzo_uso ?? ($context['costi_var_prezzo_uso'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['costi_var_prezzo_uso']) ? 'is-invalid' : '' ?>"
                         aria-describedby="costi_var_prezzo_uso-error"
                         aria-invalid="<?= isset($errors['costi_var_prezzo_uso']) ? 'true' : 'false' ?>"
@@ -227,7 +250,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="mag_prezzo_lavaggio"
                         id="mag_prezzo_lavaggio"
-                        value="<?= esc(old('mag_prezzo_lavaggio', $row->mag_prezzo_lavaggio ?? '')) ?>"
+                        value="<?= esc(old('mag_prezzo_lavaggio', $row->mag_prezzo_lavaggio ?? ($context['mag_prezzo_lavaggio'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['mag_prezzo_lavaggio']) ? 'is-invalid' : '' ?>"
                         aria-describedby="mag_prezzo_lavaggio-error"
                         aria-invalid="<?= isset($errors['mag_prezzo_lavaggio']) ? 'true' : 'false' ?>"
@@ -246,7 +269,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="costi_var_addebbito"
                         id="costi_var_addebbito"
-                        value="<?= esc(old('costi_var_addebbito', $row->costi_var_addebbito ?? '')) ?>"
+                        value="<?= esc(old('costi_var_addebbito', $row->costi_var_addebbito ?? ($context['costi_var_addebbito'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['costi_var_addebbito']) ? 'is-invalid' : '' ?>"
                         aria-describedby="costi_var_addebbito-error"
                         aria-invalid="<?= isset($errors['costi_var_addebbito']) ? 'true' : 'false' ?>"
@@ -298,6 +321,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -342,6 +366,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -349,6 +374,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

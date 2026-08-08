@@ -18,7 +18,7 @@
                             <td><?= esc($row->hotel_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('TaxPagamento.conto_id')) ?></th>
-                            <td><?= esc($row->conto_id ?? '') ?></td>
+                            <td><a href="<?= site_url('conti/view/' . rawurlencode((string) ($row->conto_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->conti__conto_id__label ?? $row->conto_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('TaxPagamento.pratica_id')) ?></th>
                             <td><?= esc($row->pratica_id ?? '') ?></td>

@@ -118,7 +118,7 @@ components:
           type: integer
           format: int32
           nullable: true
-        'agenda_preno_arr_ore':
+        'agenda__mod_agenda_id__label':
           type: string
           nullable: true
     ModificaAgendaCreate:

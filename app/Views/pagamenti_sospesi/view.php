@@ -18,7 +18,7 @@
                             <td><?= esc($row->hotel_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('PagamentiSospesi.sospeso_id')) ?></th>
-                            <td><?= esc($row->sospeso_id ?? '') ?></td>
+                            <td><a href="<?= site_url('sospesi/view/' . rawurlencode((string) ($row->sospeso_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->sospesi__sospeso_id__label ?? $row->sospeso_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('PagamentiSospesi.paga_sosp_importo')) ?></th>
                             <td><?= esc($row->paga_sosp_importo ?? '') ?></td>

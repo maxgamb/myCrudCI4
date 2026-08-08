@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -61,7 +63,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="obmp_affiliati_id"
                         id="obmp_affiliati_id"
-                        value="<?= esc(old('obmp_affiliati_id', $row->obmp_affiliati_id ?? '')) ?>"
+                        value="<?= esc(old('obmp_affiliati_id', $row->obmp_affiliati_id ?? ($context['obmp_affiliati_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_affiliati_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_affiliati_id-error"
                         aria-invalid="<?= isset($errors['obmp_affiliati_id']) ? 'true' : 'false' ?>"
@@ -80,7 +82,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="ref_site_nome"
                         id="ref_site_nome"
-                        value="<?= esc(old('ref_site_nome', $row->ref_site_nome ?? '')) ?>"
+                        value="<?= esc(old('ref_site_nome', $row->ref_site_nome ?? ($context['ref_site_nome'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['ref_site_nome']) ? 'is-invalid' : '' ?>"
                         aria-describedby="ref_site_nome-error"
                         aria-invalid="<?= isset($errors['ref_site_nome']) ? 'true' : 'false' ?>"
@@ -100,7 +102,7 @@ $submissionToken = $submissionToken ?? '';
                         type="datetime-local"
                         name="ref_site_date_record"
                         id="ref_site_date_record"
-                        value="<?= esc(old('ref_site_date_record', isset($row->ref_site_date_record) ? str_replace(' ', 'T', substr((string) $row->ref_site_date_record, 0, 16)) : '')) ?>"
+                        value="<?= esc(old('ref_site_date_record', isset($row->ref_site_date_record) ? str_replace(' ', 'T', substr((string) $row->ref_site_date_record, 0, 16)) : ($context['ref_site_date_record'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['ref_site_date_record']) ? 'is-invalid' : '' ?>"
                         aria-describedby="ref_site_date_record-error"
                         aria-invalid="<?= isset($errors['ref_site_date_record']) ? 'true' : 'false' ?>"
@@ -152,6 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -196,6 +199,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -203,6 +207,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

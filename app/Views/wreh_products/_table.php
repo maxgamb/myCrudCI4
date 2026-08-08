@@ -87,13 +87,75 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->product_id ?? '') ?></td>
-                                <td><?= esc($row->costi_area_costi_area_nome ?? $row->costi_area_id ?? '') ?></td>
-                                <td><?= esc($row->name ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->product_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'product_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->product_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->product_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->costi_area_id ?? '') !== ''): ?><a href="<?= site_url('costi_area/view/' . rawurlencode((string) $row->costi_area_id)) ?>" class="text-decoration-none"><?= esc($row->costi_area__costi_area_id__label ?? $row->costi_area_id ?? '') ?></a><?php else: ?><?= esc($row->costi_area__costi_area_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'costi_area_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->costi_area_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->costi_area_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td><?= esc($row->name ?? '') ?></td>
                                 <td><?= esc($row->price ?? '') ?></td>
                                 <td><?= esc($row->stock_quantity ?? '') ?></td>
-                                <td><?= esc($row->wreh_suppliers_company ?? $row->supplier_id ?? '') ?></td>
-                                <td class="text-end text-nowrap">
+                                <td>
+                                    <?php if ((string) ($row->supplier_id ?? '') !== ''): ?><a href="<?= site_url('wreh_suppliers/view/' . rawurlencode((string) $row->supplier_id)) ?>" class="text-decoration-none"><?= esc($row->wreh_suppliers__supplier_id__label ?? $row->supplier_id ?? '') ?></a><?php else: ?><?= esc($row->wreh_suppliers__supplier_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'supplier_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->supplier_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->supplier_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td class="text-end text-nowrap">
                                     <?php $id = $row->product_id ?? ''; ?>
                                     <div class="btn-group btn-group-sm" role="group" aria-label="Azioni record">
                                         <a href="<?= site_url('wreh_products/view/' . rawurlencode((string) $id)) ?>" class="btn btn-outline-info" title="Visualizza">

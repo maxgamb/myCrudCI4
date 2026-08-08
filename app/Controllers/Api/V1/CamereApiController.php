@@ -7,7 +7,7 @@ namespace App\Controllers\Api\V1;
 use App\API\Resources\CamereResource;
 use App\Controllers\Api\BaseApiController;
 use App\Services\CamereService;
-use App\Validation\CamereApiRules;
+use App\Validation\CamereRules;
 use RuntimeException;
 use Throwable;
 
@@ -47,7 +47,7 @@ final class CamereApiController extends BaseApiController
         if ($data === []) {
             return $this->error('EMPTY_PAYLOAD', 'Nessun campo scrivibile ricevuto.', 422);
         }
-        if (!$this->validateData($data, CamereApiRules::createRules(), CamereApiRules::messages())) {
+        if (!$this->validateData($data, CamereRules::createRules(), CamereRules::messages())) {
             return $this->error('VALIDATION_ERROR', 'Dati non validi.', 422, $this->validator->getErrors());
         }
         try {
@@ -78,11 +78,11 @@ final class CamereApiController extends BaseApiController
             return $this->error('EMPTY_PAYLOAD', 'Nessun campo scrivibile ricevuto.', 422);
         }
 
-        $rules = CamereApiRules::updateRules($id);
+        $rules = CamereRules::updateRules($id);
         if ($partial) {
             $rules = array_intersect_key($rules, $data);
         }
-        if ($rules !== [] && !$this->validateData($data, $rules, CamereApiRules::messages())) {
+        if ($rules !== [] && !$this->validateData($data, $rules, CamereRules::messages())) {
             return $this->error('VALIDATION_ERROR', 'Dati non validi.', 422, $this->validator->getErrors());
         }
 

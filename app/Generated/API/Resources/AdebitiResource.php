@@ -17,7 +17,7 @@ final class AdebitiResource
   6 => 'quantita',
   7 => 'adebiti_utente_id',
   8 => 'preno_id',
-  9 => 'prodotti_nome_prodotto',
+  9 => 'prodotti__prodotto_id__label',
 );
     private const WRITABLE = array (
   0 => 'conto_id',

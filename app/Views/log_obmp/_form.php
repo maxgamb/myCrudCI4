@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="preno_dal"
                         id="preno_dal"
-                        value="<?= esc(old('preno_dal', $row->preno_dal ?? '')) ?>"
+                        value="<?= esc(old('preno_dal', $row->preno_dal ?? ($context['preno_dal'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['preno_dal']) ? 'is-invalid' : '' ?>"
                         aria-describedby="preno_dal-error"
                         aria-invalid="<?= isset($errors['preno_dal']) ? 'true' : 'false' ?>"
@@ -61,7 +63,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="preno_al"
                         id="preno_al"
-                        value="<?= esc(old('preno_al', $row->preno_al ?? '')) ?>"
+                        value="<?= esc(old('preno_al', $row->preno_al ?? ($context['preno_al'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['preno_al']) ? 'is-invalid' : '' ?>"
                         aria-describedby="preno_al-error"
                         aria-invalid="<?= isset($errors['preno_al']) ? 'true' : 'false' ?>"
@@ -80,7 +82,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="Q1"
                         id="Q1"
-                        value="<?= esc(old('Q1', $row->Q1 ?? '')) ?>"
+                        value="<?= esc(old('Q1', $row->Q1 ?? ($context['Q1'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['Q1']) ? 'is-invalid' : '' ?>"
                         aria-describedby="Q1-error"
                         aria-invalid="<?= isset($errors['Q1']) ? 'true' : 'false' ?>"
@@ -99,7 +101,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="T1"
                         id="T1"
-                        value="<?= esc(old('T1', $row->T1 ?? '')) ?>"
+                        value="<?= esc(old('T1', $row->T1 ?? ($context['T1'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['T1']) ? 'is-invalid' : '' ?>"
                         aria-describedby="T1-error"
                         aria-invalid="<?= isset($errors['T1']) ? 'true' : 'false' ?>"
@@ -118,7 +120,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -137,7 +139,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="ref_site"
                         id="ref_site"
-                        value="<?= esc(old('ref_site', $row->ref_site ?? '')) ?>"
+                        value="<?= esc(old('ref_site', $row->ref_site ?? ($context['ref_site'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['ref_site']) ? 'is-invalid' : '' ?>"
                         aria-describedby="ref_site-error"
                         aria-invalid="<?= isset($errors['ref_site']) ? 'true' : 'false' ?>"
@@ -157,7 +159,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="ref_agency"
                         id="ref_agency"
-                        value="<?= esc(old('ref_agency', $row->ref_agency ?? '')) ?>"
+                        value="<?= esc(old('ref_agency', $row->ref_agency ?? ($context['ref_agency'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['ref_agency']) ? 'is-invalid' : '' ?>"
                         aria-describedby="ref_agency-error"
                         aria-invalid="<?= isset($errors['ref_agency']) ? 'true' : 'false' ?>"
@@ -177,7 +179,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="ref_event"
                         id="ref_event"
-                        value="<?= esc(old('ref_event', $row->ref_event ?? '')) ?>"
+                        value="<?= esc(old('ref_event', $row->ref_event ?? ($context['ref_event'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['ref_event']) ? 'is-invalid' : '' ?>"
                         aria-describedby="ref_event-error"
                         aria-invalid="<?= isset($errors['ref_event']) ? 'true' : 'false' ?>"
@@ -197,7 +199,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="ref_session"
                         id="ref_session"
-                        value="<?= esc(old('ref_session', $row->ref_session ?? '')) ?>"
+                        value="<?= esc(old('ref_session', $row->ref_session ?? ($context['ref_session'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['ref_session']) ? 'is-invalid' : '' ?>"
                         aria-describedby="ref_session-error"
                         aria-invalid="<?= isset($errors['ref_session']) ? 'true' : 'false' ?>"
@@ -217,7 +219,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="ref_cookie"
                         id="ref_cookie"
-                        value="<?= esc(old('ref_cookie', $row->ref_cookie ?? '')) ?>"
+                        value="<?= esc(old('ref_cookie', $row->ref_cookie ?? ($context['ref_cookie'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['ref_cookie']) ? 'is-invalid' : '' ?>"
                         aria-describedby="ref_cookie-error"
                         aria-invalid="<?= isset($errors['ref_cookie']) ? 'true' : 'false' ?>"
@@ -237,7 +239,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="mygooglekeyword"
                         id="mygooglekeyword"
-                        value="<?= esc(old('mygooglekeyword', $row->mygooglekeyword ?? '')) ?>"
+                        value="<?= esc(old('mygooglekeyword', $row->mygooglekeyword ?? ($context['mygooglekeyword'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['mygooglekeyword']) ? 'is-invalid' : '' ?>"
                         aria-describedby="mygooglekeyword-error"
                         aria-invalid="<?= isset($errors['mygooglekeyword']) ? 'true' : 'false' ?>"
@@ -257,7 +259,7 @@ $submissionToken = $submissionToken ?? '';
                         type="datetime-local"
                         name="log_obmp_daterecord"
                         id="log_obmp_daterecord"
-                        value="<?= esc(old('log_obmp_daterecord', isset($row->log_obmp_daterecord) ? str_replace(' ', 'T', substr((string) $row->log_obmp_daterecord, 0, 16)) : '')) ?>"
+                        value="<?= esc(old('log_obmp_daterecord', isset($row->log_obmp_daterecord) ? str_replace(' ', 'T', substr((string) $row->log_obmp_daterecord, 0, 16)) : ($context['log_obmp_daterecord'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['log_obmp_daterecord']) ? 'is-invalid' : '' ?>"
                         aria-describedby="log_obmp_daterecord-error"
                         aria-invalid="<?= isset($errors['log_obmp_daterecord']) ? 'true' : 'false' ?>"
@@ -309,6 +311,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -353,6 +356,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -360,6 +364,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

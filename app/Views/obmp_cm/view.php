@@ -18,7 +18,7 @@
                             <td><?= esc($row->hotel_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ObmpCm.agenzia_id')) ?></th>
-                            <td><?= esc($row->agenzia_id ?? '') ?></td>
+                            <td><a href="<?= site_url('agenzie/view/' . rawurlencode((string) ($row->agenzia_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->agenzie__agenzia_id__label ?? $row->agenzia_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ObmpCm.obmp_cm_id_hotel_agenzia')) ?></th>
                             <td><?= esc($row->obmp_cm_id_hotel_agenzia ?? '') ?></td>

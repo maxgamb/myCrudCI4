@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Libraries\MyCrud\Config\CrudConfigRepository;
 use App\Libraries\MyCrud\Core\ConfigBuilder;
 use App\Libraries\MyCrud\Core\CrudGeneratorService;
+use App\Libraries\MyCrud\Schema\DbSchema;
 use App\Libraries\MyCrud\Schema\TableFilter;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use Throwable;
@@ -37,7 +38,8 @@ class BuilderController extends BaseController
                 'title'  => 'Configura ' . $table,
                 'config' => $config,
                 'table'  => $table,
-                'fields' => $config['fields'],
+                'fields'               => $config['fields'],
+                'databaseParentTables' => (new DbSchema())->parentTables(),
             ]);
         } catch (PageNotFoundException $e) {
             throw $e;

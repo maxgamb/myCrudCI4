@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="win_dal"
                         id="win_dal"
-                        value="<?= esc(old('win_dal', $row->win_dal ?? '')) ?>"
+                        value="<?= esc(old('win_dal', $row->win_dal ?? ($context['win_dal'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['win_dal']) ? 'is-invalid' : '' ?>"
                         aria-describedby="win_dal-error"
                         aria-invalid="<?= isset($errors['win_dal']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="win_al"
                         id="win_al"
-                        value="<?= esc(old('win_al', $row->win_al ?? '')) ?>"
+                        value="<?= esc(old('win_al', $row->win_al ?? ($context['win_al'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['win_al']) ? 'is-invalid' : '' ?>"
                         aria-describedby="win_al-error"
                         aria-invalid="<?= isset($errors['win_al']) ? 'true' : 'false' ?>"
@@ -102,7 +104,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="mese"
                         id="mese"
-                        value="<?= esc(old('mese', $row->mese ?? '')) ?>"
+                        value="<?= esc(old('mese', $row->mese ?? ($context['mese'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['mese']) ? 'is-invalid' : '' ?>"
                         aria-describedby="mese-error"
                         aria-invalid="<?= isset($errors['mese']) ? 'true' : 'false' ?>"
@@ -122,7 +124,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="win_hotel"
                         id="win_hotel"
-                        value="<?= esc(old('win_hotel', $row->win_hotel ?? '')) ?>"
+                        value="<?= esc(old('win_hotel', $row->win_hotel ?? ($context['win_hotel'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['win_hotel']) ? 'is-invalid' : '' ?>"
                         aria-describedby="win_hotel-error"
                         aria-invalid="<?= isset($errors['win_hotel']) ? 'true' : 'false' ?>"
@@ -142,7 +144,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="win_comp"
                         id="win_comp"
-                        value="<?= esc(old('win_comp', $row->win_comp ?? '')) ?>"
+                        value="<?= esc(old('win_comp', $row->win_comp ?? ($context['win_comp'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['win_comp']) ? 'is-invalid' : '' ?>"
                         aria-describedby="win_comp-error"
                         aria-invalid="<?= isset($errors['win_comp']) ? 'true' : 'false' ?>"
@@ -162,7 +164,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="win_hotel_cum"
                         id="win_hotel_cum"
-                        value="<?= esc(old('win_hotel_cum', $row->win_hotel_cum ?? '')) ?>"
+                        value="<?= esc(old('win_hotel_cum', $row->win_hotel_cum ?? ($context['win_hotel_cum'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['win_hotel_cum']) ? 'is-invalid' : '' ?>"
                         aria-describedby="win_hotel_cum-error"
                         aria-invalid="<?= isset($errors['win_hotel_cum']) ? 'true' : 'false' ?>"
@@ -182,7 +184,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="win_comp_cum"
                         id="win_comp_cum"
-                        value="<?= esc(old('win_comp_cum', $row->win_comp_cum ?? '')) ?>"
+                        value="<?= esc(old('win_comp_cum', $row->win_comp_cum ?? ($context['win_comp_cum'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['win_comp_cum']) ? 'is-invalid' : '' ?>"
                         aria-describedby="win_comp_cum-error"
                         aria-invalid="<?= isset($errors['win_comp_cum']) ? 'true' : 'false' ?>"
@@ -235,6 +237,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -279,6 +282,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -286,6 +290,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

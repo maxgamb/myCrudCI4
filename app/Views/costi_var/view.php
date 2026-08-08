@@ -15,7 +15,7 @@
                             <td><?= esc($row->costi_var_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('CostiVar.costi_area_id')) ?></th>
-                            <td><?= esc($row->costi_area_id ?? '') ?></td>
+                            <td><a href="<?= site_url('costi_area/view/' . rawurlencode((string) ($row->costi_area_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->costi_area__costi_area_id__label ?? $row->costi_area_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('CostiVar.costi_var_sub_1')) ?></th>
                             <td><?= esc($row->costi_var_sub_1 ?? '') ?></td>

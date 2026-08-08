@@ -15,16 +15,16 @@
                             <td><?= esc($row->ref_obm_data ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('RefObmpBooking.preno_id')) ?></th>
-                            <td><?= esc($row->preno_id ?? '') ?></td>
+                            <td><a href="<?= site_url('agenda/view/' . rawurlencode((string) ($row->preno_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->agenda__preno_id__label ?? $row->preno_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('RefObmpBooking.obm_cliente_id')) ?></th>
-                            <td><?= esc($row->obm_cliente_id ?? '') ?></td>
+                            <td><a href="<?= site_url('obmp_clienti/view/' . rawurlencode((string) ($row->obm_cliente_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->obmp_clienti__obm_cliente_id__label ?? $row->obm_cliente_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('RefObmpBooking.hotel_id')) ?></th>
                             <td><?= esc($row->hotel_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('RefObmpBooking.ref_site')) ?></th>
-                            <td><?= esc($row->ref_site ?? '') ?></td>
+                            <td><a href="<?= site_url('obmp_ref_site/view/' . rawurlencode((string) ($row->ref_site ?? ''))) ?>" class="text-decoration-none"><?= esc($row->obmp_ref_site__ref_site__label ?? $row->ref_site ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('RefObmpBooking.ref_agency')) ?></th>
                             <td><?= esc($row->ref_agency ?? '') ?></td>
@@ -42,7 +42,7 @@
                             <td><?= esc($row->room_obmp_string ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('RefObmpBooking.quote_id')) ?></th>
-                            <td><?= esc($row->quote_id ?? '') ?></td>
+                            <td><a href="<?= site_url('obmp_quote/view/' . rawurlencode((string) ($row->quote_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->obmp_quote__quote_id__label ?? $row->quote_id ?? '') ?></a></td>
                         </tr>                    </tbody>
                 </table>
             </div>

@@ -12,7 +12,7 @@
                     <tbody>
                         <tr>
                             <th class="w-25"><?= esc(lang('AgenziaPrezzi.agenzia_prezzi_id')) ?></th>
-                            <td><?= esc($row->agenzia_prezzi_id ?? '') ?></td>
+                            <td><a href="<?= site_url('agenzia_listini/view/' . rawurlencode((string) ($row->agenzia_prezzi_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->agenzia_listini__agenzia_prezzi_id__label ?? $row->agenzia_prezzi_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('AgenziaPrezzi.hotel_id')) ?></th>
                             <td><?= esc($row->hotel_id ?? '') ?></td>

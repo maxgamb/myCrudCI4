@@ -13,6 +13,8 @@ $formAction = site_url('punti_spesi/update/' . ($row->{$primaryKey} ?? ''));
     'row'             => $row ?? null,
     'errors'          => $errors ?? [],
     'options'         => $options ?? [],
+    'context'         => [],
+    'contextLabels'   => [],
     'submissionToken' => $submissionToken ?? '',
 ]) ?>
 

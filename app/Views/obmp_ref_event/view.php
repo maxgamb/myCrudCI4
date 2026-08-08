@@ -15,16 +15,16 @@
                             <td><?= esc($row->ref_event_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ObmpRefEvent.ref_site_id')) ?></th>
-                            <td><?= esc($row->ref_site_id ?? '') ?></td>
+                            <td><a href="<?= site_url('obmp_ref_site/view/' . rawurlencode((string) ($row->ref_site_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->obmp_ref_site__ref_site_id__label ?? $row->ref_site_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ObmpRefEvent.hotel_id')) ?></th>
                             <td><?= esc($row->hotel_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ObmpRefEvent.listino_nome_id')) ?></th>
-                            <td><?= esc($row->listino_nome_id ?? '') ?></td>
+                            <td><a href="<?= site_url('listino_nome_obmp/view/' . rawurlencode((string) ($row->listino_nome_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->listino_nome_obmp__listino_nome_id__label ?? $row->listino_nome_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ObmpRefEvent.agenzia_id')) ?></th>
-                            <td><?= esc($row->agenzia_id ?? '') ?></td>
+                            <td><a href="<?= site_url('agenzie/view/' . rawurlencode((string) ($row->agenzia_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->agenzie__agenzia_id__label ?? $row->agenzia_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ObmpRefEvent.ref_event_nome')) ?></th>
                             <td><?= esc($row->ref_event_nome ?? '') ?></td>

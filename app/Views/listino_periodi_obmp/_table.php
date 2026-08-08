@@ -88,11 +88,72 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->listino_periodi_id ?? '') ?></td>
-                                <td><?= esc($row->listino_nome_obmp_listino_nome ?? $row->listino_nome_id ?? '') ?></td>
-                                <td><?= esc($row->listino_periodi_flex ?? '') ?></td>
-                                <td><?= esc($row->listino_dal ?? '') ?></td>
-                                <td><?= esc($row->listino_al ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->listino_periodi_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'listino_periodi_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->listino_periodi_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->listino_periodi_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->listino_nome_id ?? '') !== ''): ?><a href="<?= site_url('listino_nome_obmp/view/' . rawurlencode((string) $row->listino_nome_id)) ?>" class="text-decoration-none"><?= esc($row->listino_nome_obmp__listino_nome_id__label ?? $row->listino_nome_id ?? '') ?></a><?php else: ?><?= esc($row->listino_nome_obmp__listino_nome_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'listino_nome_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->listino_nome_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->listino_nome_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td><?= esc($row->listino_periodi_flex ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->listino_dal ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'listino_dal',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->listino_dal,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->listino_dal) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->listino_al ?? '') ?></td>
                                 <td><?= esc($row->hotel_id ?? '') ?></td>
                                 <td><?= esc($row->listino_periodi ?? '') ?></td>
                                 <td class="text-end text-nowrap">

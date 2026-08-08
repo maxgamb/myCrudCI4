@@ -99,7 +99,12 @@ final class PagamentiSospesiModel extends Model
   array (
     'table' => 'sospesi',
     'key' => 'sospeso_id',
-    'label' => 'sospeso_id',
+    'displayField' => 'sospeso_id',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'sospeso_id',
+    ),
     'mode' => 'select',
   ),
 );
@@ -118,7 +123,7 @@ final class PagamentiSospesiModel extends Model
             'pagamenti_sospesi.paga_modalita AS paga_modalita',
             'pagamenti_sospesi.data_rec_paga_sosp AS data_rec_paga_sosp',
             'pagamenti_sospesi.pagamenti_sospesi_utente_id AS pagamenti_sospesi_utente_id',
-            'sospesi__sospeso_id.sospeso_id AS sospesi_sospeso_id'
+            'sospesi__sospeso_id.sospeso_id AS sospesi__sospeso_id__label'
         ]);
         $builder->join('sospesi AS sospesi__sospeso_id', 'sospesi__sospeso_id.sospeso_id = pagamenti_sospesi.sospeso_id', 'left');
         return $builder;
@@ -137,7 +142,7 @@ final class PagamentiSospesiModel extends Model
             'pagamenti_sospesi.paga_modalita AS paga_modalita',
             'pagamenti_sospesi.data_rec_paga_sosp AS data_rec_paga_sosp',
             'pagamenti_sospesi.pagamenti_sospesi_utente_id AS pagamenti_sospesi_utente_id',
-            'sospesi__sospeso_id.sospeso_id AS sospesi_sospeso_id'
+            'sospesi__sospeso_id.sospeso_id AS sospesi__sospeso_id__label'
         ]);
         $builder->join('sospesi AS sospesi__sospeso_id', 'sospesi__sospeso_id.sospeso_id = pagamenti_sospesi.sospeso_id', 'left');
         return $builder;
@@ -218,7 +223,7 @@ final class PagamentiSospesiModel extends Model
             'pagamenti_sospesi.paga_modalita AS paga_modalita',
             'pagamenti_sospesi.data_rec_paga_sosp AS data_rec_paga_sosp',
             'pagamenti_sospesi.pagamenti_sospesi_utente_id AS pagamenti_sospesi_utente_id',
-            'sospesi__sospeso_id.sospeso_id AS sospesi_sospeso_id'
+            'sospesi__sospeso_id.sospeso_id AS sospesi__sospeso_id__label'
         ]);
         $builder->join('sospesi AS sospesi__sospeso_id', 'sospesi__sospeso_id.sospeso_id = pagamenti_sospesi.sospeso_id', 'left');
         $this->applyListFilters($builder, $filters, true);
@@ -425,21 +430,23 @@ final class PagamentiSospesiModel extends Model
     public function getSospesiSospesoIdOptions(): array
     {
         return $this->db->table('sospesi')
-            ->select(['sospeso_id', 'sospeso_id'])
+            ->select(array (
+  0 => 'sospeso_id',
+))
             ->orderBy('sospeso_id', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     public function relationOptions(): array
     {
         return [
-            'sospeso_id' => $this->toOptions($this->getSospesiSospesoIdOptions(), 'sospeso_id', 'sospeso_id'),
+            'sospeso_id' => $this->toRelationOptions($this->getSospesiSospesoIdOptions(), 'sospeso_id'),
         ];
     }
 
     /**
      * Ricerca server-side delle opzioni per relazioni grandi.
-     * Tabella, chiave e campo label arrivano solo dalla whitelist generata.
+     * Tabella, chiave e campi descrittivi arrivano solo dalla whitelist generata.
      *
      * @return list<array{id:string,text:string}>
      */
@@ -450,36 +457,100 @@ final class PagamentiSospesiModel extends Model
         }
 
         $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
         $limit = max(1, min(100, $limit));
         $builder = $this->db->table((string) $definition['table'])
-            ->select([(string) $definition['key'], (string) $definition['label']])
-            ->orderBy((string) $definition['label'], 'ASC')
+            ->select($selectFields)
+            ->orderBy((string) $definition['displayField'], 'ASC')
             ->limit($limit);
 
         $query = trim($query);
-        if ($query !== '') {
-            $builder->like((string) $definition['label'], $query, 'after');
+        if ($query !== '' && $displayFields !== []) {
+            $builder->groupStart();
+            foreach ($displayFields as $index => $displayColumn) {
+                if ($index === 0) {
+                    $builder->like((string) $displayColumn, $query, 'after');
+                } else {
+                    $builder->orLike((string) $displayColumn, $query, 'after');
+                }
+            }
+            $builder->groupEnd();
         }
 
         $rows = $builder->get()->getResultArray();
         $result = [];
         foreach ($rows as $row) {
             $result[] = [
-                'id' => (string) ($row[(string) $definition['key']] ?? ''),
-                'text' => (string) ($row[(string) $definition['label']] ?? ''),
+                'id' => (string) ($row[$key] ?? ''),
+                'text' => $this->formatRelationLabel($row, $definition),
             ];
         }
 
         return $result;
     }
 
-    private function toOptions(array $rows, string $key, string $label): array
+    /** Restituisce una FK valida e la sua descrizione; usato dal Create contestuale. */
+    public function relationOptionById(string $field, int|string $id): ?array
     {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return null;
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
+        $row = $this->db->table((string) $definition['table'])
+            ->select($selectFields)
+            ->where($key, $id)
+            ->limit(1)
+            ->get()
+            ->getRowArray();
+
+        if (!is_array($row)) {
+            return null;
+        }
+
+        return [
+            'id' => (string) ($row[$key] ?? ''),
+            'text' => $this->formatRelationLabel($row, $definition),
+        ];
+    }
+
+    private function toRelationOptions(array $rows, string $field): array
+    {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return [];
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
         $options = [];
         foreach ($rows as $row) {
-            $options[(string) $row->{$key}] = (string) $row->{$label};
+            if (!is_array($row)) {
+                continue;
+            }
+            $options[(string) ($row[$key] ?? '')] = $this->formatRelationLabel($row, $definition);
         }
         return $options;
+    }
+
+    private function formatRelationLabel(array $row, array $definition): string
+    {
+        $template = trim((string) ($definition['displayTemplate'] ?? ''));
+        if ($template === '') {
+            return trim((string) ($row[(string) $definition['displayField']] ?? ''));
+        }
+
+        $label = preg_replace_callback(
+            '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+            static fn (array $match): string => (string) ($row[$match[1]] ?? ''),
+            $template
+        );
+
+        return trim((string) $label);
     }
 
     public function loadHasMany(int|string $parentId): array

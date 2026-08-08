@@ -16,8 +16,8 @@ final class RefCostiTipologiaResource
   5 => 'days',
   6 => 'check_out',
   7 => 'utente_id',
-  8 => 'costi_var_costi_var_sub_1',
-  9 => 'tipologia_camera_nome_tipologia',
+  8 => 'costi_var__costi_var_id__label',
+  9 => 'tipologia_camera__tipologia_id__label',
 );
     private const WRITABLE = array (
   0 => 'costi_var_id',

@@ -13,6 +13,8 @@ $formAction = site_url('tipologia_camera/update/' . ($row->{$primaryKey} ?? ''))
     'row'             => $row ?? null,
     'errors'          => $errors ?? [],
     'options'         => $options ?? [],
+    'context'         => [],
+    'contextLabels'   => [],
     'submissionToken' => $submissionToken ?? '',
 ]) ?>
 

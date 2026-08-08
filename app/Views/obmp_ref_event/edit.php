@@ -13,6 +13,8 @@ $formAction = site_url('obmp_ref_event/update/' . ($row->{$primaryKey} ?? ''));
     'row'             => $row ?? null,
     'errors'          => $errors ?? [],
     'options'         => $options ?? [],
+    'context'         => [],
+    'contextLabels'   => [],
     'submissionToken' => $submissionToken ?? '',
 ]) ?>
 

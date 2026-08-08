@@ -43,7 +43,7 @@ final class ObmpCmResource
   32 => 'obmp_cm_max_camere',
   33 => 'obmp_cm_min_camare',
   34 => 'obmp_cm_utente_id',
-  35 => 'agenzie_agenzia_tipologia',
+  35 => 'agenzie__agenzia_id__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

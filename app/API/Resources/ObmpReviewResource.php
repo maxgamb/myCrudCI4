@@ -37,7 +37,7 @@ final class ObmpReviewResource
   26 => 'raccomandi',
   27 => 'ip_review',
   28 => 'data_review',
-  29 => 'conti_trattamento_sog',
+  29 => 'conti__conto_id__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

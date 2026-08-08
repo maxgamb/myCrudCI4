@@ -12,7 +12,7 @@
                     <tbody>
                         <tr>
                             <th class="w-25"><?= esc(lang('ModificaAgenda.mod_agenda_id')) ?></th>
-                            <td><?= esc($row->mod_agenda_id ?? '') ?></td>
+                            <td><a href="<?= site_url('agenda/view/' . rawurlencode((string) ($row->mod_agenda_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->agenda__mod_agenda_id__label ?? $row->mod_agenda_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ModificaAgenda.mod_preno_id')) ?></th>
                             <td><?= esc($row->mod_preno_id ?? '') ?></td>

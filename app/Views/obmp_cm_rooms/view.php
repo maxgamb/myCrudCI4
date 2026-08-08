@@ -15,7 +15,7 @@
                             <td><?= esc($row->obmp_cm_rooms_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ObmpCmRooms.obmp_cm_id')) ?></th>
-                            <td><?= esc($row->obmp_cm_id ?? '') ?></td>
+                            <td><a href="<?= site_url('obmp_cm/view/' . rawurlencode((string) ($row->obmp_cm_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->obmp_cm__obmp_cm_id__label ?? $row->obmp_cm_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ObmpCmRooms.hotel_id')) ?></th>
                             <td><?= esc($row->hotel_id ?? '') ?></td>
@@ -27,7 +27,7 @@
                             <td><?= esc($row->obmp_cm_rooms_attiva ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ObmpCmRooms.obmp_cm_rooms_tipologia_id')) ?></th>
-                            <td><?= esc($row->obmp_cm_rooms_tipologia_id ?? '') ?></td>
+                            <td><a href="<?= site_url('tipologia_camera/view/' . rawurlencode((string) ($row->obmp_cm_rooms_tipologia_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->tipologia_camera__obmp_cm_rooms_tipologia_id__label ?? $row->obmp_cm_rooms_tipologia_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ObmpCmRooms.obmp_cm_rooms_room_note')) ?></th>
                             <td><?= esc($row->obmp_cm_rooms_room_note ?? '') ?></td>

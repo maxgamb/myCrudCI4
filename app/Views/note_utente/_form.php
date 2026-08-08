@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="note_utente_rispondi_id"
                         id="note_utente_rispondi_id"
-                        value="<?= esc(old('note_utente_rispondi_id', $row->note_utente_rispondi_id ?? '')) ?>"
+                        value="<?= esc(old('note_utente_rispondi_id', $row->note_utente_rispondi_id ?? ($context['note_utente_rispondi_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['note_utente_rispondi_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="note_utente_rispondi_id-error"
                         aria-invalid="<?= isset($errors['note_utente_rispondi_id']) ? 'true' : 'false' ?>"
@@ -69,12 +71,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['Utente_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('Utente_id', $row->Utente_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('Utente_id', $row->Utente_id ?? ($context['Utente_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="Utente_id"
+                            data-base-url="<?= site_url('utenti/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('utenti/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['Utente_id'])): ?>
                         <div id="Utente_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['Utente_id']) ?>
@@ -89,7 +112,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -109,7 +132,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="reparto"
                         id="reparto"
-                        value="<?= esc(old('reparto', $row->reparto ?? '')) ?>"
+                        value="<?= esc(old('reparto', $row->reparto ?? ($context['reparto'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['reparto']) ? 'is-invalid' : '' ?>"
                         aria-describedby="reparto-error"
                         aria-invalid="<?= isset($errors['reparto']) ? 'true' : 'false' ?>"
@@ -129,7 +152,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="titolo"
                         id="titolo"
-                        value="<?= esc(old('titolo', $row->titolo ?? '')) ?>"
+                        value="<?= esc(old('titolo', $row->titolo ?? ($context['titolo'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['titolo']) ? 'is-invalid' : '' ?>"
                         aria-describedby="titolo-error"
                         aria-invalid="<?= isset($errors['titolo']) ? 'true' : 'false' ?>"
@@ -152,7 +175,7 @@ $submissionToken = $submissionToken ?? '';
                         aria-describedby="note_utente_tex-error"
                         aria-invalid="<?= isset($errors['note_utente_tex']) ? 'true' : 'false' ?>"
                         required
-                    ><?= esc(old('note_utente_tex', $row->note_utente_tex ?? '')) ?></textarea>
+                    ><?= esc(old('note_utente_tex', $row->note_utente_tex ?? ($context['note_utente_tex'] ?? ''))) ?></textarea>
                     <?php if (!empty($errors['note_utente_tex'])): ?>
                         <div id="note_utente_tex-error" class="invalid-feedback d-block">
                             <?= esc($errors['note_utente_tex']) ?>
@@ -167,7 +190,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="note_utente_per"
                         id="note_utente_per"
-                        value="<?= esc(old('note_utente_per', $row->note_utente_per ?? '')) ?>"
+                        value="<?= esc(old('note_utente_per', $row->note_utente_per ?? ($context['note_utente_per'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['note_utente_per']) ? 'is-invalid' : '' ?>"
                         aria-describedby="note_utente_per-error"
                         aria-invalid="<?= isset($errors['note_utente_per']) ? 'true' : 'false' ?>"
@@ -187,7 +210,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="note_utente_stato"
                         id="note_utente_stato"
-                        value="<?= esc(old('note_utente_stato', $row->note_utente_stato ?? '')) ?>"
+                        value="<?= esc(old('note_utente_stato', $row->note_utente_stato ?? ($context['note_utente_stato'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['note_utente_stato']) ? 'is-invalid' : '' ?>"
                         aria-describedby="note_utente_stato-error"
                         aria-invalid="<?= isset($errors['note_utente_stato']) ? 'true' : 'false' ?>"
@@ -207,7 +230,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="note_utente_dal"
                         id="note_utente_dal"
-                        value="<?= esc(old('note_utente_dal', $row->note_utente_dal ?? '')) ?>"
+                        value="<?= esc(old('note_utente_dal', $row->note_utente_dal ?? ($context['note_utente_dal'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['note_utente_dal']) ? 'is-invalid' : '' ?>"
                         aria-describedby="note_utente_dal-error"
                         aria-invalid="<?= isset($errors['note_utente_dal']) ? 'true' : 'false' ?>"
@@ -227,7 +250,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="note_utente_al"
                         id="note_utente_al"
-                        value="<?= esc(old('note_utente_al', $row->note_utente_al ?? '')) ?>"
+                        value="<?= esc(old('note_utente_al', $row->note_utente_al ?? ($context['note_utente_al'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['note_utente_al']) ? 'is-invalid' : '' ?>"
                         aria-describedby="note_utente_al-error"
                         aria-invalid="<?= isset($errors['note_utente_al']) ? 'true' : 'false' ?>"
@@ -247,7 +270,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="note_utente_data"
                         id="note_utente_data"
-                        value="<?= esc(old('note_utente_data', $row->note_utente_data ?? '')) ?>"
+                        value="<?= esc(old('note_utente_data', $row->note_utente_data ?? ($context['note_utente_data'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['note_utente_data']) ? 'is-invalid' : '' ?>"
                         aria-describedby="note_utente_data-error"
                         aria-invalid="<?= isset($errors['note_utente_data']) ? 'true' : 'false' ?>"
@@ -300,6 +323,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -344,6 +368,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -351,6 +376,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

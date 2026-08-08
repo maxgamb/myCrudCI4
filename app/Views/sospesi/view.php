@@ -30,7 +30,7 @@
                             <td><?= esc($row->sospeso_conto_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Sospesi.sospeso_pratica_id')) ?></th>
-                            <td><?= esc($row->sospeso_pratica_id ?? '') ?></td>
+                            <td><a href="<?= site_url('pratiche/view/' . rawurlencode((string) ($row->sospeso_pratica_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->pratiche__sospeso_pratica_id__label ?? $row->sospeso_pratica_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Sospesi.sospeso_preno_id')) ?></th>
                             <td><?= esc($row->sospeso_preno_id ?? '') ?></td>
@@ -45,7 +45,7 @@
                             <td><?= esc($row->sospeso_imp_conto ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Sospesi.sopeso_societa')) ?></th>
-                            <td><?= esc($row->sopeso_societa ?? '') ?></td>
+                            <td><a href="<?= site_url('agenzie/view/' . rawurlencode((string) ($row->sopeso_societa ?? ''))) ?>" class="text-decoration-none"><?= esc($row->agenzie__sopeso_societa__label ?? $row->sopeso_societa ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Sospesi.sospeso_note')) ?></th>
                             <td><?= esc($row->sospeso_note ?? '') ?></td>

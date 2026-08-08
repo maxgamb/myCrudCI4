@@ -17,8 +17,8 @@ final class RefAgenziaListiniResource
   6 => 'agenzia_max_vendita',
   7 => 'agenzia_ab_max_vendita',
   8 => 'ref_agenzia_datarecord',
-  9 => 'agenzia_listini_agenzia_listini_nome',
-  10 => 'agenzie_agenzia_tipologia',
+  9 => 'agenzia_listini__agenzia_listini_id__label',
+  10 => 'agenzie__agenzia_id__label',
 );
     private const WRITABLE = array (
   0 => 'agenzia_listini_id',

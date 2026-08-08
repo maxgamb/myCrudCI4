@@ -78,8 +78,8 @@ final class FormViewGenerator extends AbstractViewGenerator
             $label = $this->labelExpression($field, $name);
             $value = match ($type) {
                 'password', 'file', 'image' => "old('{$name}', '')",
-                'datetime-local' => "old('{$name}', isset(\$row->{$name}) ? str_replace(' ', 'T', substr((string) \$row->{$name}, 0, 16)) : '')",
-                default => "old('{$name}', \$row->{$name} ?? '')",
+                'datetime-local' => "old('{$name}', isset(\$row->{$name}) ? str_replace(' ', 'T', substr((string) \$row->{$name}, 0, 16)) : (\$context['{$name}'] ?? ''))",
+                default => "old('{$name}', \$row->{$name} ?? (\$context['{$name}'] ?? ''))",
             };
             $errorId = $name . '-error';
             $relationMode = strtolower((string) ($field['relationMode'] ?? ''));
@@ -87,6 +87,10 @@ final class FormViewGenerator extends AbstractViewGenerator
                 $control = $this->buildAjaxRelationControl($config, $field, $name, $value, $errorId);
             } else {
                 $control = $this->buildControl($type, $name, $value, $attributes, $errorId);
+            }
+
+            if (!empty($field['foreignKey'])) {
+                $control .= $this->buildRelationNavigation($field, $name, $value);
             }
             $wrapper = $type === 'hidden' ? 'd-none' : "col-md-{$width}";
 
@@ -121,8 +125,8 @@ PHP;
         $relation = (array) ($field['foreignKey'] ?? []);
         $alias = (string) ($relation['alias'] ?? '');
         $labelValue = $alias !== ''
-            ? "old('{$name}__label', \$row->{$alias} ?? '')"
-            : "old('{$name}__label', '')";
+            ? "old('{$name}__label', \$row->{$alias} ?? (\$contextLabels['{$name}'] ?? ''))"
+            : "old('{$name}__label', \$contextLabels['{$name}'] ?? '')";
         $invalid = "<?= isset(\$errors['{$name}']) ? 'is-invalid' : '' ?>";
         $minChars = max(0, min(10, (int) (config('MyCrud')->relationAjaxMinimumChars ?? 2)));
 
@@ -153,6 +157,56 @@ PHP;
                         size="5"
                         aria-label="Risultati ricerca"
                     ></select>
+PHP;
+    }
+
+    private function buildRelationNavigation(array $field, string $name, string $value): string
+    {
+        $relation = (array) ($field['foreignKey'] ?? []);
+        $navigation = (array) ($field['relationNavigation'] ?? []);
+        $parentTable = (string) ($relation['parentTable'] ?? '');
+
+        if ($parentTable === '' || (empty($navigation['parentLink']) && empty($navigation['createParentLink']))) {
+            return '';
+        }
+
+        $parentLink = '';
+        if (!empty($navigation['parentLink'])) {
+            $parentLink = <<<PHP
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="{$name}"
+                            data-base-url="<?= site_url('{$parentTable}/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+PHP;
+        }
+
+        $createLink = '';
+        if (!empty($navigation['createParentLink'])) {
+            $createLink = <<<PHP
+                        <a
+                            href="<?= site_url('{$parentTable}/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>
+PHP;
+        }
+
+        return <<<PHP
+                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+{$parentLink}{$createLink}                    </div>
 PHP;
     }
 

@@ -64,7 +64,7 @@ final class AgendaResource
   53 => 'cancella_user',
   54 => 'cancella_pass',
   55 => 'agenda_utente_id',
-  56 => 'agenzie_agenzia_tipologia',
+  56 => 'agenzie__preno_agenzia__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

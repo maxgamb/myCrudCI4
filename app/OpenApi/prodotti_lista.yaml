@@ -127,7 +127,7 @@ components:
           type: integer
           format: int32
           nullable: true
-        'prodotti_nome_prodotto':
+        'prodotti__prodotti_lista_id__label':
           type: string
           nullable: true
     ProdottiListaCreate:

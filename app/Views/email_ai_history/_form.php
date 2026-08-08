@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="email"
                         name="raw_email"
                         id="raw_email"
-                        value="<?= esc(old('raw_email', $row->raw_email ?? '')) ?>"
+                        value="<?= esc(old('raw_email', $row->raw_email ?? ($context['raw_email'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['raw_email']) ? 'is-invalid' : '' ?>"
                         aria-describedby="raw_email-error"
                         aria-invalid="<?= isset($errors['raw_email']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="json_classifier"
                         id="json_classifier"
-                        value="<?= esc(old('json_classifier', $row->json_classifier ?? '')) ?>"
+                        value="<?= esc(old('json_classifier', $row->json_classifier ?? ($context['json_classifier'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['json_classifier']) ? 'is-invalid' : '' ?>"
                         aria-describedby="json_classifier-error"
                         aria-invalid="<?= isset($errors['json_classifier']) ? 'true' : 'false' ?>"
@@ -101,7 +103,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="category"
                         id="category"
-                        value="<?= esc(old('category', $row->category ?? '')) ?>"
+                        value="<?= esc(old('category', $row->category ?? ($context['category'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['category']) ? 'is-invalid' : '' ?>"
                         aria-describedby="category-error"
                         aria-invalid="<?= isset($errors['category']) ? 'true' : 'false' ?>"
@@ -121,7 +123,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="confidence"
                         id="confidence"
-                        value="<?= esc(old('confidence', $row->confidence ?? '')) ?>"
+                        value="<?= esc(old('confidence', $row->confidence ?? ($context['confidence'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['confidence']) ? 'is-invalid' : '' ?>"
                         aria-describedby="confidence-error"
                         aria-invalid="<?= isset($errors['confidence']) ? 'true' : 'false' ?>"
@@ -140,7 +142,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="referente_tipo"
                         id="referente_tipo"
-                        value="<?= esc(old('referente_tipo', $row->referente_tipo ?? '')) ?>"
+                        value="<?= esc(old('referente_tipo', $row->referente_tipo ?? ($context['referente_tipo'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['referente_tipo']) ? 'is-invalid' : '' ?>"
                         aria-describedby="referente_tipo-error"
                         aria-invalid="<?= isset($errors['referente_tipo']) ? 'true' : 'false' ?>"
@@ -160,7 +162,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="prenotazione_tipo"
                         id="prenotazione_tipo"
-                        value="<?= esc(old('prenotazione_tipo', $row->prenotazione_tipo ?? '')) ?>"
+                        value="<?= esc(old('prenotazione_tipo', $row->prenotazione_tipo ?? ($context['prenotazione_tipo'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['prenotazione_tipo']) ? 'is-invalid' : '' ?>"
                         aria-describedby="prenotazione_tipo-error"
                         aria-invalid="<?= isset($errors['prenotazione_tipo']) ? 'true' : 'false' ?>"
@@ -180,7 +182,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="finalita"
                         id="finalita"
-                        value="<?= esc(old('finalita', $row->finalita ?? '')) ?>"
+                        value="<?= esc(old('finalita', $row->finalita ?? ($context['finalita'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['finalita']) ? 'is-invalid' : '' ?>"
                         aria-describedby="finalita-error"
                         aria-invalid="<?= isset($errors['finalita']) ? 'true' : 'false' ?>"
@@ -200,7 +202,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="segmento_commerciale"
                         id="segmento_commerciale"
-                        value="<?= esc(old('segmento_commerciale', $row->segmento_commerciale ?? '')) ?>"
+                        value="<?= esc(old('segmento_commerciale', $row->segmento_commerciale ?? ($context['segmento_commerciale'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['segmento_commerciale']) ? 'is-invalid' : '' ?>"
                         aria-describedby="segmento_commerciale-error"
                         aria-invalid="<?= isset($errors['segmento_commerciale']) ? 'true' : 'false' ?>"
@@ -220,7 +222,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agent_selected"
                         id="agent_selected"
-                        value="<?= esc(old('agent_selected', $row->agent_selected ?? '')) ?>"
+                        value="<?= esc(old('agent_selected', $row->agent_selected ?? ($context['agent_selected'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agent_selected']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agent_selected-error"
                         aria-invalid="<?= isset($errors['agent_selected']) ? 'true' : 'false' ?>"
@@ -240,7 +242,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="reply_prompt"
                         id="reply_prompt"
-                        value="<?= esc(old('reply_prompt', $row->reply_prompt ?? '')) ?>"
+                        value="<?= esc(old('reply_prompt', $row->reply_prompt ?? ($context['reply_prompt'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['reply_prompt']) ? 'is-invalid' : '' ?>"
                         aria-describedby="reply_prompt-error"
                         aria-invalid="<?= isset($errors['reply_prompt']) ? 'true' : 'false' ?>"
@@ -259,7 +261,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="gpt_reply_raw"
                         id="gpt_reply_raw"
-                        value="<?= esc(old('gpt_reply_raw', $row->gpt_reply_raw ?? '')) ?>"
+                        value="<?= esc(old('gpt_reply_raw', $row->gpt_reply_raw ?? ($context['gpt_reply_raw'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['gpt_reply_raw']) ? 'is-invalid' : '' ?>"
                         aria-describedby="gpt_reply_raw-error"
                         aria-invalid="<?= isset($errors['gpt_reply_raw']) ? 'true' : 'false' ?>"
@@ -278,7 +280,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="gpt_reply_clean"
                         id="gpt_reply_clean"
-                        value="<?= esc(old('gpt_reply_clean', $row->gpt_reply_clean ?? '')) ?>"
+                        value="<?= esc(old('gpt_reply_clean', $row->gpt_reply_clean ?? ($context['gpt_reply_clean'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['gpt_reply_clean']) ? 'is-invalid' : '' ?>"
                         aria-describedby="gpt_reply_clean-error"
                         aria-invalid="<?= isset($errors['gpt_reply_clean']) ? 'true' : 'false' ?>"
@@ -297,7 +299,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="pms_output"
                         id="pms_output"
-                        value="<?= esc(old('pms_output', $row->pms_output ?? '')) ?>"
+                        value="<?= esc(old('pms_output', $row->pms_output ?? ($context['pms_output'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pms_output']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pms_output-error"
                         aria-invalid="<?= isset($errors['pms_output']) ? 'true' : 'false' ?>"
@@ -349,6 +351,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -393,6 +396,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -400,6 +404,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="mod_preno_id"
                         id="mod_preno_id"
-                        value="<?= esc(old('mod_preno_id', $row->mod_preno_id ?? '')) ?>"
+                        value="<?= esc(old('mod_preno_id', $row->mod_preno_id ?? ($context['mod_preno_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['mod_preno_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="mod_preno_id-error"
                         aria-invalid="<?= isset($errors['mod_preno_id']) ? 'true' : 'false' ?>"
@@ -61,7 +63,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="mod_agenda_valori"
                         id="mod_agenda_valori"
-                        value="<?= esc(old('mod_agenda_valori', $row->mod_agenda_valori ?? '')) ?>"
+                        value="<?= esc(old('mod_agenda_valori', $row->mod_agenda_valori ?? ($context['mod_agenda_valori'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['mod_agenda_valori']) ? 'is-invalid' : '' ?>"
                         aria-describedby="mod_agenda_valori-error"
                         aria-invalid="<?= isset($errors['mod_agenda_valori']) ? 'true' : 'false' ?>"
@@ -81,7 +83,7 @@ $submissionToken = $submissionToken ?? '';
                         type="datetime-local"
                         name="mod_preno_data_records"
                         id="mod_preno_data_records"
-                        value="<?= esc(old('mod_preno_data_records', isset($row->mod_preno_data_records) ? str_replace(' ', 'T', substr((string) $row->mod_preno_data_records, 0, 16)) : '')) ?>"
+                        value="<?= esc(old('mod_preno_data_records', isset($row->mod_preno_data_records) ? str_replace(' ', 'T', substr((string) $row->mod_preno_data_records, 0, 16)) : ($context['mod_preno_data_records'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['mod_preno_data_records']) ? 'is-invalid' : '' ?>"
                         aria-describedby="mod_preno_data_records-error"
                         aria-invalid="<?= isset($errors['mod_preno_data_records']) ? 'true' : 'false' ?>"
@@ -100,7 +102,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="modifica_agenda_adebiti_utente_id"
                         id="modifica_agenda_adebiti_utente_id"
-                        value="<?= esc(old('modifica_agenda_adebiti_utente_id', $row->modifica_agenda_adebiti_utente_id ?? '')) ?>"
+                        value="<?= esc(old('modifica_agenda_adebiti_utente_id', $row->modifica_agenda_adebiti_utente_id ?? ($context['modifica_agenda_adebiti_utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['modifica_agenda_adebiti_utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="modifica_agenda_adebiti_utente_id-error"
                         aria-invalid="<?= isset($errors['modifica_agenda_adebiti_utente_id']) ? 'true' : 'false' ?>"
@@ -152,6 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -196,6 +199,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -203,6 +207,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

@@ -18,7 +18,7 @@ final class ImagesResource
   7 => 'img_large',
   8 => 'titolo',
   9 => 'utente_id',
-  10 => 'obmp_cm_rooms_obmp_cm_rooms_room_note',
+  10 => 'obmp_cm_rooms__obmp_cm_rooms_id__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

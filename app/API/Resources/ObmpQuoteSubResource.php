@@ -14,7 +14,7 @@ final class ObmpQuoteSubResource
   3 => 'quote_sub_jeson',
   4 => 'quote_sub_data',
   5 => 'randomd_string',
-  6 => 'obmp_quote_quote_lg',
+  6 => 'obmp_quote__obmp_quote_id__label',
 );
     private const WRITABLE = array (
   0 => 'obmp_quote_id',

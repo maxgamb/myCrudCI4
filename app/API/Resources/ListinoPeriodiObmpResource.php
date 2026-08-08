@@ -15,7 +15,7 @@ final class ListinoPeriodiObmpResource
   4 => 'listino_al',
   5 => 'hotel_id',
   6 => 'listino_periodi',
-  7 => 'listino_nome_obmp_listino_nome',
+  7 => 'listino_nome_obmp__listino_nome_id__label',
 );
     private const WRITABLE = array (
   0 => 'listino_nome_id',

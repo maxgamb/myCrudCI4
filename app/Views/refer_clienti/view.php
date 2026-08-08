@@ -12,7 +12,7 @@
                     <tbody>
                         <tr>
                             <th class="w-25"><?= esc(lang('ReferClienti.conto_id')) ?></th>
-                            <td><?= esc($row->conto_id ?? '') ?></td>
+                            <td><a href="<?= site_url('conti/view/' . rawurlencode((string) ($row->conto_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->conti__conto_id__label ?? $row->conto_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ReferClienti.clienti_id')) ?></th>
                             <td><?= esc($row->clienti_id ?? '') ?></td>

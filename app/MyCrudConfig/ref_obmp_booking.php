@@ -33,10 +33,20 @@ return array (
       'inputType' => 'datetime-local',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
         array (
+          0 => 'required',
         ),
         'values' => 
         array (
@@ -58,13 +68,23 @@ return array (
     'preno_id' => 
     array (
       'label' => '',
-      'inputType' => 'select',
+      'inputType' => 'hidden',
       'width' => 6,
       'relationMode' => 'select',
+      'relationDisplayField' => 'preno_id',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => true,
+        'parentLink' => true,
+        'acceptContext' => true,
+        'createParentLink' => true,
+      ),
       'attributes' => 
       array (
         'boolean' => 
         array (
+          0 => 'required',
         ),
         'values' => 
         array (
@@ -86,13 +106,23 @@ return array (
     'obm_cliente_id' => 
     array (
       'label' => '',
-      'inputType' => 'select',
+      'inputType' => 'hidden',
       'width' => 6,
       'relationMode' => 'select',
+      'relationDisplayField' => 'obm_cliente_id',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => true,
+        'parentLink' => true,
+        'acceptContext' => true,
+        'createParentLink' => true,
+      ),
       'attributes' => 
       array (
         'boolean' => 
         array (
+          0 => 'required',
         ),
         'values' => 
         array (
@@ -117,10 +147,20 @@ return array (
       'inputType' => 'number',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
         array (
+          0 => 'required',
         ),
         'values' => 
         array (
@@ -142,9 +182,18 @@ return array (
     'ref_site' => 
     array (
       'label' => '',
-      'inputType' => 'select',
+      'inputType' => 'hidden',
       'width' => 6,
       'relationMode' => 'select',
+      'relationDisplayField' => 'ref_site_id',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => true,
+        'parentLink' => true,
+        'acceptContext' => true,
+        'createParentLink' => true,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -173,6 +222,15 @@ return array (
       'inputType' => 'number',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -201,6 +259,15 @@ return array (
       'inputType' => 'number',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -229,6 +296,15 @@ return array (
       'inputType' => 'text',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -258,6 +334,15 @@ return array (
       'inputType' => 'text',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -287,6 +372,15 @@ return array (
       'inputType' => 'text',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -313,9 +407,18 @@ return array (
     'quote_id' => 
     array (
       'label' => '',
-      'inputType' => 'select',
+      'inputType' => 'hidden',
       'width' => 6,
       'relationMode' => 'select',
+      'relationDisplayField' => 'quote_id',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => true,
+        'parentLink' => true,
+        'acceptContext' => true,
+        'createParentLink' => true,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -357,9 +460,9 @@ return array (
   ),
   '_meta' => 
   array (
-    'generatorVersion' => '2.8.0-dev1',
-    'savedAt' => '2026-08-07T16:52:54+00:00',
+    'generatorVersion' => '2.8.0-dev13',
+    'savedAt' => '2026-08-08T17:37:24+00:00',
     'schemaFingerprint' => 'f642c6c897be8863a265464274f0d6c4fd6f1a9683ffd165510774cfa880dd46',
-    'configHash' => '85685a77af7fe72150850e94467e21ea364f2b012b18b87c669be7a95fe14144',
+    'configHash' => 'f703fde674ea36077af5424471a537ad767a98f48bbcf329a7a4e0c3bef04761',
   ),
 );

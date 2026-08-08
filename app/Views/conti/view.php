@@ -18,7 +18,7 @@
                             <td><?= esc($row->hotel_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Conti.foglio_id')) ?></th>
-                            <td><?= esc($row->foglio_id ?? '') ?></td>
+                            <td><a href="<?= site_url('foglio_giorno/view/' . rawurlencode((string) ($row->foglio_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->foglio_giorno__foglio_id__label ?? $row->foglio_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Conti.clienti_id')) ?></th>
                             <td><?= esc($row->clienti_id ?? '') ?></td>
@@ -39,7 +39,7 @@
                             <td><?= esc($row->preno_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Conti.camera_id')) ?></th>
-                            <td><?= esc($row->camera_id ?? '') ?></td>
+                            <td><a href="<?= site_url('camere/view/' . rawurlencode((string) ($row->camera_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->camere__camera_id__label ?? $row->camera_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Conti.numero_camera')) ?></th>
                             <td><?= esc($row->numero_camera ?? '') ?></td>

@@ -87,10 +87,72 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->order_detail_id ?? '') ?></td>
-                                <td><?= esc($row->wreh_orders_status ?? $row->order_id ?? '') ?></td>
-                                <td><?= esc($row->wreh_products_name ?? $row->product_id ?? '') ?></td>
-                                <td><?= esc($row->quantity ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->order_detail_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'order_detail_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->order_detail_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->order_detail_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->order_id ?? '') !== ''): ?><a href="<?= site_url('wreh_orders/view/' . rawurlencode((string) $row->order_id)) ?>" class="text-decoration-none"><?= esc($row->wreh_orders__order_id__label ?? $row->order_id ?? '') ?></a><?php else: ?><?= esc($row->wreh_orders__order_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'order_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->order_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->order_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td>
+                                    <?php if ((string) ($row->product_id ?? '') !== ''): ?><a href="<?= site_url('wreh_products/view/' . rawurlencode((string) $row->product_id)) ?>" class="text-decoration-none"><?= esc($row->wreh_products__product_id__label ?? $row->product_id ?? '') ?></a><?php else: ?><?= esc($row->wreh_products__product_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'product_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->product_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->product_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td><?= esc($row->quantity ?? '') ?></td>
                                 <td><?= esc($row->price ?? '') ?></td>
                                 <td><?= esc($row->utente_id ?? '') ?></td>
                                 <td class="text-end text-nowrap">

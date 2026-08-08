@@ -141,7 +141,7 @@ components:
           type: integer
           format: int32
           nullable: true
-        'prodotti_nome_prodotto':
+        'prodotti__prodotto_id__label':
           type: string
           nullable: true
     AdebitiCreate:

@@ -72,12 +72,7 @@ PHP;
                 }
 
                 $relation = $config['relations']['belongsTo'][$name] ?? null;
-                if (is_array($relation)) {
-                    $alias = (string) ($relation['alias'] ?? ((string) $relation['parentTable'] . '_' . (string) $relation['displayField']));
-                    $cells .= "                                <td><?= esc(\$row->{$alias} ?? \$row->{$name} ?? '') ?></td>\n";
-                } else {
-                    $cells .= "                                <td><?= esc(\$row->{$name} ?? '') ?></td>\n";
-                }
+                $cells .= $this->indexCell($field, $name, is_array($relation) ? $relation : null, $indexEligible);
                 $visibleCount++;
             }
 
@@ -113,6 +108,83 @@ PHP;
             ]),
             'pager' => $this->templates->render('views/pager.tpl'),
         ];
+    }
+
+    private function indexCell(array $field, string $name, ?array $relation, bool $indexEligible): string
+    {
+        if ($relation !== null) {
+            $alias = (string) ($relation['alias'] ?? ((string) ($relation['parentTable'] ?? 'parent') . '__' . $name . '__label'));
+            $parentTable = (string) ($relation['parentTable'] ?? '');
+            $navigation = (array) ($field['relationNavigation'] ?? []);
+            $parentLink = !empty($navigation['parentLink']) && $parentTable !== '';
+            $quickFilter = !empty($navigation['quickFilter']) && $indexEligible && !empty($field['ui']['searchable']);
+
+            $labelMarkup = $parentLink
+                ? "<?php if ((string) (\$row->{$name} ?? '') !== ''): ?><a href=\"<?= site_url('{$parentTable}/view/' . rawurlencode((string) \$row->{$name})) ?>\" class=\"text-decoration-none\"><?= esc(\$row->{$alias} ?? \$row->{$name} ?? '') ?></a><?php else: ?><?= esc(\$row->{$alias} ?? '') ?><?php endif; ?>"
+                : "<?= esc(\$row->{$alias} ?? \$row->{$name} ?? '') ?>";
+
+            $filterMarkup = '';
+            if ($quickFilter) {
+                $filterMarkup = <<<PHP
+                                    <?php
+                                    \$quickFilters = array_values((array) (\$filters ?? []));
+                                    \$quickFilters[] = [
+                                        'field' => '{$name}',
+                                        'operator' => 'eq',
+                                        'value' => (string) (\$row->{$name} ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    \$quickQuery = array_replace((array) (\$query ?? []), [
+                                        'filters' => \$quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) (\$row->{$name} ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query(\$quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>
+PHP;
+            }
+
+            return <<<PHP
+                                <td>
+                                    {$labelMarkup}
+{$filterMarkup}                                </td>
+PHP;
+        }
+
+        if ($indexEligible && !empty($field['ui']['searchable'])) {
+            return <<<PHP
+                                <td>
+                                    <?php if ((string) (\$row->{$name} ?? '') !== ''): ?>
+                                        <?php
+                                        \$quickFilters = array_values((array) (\$filters ?? []));
+                                        \$quickFilters[] = [
+                                            'field' => '{$name}',
+                                            'operator' => 'eq',
+                                            'value' => (string) \$row->{$name},
+                                            'logic' => 'and',
+                                        ];
+                                        \$quickQuery = array_replace((array) (\$query ?? []), [
+                                            'filters' => \$quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query(\$quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc(\$row->{$name}) ?></a>
+                                    <?php endif; ?>
+                                </td>
+PHP;
+        }
+
+        return "                                <td><?= esc(\$row->{$name} ?? '') ?></td>\n";
     }
 
     /** @return array{label:string,input:string,operators:list<string>,relation:?string} */

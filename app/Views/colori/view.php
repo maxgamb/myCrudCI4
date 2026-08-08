@@ -18,7 +18,7 @@
                             <td><?= esc($row->colore_codice ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Colori.col_preno_id')) ?></th>
-                            <td><?= esc($row->col_preno_id ?? '') ?></td>
+                            <td><a href="<?= site_url('agenda/view/' . rawurlencode((string) ($row->col_preno_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->agenda__col_preno_id__label ?? $row->col_preno_id ?? '') ?></a></td>
                         </tr>                    </tbody>
                 </table>
             </div>

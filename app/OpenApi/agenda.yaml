@@ -347,7 +347,7 @@ components:
           type: integer
           format: int32
           nullable: true
-        'agenzie_agenzia_tipologia':
+        'agenzie__preno_agenzia__label':
           type: string
           nullable: true
     AgendaCreate:

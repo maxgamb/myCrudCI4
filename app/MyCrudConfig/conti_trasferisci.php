@@ -28,6 +28,15 @@ return array (
       'inputType' => 'number',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -56,10 +65,20 @@ return array (
       'inputType' => 'number',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
         array (
+          0 => 'required',
         ),
         'values' => 
         array (
@@ -84,10 +103,20 @@ return array (
       'inputType' => 'number',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
         array (
+          0 => 'required',
         ),
         'values' => 
         array (
@@ -112,10 +141,20 @@ return array (
       'inputType' => 'number',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
         array (
+          0 => 'required',
         ),
         'values' => 
         array (
@@ -137,13 +176,23 @@ return array (
     'adebito_id' => 
     array (
       'label' => '',
-      'inputType' => 'select',
+      'inputType' => 'hidden',
       'width' => 6,
       'relationMode' => 'select',
+      'relationDisplayField' => 'adebito_id',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => true,
+        'parentLink' => true,
+        'acceptContext' => true,
+        'createParentLink' => true,
+      ),
       'attributes' => 
       array (
         'boolean' => 
         array (
+          0 => 'required',
         ),
         'values' => 
         array (
@@ -168,10 +217,20 @@ return array (
       'inputType' => 'datetime-local',
       'width' => 6,
       'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
       'attributes' => 
       array (
         'boolean' => 
         array (
+          0 => 'required',
         ),
         'values' => 
         array (
@@ -209,9 +268,9 @@ return array (
   ),
   '_meta' => 
   array (
-    'generatorVersion' => '2.8.0-dev1',
-    'savedAt' => '2026-08-07T16:52:53+00:00',
+    'generatorVersion' => '2.8.0-dev13',
+    'savedAt' => '2026-08-08T17:30:10+00:00',
     'schemaFingerprint' => 'e89179d58008ad7dc9fdcc5eb7f91da36182f400b1edccd333297bae478245a8',
-    'configHash' => 'a4c04539cfdf772ccaf1fa624388e8a59fafb80578d174cf0d6c7e4e2aceda47',
+    'configHash' => '2ea890a605a689b3afe928f72613616391817e2b1f732cb8801e711fdf0aa066',
   ),
 );

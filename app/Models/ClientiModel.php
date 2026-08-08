@@ -245,7 +245,12 @@ final class ClientiModel extends Model
   array (
     'table' => 'refer_clienti',
     'key' => 'clienti_id',
-    'label' => 'conto_id',
+    'displayField' => 'conto_id',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'conto_id',
+    ),
     'mode' => 'select',
   ),
 );
@@ -314,7 +319,7 @@ final class ClientiModel extends Model
             'clienti.password AS password',
             'clienti.clienti_data_record AS clienti_data_record',
             'clienti.clienti_utente_id AS clienti_utente_id',
-            'refer_clienti__clienti_id.conto_id AS refer_clienti_conto_id'
+            'refer_clienti__clienti_id.conto_id AS refer_clienti__clienti_id__label'
         ]);
         $builder->join('refer_clienti AS refer_clienti__clienti_id', 'refer_clienti__clienti_id.clienti_id = clienti.clienti_id', 'left');
         return $builder;
@@ -335,7 +340,7 @@ final class ClientiModel extends Model
             'clienti.cliente_cocumento_tipo AS cliente_cocumento_tipo',
             'clienti.clienti_tel AS clienti_tel',
             'clienti.clienti_email AS clienti_email',
-            'refer_clienti__clienti_id.conto_id AS refer_clienti_conto_id'
+            'refer_clienti__clienti_id.conto_id AS refer_clienti__clienti_id__label'
         ]);
         $builder->join('refer_clienti AS refer_clienti__clienti_id', 'refer_clienti__clienti_id.clienti_id = clienti.clienti_id', 'left');
         return $builder;
@@ -465,7 +470,7 @@ final class ClientiModel extends Model
             'clienti.lingua AS lingua',
             'clienti.password AS password',
             'clienti.clienti_utente_id AS clienti_utente_id',
-            'refer_clienti__clienti_id.conto_id AS refer_clienti_conto_id'
+            'refer_clienti__clienti_id.conto_id AS refer_clienti__clienti_id__label'
         ]);
         $builder->join('refer_clienti AS refer_clienti__clienti_id', 'refer_clienti__clienti_id.clienti_id = clienti.clienti_id', 'left');
         $this->applyListFilters($builder, $filters, true);
@@ -672,21 +677,24 @@ final class ClientiModel extends Model
     public function getReferClientiClientiIdOptions(): array
     {
         return $this->db->table('refer_clienti')
-            ->select(['clienti_id', 'conto_id'])
+            ->select(array (
+  0 => 'clienti_id',
+  1 => 'conto_id',
+))
             ->orderBy('conto_id', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     public function relationOptions(): array
     {
         return [
-            'clienti_id' => $this->toOptions($this->getReferClientiClientiIdOptions(), 'clienti_id', 'conto_id'),
+            'clienti_id' => $this->toRelationOptions($this->getReferClientiClientiIdOptions(), 'clienti_id'),
         ];
     }
 
     /**
      * Ricerca server-side delle opzioni per relazioni grandi.
-     * Tabella, chiave e campo label arrivano solo dalla whitelist generata.
+     * Tabella, chiave e campi descrittivi arrivano solo dalla whitelist generata.
      *
      * @return list<array{id:string,text:string}>
      */
@@ -697,36 +705,100 @@ final class ClientiModel extends Model
         }
 
         $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
         $limit = max(1, min(100, $limit));
         $builder = $this->db->table((string) $definition['table'])
-            ->select([(string) $definition['key'], (string) $definition['label']])
-            ->orderBy((string) $definition['label'], 'ASC')
+            ->select($selectFields)
+            ->orderBy((string) $definition['displayField'], 'ASC')
             ->limit($limit);
 
         $query = trim($query);
-        if ($query !== '') {
-            $builder->like((string) $definition['label'], $query, 'after');
+        if ($query !== '' && $displayFields !== []) {
+            $builder->groupStart();
+            foreach ($displayFields as $index => $displayColumn) {
+                if ($index === 0) {
+                    $builder->like((string) $displayColumn, $query, 'after');
+                } else {
+                    $builder->orLike((string) $displayColumn, $query, 'after');
+                }
+            }
+            $builder->groupEnd();
         }
 
         $rows = $builder->get()->getResultArray();
         $result = [];
         foreach ($rows as $row) {
             $result[] = [
-                'id' => (string) ($row[(string) $definition['key']] ?? ''),
-                'text' => (string) ($row[(string) $definition['label']] ?? ''),
+                'id' => (string) ($row[$key] ?? ''),
+                'text' => $this->formatRelationLabel($row, $definition),
             ];
         }
 
         return $result;
     }
 
-    private function toOptions(array $rows, string $key, string $label): array
+    /** Restituisce una FK valida e la sua descrizione; usato dal Create contestuale. */
+    public function relationOptionById(string $field, int|string $id): ?array
     {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return null;
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
+        $row = $this->db->table((string) $definition['table'])
+            ->select($selectFields)
+            ->where($key, $id)
+            ->limit(1)
+            ->get()
+            ->getRowArray();
+
+        if (!is_array($row)) {
+            return null;
+        }
+
+        return [
+            'id' => (string) ($row[$key] ?? ''),
+            'text' => $this->formatRelationLabel($row, $definition),
+        ];
+    }
+
+    private function toRelationOptions(array $rows, string $field): array
+    {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return [];
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
         $options = [];
         foreach ($rows as $row) {
-            $options[(string) $row->{$key}] = (string) $row->{$label};
+            if (!is_array($row)) {
+                continue;
+            }
+            $options[(string) ($row[$key] ?? '')] = $this->formatRelationLabel($row, $definition);
         }
         return $options;
+    }
+
+    private function formatRelationLabel(array $row, array $definition): string
+    {
+        $template = trim((string) ($definition['displayTemplate'] ?? ''));
+        if ($template === '') {
+            return trim((string) ($row[(string) $definition['displayField']] ?? ''));
+        }
+
+        $label = preg_replace_callback(
+            '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+            static fn (array $match): string => (string) ($row[$match[1]] ?? ''),
+            $template
+        );
+
+        return trim((string) $label);
     }
 
     /** Carica al massimo una riga in più per determinare se esistono altri risultati. */

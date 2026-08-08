@@ -68,9 +68,49 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->obmp_payment_id ?? '') ?></td>
-                                <td><?= esc($row->obmp_payment_cod ?? '') ?></td>
-                                <td><?= esc($row->obmp_payment_title ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->obmp_payment_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'obmp_payment_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->obmp_payment_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->obmp_payment_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->obmp_payment_cod ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'obmp_payment_cod',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->obmp_payment_cod,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->obmp_payment_cod) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->obmp_payment_title ?? '') ?></td>
                                 <td><?= esc($row->obmp_payment ?? '') ?></td>
                                 <td><?= esc($row->obmp_payment_value ?? '') ?></td>
                                 <td><?= esc($row->payment_lg ?? '') ?></td>

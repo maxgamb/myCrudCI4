@@ -130,7 +130,7 @@ components:
         'conti_tra_data':
           type: string
           format: date-time
-        'adebiti_descrizione':
+        'adebiti__adebito_id__label':
           type: string
           nullable: true
     ContiTrasferisciCreate:

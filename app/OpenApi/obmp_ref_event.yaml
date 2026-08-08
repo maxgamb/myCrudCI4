@@ -147,13 +147,13 @@ components:
           type: string
           nullable: true
           maxLength: 250
-        'agenzie_agenzia_tipologia':
+        'agenzie__agenzia_id__label':
           type: string
           nullable: true
-        'listino_nome_obmp_listino_nome':
+        'listino_nome_obmp__listino_nome_id__label':
           type: string
           nullable: true
-        'obmp_ref_site_ref_site_nome':
+        'obmp_ref_site__ref_site_id__label':
           type: string
           nullable: true
     ObmpRefEventCreate:

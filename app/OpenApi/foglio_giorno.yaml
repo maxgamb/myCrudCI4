@@ -206,16 +206,16 @@ components:
           type: integer
           format: int32
           nullable: true
-        'agenda_preno_arr_ore':
+        'agenda__preno_id__label':
           type: string
           nullable: true
-        'agenzie_agenzia_tipologia':
+        'agenzie__preno_agenzia__label':
           type: string
           nullable: true
-        'camere_tipologia_camera':
+        'camere__camera_id__label':
           type: string
           nullable: true
-        'tipologia_camera_nome_tipologia':
+        'tipologia_camera__tipologia_id__label':
           type: string
           nullable: true
     FoglioGiornoCreate:

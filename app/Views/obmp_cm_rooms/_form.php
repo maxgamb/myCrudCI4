@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -50,12 +52,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['obmp_cm_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('obmp_cm_id', $row->obmp_cm_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('obmp_cm_id', $row->obmp_cm_id ?? ($context['obmp_cm_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="obmp_cm_id"
+                            data-base-url="<?= site_url('obmp_cm/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('obmp_cm/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['obmp_cm_id'])): ?>
                         <div id="obmp_cm_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['obmp_cm_id']) ?>
@@ -70,7 +93,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -90,7 +113,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="obmp_cm_rooms_room_id"
                         id="obmp_cm_rooms_room_id"
-                        value="<?= esc(old('obmp_cm_rooms_room_id', $row->obmp_cm_rooms_room_id ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_rooms_room_id', $row->obmp_cm_rooms_room_id ?? ($context['obmp_cm_rooms_room_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_rooms_room_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_rooms_room_id-error"
                         aria-invalid="<?= isset($errors['obmp_cm_rooms_room_id']) ? 'true' : 'false' ?>"
@@ -109,7 +132,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="obmp_cm_rooms_attiva"
                         id="obmp_cm_rooms_attiva"
-                        value="<?= esc(old('obmp_cm_rooms_attiva', $row->obmp_cm_rooms_attiva ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_rooms_attiva', $row->obmp_cm_rooms_attiva ?? ($context['obmp_cm_rooms_attiva'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_rooms_attiva']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_rooms_attiva-error"
                         aria-invalid="<?= isset($errors['obmp_cm_rooms_attiva']) ? 'true' : 'false' ?>"
@@ -135,12 +158,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['obmp_cm_rooms_tipologia_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('obmp_cm_rooms_tipologia_id', $row->obmp_cm_rooms_tipologia_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('obmp_cm_rooms_tipologia_id', $row->obmp_cm_rooms_tipologia_id ?? ($context['obmp_cm_rooms_tipologia_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="obmp_cm_rooms_tipologia_id"
+                            data-base-url="<?= site_url('tipologia_camera/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('tipologia_camera/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['obmp_cm_rooms_tipologia_id'])): ?>
                         <div id="obmp_cm_rooms_tipologia_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['obmp_cm_rooms_tipologia_id']) ?>
@@ -155,7 +199,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cm_rooms_room_note"
                         id="obmp_cm_rooms_room_note"
-                        value="<?= esc(old('obmp_cm_rooms_room_note', $row->obmp_cm_rooms_room_note ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_rooms_room_note', $row->obmp_cm_rooms_room_note ?? ($context['obmp_cm_rooms_room_note'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_rooms_room_note']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_rooms_room_note-error"
                         aria-invalid="<?= isset($errors['obmp_cm_rooms_room_note']) ? 'true' : 'false' ?>"
@@ -175,7 +219,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="obmp_cm_rooms_room_var_prezzo"
                         id="obmp_cm_rooms_room_var_prezzo"
-                        value="<?= esc(old('obmp_cm_rooms_room_var_prezzo', $row->obmp_cm_rooms_room_var_prezzo ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_rooms_room_var_prezzo', $row->obmp_cm_rooms_room_var_prezzo ?? ($context['obmp_cm_rooms_room_var_prezzo'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_rooms_room_var_prezzo']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_rooms_room_var_prezzo-error"
                         aria-invalid="<?= isset($errors['obmp_cm_rooms_room_var_prezzo']) ? 'true' : 'false' ?>"
@@ -194,7 +238,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="obmp_cm_rooms_room_min_prezzo"
                         id="obmp_cm_rooms_room_min_prezzo"
-                        value="<?= esc(old('obmp_cm_rooms_room_min_prezzo', $row->obmp_cm_rooms_room_min_prezzo ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_rooms_room_min_prezzo', $row->obmp_cm_rooms_room_min_prezzo ?? ($context['obmp_cm_rooms_room_min_prezzo'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_rooms_room_min_prezzo']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_rooms_room_min_prezzo-error"
                         aria-invalid="<?= isset($errors['obmp_cm_rooms_room_min_prezzo']) ? 'true' : 'false' ?>"
@@ -213,7 +257,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cm_rooms_trattamento"
                         id="obmp_cm_rooms_trattamento"
-                        value="<?= esc(old('obmp_cm_rooms_trattamento', $row->obmp_cm_rooms_trattamento ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_rooms_trattamento', $row->obmp_cm_rooms_trattamento ?? ($context['obmp_cm_rooms_trattamento'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_rooms_trattamento']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_rooms_trattamento-error"
                         aria-invalid="<?= isset($errors['obmp_cm_rooms_trattamento']) ? 'true' : 'false' ?>"
@@ -233,7 +277,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="obmp_cm_rooms_max_pax"
                         id="obmp_cm_rooms_max_pax"
-                        value="<?= esc(old('obmp_cm_rooms_max_pax', $row->obmp_cm_rooms_max_pax ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_rooms_max_pax', $row->obmp_cm_rooms_max_pax ?? ($context['obmp_cm_rooms_max_pax'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_rooms_max_pax']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_rooms_max_pax-error"
                         aria-invalid="<?= isset($errors['obmp_cm_rooms_max_pax']) ? 'true' : 'false' ?>"
@@ -252,7 +296,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="obmp_cm_rooms_max_room"
                         id="obmp_cm_rooms_max_room"
-                        value="<?= esc(old('obmp_cm_rooms_max_room', $row->obmp_cm_rooms_max_room ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_rooms_max_room', $row->obmp_cm_rooms_max_room ?? ($context['obmp_cm_rooms_max_room'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_rooms_max_room']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_rooms_max_room-error"
                         aria-invalid="<?= isset($errors['obmp_cm_rooms_max_room']) ? 'true' : 'false' ?>"
@@ -271,7 +315,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="obmp_cm_rooms_nesting"
                         id="obmp_cm_rooms_nesting"
-                        value="<?= esc(old('obmp_cm_rooms_nesting', $row->obmp_cm_rooms_nesting ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_rooms_nesting', $row->obmp_cm_rooms_nesting ?? ($context['obmp_cm_rooms_nesting'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_rooms_nesting']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_rooms_nesting-error"
                         aria-invalid="<?= isset($errors['obmp_cm_rooms_nesting']) ? 'true' : 'false' ?>"
@@ -291,7 +335,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="citytax"
                         id="citytax"
-                        value="<?= esc(old('citytax', $row->citytax ?? '')) ?>"
+                        value="<?= esc(old('citytax', $row->citytax ?? ($context['citytax'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['citytax']) ? 'is-invalid' : '' ?>"
                         aria-describedby="citytax-error"
                         aria-invalid="<?= isset($errors['citytax']) ? 'true' : 'false' ?>"
@@ -311,7 +355,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cm_rooms_foto"
                         id="obmp_cm_rooms_foto"
-                        value="<?= esc(old('obmp_cm_rooms_foto', $row->obmp_cm_rooms_foto ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_rooms_foto', $row->obmp_cm_rooms_foto ?? ($context['obmp_cm_rooms_foto'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_rooms_foto']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_rooms_foto-error"
                         aria-invalid="<?= isset($errors['obmp_cm_rooms_foto']) ? 'true' : 'false' ?>"
@@ -331,7 +375,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cm_rooms_foto150"
                         id="obmp_cm_rooms_foto150"
-                        value="<?= esc(old('obmp_cm_rooms_foto150', $row->obmp_cm_rooms_foto150 ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_rooms_foto150', $row->obmp_cm_rooms_foto150 ?? ($context['obmp_cm_rooms_foto150'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_rooms_foto150']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_rooms_foto150-error"
                         aria-invalid="<?= isset($errors['obmp_cm_rooms_foto150']) ? 'true' : 'false' ?>"
@@ -351,7 +395,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cm_rooms_foto270"
                         id="obmp_cm_rooms_foto270"
-                        value="<?= esc(old('obmp_cm_rooms_foto270', $row->obmp_cm_rooms_foto270 ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_rooms_foto270', $row->obmp_cm_rooms_foto270 ?? ($context['obmp_cm_rooms_foto270'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_rooms_foto270']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_rooms_foto270-error"
                         aria-invalid="<?= isset($errors['obmp_cm_rooms_foto270']) ? 'true' : 'false' ?>"
@@ -371,7 +415,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cm_rooms_foto700"
                         id="obmp_cm_rooms_foto700"
-                        value="<?= esc(old('obmp_cm_rooms_foto700', $row->obmp_cm_rooms_foto700 ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_rooms_foto700', $row->obmp_cm_rooms_foto700 ?? ($context['obmp_cm_rooms_foto700'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_rooms_foto700']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_rooms_foto700-error"
                         aria-invalid="<?= isset($errors['obmp_cm_rooms_foto700']) ? 'true' : 'false' ?>"
@@ -391,7 +435,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cm_rooms_utente_id"
                         id="obmp_cm_rooms_utente_id"
-                        value="<?= esc(old('obmp_cm_rooms_utente_id', $row->obmp_cm_rooms_utente_id ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_rooms_utente_id', $row->obmp_cm_rooms_utente_id ?? ($context['obmp_cm_rooms_utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_rooms_utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_rooms_utente_id-error"
                         aria-invalid="<?= isset($errors['obmp_cm_rooms_utente_id']) ? 'true' : 'false' ?>"
@@ -444,6 +488,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -488,6 +533,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -495,6 +541,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

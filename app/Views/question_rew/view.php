@@ -15,7 +15,7 @@
                             <td><?= esc($row->question_rew_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('QuestionRew.question_id')) ?></th>
-                            <td><?= esc($row->question_id ?? '') ?></td>
+                            <td><a href="<?= site_url('question/view/' . rawurlencode((string) ($row->question_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->question__question_id__label ?? $row->question_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('QuestionRew.hotel_id')) ?></th>
                             <td><?= esc($row->hotel_id ?? '') ?></td>

@@ -51,8 +51,28 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->obmp_affiliati_id ?? '') ?></td>
-                                <td><?= esc($row->obmp_aff_societa ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->obmp_affiliati_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'obmp_affiliati_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->obmp_affiliati_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->obmp_affiliati_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->obmp_aff_societa ?? '') ?></td>
                                 <td><?= esc($row->obmp_aff_sito ?? '') ?></td>
                                 <td><?= esc($row->obmp_aff_email ?? '') ?></td>
                                 <td><?= esc($row->obmp_aff_pasword ?? '') ?></td>

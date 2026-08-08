@@ -11,7 +11,7 @@ final class ColoriResource
   0 => 'colore_nome',
   1 => 'colore_codice',
   2 => 'col_preno_id',
-  3 => 'agenda_preno_arr_ore',
+  3 => 'agenda__col_preno_id__label',
 );
     private const WRITABLE = array (
   0 => 'colore_nome',

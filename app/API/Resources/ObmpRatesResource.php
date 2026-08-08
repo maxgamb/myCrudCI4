@@ -18,11 +18,11 @@ final class ObmpRatesResource
   7 => 'rate_sum',
   8 => 'rate_mol',
   9 => 'rate_stato',
-  10 => 'obmp_board_obmp_board_title',
-  11 => 'obmp_cancellations_obmp_cancellation_title',
-  12 => 'obmp_cm_rooms_obmp_cm_rooms_room_note',
-  13 => 'obmp_payments_obmp_payment_title',
-  14 => 'obmp_restrictions_hotel_id',
+  10 => 'obmp_board__obmp_board_cod__label',
+  11 => 'obmp_cancellations__obmp_cancellation_cod__label',
+  12 => 'obmp_cm_rooms__obmp_cm_rooms_id__label',
+  13 => 'obmp_payments__obmp_payment_cod__label',
+  14 => 'obmp_restrictions__obmp_restriction_id__label',
 );
     private const WRITABLE = array (
   0 => 'obmp_cm_rooms_id',

@@ -12,8 +12,8 @@ final class RefAgenziaPrenoResource
   1 => 'agenzia_id',
   2 => 'preno_id',
   3 => 'ref_a_p_datarecord',
-  4 => 'agenda_preno_arr_ore',
-  5 => 'agenzie_agenzia_tipologia',
+  4 => 'agenda__preno_id__label',
+  5 => 'agenzie__agenzia_id__label',
 );
     private const WRITABLE = array (
   0 => 'agenzia_id',

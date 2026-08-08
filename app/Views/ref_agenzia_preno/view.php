@@ -15,10 +15,10 @@
                             <td><?= esc($row->ref_agenzia_preno ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('RefAgenziaPreno.agenzia_id')) ?></th>
-                            <td><?= esc($row->agenzia_id ?? '') ?></td>
+                            <td><a href="<?= site_url('agenzie/view/' . rawurlencode((string) ($row->agenzia_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->agenzie__agenzia_id__label ?? $row->agenzia_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('RefAgenziaPreno.preno_id')) ?></th>
-                            <td><?= esc($row->preno_id ?? '') ?></td>
+                            <td><a href="<?= site_url('agenda/view/' . rawurlencode((string) ($row->preno_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->agenda__preno_id__label ?? $row->preno_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('RefAgenziaPreno.ref_a_p_datarecord')) ?></th>
                             <td><?= esc($row->ref_a_p_datarecord ?? '') ?></td>

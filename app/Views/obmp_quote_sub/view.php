@@ -15,7 +15,7 @@
                             <td><?= esc($row->obmp_quote_sub_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ObmpQuoteSub.obmp_quote_id')) ?></th>
-                            <td><?= esc($row->obmp_quote_id ?? '') ?></td>
+                            <td><a href="<?= site_url('obmp_quote/view/' . rawurlencode((string) ($row->obmp_quote_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->obmp_quote__obmp_quote_id__label ?? $row->obmp_quote_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ObmpQuoteSub.hotel_id')) ?></th>
                             <td><?= esc($row->hotel_id ?? '') ?></td>

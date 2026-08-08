@@ -148,14 +148,139 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->obmp_rate_id ?? '') ?></td>
-                                <td><?= esc($row->obmp_cm_rooms_obmp_cm_rooms_room_note ?? $row->obmp_cm_rooms_id ?? '') ?></td>
-                                <td><?= esc($row->obmp_restrictions_hotel_id ?? $row->obmp_restriction_id ?? '') ?></td>
-                                <td><?= esc($row->hotel_id ?? '') ?></td>
-                                <td><?= esc($row->obmp_board_obmp_board_title ?? $row->obmp_board_cod ?? '') ?></td>
-                                <td><?= esc($row->obmp_cancellations_obmp_cancellation_title ?? $row->obmp_cancellation_cod ?? '') ?></td>
-                                <td><?= esc($row->obmp_payments_obmp_payment_title ?? $row->obmp_payment_cod ?? '') ?></td>
-                                <td><?= esc($row->rate_sum ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->obmp_rate_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'obmp_rate_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->obmp_rate_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->obmp_rate_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->obmp_cm_rooms_id ?? '') !== ''): ?><a href="<?= site_url('obmp_cm_rooms/view/' . rawurlencode((string) $row->obmp_cm_rooms_id)) ?>" class="text-decoration-none"><?= esc($row->obmp_cm_rooms__obmp_cm_rooms_id__label ?? $row->obmp_cm_rooms_id ?? '') ?></a><?php else: ?><?= esc($row->obmp_cm_rooms__obmp_cm_rooms_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'obmp_cm_rooms_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->obmp_cm_rooms_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->obmp_cm_rooms_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td>
+                                    <?php if ((string) ($row->obmp_restriction_id ?? '') !== ''): ?><a href="<?= site_url('obmp_restrictions/view/' . rawurlencode((string) $row->obmp_restriction_id)) ?>" class="text-decoration-none"><?= esc($row->obmp_restrictions__obmp_restriction_id__label ?? $row->obmp_restriction_id ?? '') ?></a><?php else: ?><?= esc($row->obmp_restrictions__obmp_restriction_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'obmp_restriction_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->obmp_restriction_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->obmp_restriction_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td><?= esc($row->hotel_id ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->obmp_board_cod ?? '') !== ''): ?><a href="<?= site_url('obmp_board/view/' . rawurlencode((string) $row->obmp_board_cod)) ?>" class="text-decoration-none"><?= esc($row->obmp_board__obmp_board_cod__label ?? $row->obmp_board_cod ?? '') ?></a><?php else: ?><?= esc($row->obmp_board__obmp_board_cod__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'obmp_board_cod',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->obmp_board_cod ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->obmp_board_cod ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td>
+                                    <?php if ((string) ($row->obmp_cancellation_cod ?? '') !== ''): ?><a href="<?= site_url('obmp_cancellations/view/' . rawurlencode((string) $row->obmp_cancellation_cod)) ?>" class="text-decoration-none"><?= esc($row->obmp_cancellations__obmp_cancellation_cod__label ?? $row->obmp_cancellation_cod ?? '') ?></a><?php else: ?><?= esc($row->obmp_cancellations__obmp_cancellation_cod__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'obmp_cancellation_cod',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->obmp_cancellation_cod ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->obmp_cancellation_cod ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td>
+                                    <?php if ((string) ($row->obmp_payment_cod ?? '') !== ''): ?><a href="<?= site_url('obmp_payments/view/' . rawurlencode((string) $row->obmp_payment_cod)) ?>" class="text-decoration-none"><?= esc($row->obmp_payments__obmp_payment_cod__label ?? $row->obmp_payment_cod ?? '') ?></a><?php else: ?><?= esc($row->obmp_payments__obmp_payment_cod__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'obmp_payment_cod',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->obmp_payment_cod ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->obmp_payment_cod ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td><?= esc($row->rate_sum ?? '') ?></td>
                                 <td><?= esc($row->rate_mol ?? '') ?></td>
                                 <td><?= esc($row->rate_stato ?? '') ?></td>
                                 <td class="text-end text-nowrap">

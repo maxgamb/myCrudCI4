@@ -187,7 +187,7 @@ components:
           type: string
           nullable: true
           maxLength: 100
-        'agenda_preno_arr_ore':
+        'agenda__preno_id__label':
           type: string
           nullable: true
     CassaCreate:

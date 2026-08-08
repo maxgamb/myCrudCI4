@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="direction"
                         id="direction"
-                        value="<?= esc(old('direction', $row->direction ?? '')) ?>"
+                        value="<?= esc(old('direction', $row->direction ?? ($context['direction'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['direction']) ? 'is-invalid' : '' ?>"
                         aria-describedby="direction-error"
                         aria-invalid="<?= isset($errors['direction']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="uid"
                         id="uid"
-                        value="<?= esc(old('uid', $row->uid ?? '')) ?>"
+                        value="<?= esc(old('uid', $row->uid ?? ($context['uid'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['uid']) ? 'is-invalid' : '' ?>"
                         aria-describedby="uid-error"
                         aria-invalid="<?= isset($errors['uid']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="message_id"
                         id="message_id"
-                        value="<?= esc(old('message_id', $row->message_id ?? '')) ?>"
+                        value="<?= esc(old('message_id', $row->message_id ?? ($context['message_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['message_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="message_id-error"
                         aria-invalid="<?= isset($errors['message_id']) ? 'true' : 'false' ?>"
@@ -102,7 +104,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="in_reply_to"
                         id="in_reply_to"
-                        value="<?= esc(old('in_reply_to', $row->in_reply_to ?? '')) ?>"
+                        value="<?= esc(old('in_reply_to', $row->in_reply_to ?? ($context['in_reply_to'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['in_reply_to']) ? 'is-invalid' : '' ?>"
                         aria-describedby="in_reply_to-error"
                         aria-invalid="<?= isset($errors['in_reply_to']) ? 'true' : 'false' ?>"
@@ -125,7 +127,7 @@ $submissionToken = $submissionToken ?? '';
                         aria-describedby="refs-error"
                         aria-invalid="<?= isset($errors['refs']) ? 'true' : 'false' ?>"
                         maxlength="65535"
-                    ><?= esc(old('refs', $row->refs ?? '')) ?></textarea>
+                    ><?= esc(old('refs', $row->refs ?? ($context['refs'] ?? ''))) ?></textarea>
                     <?php if (!empty($errors['refs'])): ?>
                         <div id="refs-error" class="invalid-feedback d-block">
                             <?= esc($errors['refs']) ?>
@@ -140,7 +142,7 @@ $submissionToken = $submissionToken ?? '';
                         type="email"
                         name="email_from"
                         id="email_from"
-                        value="<?= esc(old('email_from', $row->email_from ?? '')) ?>"
+                        value="<?= esc(old('email_from', $row->email_from ?? ($context['email_from'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['email_from']) ? 'is-invalid' : '' ?>"
                         aria-describedby="email_from-error"
                         aria-invalid="<?= isset($errors['email_from']) ? 'true' : 'false' ?>"
@@ -160,7 +162,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="thread_id"
                         id="thread_id"
-                        value="<?= esc(old('thread_id', $row->thread_id ?? '')) ?>"
+                        value="<?= esc(old('thread_id', $row->thread_id ?? ($context['thread_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['thread_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="thread_id-error"
                         aria-invalid="<?= isset($errors['thread_id']) ? 'true' : 'false' ?>"
@@ -180,7 +182,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="thread_status"
                         id="thread_status"
-                        value="<?= esc(old('thread_status', $row->thread_status ?? '')) ?>"
+                        value="<?= esc(old('thread_status', $row->thread_status ?? ($context['thread_status'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['thread_status']) ? 'is-invalid' : '' ?>"
                         aria-describedby="thread_status-error"
                         aria-invalid="<?= isset($errors['thread_status']) ? 'true' : 'false' ?>"
@@ -203,7 +205,7 @@ $submissionToken = $submissionToken ?? '';
                         aria-describedby="subject-error"
                         aria-invalid="<?= isset($errors['subject']) ? 'true' : 'false' ?>"
                         maxlength="65535"
-                    ><?= esc(old('subject', $row->subject ?? '')) ?></textarea>
+                    ><?= esc(old('subject', $row->subject ?? ($context['subject'] ?? ''))) ?></textarea>
                     <?php if (!empty($errors['subject'])): ?>
                         <div id="subject-error" class="invalid-feedback d-block">
                             <?= esc($errors['subject']) ?>
@@ -221,7 +223,7 @@ $submissionToken = $submissionToken ?? '';
                         aria-describedby="body-error"
                         aria-invalid="<?= isset($errors['body']) ? 'true' : 'false' ?>"
                         maxlength="65535"
-                    ><?= esc(old('body', $row->body ?? '')) ?></textarea>
+                    ><?= esc(old('body', $row->body ?? ($context['body'] ?? ''))) ?></textarea>
                     <?php if (!empty($errors['body'])): ?>
                         <div id="body-error" class="invalid-feedback d-block">
                             <?= esc($errors['body']) ?>
@@ -236,7 +238,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="category"
                         id="category"
-                        value="<?= esc(old('category', $row->category ?? '')) ?>"
+                        value="<?= esc(old('category', $row->category ?? ($context['category'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['category']) ? 'is-invalid' : '' ?>"
                         aria-describedby="category-error"
                         aria-invalid="<?= isset($errors['category']) ? 'true' : 'false' ?>"
@@ -256,7 +258,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="language"
                         id="language"
-                        value="<?= esc(old('language', $row->language ?? '')) ?>"
+                        value="<?= esc(old('language', $row->language ?? ($context['language'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['language']) ? 'is-invalid' : '' ?>"
                         aria-describedby="language-error"
                         aria-invalid="<?= isset($errors['language']) ? 'true' : 'false' ?>"
@@ -279,7 +281,7 @@ $submissionToken = $submissionToken ?? '';
                         aria-describedby="reply-error"
                         aria-invalid="<?= isset($errors['reply']) ? 'true' : 'false' ?>"
                         maxlength="65535"
-                    ><?= esc(old('reply', $row->reply ?? '')) ?></textarea>
+                    ><?= esc(old('reply', $row->reply ?? ($context['reply'] ?? ''))) ?></textarea>
                     <?php if (!empty($errors['reply'])): ?>
                         <div id="reply-error" class="invalid-feedback d-block">
                             <?= esc($errors['reply']) ?>
@@ -297,7 +299,7 @@ $submissionToken = $submissionToken ?? '';
                         aria-describedby="attachments-error"
                         aria-invalid="<?= isset($errors['attachments']) ? 'true' : 'false' ?>"
                         maxlength="65535"
-                    ><?= esc(old('attachments', $row->attachments ?? '')) ?></textarea>
+                    ><?= esc(old('attachments', $row->attachments ?? ($context['attachments'] ?? ''))) ?></textarea>
                     <?php if (!empty($errors['attachments'])): ?>
                         <div id="attachments-error" class="invalid-feedback d-block">
                             <?= esc($errors['attachments']) ?>
@@ -317,7 +319,7 @@ $submissionToken = $submissionToken ?? '';
                             id="replied"
                             value="1"
                             class="form-check-input <?= isset($errors['replied']) ? 'is-invalid' : '' ?>"
-                            <?= old('replied', $row->replied ?? '') ? 'checked' : '' ?>
+                            <?= old('replied', $row->replied ?? ($context['replied'] ?? '')) ? 'checked' : '' ?>
                         aria-describedby="replied-error"
                         aria-invalid="<?= isset($errors['replied']) ? 'true' : 'false' ?>"
                         >
@@ -369,6 +371,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -413,6 +416,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -420,6 +424,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

@@ -144,7 +144,7 @@ components:
           type: integer
           format: int32
           nullable: true
-        'pratiche_pratica_nome':
+        'pratiche__pratiche_rif_id__label':
           type: string
           nullable: true
     PraticheRifCreate:

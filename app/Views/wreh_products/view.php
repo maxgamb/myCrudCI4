@@ -15,7 +15,7 @@
                             <td><?= esc($row->product_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('WrehProducts.costi_area_id')) ?></th>
-                            <td><?= esc($row->costi_area_id ?? '') ?></td>
+                            <td><a href="<?= site_url('costi_area/view/' . rawurlencode((string) ($row->costi_area_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->costi_area__costi_area_id__label ?? $row->costi_area_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('WrehProducts.name')) ?></th>
                             <td><?= esc($row->name ?? '') ?></td>
@@ -30,7 +30,7 @@
                             <td><?= esc($row->stock_quantity ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('WrehProducts.supplier_id')) ?></th>
-                            <td><?= esc($row->supplier_id ?? '') ?></td>
+                            <td><a href="<?= site_url('wreh_suppliers/view/' . rawurlencode((string) ($row->supplier_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->wreh_suppliers__supplier_id__label ?? $row->supplier_id ?? '') ?></a></td>
                         </tr>                    </tbody>
                 </table>
             </div>

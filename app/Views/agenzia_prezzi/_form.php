@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -61,7 +63,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="agenzia_listini_id"
                         id="agenzia_listini_id"
-                        value="<?= esc(old('agenzia_listini_id', $row->agenzia_listini_id ?? '')) ?>"
+                        value="<?= esc(old('agenzia_listini_id', $row->agenzia_listini_id ?? ($context['agenzia_listini_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_listini_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_listini_id-error"
                         aria-invalid="<?= isset($errors['agenzia_listini_id']) ? 'true' : 'false' ?>"
@@ -80,7 +82,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="agenzia_listini_dal"
                         id="agenzia_listini_dal"
-                        value="<?= esc(old('agenzia_listini_dal', $row->agenzia_listini_dal ?? '')) ?>"
+                        value="<?= esc(old('agenzia_listini_dal', $row->agenzia_listini_dal ?? ($context['agenzia_listini_dal'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_listini_dal']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_listini_dal-error"
                         aria-invalid="<?= isset($errors['agenzia_listini_dal']) ? 'true' : 'false' ?>"
@@ -100,7 +102,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="agenzia_listini_al"
                         id="agenzia_listini_al"
-                        value="<?= esc(old('agenzia_listini_al', $row->agenzia_listini_al ?? '')) ?>"
+                        value="<?= esc(old('agenzia_listini_al', $row->agenzia_listini_al ?? ($context['agenzia_listini_al'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_listini_al']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_listini_al-error"
                         aria-invalid="<?= isset($errors['agenzia_listini_al']) ? 'true' : 'false' ?>"
@@ -120,7 +122,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="agenzia_prezzi_1pax"
                         id="agenzia_prezzi_1pax"
-                        value="<?= esc(old('agenzia_prezzi_1pax', $row->agenzia_prezzi_1pax ?? '')) ?>"
+                        value="<?= esc(old('agenzia_prezzi_1pax', $row->agenzia_prezzi_1pax ?? ($context['agenzia_prezzi_1pax'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_prezzi_1pax']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_prezzi_1pax-error"
                         aria-invalid="<?= isset($errors['agenzia_prezzi_1pax']) ? 'true' : 'false' ?>"
@@ -139,7 +141,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="agenzia_prezzi_2pax"
                         id="agenzia_prezzi_2pax"
-                        value="<?= esc(old('agenzia_prezzi_2pax', $row->agenzia_prezzi_2pax ?? '')) ?>"
+                        value="<?= esc(old('agenzia_prezzi_2pax', $row->agenzia_prezzi_2pax ?? ($context['agenzia_prezzi_2pax'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_prezzi_2pax']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_prezzi_2pax-error"
                         aria-invalid="<?= isset($errors['agenzia_prezzi_2pax']) ? 'true' : 'false' ?>"
@@ -158,7 +160,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="agenzia_prezzi_3pax"
                         id="agenzia_prezzi_3pax"
-                        value="<?= esc(old('agenzia_prezzi_3pax', $row->agenzia_prezzi_3pax ?? '')) ?>"
+                        value="<?= esc(old('agenzia_prezzi_3pax', $row->agenzia_prezzi_3pax ?? ($context['agenzia_prezzi_3pax'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_prezzi_3pax']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_prezzi_3pax-error"
                         aria-invalid="<?= isset($errors['agenzia_prezzi_3pax']) ? 'true' : 'false' ?>"
@@ -177,7 +179,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="agenzia_prezzi_4pax"
                         id="agenzia_prezzi_4pax"
-                        value="<?= esc(old('agenzia_prezzi_4pax', $row->agenzia_prezzi_4pax ?? '')) ?>"
+                        value="<?= esc(old('agenzia_prezzi_4pax', $row->agenzia_prezzi_4pax ?? ($context['agenzia_prezzi_4pax'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_prezzi_4pax']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_prezzi_4pax-error"
                         aria-invalid="<?= isset($errors['agenzia_prezzi_4pax']) ? 'true' : 'false' ?>"
@@ -196,7 +198,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="agenzia_prezzi_free_pax"
                         id="agenzia_prezzi_free_pax"
-                        value="<?= esc(old('agenzia_prezzi_free_pax', $row->agenzia_prezzi_free_pax ?? '')) ?>"
+                        value="<?= esc(old('agenzia_prezzi_free_pax', $row->agenzia_prezzi_free_pax ?? ($context['agenzia_prezzi_free_pax'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_prezzi_free_pax']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_prezzi_free_pax-error"
                         aria-invalid="<?= isset($errors['agenzia_prezzi_free_pax']) ? 'true' : 'false' ?>"
@@ -215,7 +217,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="agenzia_prezzi_free"
                         id="agenzia_prezzi_free"
-                        value="<?= esc(old('agenzia_prezzi_free', $row->agenzia_prezzi_free ?? '')) ?>"
+                        value="<?= esc(old('agenzia_prezzi_free', $row->agenzia_prezzi_free ?? ($context['agenzia_prezzi_free'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_prezzi_free']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_prezzi_free-error"
                         aria-invalid="<?= isset($errors['agenzia_prezzi_free']) ? 'true' : 'false' ?>"
@@ -234,7 +236,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="agenzia_prezzi_portage"
                         id="agenzia_prezzi_portage"
-                        value="<?= esc(old('agenzia_prezzi_portage', $row->agenzia_prezzi_portage ?? '')) ?>"
+                        value="<?= esc(old('agenzia_prezzi_portage', $row->agenzia_prezzi_portage ?? ($context['agenzia_prezzi_portage'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_prezzi_portage']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_prezzi_portage-error"
                         aria-invalid="<?= isset($errors['agenzia_prezzi_portage']) ? 'true' : 'false' ?>"
@@ -253,7 +255,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="agenzia_prezzi_wdrink"
                         id="agenzia_prezzi_wdrink"
-                        value="<?= esc(old('agenzia_prezzi_wdrink', $row->agenzia_prezzi_wdrink ?? '')) ?>"
+                        value="<?= esc(old('agenzia_prezzi_wdrink', $row->agenzia_prezzi_wdrink ?? ($context['agenzia_prezzi_wdrink'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_prezzi_wdrink']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_prezzi_wdrink-error"
                         aria-invalid="<?= isset($errors['agenzia_prezzi_wdrink']) ? 'true' : 'false' ?>"
@@ -272,7 +274,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="agenzia_prezzi_american_bb"
                         id="agenzia_prezzi_american_bb"
-                        value="<?= esc(old('agenzia_prezzi_american_bb', $row->agenzia_prezzi_american_bb ?? '')) ?>"
+                        value="<?= esc(old('agenzia_prezzi_american_bb', $row->agenzia_prezzi_american_bb ?? ($context['agenzia_prezzi_american_bb'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_prezzi_american_bb']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_prezzi_american_bb-error"
                         aria-invalid="<?= isset($errors['agenzia_prezzi_american_bb']) ? 'true' : 'false' ?>"
@@ -291,7 +293,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="agenzia_prezzi_pranzo"
                         id="agenzia_prezzi_pranzo"
-                        value="<?= esc(old('agenzia_prezzi_pranzo', $row->agenzia_prezzi_pranzo ?? '')) ?>"
+                        value="<?= esc(old('agenzia_prezzi_pranzo', $row->agenzia_prezzi_pranzo ?? ($context['agenzia_prezzi_pranzo'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_prezzi_pranzo']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_prezzi_pranzo-error"
                         aria-invalid="<?= isset($errors['agenzia_prezzi_pranzo']) ? 'true' : 'false' ?>"
@@ -310,7 +312,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="agenzia_prezzi_cena"
                         id="agenzia_prezzi_cena"
-                        value="<?= esc(old('agenzia_prezzi_cena', $row->agenzia_prezzi_cena ?? '')) ?>"
+                        value="<?= esc(old('agenzia_prezzi_cena', $row->agenzia_prezzi_cena ?? ($context['agenzia_prezzi_cena'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_prezzi_cena']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_prezzi_cena-error"
                         aria-invalid="<?= isset($errors['agenzia_prezzi_cena']) ? 'true' : 'false' ?>"
@@ -329,7 +331,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_prezzi_nome"
                         id="agenzia_prezzi_nome"
-                        value="<?= esc(old('agenzia_prezzi_nome', $row->agenzia_prezzi_nome ?? '')) ?>"
+                        value="<?= esc(old('agenzia_prezzi_nome', $row->agenzia_prezzi_nome ?? ($context['agenzia_prezzi_nome'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_prezzi_nome']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_prezzi_nome-error"
                         aria-invalid="<?= isset($errors['agenzia_prezzi_nome']) ? 'true' : 'false' ?>"
@@ -349,7 +351,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_prezzi_note"
                         id="agenzia_prezzi_note"
-                        value="<?= esc(old('agenzia_prezzi_note', $row->agenzia_prezzi_note ?? '')) ?>"
+                        value="<?= esc(old('agenzia_prezzi_note', $row->agenzia_prezzi_note ?? ($context['agenzia_prezzi_note'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_prezzi_note']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_prezzi_note-error"
                         aria-invalid="<?= isset($errors['agenzia_prezzi_note']) ? 'true' : 'false' ?>"
@@ -369,7 +371,7 @@ $submissionToken = $submissionToken ?? '';
                         type="datetime-local"
                         name="agenzia_prezzi_datarecord"
                         id="agenzia_prezzi_datarecord"
-                        value="<?= esc(old('agenzia_prezzi_datarecord', isset($row->agenzia_prezzi_datarecord) ? str_replace(' ', 'T', substr((string) $row->agenzia_prezzi_datarecord, 0, 16)) : '')) ?>"
+                        value="<?= esc(old('agenzia_prezzi_datarecord', isset($row->agenzia_prezzi_datarecord) ? str_replace(' ', 'T', substr((string) $row->agenzia_prezzi_datarecord, 0, 16)) : ($context['agenzia_prezzi_datarecord'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_prezzi_datarecord']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_prezzi_datarecord-error"
                         aria-invalid="<?= isset($errors['agenzia_prezzi_datarecord']) ? 'true' : 'false' ?>"
@@ -421,6 +423,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -465,6 +468,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -472,6 +476,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

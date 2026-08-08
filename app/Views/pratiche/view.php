@@ -21,7 +21,7 @@
                             <td><?= esc($row->pratica_nome ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Pratiche.pratica_agenzia_id')) ?></th>
-                            <td><?= esc($row->pratica_agenzia_id ?? '') ?></td>
+                            <td><a href="<?= site_url('agenzie/view/' . rawurlencode((string) ($row->pratica_agenzia_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->agenzie__pratica_agenzia_id__label ?? $row->pratica_agenzia_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Pratiche.pratica_1')) ?></th>
                             <td><?= esc($row->pratica_1 ?? '') ?></td>

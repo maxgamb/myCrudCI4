@@ -12,7 +12,7 @@
                     <tbody>
                         <tr>
                             <th class="w-25"><?= esc(lang('ProdottiLista.prodotti_lista_id')) ?></th>
-                            <td><?= esc($row->prodotti_lista_id ?? '') ?></td>
+                            <td><a href="<?= site_url('prodotti/view/' . rawurlencode((string) ($row->prodotti_lista_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->prodotti__prodotti_lista_id__label ?? $row->prodotti_lista_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ProdottiLista.prod_lista_mone')) ?></th>
                             <td><?= esc($row->prod_lista_mone ?? '') ?></td>

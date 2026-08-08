@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="conto_id"
                         id="conto_id"
-                        value="<?= esc(old('conto_id', $row->conto_id ?? '')) ?>"
+                        value="<?= esc(old('conto_id', $row->conto_id ?? ($context['conto_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['conto_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="conto_id-error"
                         aria-invalid="<?= isset($errors['conto_id']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -90,12 +92,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['prodotto_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('prodotto_id', $row->prodotto_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('prodotto_id', $row->prodotto_id ?? ($context['prodotto_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="prodotto_id"
+                            data-base-url="<?= site_url('prodotti/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('prodotti/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['prodotto_id'])): ?>
                         <div id="prodotto_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['prodotto_id']) ?>
@@ -110,7 +133,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="descrizione"
                         id="descrizione"
-                        value="<?= esc(old('descrizione', $row->descrizione ?? '')) ?>"
+                        value="<?= esc(old('descrizione', $row->descrizione ?? ($context['descrizione'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['descrizione']) ? 'is-invalid' : '' ?>"
                         aria-describedby="descrizione-error"
                         aria-invalid="<?= isset($errors['descrizione']) ? 'true' : 'false' ?>"
@@ -130,7 +153,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="prezzo"
                         id="prezzo"
-                        value="<?= esc(old('prezzo', $row->prezzo ?? '')) ?>"
+                        value="<?= esc(old('prezzo', $row->prezzo ?? ($context['prezzo'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['prezzo']) ? 'is-invalid' : '' ?>"
                         aria-describedby="prezzo-error"
                         aria-invalid="<?= isset($errors['prezzo']) ? 'true' : 'false' ?>"
@@ -150,7 +173,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="quantita"
                         id="quantita"
-                        value="<?= esc(old('quantita', $row->quantita ?? '')) ?>"
+                        value="<?= esc(old('quantita', $row->quantita ?? ($context['quantita'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['quantita']) ? 'is-invalid' : '' ?>"
                         aria-describedby="quantita-error"
                         aria-invalid="<?= isset($errors['quantita']) ? 'true' : 'false' ?>"
@@ -170,7 +193,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="adebiti_utente_id"
                         id="adebiti_utente_id"
-                        value="<?= esc(old('adebiti_utente_id', $row->adebiti_utente_id ?? '')) ?>"
+                        value="<?= esc(old('adebiti_utente_id', $row->adebiti_utente_id ?? ($context['adebiti_utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['adebiti_utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="adebiti_utente_id-error"
                         aria-invalid="<?= isset($errors['adebiti_utente_id']) ? 'true' : 'false' ?>"
@@ -189,7 +212,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="preno_id"
                         id="preno_id"
-                        value="<?= esc(old('preno_id', $row->preno_id ?? '')) ?>"
+                        value="<?= esc(old('preno_id', $row->preno_id ?? ($context['preno_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['preno_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="preno_id-error"
                         aria-invalid="<?= isset($errors['preno_id']) ? 'true' : 'false' ?>"
@@ -241,6 +264,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -285,6 +309,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -292,6 +317,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

@@ -43,6 +43,35 @@ ksort($parentTables);
 ksort($childTables);
 ?>
 
+<div class="container-fluid px-3 px-lg-4">
+    <div class="row g-4 align-items-start">
+        <aside class="col-12 col-lg-2">
+            <div class="card shadow-sm position-sticky" style="top: 1rem; max-height: calc(100vh - 2rem); overflow-y: auto;">
+                <div class="card-header fw-semibold">
+                    <i class="bi bi-diagram-2"></i>
+                    Tabelle padre DB
+                </div>
+
+                <div class="list-group list-group-flush">
+                    <?php if (($databaseParentTables ?? []) === []): ?>
+                        <div class="list-group-item small text-muted">
+                            Nessuna tabella padre
+                        </div>
+                    <?php else: ?>
+                        <?php foreach (($databaseParentTables ?? []) as $databaseParentTable): ?>
+                            <a
+                                class="list-group-item list-group-item-action <?= $databaseParentTable === $table ? 'active' : '' ?>"
+                                href="<?= site_url('mycrud/builder/configure/' . rawurlencode((string) $databaseParentTable)) ?>"
+                            >
+                                <?= esc($databaseParentTable) ?>
+                            </a>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </aside>
+
+        <main class="col-12 col-lg-10">
 <div class="card shadow-sm mb-4 relation-navigation">
     <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
         <strong>
@@ -686,6 +715,86 @@ ksort($childTables);
                                 </div>
                             <?php endif; ?>
 
+                            <?php if ($fk): ?>
+                                <?php
+                                $displayFields = array_values((array) ($fk['availableDisplayFields'] ?? []));
+                                $selectedDisplayField = (string) ($field['relationDisplayField'] ?? $fk['displayField'] ?? $fk['parentKey'] ?? '');
+                                $navigation = (array) ($field['relationNavigation'] ?? []);
+                                ?>
+
+                                <div class="col-lg-4">
+                                    <label class="form-label">Valore descrittivo</label>
+                                    <select
+                                        name="relationDisplayField[<?= esc($fieldName) ?>]"
+                                        class="form-select"
+                                    >
+                                        <?php foreach ($displayFields as $displayField): ?>
+                                            <option
+                                                value="<?= esc($displayField) ?>"
+                                                <?= $selectedDisplayField === $displayField ? 'selected' : '' ?>
+                                            >
+                                                <?= esc($displayField) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <div class="form-text">
+                                        È il testo mostrato al posto della chiave FK, per esempio 5 → “Hotel Ateneo”.
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-8">
+                                    <label class="form-label">Template descrittivo <span class="text-muted">(opzionale)</span></label>
+                                    <input
+                                        type="text"
+                                        name="relationDisplayTemplate[<?= esc($fieldName) ?>]"
+                                        value="<?= esc($field['relationDisplayTemplate'] ?? '') ?>"
+                                        class="form-control"
+                                        placeholder="Esempio: {cognome} {nome}"
+                                    >
+                                    <div class="form-text">
+                                        Se compilato, prevale sul campo singolo. Campi disponibili:
+                                        <?= esc(implode(', ', $displayFields)) ?>.
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label d-block">Navigazione relazione</label>
+                                    <input type="hidden" name="relationNavigation[<?= esc($fieldName) ?>][]" value="">
+
+                                    <?php
+                                    $navigationFlags = [
+                                        'quickFilter' => 'Filtro rapido nella tabella',
+                                        'parentLink' => 'Link al record padre',
+                                        'acceptContext' => 'Accetta la FK dalla URL nel Create',
+                                        'createParentLink' => 'Link “Nuovo padre” nel form',
+                                    ];
+                                    ?>
+
+                                    <?php foreach ($navigationFlags as $navFlag => $navLabel): ?>
+                                        <div class="form-check form-check-inline">
+                                            <input
+                                                type="checkbox"
+                                                class="form-check-input"
+                                                name="relationNavigation[<?= esc($fieldName) ?>][]"
+                                                value="<?= esc($navFlag) ?>"
+                                                id="<?= esc($fieldName . '_nav_' . $navFlag) ?>"
+                                                <?= !empty($navigation[$navFlag]) ? 'checked' : '' ?>
+                                            >
+                                            <label
+                                                class="form-check-label"
+                                                for="<?= esc($fieldName . '_nav_' . $navFlag) ?>"
+                                            >
+                                                <?= esc($navLabel) ?>
+                                            </label>
+                                        </div>
+                                    <?php endforeach; ?>
+
+                                    <div class="form-text">
+                                        La FK ricevuta via URL viene validata sulla tabella padre prima di precompilare hidden, select, select AJAX o input normale.
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
                             <div class="col-lg-4">
                                 <label class="form-label">Label</label>
                                 <input
@@ -839,6 +948,9 @@ ksort($childTables);
             </div>
         </div>
     </form>
+</div>
+        </main>
+    </div>
 </div>
 
 <div class="modal fade" id="previewModal" tabindex="-1">

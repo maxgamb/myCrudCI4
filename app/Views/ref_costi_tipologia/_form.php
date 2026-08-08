@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -49,12 +51,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['costi_var_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('costi_var_id', $row->costi_var_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('costi_var_id', $row->costi_var_id ?? ($context['costi_var_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="costi_var_id"
+                            data-base-url="<?= site_url('costi_var/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('costi_var/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['costi_var_id'])): ?>
                         <div id="costi_var_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['costi_var_id']) ?>
@@ -76,12 +99,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['tipologia_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('tipologia_id', $row->tipologia_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('tipologia_id', $row->tipologia_id ?? ($context['tipologia_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="tipologia_id"
+                            data-base-url="<?= site_url('tipologia_camera/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('tipologia_camera/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['tipologia_id'])): ?>
                         <div id="tipologia_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['tipologia_id']) ?>
@@ -96,7 +140,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -115,7 +159,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="stay"
                         id="stay"
-                        value="<?= esc(old('stay', $row->stay ?? '')) ?>"
+                        value="<?= esc(old('stay', $row->stay ?? ($context['stay'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['stay']) ? 'is-invalid' : '' ?>"
                         aria-describedby="stay-error"
                         aria-invalid="<?= isset($errors['stay']) ? 'true' : 'false' ?>"
@@ -134,7 +178,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="days"
                         id="days"
-                        value="<?= esc(old('days', $row->days ?? '')) ?>"
+                        value="<?= esc(old('days', $row->days ?? ($context['days'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['days']) ? 'is-invalid' : '' ?>"
                         aria-describedby="days-error"
                         aria-invalid="<?= isset($errors['days']) ? 'true' : 'false' ?>"
@@ -154,7 +198,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="check_out"
                         id="check_out"
-                        value="<?= esc(old('check_out', $row->check_out ?? '')) ?>"
+                        value="<?= esc(old('check_out', $row->check_out ?? ($context['check_out'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['check_out']) ? 'is-invalid' : '' ?>"
                         aria-describedby="check_out-error"
                         aria-invalid="<?= isset($errors['check_out']) ? 'true' : 'false' ?>"
@@ -173,7 +217,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="utente_id"
                         id="utente_id"
-                        value="<?= esc(old('utente_id', $row->utente_id ?? '')) ?>"
+                        value="<?= esc(old('utente_id', $row->utente_id ?? ($context['utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="utente_id-error"
                         aria-invalid="<?= isset($errors['utente_id']) ? 'true' : 'false' ?>"
@@ -225,6 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -269,6 +314,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -276,6 +322,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

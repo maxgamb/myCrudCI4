@@ -18,8 +18,8 @@ final class GuastiResource
   7 => 'guasto_stato',
   8 => 'guasto_data',
   9 => 'guasto_utente_id',
-  10 => 'camere_tipologia_camera',
-  11 => 'hotels_nome_hotel',
+  10 => 'camere__camera_id__label',
+  11 => 'hotels__hotel_id__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

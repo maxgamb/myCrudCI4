@@ -15,8 +15,8 @@ final class WrehProductsResource
   4 => 'price',
   5 => 'stock_quantity',
   6 => 'supplier_id',
-  7 => 'costi_area_costi_area_nome',
-  8 => 'wreh_suppliers_company',
+  7 => 'costi_area__costi_area_id__label',
+  8 => 'wreh_suppliers__supplier_id__label',
 );
     private const WRITABLE = array (
   0 => 'costi_area_id',

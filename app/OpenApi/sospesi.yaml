@@ -177,10 +177,10 @@ components:
           type: integer
           format: int32
           nullable: true
-        'agenzie_agenzia_tipologia':
+        'agenzie__sopeso_societa__label':
           type: string
           nullable: true
-        'pratiche_pratica_nome':
+        'pratiche__sospeso_pratica_id__label':
           type: string
           nullable: true
     SospesiCreate:

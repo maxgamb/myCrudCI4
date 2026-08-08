@@ -15,7 +15,7 @@
                             <td><?= esc($row->doc_files_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('DocFile.hotel_id')) ?></th>
-                            <td><?= esc($row->hotel_id ?? '') ?></td>
+                            <td><a href="<?= site_url('hotels/view/' . rawurlencode((string) ($row->hotel_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->hotels__hotel_id__label ?? $row->hotel_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('DocFile.doc_dipar_id')) ?></th>
                             <td><?= esc($row->doc_dipar_id ?? '') ?></td>

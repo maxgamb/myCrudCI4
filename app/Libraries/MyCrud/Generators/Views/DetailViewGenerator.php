@@ -21,11 +21,24 @@ final class DetailViewGenerator extends AbstractViewGenerator
                 continue;
             }
             $label = $this->labelExpression($field, $name);
+            $relation = $config['relations']['belongsTo'][$name] ?? null;
+            $valueMarkup = "<?= esc(\$row->{$name} ?? '') ?>";
+
+            if (is_array($relation)) {
+                $alias = (string) ($relation['alias'] ?? ((string) ($relation['parentTable'] ?? 'parent') . '__' . $name . '__label'));
+                $parentTable = (string) ($relation['parentTable'] ?? '');
+                $displayMarkup = "<?= esc(\$row->{$alias} ?? \$row->{$name} ?? '') ?>";
+                if (!empty($field['relationNavigation']['parentLink']) && $parentTable !== '') {
+                    $valueMarkup = "<a href=\"<?= site_url('{$parentTable}/view/' . rawurlencode((string) (\$row->{$name} ?? ''))) ?>\" class=\"text-decoration-none\">{$displayMarkup}</a>";
+                } else {
+                    $valueMarkup = $displayMarkup;
+                }
+            }
 
             $rows .= <<<PHP
                         <tr>
                             <th class="w-25"><?= esc({$label}) ?></th>
-                            <td><?= esc(\$row->{$name} ?? '') ?></td>
+                            <td>{$valueMarkup}</td>
                         </tr>
 PHP;
         }
@@ -43,6 +56,17 @@ PHP;
 
         foreach ($config['relationsConfig']['hasMany'] ?? [] as $key => $relation) {
             if (empty($relation['enabled'])) {
+                continue;
+            }
+
+            // Le relazioni devono provenire dallo schema corrente. Una config
+            // legacy/stale incompleta viene ignorata invece di interrompere la
+            // generazione della pagina di dettaglio.
+            if (
+                empty($relation['childTable'])
+                || empty($relation['foreignKey'])
+                || empty($relation['primaryKey'])
+            ) {
                 continue;
             }
 

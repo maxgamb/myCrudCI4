@@ -16,7 +16,7 @@ final class ProdottiListaResource
   5 => 'prod_lista_img',
   6 => 'prod_lista_data',
   7 => 'prod_lista_user_id',
-  8 => 'prodotti_nome_prodotto',
+  8 => 'prodotti__prodotti_lista_id__label',
 );
     private const WRITABLE = array (
   0 => 'prod_lista_mone',

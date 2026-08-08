@@ -130,10 +130,10 @@ components:
           type: integer
           format: int32
           nullable: true
-        'costi_area_costi_area_nome':
+        'costi_area__costi_area_id__label':
           type: string
           nullable: true
-        'wreh_suppliers_company':
+        'wreh_suppliers__supplier_id__label':
           type: string
           nullable: true
     WrehProductsCreate:

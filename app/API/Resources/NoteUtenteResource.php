@@ -19,7 +19,7 @@ final class NoteUtenteResource
   8 => 'note_utente_dal',
   9 => 'note_utente_al',
   10 => 'note_utente_data',
-  11 => 'utenti_Nome_Utente',
+  11 => 'utenti__Utente_id__label',
 );
     private const WRITABLE = array (
   0 => 'note_utente_rispondi_id',

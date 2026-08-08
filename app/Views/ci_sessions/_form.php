@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="id"
                         id="id"
-                        value="<?= esc(old('id', $row->id ?? '')) ?>"
+                        value="<?= esc(old('id', $row->id ?? ($context['id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="id-error"
                         aria-invalid="<?= isset($errors['id']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="ip_address"
                         id="ip_address"
-                        value="<?= esc(old('ip_address', $row->ip_address ?? '')) ?>"
+                        value="<?= esc(old('ip_address', $row->ip_address ?? ($context['ip_address'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['ip_address']) ? 'is-invalid' : '' ?>"
                         aria-describedby="ip_address-error"
                         aria-invalid="<?= isset($errors['ip_address']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="timestamp"
                         id="timestamp"
-                        value="<?= esc(old('timestamp', $row->timestamp ?? '')) ?>"
+                        value="<?= esc(old('timestamp', $row->timestamp ?? ($context['timestamp'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['timestamp']) ? 'is-invalid' : '' ?>"
                         aria-describedby="timestamp-error"
                         aria-invalid="<?= isset($errors['timestamp']) ? 'true' : 'false' ?>"
@@ -104,7 +106,7 @@ $submissionToken = $submissionToken ?? '';
                         aria-describedby="data-error"
                         aria-invalid="<?= isset($errors['data']) ? 'true' : 'false' ?>"
                         required maxlength="65535"
-                    ><?= esc(old('data', $row->data ?? '')) ?></textarea>
+                    ><?= esc(old('data', $row->data ?? ($context['data'] ?? ''))) ?></textarea>
                     <?php if (!empty($errors['data'])): ?>
                         <div id="data-error" class="invalid-feedback d-block">
                             <?= esc($errors['data']) ?>
@@ -152,6 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -196,6 +199,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -203,6 +207,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="isoKey"
                         id="isoKey"
-                        value="<?= esc(old('isoKey', $row->isoKey ?? '')) ?>"
+                        value="<?= esc(old('isoKey', $row->isoKey ?? ($context['isoKey'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['isoKey']) ? 'is-invalid' : '' ?>"
                         aria-describedby="isoKey-error"
                         aria-invalid="<?= isset($errors['isoKey']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="iso3"
                         id="iso3"
-                        value="<?= esc(old('iso3', $row->iso3 ?? '')) ?>"
+                        value="<?= esc(old('iso3', $row->iso3 ?? ($context['iso3'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['iso3']) ? 'is-invalid' : '' ?>"
                         aria-describedby="iso3-error"
                         aria-invalid="<?= isset($errors['iso3']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nazioni_EN"
                         id="nazioni_EN"
-                        value="<?= esc(old('nazioni_EN', $row->nazioni_EN ?? '')) ?>"
+                        value="<?= esc(old('nazioni_EN', $row->nazioni_EN ?? ($context['nazioni_EN'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nazioni_EN']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nazioni_EN-error"
                         aria-invalid="<?= isset($errors['nazioni_EN']) ? 'true' : 'false' ?>"
@@ -102,7 +104,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nazioni_ES"
                         id="nazioni_ES"
-                        value="<?= esc(old('nazioni_ES', $row->nazioni_ES ?? '')) ?>"
+                        value="<?= esc(old('nazioni_ES', $row->nazioni_ES ?? ($context['nazioni_ES'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nazioni_ES']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nazioni_ES-error"
                         aria-invalid="<?= isset($errors['nazioni_ES']) ? 'true' : 'false' ?>"
@@ -122,7 +124,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nazioni_FR"
                         id="nazioni_FR"
-                        value="<?= esc(old('nazioni_FR', $row->nazioni_FR ?? '')) ?>"
+                        value="<?= esc(old('nazioni_FR', $row->nazioni_FR ?? ($context['nazioni_FR'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nazioni_FR']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nazioni_FR-error"
                         aria-invalid="<?= isset($errors['nazioni_FR']) ? 'true' : 'false' ?>"
@@ -142,7 +144,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nazioni_DE"
                         id="nazioni_DE"
-                        value="<?= esc(old('nazioni_DE', $row->nazioni_DE ?? '')) ?>"
+                        value="<?= esc(old('nazioni_DE', $row->nazioni_DE ?? ($context['nazioni_DE'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nazioni_DE']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nazioni_DE-error"
                         aria-invalid="<?= isset($errors['nazioni_DE']) ? 'true' : 'false' ?>"
@@ -162,7 +164,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nazioni_IT"
                         id="nazioni_IT"
-                        value="<?= esc(old('nazioni_IT', $row->nazioni_IT ?? '')) ?>"
+                        value="<?= esc(old('nazioni_IT', $row->nazioni_IT ?? ($context['nazioni_IT'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nazioni_IT']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nazioni_IT-error"
                         aria-invalid="<?= isset($errors['nazioni_IT']) ? 'true' : 'false' ?>"
@@ -182,7 +184,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="lg"
                         id="lg"
-                        value="<?= esc(old('lg', $row->lg ?? '')) ?>"
+                        value="<?= esc(old('lg', $row->lg ?? ($context['lg'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['lg']) ? 'is-invalid' : '' ?>"
                         aria-describedby="lg-error"
                         aria-invalid="<?= isset($errors['lg']) ? 'true' : 'false' ?>"
@@ -235,6 +237,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -279,6 +282,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -286,6 +290,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

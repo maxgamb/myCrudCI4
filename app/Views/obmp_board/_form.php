@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="obmp_board_id"
                         id="obmp_board_id"
-                        value="<?= esc(old('obmp_board_id', $row->obmp_board_id ?? '')) ?>"
+                        value="<?= esc(old('obmp_board_id', $row->obmp_board_id ?? ($context['obmp_board_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_board_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_board_id-error"
                         aria-invalid="<?= isset($errors['obmp_board_id']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_board_title"
                         id="obmp_board_title"
-                        value="<?= esc(old('obmp_board_title', $row->obmp_board_title ?? '')) ?>"
+                        value="<?= esc(old('obmp_board_title', $row->obmp_board_title ?? ($context['obmp_board_title'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_board_title']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_board_title-error"
                         aria-invalid="<?= isset($errors['obmp_board_title']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_board"
                         id="obmp_board"
-                        value="<?= esc(old('obmp_board', $row->obmp_board ?? '')) ?>"
+                        value="<?= esc(old('obmp_board', $row->obmp_board ?? ($context['obmp_board'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_board']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_board-error"
                         aria-invalid="<?= isset($errors['obmp_board']) ? 'true' : 'false' ?>"
@@ -102,7 +104,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_board_cod"
                         id="obmp_board_cod"
-                        value="<?= esc(old('obmp_board_cod', $row->obmp_board_cod ?? '')) ?>"
+                        value="<?= esc(old('obmp_board_cod', $row->obmp_board_cod ?? ($context['obmp_board_cod'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_board_cod']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_board_cod-error"
                         aria-invalid="<?= isset($errors['obmp_board_cod']) ? 'true' : 'false' ?>"
@@ -122,7 +124,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="board_lg"
                         id="board_lg"
-                        value="<?= esc(old('board_lg', $row->board_lg ?? '')) ?>"
+                        value="<?= esc(old('board_lg', $row->board_lg ?? ($context['board_lg'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['board_lg']) ? 'is-invalid' : '' ?>"
                         aria-describedby="board_lg-error"
                         aria-invalid="<?= isset($errors['board_lg']) ? 'true' : 'false' ?>"
@@ -175,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -219,6 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -226,6 +230,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

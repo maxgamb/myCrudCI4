@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -50,12 +52,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['obmp_quote_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('obmp_quote_id', $row->obmp_quote_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('obmp_quote_id', $row->obmp_quote_id ?? ($context['obmp_quote_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="obmp_quote_id"
+                            data-base-url="<?= site_url('obmp_quote/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('obmp_quote/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['obmp_quote_id'])): ?>
                         <div id="obmp_quote_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['obmp_quote_id']) ?>
@@ -70,7 +93,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -90,7 +113,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="quote_sub_jeson"
                         id="quote_sub_jeson"
-                        value="<?= esc(old('quote_sub_jeson', $row->quote_sub_jeson ?? '')) ?>"
+                        value="<?= esc(old('quote_sub_jeson', $row->quote_sub_jeson ?? ($context['quote_sub_jeson'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['quote_sub_jeson']) ? 'is-invalid' : '' ?>"
                         aria-describedby="quote_sub_jeson-error"
                         aria-invalid="<?= isset($errors['quote_sub_jeson']) ? 'true' : 'false' ?>"
@@ -110,7 +133,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="quote_sub_data"
                         id="quote_sub_data"
-                        value="<?= esc(old('quote_sub_data', $row->quote_sub_data ?? '')) ?>"
+                        value="<?= esc(old('quote_sub_data', $row->quote_sub_data ?? ($context['quote_sub_data'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['quote_sub_data']) ? 'is-invalid' : '' ?>"
                         aria-describedby="quote_sub_data-error"
                         aria-invalid="<?= isset($errors['quote_sub_data']) ? 'true' : 'false' ?>"
@@ -130,7 +153,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="randomd_string"
                         id="randomd_string"
-                        value="<?= esc(old('randomd_string', $row->randomd_string ?? '')) ?>"
+                        value="<?= esc(old('randomd_string', $row->randomd_string ?? ($context['randomd_string'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['randomd_string']) ? 'is-invalid' : '' ?>"
                         aria-describedby="randomd_string-error"
                         aria-invalid="<?= isset($errors['randomd_string']) ? 'true' : 'false' ?>"
@@ -183,6 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -227,6 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -234,6 +259,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

@@ -14,7 +14,7 @@ final class ContiTrasferisciResource
   3 => 'hotel_id',
   4 => 'adebito_id',
   5 => 'conti_tra_data',
-  6 => 'adebiti_descrizione',
+  6 => 'adebiti__adebito_id__label',
 );
     private const WRITABLE = array (
   0 => 'conto_id_ex',

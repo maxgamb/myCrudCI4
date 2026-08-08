@@ -67,12 +67,52 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->product_id ?? '') ?></td>
-                                <td><?= esc($row->name ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->product_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'product_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->product_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->product_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->name ?? '') ?></td>
                                 <td><?= esc($row->price ?? '') ?></td>
                                 <td><?= esc($row->stock_quantity ?? '') ?></td>
-                                <td><?= esc($row->supplier_id ?? '') ?></td>
-                                <td class="text-end text-nowrap">
+                                <td>
+                                    <?php if ((string) ($row->supplier_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'supplier_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->supplier_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->supplier_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td class="text-end text-nowrap">
                                     <?php $id = $row->product_id ?? ''; ?>
                                     <div class="btn-group btn-group-sm" role="group" aria-label="Azioni record">
                                         <a href="<?= site_url('products/view/' . rawurlencode((string) $id)) ?>" class="btn btn-outline-info" title="Visualizza">

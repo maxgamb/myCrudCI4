@@ -65,6 +65,15 @@ final class GlobalGenerationService
         foreach ($tables as $table) {
             try {
                 $config = $builder->buildFromTable($table);
+
+                // QUICK: per le FK usiamo un default completamente deterministico.
+                // Il database ci dice con certezza quale colonna del padre viene
+                // referenziata, ma non quale campo sia semanticamente descrittivo.
+                // Quindi la Quick mostra inizialmente il valore della chiave
+                // referenziata; eventuali label/template leggibili restano una
+                // scelta esplicita dello sviluppatore nel Builder.
+                $config = $this->applyQuickForeignKeyDefaults($config);
+
                 $config['architecture'] = $architecture;
                 $config['features'] = $this->featuresForArchitecture($architecture, $config);
 
@@ -113,6 +122,61 @@ final class GlobalGenerationService
         $report['durationSeconds'] = round(microtime(true) - $startedAt, 4);
 
         return $report;
+    }
+
+    /**
+     * Applica i default specifici della generazione Quick alle relazioni belongsTo.
+     *
+     * La Quick non prova a dedurre un campo descrittivo da nomi come `name`,
+     * `descrizione` o dal primo varchar: usa sempre la colonna realmente
+     * referenziata dalla foreign key. Il Builder potrà poi sostituirla con un
+     * displayField, un displayTemplate e le opzioni di navigazione esplicitamente scelte.
+     *
+     * @param array<string, mixed> $config
+     * @return array<string, mixed>
+     */
+    private function applyQuickForeignKeyDefaults(array $config): array
+    {
+        foreach ((array) ($config['relations']['belongsTo'] ?? []) as $fieldName => $relation) {
+            if (!is_array($relation)) {
+                continue;
+            }
+
+            $parentKey = trim((string) ($relation['parentKey'] ?? ''));
+            if ($parentKey === '') {
+                continue;
+            }
+
+            // Relazione globale usata da Model/View generator.
+            $config['relations']['belongsTo'][$fieldName]['displayField'] = $parentKey;
+            $config['relations']['belongsTo'][$fieldName]['displayTemplate'] = '';
+
+            if (!isset($config['fields'][$fieldName]) || !is_array($config['fields'][$fieldName])) {
+                continue;
+            }
+
+            // Configurazione persistente del singolo campo.
+            $config['fields'][$fieldName]['relationDisplayField'] = $parentKey;
+            $config['fields'][$fieldName]['relationDisplayTemplate'] = '';
+
+            // Quick non decide la navigazione applicativa. Queste opzioni
+            // restano esplicitamente disattivate finché lo sviluppatore non
+            // le abilita dal Builder.
+            $config['fields'][$fieldName]['relationNavigation'] = [
+                'quickFilter' => false,
+                'parentLink' => false,
+                'acceptContext' => false,
+                'createParentLink' => false,
+            ];
+
+            if (!empty($config['fields'][$fieldName]['foreignKey'])
+                && is_array($config['fields'][$fieldName]['foreignKey'])) {
+                $config['fields'][$fieldName]['foreignKey']['displayField'] = $parentKey;
+                $config['fields'][$fieldName]['foreignKey']['displayTemplate'] = '';
+            }
+        }
+
+        return $config;
     }
 
     /** Costruisce il piano dei file senza scrivere sul filesystem. */

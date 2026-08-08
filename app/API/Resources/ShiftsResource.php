@@ -14,7 +14,7 @@ final class ShiftsResource
   3 => 'shift_date',
   4 => 'position',
   5 => 'shift_time',
-  6 => 'staff_nome',
+  6 => 'staff__staff_id__label',
 );
     private const WRITABLE = array (
   0 => 'staff_id',

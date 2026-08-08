@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="ip_aderss"
                         id="ip_aderss"
-                        value="<?= esc(old('ip_aderss', $row->ip_aderss ?? '')) ?>"
+                        value="<?= esc(old('ip_aderss', $row->ip_aderss ?? ($context['ip_aderss'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['ip_aderss']) ? 'is-invalid' : '' ?>"
                         aria-describedby="ip_aderss-error"
                         aria-invalid="<?= isset($errors['ip_aderss']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="Livello"
                         id="Livello"
-                        value="<?= esc(old('Livello', $row->Livello ?? '')) ?>"
+                        value="<?= esc(old('Livello', $row->Livello ?? ($context['Livello'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['Livello']) ? 'is-invalid' : '' ?>"
                         aria-describedby="Livello-error"
                         aria-invalid="<?= isset($errors['Livello']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="datetime-local"
                         name="data"
                         id="data"
-                        value="<?= esc(old('data', isset($row->data) ? str_replace(' ', 'T', substr((string) $row->data, 0, 16)) : '')) ?>"
+                        value="<?= esc(old('data', isset($row->data) ? str_replace(' ', 'T', substr((string) $row->data, 0, 16)) : ($context['data'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['data']) ? 'is-invalid' : '' ?>"
                         aria-describedby="data-error"
                         aria-invalid="<?= isset($errors['data']) ? 'true' : 'false' ?>"
@@ -134,6 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -178,6 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -185,6 +189,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

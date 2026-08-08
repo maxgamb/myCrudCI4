@@ -49,8 +49,28 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->log_in_id ?? '') ?></td>
-                                <td><?= esc($row->log_nome ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->log_in_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'log_in_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->log_in_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->log_in_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->log_nome ?? '') ?></td>
                                 <td><?= esc($row->log_pass ?? '') ?></td>
                                 <td><?= esc($row->log_ip ?? '') ?></td>
                                 <td><?= esc($row->log_out ?? '') ?></td>

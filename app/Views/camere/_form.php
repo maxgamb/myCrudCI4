@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="camera_id"
                         id="camera_id"
-                        value="<?= esc(old('camera_id', $row->camera_id ?? '')) ?>"
+                        value="<?= esc(old('camera_id', $row->camera_id ?? ($context['camera_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['camera_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="camera_id-error"
                         aria-invalid="<?= isset($errors['camera_id']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -81,7 +83,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="numero_camera"
                         id="numero_camera"
-                        value="<?= esc(old('numero_camera', $row->numero_camera ?? '')) ?>"
+                        value="<?= esc(old('numero_camera', $row->numero_camera ?? ($context['numero_camera'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['numero_camera']) ? 'is-invalid' : '' ?>"
                         aria-describedby="numero_camera-error"
                         aria-invalid="<?= isset($errors['numero_camera']) ? 'true' : 'false' ?>"
@@ -100,7 +102,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="tipologia_camera"
                         id="tipologia_camera"
-                        value="<?= esc(old('tipologia_camera', $row->tipologia_camera ?? '')) ?>"
+                        value="<?= esc(old('tipologia_camera', $row->tipologia_camera ?? ($context['tipologia_camera'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['tipologia_camera']) ? 'is-invalid' : '' ?>"
                         aria-describedby="tipologia_camera-error"
                         aria-invalid="<?= isset($errors['tipologia_camera']) ? 'true' : 'false' ?>"
@@ -127,12 +129,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['tipologia_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('tipologia_id', $row->tipologia_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('tipologia_id', $row->tipologia_id ?? ($context['tipologia_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="tipologia_id"
+                            data-base-url="<?= site_url('tipologia_camera/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('tipologia_camera/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['tipologia_id'])): ?>
                         <div id="tipologia_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['tipologia_id']) ?>
@@ -147,7 +170,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="camere_max_pax"
                         id="camere_max_pax"
-                        value="<?= esc(old('camere_max_pax', $row->camere_max_pax ?? '')) ?>"
+                        value="<?= esc(old('camere_max_pax', $row->camere_max_pax ?? ($context['camere_max_pax'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['camere_max_pax']) ? 'is-invalid' : '' ?>"
                         aria-describedby="camere_max_pax-error"
                         aria-invalid="<?= isset($errors['camere_max_pax']) ? 'true' : 'false' ?>"
@@ -166,7 +189,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="camere_metri_quadri"
                         id="camere_metri_quadri"
-                        value="<?= esc(old('camere_metri_quadri', $row->camere_metri_quadri ?? '')) ?>"
+                        value="<?= esc(old('camere_metri_quadri', $row->camere_metri_quadri ?? ($context['camere_metri_quadri'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['camere_metri_quadri']) ? 'is-invalid' : '' ?>"
                         aria-describedby="camere_metri_quadri-error"
                         aria-invalid="<?= isset($errors['camere_metri_quadri']) ? 'true' : 'false' ?>"
@@ -185,7 +208,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="camere_vista"
                         id="camere_vista"
-                        value="<?= esc(old('camere_vista', $row->camere_vista ?? '')) ?>"
+                        value="<?= esc(old('camere_vista', $row->camere_vista ?? ($context['camere_vista'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['camere_vista']) ? 'is-invalid' : '' ?>"
                         aria-describedby="camere_vista-error"
                         aria-invalid="<?= isset($errors['camere_vista']) ? 'true' : 'false' ?>"
@@ -205,7 +228,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="camere_piano"
                         id="camere_piano"
-                        value="<?= esc(old('camere_piano', $row->camere_piano ?? '')) ?>"
+                        value="<?= esc(old('camere_piano', $row->camere_piano ?? ($context['camere_piano'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['camere_piano']) ? 'is-invalid' : '' ?>"
                         aria-describedby="camere_piano-error"
                         aria-invalid="<?= isset($errors['camere_piano']) ? 'true' : 'false' ?>"
@@ -224,7 +247,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="camere_bagno"
                         id="camere_bagno"
-                        value="<?= esc(old('camere_bagno', $row->camere_bagno ?? '')) ?>"
+                        value="<?= esc(old('camere_bagno', $row->camere_bagno ?? ($context['camere_bagno'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['camere_bagno']) ? 'is-invalid' : '' ?>"
                         aria-describedby="camere_bagno-error"
                         aria-invalid="<?= isset($errors['camere_bagno']) ? 'true' : 'false' ?>"
@@ -244,7 +267,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="camere_edificio"
                         id="camere_edificio"
-                        value="<?= esc(old('camere_edificio', $row->camere_edificio ?? '')) ?>"
+                        value="<?= esc(old('camere_edificio', $row->camere_edificio ?? ($context['camere_edificio'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['camere_edificio']) ? 'is-invalid' : '' ?>"
                         aria-describedby="camere_edificio-error"
                         aria-invalid="<?= isset($errors['camere_edificio']) ? 'true' : 'false' ?>"
@@ -264,7 +287,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="review_tot"
                         id="review_tot"
-                        value="<?= esc(old('review_tot', $row->review_tot ?? '')) ?>"
+                        value="<?= esc(old('review_tot', $row->review_tot ?? ($context['review_tot'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['review_tot']) ? 'is-invalid' : '' ?>"
                         aria-describedby="review_tot-error"
                         aria-invalid="<?= isset($errors['review_tot']) ? 'true' : 'false' ?>"
@@ -283,7 +306,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="camere_utente_id"
                         id="camere_utente_id"
-                        value="<?= esc(old('camere_utente_id', $row->camere_utente_id ?? '')) ?>"
+                        value="<?= esc(old('camere_utente_id', $row->camere_utente_id ?? ($context['camere_utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['camere_utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="camere_utente_id-error"
                         aria-invalid="<?= isset($errors['camere_utente_id']) ? 'true' : 'false' ?>"
@@ -335,6 +358,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -379,6 +403,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -386,6 +411,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

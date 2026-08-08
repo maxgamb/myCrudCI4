@@ -19,10 +19,10 @@ final class RefObmpBookingResource
   8 => 'ref_cookie',
   9 => 'room_obmp_string',
   10 => 'quote_id',
-  11 => 'agenda_preno_arr_ore',
-  12 => 'obmp_clienti_obm_cliente_first_name',
-  13 => 'obmp_quote_quote_lg',
-  14 => 'obmp_ref_site_ref_site_nome',
+  11 => 'agenda__preno_id__label',
+  12 => 'obmp_clienti__obm_cliente_id__label',
+  13 => 'obmp_quote__quote_id__label',
+  14 => 'obmp_ref_site__ref_site__label',
 );
     private const WRITABLE = array (
   0 => 'ref_obm_data',

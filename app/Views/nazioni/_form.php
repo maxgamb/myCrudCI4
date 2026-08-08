@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="Nazioni_Id_Codice"
                         id="Nazioni_Id_Codice"
-                        value="<?= esc(old('Nazioni_Id_Codice', $row->Nazioni_Id_Codice ?? '')) ?>"
+                        value="<?= esc(old('Nazioni_Id_Codice', $row->Nazioni_Id_Codice ?? ($context['Nazioni_Id_Codice'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['Nazioni_Id_Codice']) ? 'is-invalid' : '' ?>"
                         aria-describedby="Nazioni_Id_Codice-error"
                         aria-invalid="<?= isset($errors['Nazioni_Id_Codice']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="Nazioni_Codice"
                         id="Nazioni_Codice"
-                        value="<?= esc(old('Nazioni_Codice', $row->Nazioni_Codice ?? '')) ?>"
+                        value="<?= esc(old('Nazioni_Codice', $row->Nazioni_Codice ?? ($context['Nazioni_Codice'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['Nazioni_Codice']) ? 'is-invalid' : '' ?>"
                         aria-describedby="Nazioni_Codice-error"
                         aria-invalid="<?= isset($errors['Nazioni_Codice']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="Nazioni_Descrizione"
                         id="Nazioni_Descrizione"
-                        value="<?= esc(old('Nazioni_Descrizione', $row->Nazioni_Descrizione ?? '')) ?>"
+                        value="<?= esc(old('Nazioni_Descrizione', $row->Nazioni_Descrizione ?? ($context['Nazioni_Descrizione'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['Nazioni_Descrizione']) ? 'is-invalid' : '' ?>"
                         aria-describedby="Nazioni_Descrizione-error"
                         aria-invalid="<?= isset($errors['Nazioni_Descrizione']) ? 'true' : 'false' ?>"
@@ -102,7 +104,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="Nazioni_Targa"
                         id="Nazioni_Targa"
-                        value="<?= esc(old('Nazioni_Targa', $row->Nazioni_Targa ?? '')) ?>"
+                        value="<?= esc(old('Nazioni_Targa', $row->Nazioni_Targa ?? ($context['Nazioni_Targa'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['Nazioni_Targa']) ? 'is-invalid' : '' ?>"
                         aria-describedby="Nazioni_Targa-error"
                         aria-invalid="<?= isset($errors['Nazioni_Targa']) ? 'true' : 'false' ?>"
@@ -122,7 +124,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="Nazioni_ColExcel"
                         id="Nazioni_ColExcel"
-                        value="<?= esc(old('Nazioni_ColExcel', $row->Nazioni_ColExcel ?? '')) ?>"
+                        value="<?= esc(old('Nazioni_ColExcel', $row->Nazioni_ColExcel ?? ($context['Nazioni_ColExcel'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['Nazioni_ColExcel']) ? 'is-invalid' : '' ?>"
                         aria-describedby="Nazioni_ColExcel-error"
                         aria-invalid="<?= isset($errors['Nazioni_ColExcel']) ? 'true' : 'false' ?>"
@@ -142,7 +144,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="EN_Country"
                         id="EN_Country"
-                        value="<?= esc(old('EN_Country', $row->EN_Country ?? '')) ?>"
+                        value="<?= esc(old('EN_Country', $row->EN_Country ?? ($context['EN_Country'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['EN_Country']) ? 'is-invalid' : '' ?>"
                         aria-describedby="EN_Country-error"
                         aria-invalid="<?= isset($errors['EN_Country']) ? 'true' : 'false' ?>"
@@ -195,6 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -239,6 +242,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -246,6 +250,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

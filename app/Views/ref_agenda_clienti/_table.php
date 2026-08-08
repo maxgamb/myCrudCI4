@@ -86,10 +86,71 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->ref_agenda_cliente ?? '') ?></td>
-                                <td><?= esc($row->agenda_preno_arr_ore ?? $row->preno_id ?? '') ?></td>
-                                <td><?= esc($row->clienti_id ?? '') ?></td>
-                                <td><?= esc($row->tipologia_id ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->ref_agenda_cliente ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'ref_agenda_cliente',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->ref_agenda_cliente,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->ref_agenda_cliente) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->preno_id ?? '') !== ''): ?><a href="<?= site_url('agenda/view/' . rawurlencode((string) $row->preno_id)) ?>" class="text-decoration-none"><?= esc($row->agenda__preno_id__label ?? $row->preno_id ?? '') ?></a><?php else: ?><?= esc($row->agenda__preno_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'preno_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->preno_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->preno_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td>
+                                    <?php if ((string) ($row->clienti_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'clienti_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->clienti_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->clienti_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->tipologia_id ?? '') ?></td>
                                 <td><?= esc($row->ref_a_c_datarecord ?? '') ?></td>
                                 <td class="text-end text-nowrap">
                                     <?php $id = $row->ref_agenda_cliente ?? ''; ?>

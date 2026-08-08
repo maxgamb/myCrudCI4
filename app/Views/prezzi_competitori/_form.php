@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="data_prezzo"
                         id="data_prezzo"
-                        value="<?= esc(old('data_prezzo', $row->data_prezzo ?? '')) ?>"
+                        value="<?= esc(old('data_prezzo', $row->data_prezzo ?? ($context['data_prezzo'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['data_prezzo']) ? 'is-invalid' : '' ?>"
                         aria-describedby="data_prezzo-error"
                         aria-invalid="<?= isset($errors['data_prezzo']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="percentile_10"
                         id="percentile_10"
-                        value="<?= esc(old('percentile_10', $row->percentile_10 ?? '')) ?>"
+                        value="<?= esc(old('percentile_10', $row->percentile_10 ?? ($context['percentile_10'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['percentile_10']) ? 'is-invalid' : '' ?>"
                         aria-describedby="percentile_10-error"
                         aria-invalid="<?= isset($errors['percentile_10']) ? 'true' : 'false' ?>"
@@ -101,7 +103,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="percentile_25"
                         id="percentile_25"
-                        value="<?= esc(old('percentile_25', $row->percentile_25 ?? '')) ?>"
+                        value="<?= esc(old('percentile_25', $row->percentile_25 ?? ($context['percentile_25'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['percentile_25']) ? 'is-invalid' : '' ?>"
                         aria-describedby="percentile_25-error"
                         aria-invalid="<?= isset($errors['percentile_25']) ? 'true' : 'false' ?>"
@@ -120,7 +122,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="percentile_50"
                         id="percentile_50"
-                        value="<?= esc(old('percentile_50', $row->percentile_50 ?? '')) ?>"
+                        value="<?= esc(old('percentile_50', $row->percentile_50 ?? ($context['percentile_50'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['percentile_50']) ? 'is-invalid' : '' ?>"
                         aria-describedby="percentile_50-error"
                         aria-invalid="<?= isset($errors['percentile_50']) ? 'true' : 'false' ?>"
@@ -139,7 +141,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="percentile_75"
                         id="percentile_75"
-                        value="<?= esc(old('percentile_75', $row->percentile_75 ?? '')) ?>"
+                        value="<?= esc(old('percentile_75', $row->percentile_75 ?? ($context['percentile_75'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['percentile_75']) ? 'is-invalid' : '' ?>"
                         aria-describedby="percentile_75-error"
                         aria-invalid="<?= isset($errors['percentile_75']) ? 'true' : 'false' ?>"
@@ -158,7 +160,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="percentile_90"
                         id="percentile_90"
-                        value="<?= esc(old('percentile_90', $row->percentile_90 ?? '')) ?>"
+                        value="<?= esc(old('percentile_90', $row->percentile_90 ?? ($context['percentile_90'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['percentile_90']) ? 'is-invalid' : '' ?>"
                         aria-describedby="percentile_90-error"
                         aria-invalid="<?= isset($errors['percentile_90']) ? 'true' : 'false' ?>"
@@ -177,7 +179,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="indice_disponibilita"
                         id="indice_disponibilita"
-                        value="<?= esc(old('indice_disponibilita', $row->indice_disponibilita ?? '')) ?>"
+                        value="<?= esc(old('indice_disponibilita', $row->indice_disponibilita ?? ($context['indice_disponibilita'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['indice_disponibilita']) ? 'is-invalid' : '' ?>"
                         aria-describedby="indice_disponibilita-error"
                         aria-invalid="<?= isset($errors['indice_disponibilita']) ? 'true' : 'false' ?>"
@@ -196,7 +198,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="data_acuisizione"
                         id="data_acuisizione"
-                        value="<?= esc(old('data_acuisizione', $row->data_acuisizione ?? '')) ?>"
+                        value="<?= esc(old('data_acuisizione', $row->data_acuisizione ?? ($context['data_acuisizione'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['data_acuisizione']) ? 'is-invalid' : '' ?>"
                         aria-describedby="data_acuisizione-error"
                         aria-invalid="<?= isset($errors['data_acuisizione']) ? 'true' : 'false' ?>"
@@ -249,6 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -293,6 +296,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -300,6 +304,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

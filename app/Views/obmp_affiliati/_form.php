@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_aff_societa"
                         id="obmp_aff_societa"
-                        value="<?= esc(old('obmp_aff_societa', $row->obmp_aff_societa ?? '')) ?>"
+                        value="<?= esc(old('obmp_aff_societa', $row->obmp_aff_societa ?? ($context['obmp_aff_societa'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_aff_societa']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_aff_societa-error"
                         aria-invalid="<?= isset($errors['obmp_aff_societa']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_aff_sito"
                         id="obmp_aff_sito"
-                        value="<?= esc(old('obmp_aff_sito', $row->obmp_aff_sito ?? '')) ?>"
+                        value="<?= esc(old('obmp_aff_sito', $row->obmp_aff_sito ?? ($context['obmp_aff_sito'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_aff_sito']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_aff_sito-error"
                         aria-invalid="<?= isset($errors['obmp_aff_sito']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="email"
                         name="obmp_aff_email"
                         id="obmp_aff_email"
-                        value="<?= esc(old('obmp_aff_email', $row->obmp_aff_email ?? '')) ?>"
+                        value="<?= esc(old('obmp_aff_email', $row->obmp_aff_email ?? ($context['obmp_aff_email'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_aff_email']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_aff_email-error"
                         aria-invalid="<?= isset($errors['obmp_aff_email']) ? 'true' : 'false' ?>"
@@ -102,7 +104,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_aff_pasword"
                         id="obmp_aff_pasword"
-                        value="<?= esc(old('obmp_aff_pasword', $row->obmp_aff_pasword ?? '')) ?>"
+                        value="<?= esc(old('obmp_aff_pasword', $row->obmp_aff_pasword ?? ($context['obmp_aff_pasword'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_aff_pasword']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_aff_pasword-error"
                         aria-invalid="<?= isset($errors['obmp_aff_pasword']) ? 'true' : 'false' ?>"
@@ -122,7 +124,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="obmp_aff_cookies"
                         id="obmp_aff_cookies"
-                        value="<?= esc(old('obmp_aff_cookies', $row->obmp_aff_cookies ?? '')) ?>"
+                        value="<?= esc(old('obmp_aff_cookies', $row->obmp_aff_cookies ?? ($context['obmp_aff_cookies'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_aff_cookies']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_aff_cookies-error"
                         aria-invalid="<?= isset($errors['obmp_aff_cookies']) ? 'true' : 'false' ?>"
@@ -141,7 +143,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="obmp_aff_commisione"
                         id="obmp_aff_commisione"
-                        value="<?= esc(old('obmp_aff_commisione', $row->obmp_aff_commisione ?? '')) ?>"
+                        value="<?= esc(old('obmp_aff_commisione', $row->obmp_aff_commisione ?? ($context['obmp_aff_commisione'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_aff_commisione']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_aff_commisione-error"
                         aria-invalid="<?= isset($errors['obmp_aff_commisione']) ? 'true' : 'false' ?>"
@@ -160,7 +162,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="obmp_aff_mark_up"
                         id="obmp_aff_mark_up"
-                        value="<?= esc(old('obmp_aff_mark_up', $row->obmp_aff_mark_up ?? '')) ?>"
+                        value="<?= esc(old('obmp_aff_mark_up', $row->obmp_aff_mark_up ?? ($context['obmp_aff_mark_up'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_aff_mark_up']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_aff_mark_up-error"
                         aria-invalid="<?= isset($errors['obmp_aff_mark_up']) ? 'true' : 'false' ?>"
@@ -212,6 +214,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -256,6 +259,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -263,6 +267,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

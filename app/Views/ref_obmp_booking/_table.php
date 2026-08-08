@@ -148,17 +148,141 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->ref_obm_data ?? '') ?></td>
-                                <td><?= esc($row->agenda_preno_arr_ore ?? $row->preno_id ?? '') ?></td>
-                                <td><?= esc($row->obmp_clienti_obm_cliente_first_name ?? $row->obm_cliente_id ?? '') ?></td>
-                                <td><?= esc($row->hotel_id ?? '') ?></td>
-                                <td><?= esc($row->obmp_ref_site_ref_site_nome ?? $row->ref_site ?? '') ?></td>
-                                <td><?= esc($row->ref_agency ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->ref_obm_data ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'ref_obm_data',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->ref_obm_data,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->ref_obm_data) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->preno_id ?? '') !== ''): ?><a href="<?= site_url('agenda/view/' . rawurlencode((string) $row->preno_id)) ?>" class="text-decoration-none"><?= esc($row->agenda__preno_id__label ?? $row->preno_id ?? '') ?></a><?php else: ?><?= esc($row->agenda__preno_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'preno_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->preno_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->preno_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td>
+                                    <?php if ((string) ($row->obm_cliente_id ?? '') !== ''): ?><a href="<?= site_url('obmp_clienti/view/' . rawurlencode((string) $row->obm_cliente_id)) ?>" class="text-decoration-none"><?= esc($row->obmp_clienti__obm_cliente_id__label ?? $row->obm_cliente_id ?? '') ?></a><?php else: ?><?= esc($row->obmp_clienti__obm_cliente_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'obm_cliente_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->obm_cliente_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->obm_cliente_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td>
+                                    <?php if ((string) ($row->hotel_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'hotel_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->hotel_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->hotel_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->ref_site ?? '') !== ''): ?><a href="<?= site_url('obmp_ref_site/view/' . rawurlencode((string) $row->ref_site)) ?>" class="text-decoration-none"><?= esc($row->obmp_ref_site__ref_site__label ?? $row->ref_site ?? '') ?></a><?php else: ?><?= esc($row->obmp_ref_site__ref_site__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'ref_site',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->ref_site ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->ref_site ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td><?= esc($row->ref_agency ?? '') ?></td>
                                 <td><?= esc($row->ref_event ?? '') ?></td>
                                 <td><?= esc($row->ref_session ?? '') ?></td>
                                 <td><?= esc($row->ref_cookie ?? '') ?></td>
-                                <td><?= esc($row->obmp_quote_quote_lg ?? $row->quote_id ?? '') ?></td>
-                                <td class="text-end text-nowrap">
+                                <td>
+                                    <?php if ((string) ($row->quote_id ?? '') !== ''): ?><a href="<?= site_url('obmp_quote/view/' . rawurlencode((string) $row->quote_id)) ?>" class="text-decoration-none"><?= esc($row->obmp_quote__quote_id__label ?? $row->quote_id ?? '') ?></a><?php else: ?><?= esc($row->obmp_quote__quote_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'quote_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->quote_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->quote_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td class="text-end text-nowrap">
                                     <?php $id = $row->ref_obm_data ?? ''; ?>
                                     <div class="btn-group btn-group-sm" role="group" aria-label="Azioni record">
                                         <a href="<?= site_url('ref_obmp_booking/view/' . rawurlencode((string) $id)) ?>" class="btn btn-outline-info" title="Visualizza">

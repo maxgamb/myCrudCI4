@@ -68,7 +68,7 @@
 
                         <li>
                             <a class="dropdown-item"
-                               href="<?= site_url('mycrud') ?>">
+                               href="<?= site_url('mycrud/builder') ?>">
                                 <i class="bi bi-sliders"></i>
                                 Generazione personalizzata
                             </a>
@@ -121,6 +121,16 @@
                         <li>
                             <a
                                 class="dropdown-item"
+                                href="<?= site_url('mycrud/tools/ai-context') ?>"
+                            >
+                                <i class="bi bi-robot"></i>
+                                Contesto IA
+                            </a>
+                        </li>
+
+                        <li>
+                            <a
+                                class="dropdown-item"
                                 href="<?= site_url('mycrud/tools/schema') ?>"
                             >
                                 <i class="bi bi-diagram-3"></i>
@@ -130,67 +140,18 @@
                     </ul>
                 </li>
 
-                <li class="nav-item dropdown">
-                    <a
-                        class="nav-link dropdown-toggle"
-                        href="#"
-                        role="button"
-                        data-bs-toggle="dropdown"
-                    >
-                        <i class="bi bi-clock-history"></i>
-                        Legacy
+                <li class="nav-item">
+                    <a class="nav-link" href="<?= site_url('mycrud/docs') ?>">
+                        <i class="bi bi-book"></i>
+                        Documentazione
                     </a>
-
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item"
-                               href="<?= site_url('generamodelsadvanced') ?>">
-                                Genera Models
-                            </a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item"
-                               href="<?= site_url('generacontrollers') ?>">
-                                Genera Controllers
-                            </a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item"
-                               href="<?= site_url('generaviews') ?>">
-                                Genera Views
-                            </a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item"
-                               href="<?= site_url('generaroutesfromtables') ?>">
-                                Vecchie Routes
-                            </a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item"
-                               href="<?= site_url('generagields') ?>">
-                                Vecchi Fields
-                            </a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item"
-                               href="<?= site_url('formgenerator') ?>">
-                                Vecchio Form Generator
-                            </a>
-                        </li>
-                    </ul>
                 </li>
 
             </ul>
 
             <span class="navbar-text">
-                <span class="badge bg-success">
-                    Production
+                <span class="badge text-bg-secondary">
+                    <?= esc((string) config('MyCrud')->version) ?>
                 </span>
             </span>
         </div>

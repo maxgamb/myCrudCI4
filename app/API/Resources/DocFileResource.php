@@ -15,7 +15,7 @@ final class DocFileResource
   4 => 'doc_url_file',
   5 => 'doc_note',
   6 => 'doc_utente_id',
-  7 => 'hotels_nome_hotel',
+  7 => 'hotels__hotel_id__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

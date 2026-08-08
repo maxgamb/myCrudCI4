@@ -162,16 +162,16 @@ components:
           type: integer
           format: int32
           nullable: true
-        'agenda_preno_arr_ore':
+        'agenda__preno_id__label':
           type: string
           nullable: true
-        'obmp_clienti_obm_cliente_first_name':
+        'obmp_clienti__obm_cliente_id__label':
           type: string
           nullable: true
-        'obmp_quote_quote_lg':
+        'obmp_quote__quote_id__label':
           type: string
           nullable: true
-        'obmp_ref_site_ref_site_nome':
+        'obmp_ref_site__ref_site__label':
           type: string
           nullable: true
     RefObmpBookingCreate:

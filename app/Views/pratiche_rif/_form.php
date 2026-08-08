@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="pratica_rif_pratica_id"
                         id="pratica_rif_pratica_id"
-                        value="<?= esc(old('pratica_rif_pratica_id', $row->pratica_rif_pratica_id ?? '')) ?>"
+                        value="<?= esc(old('pratica_rif_pratica_id', $row->pratica_rif_pratica_id ?? ($context['pratica_rif_pratica_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pratica_rif_pratica_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pratica_rif_pratica_id-error"
                         aria-invalid="<?= isset($errors['pratica_rif_pratica_id']) ? 'true' : 'false' ?>"
@@ -61,7 +63,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -80,7 +82,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="pratica_rif_conto_id"
                         id="pratica_rif_conto_id"
-                        value="<?= esc(old('pratica_rif_conto_id', $row->pratica_rif_conto_id ?? '')) ?>"
+                        value="<?= esc(old('pratica_rif_conto_id', $row->pratica_rif_conto_id ?? ($context['pratica_rif_conto_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pratica_rif_conto_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pratica_rif_conto_id-error"
                         aria-invalid="<?= isset($errors['pratica_rif_conto_id']) ? 'true' : 'false' ?>"
@@ -99,7 +101,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="pratica_rif_totale_modificato"
                         id="pratica_rif_totale_modificato"
-                        value="<?= esc(old('pratica_rif_totale_modificato', $row->pratica_rif_totale_modificato ?? '')) ?>"
+                        value="<?= esc(old('pratica_rif_totale_modificato', $row->pratica_rif_totale_modificato ?? ($context['pratica_rif_totale_modificato'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pratica_rif_totale_modificato']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pratica_rif_totale_modificato-error"
                         aria-invalid="<?= isset($errors['pratica_rif_totale_modificato']) ? 'true' : 'false' ?>"
@@ -118,7 +120,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="pratica_rif_totale_importo"
                         id="pratica_rif_totale_importo"
-                        value="<?= esc(old('pratica_rif_totale_importo', $row->pratica_rif_totale_importo ?? '')) ?>"
+                        value="<?= esc(old('pratica_rif_totale_importo', $row->pratica_rif_totale_importo ?? ($context['pratica_rif_totale_importo'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pratica_rif_totale_importo']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pratica_rif_totale_importo-error"
                         aria-invalid="<?= isset($errors['pratica_rif_totale_importo']) ? 'true' : 'false' ?>"
@@ -137,7 +139,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="pratica_rif_pagamento_importo_pag"
                         id="pratica_rif_pagamento_importo_pag"
-                        value="<?= esc(old('pratica_rif_pagamento_importo_pag', $row->pratica_rif_pagamento_importo_pag ?? '')) ?>"
+                        value="<?= esc(old('pratica_rif_pagamento_importo_pag', $row->pratica_rif_pagamento_importo_pag ?? ($context['pratica_rif_pagamento_importo_pag'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pratica_rif_pagamento_importo_pag']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pratica_rif_pagamento_importo_pag-error"
                         aria-invalid="<?= isset($errors['pratica_rif_pagamento_importo_pag']) ? 'true' : 'false' ?>"
@@ -156,7 +158,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="pratica_rif_note"
                         id="pratica_rif_note"
-                        value="<?= esc(old('pratica_rif_note', $row->pratica_rif_note ?? '')) ?>"
+                        value="<?= esc(old('pratica_rif_note', $row->pratica_rif_note ?? ($context['pratica_rif_note'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pratica_rif_note']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pratica_rif_note-error"
                         aria-invalid="<?= isset($errors['pratica_rif_note']) ? 'true' : 'false' ?>"
@@ -175,7 +177,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="pratica_rif_out_conto"
                         id="pratica_rif_out_conto"
-                        value="<?= esc(old('pratica_rif_out_conto', $row->pratica_rif_out_conto ?? '')) ?>"
+                        value="<?= esc(old('pratica_rif_out_conto', $row->pratica_rif_out_conto ?? ($context['pratica_rif_out_conto'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pratica_rif_out_conto']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pratica_rif_out_conto-error"
                         aria-invalid="<?= isset($errors['pratica_rif_out_conto']) ? 'true' : 'false' ?>"
@@ -202,12 +204,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['pratiche_rif_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('pratiche_rif_id', $row->pratiche_rif_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('pratiche_rif_id', $row->pratiche_rif_id ?? ($context['pratiche_rif_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="pratiche_rif_id"
+                            data-base-url="<?= site_url('pratiche/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('pratiche/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['pratiche_rif_id'])): ?>
                         <div id="pratiche_rif_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['pratiche_rif_id']) ?>
@@ -255,6 +278,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -299,6 +323,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -306,6 +331,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

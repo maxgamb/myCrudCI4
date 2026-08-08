@@ -17,7 +17,7 @@ final class PuliziaResource
   6 => 'pulizia_data',
   7 => 'pulizia_note',
   8 => 'utente_id',
-  9 => 'conti_trattamento_sog',
+  9 => 'conti__conto_id__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

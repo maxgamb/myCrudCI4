@@ -36,7 +36,7 @@
                             <td><?= esc($row->pratica_rif_out_conto ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('PraticheRif.pratiche_rif_id')) ?></th>
-                            <td><?= esc($row->pratiche_rif_id ?? '') ?></td>
+                            <td><a href="<?= site_url('pratiche/view/' . rawurlencode((string) ($row->pratiche_rif_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->pratiche__pratiche_rif_id__label ?? $row->pratiche_rif_id ?? '') ?></a></td>
                         </tr>                    </tbody>
                 </table>
             </div>

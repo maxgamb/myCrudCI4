@@ -15,10 +15,10 @@
                             <td><?= esc($row->ref_costi_tipologia_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('RefCostiTipologia.costi_var_id')) ?></th>
-                            <td><?= esc($row->costi_var_id ?? '') ?></td>
+                            <td><a href="<?= site_url('costi_var/view/' . rawurlencode((string) ($row->costi_var_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->costi_var__costi_var_id__label ?? $row->costi_var_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('RefCostiTipologia.tipologia_id')) ?></th>
-                            <td><?= esc($row->tipologia_id ?? '') ?></td>
+                            <td><a href="<?= site_url('tipologia_camera/view/' . rawurlencode((string) ($row->tipologia_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->tipologia_camera__tipologia_id__label ?? $row->tipologia_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('RefCostiTipologia.hotel_id')) ?></th>
                             <td><?= esc($row->hotel_id ?? '') ?></td>

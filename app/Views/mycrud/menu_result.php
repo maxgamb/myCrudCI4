@@ -16,6 +16,27 @@
                 <code>&lt;?= view('layouts/_menu') ?&gt;</code>
             </div>
 
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <div class="border rounded p-3 h-100">
+                        <strong><i class="bi bi-layout-sidebar"></i> Verticale</strong>
+                        <div class="small text-body-secondary mt-1">Gruppi accordion, sottogruppi, ricerca, preferiti e voce corrente.</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="border rounded p-3 h-100">
+                        <strong><i class="bi bi-menu-button-wide"></i> Orizzontale</strong>
+                        <div class="small text-body-secondary mt-1">Dropdown Bootstrap, sottogruppi, preferiti e ricerca dedicata.</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="border rounded p-3 h-100">
+                        <strong><i class="bi bi-gear"></i> Configurazione unica</strong>
+                        <div class="small text-body-secondary mt-1"><code>Config/Menu.php</code> alimenta entrambi i renderer.</div>
+                    </div>
+                </div>
+            </div>
+
             <p class="mb-3">
                 Il renderer predefinito è <strong><?= esc($type) ?></strong>.
                 Puoi cambiarlo in seguito modificando <code>Config\Menu::$type</code> senza rigenerare le voci.

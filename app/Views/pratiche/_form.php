@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -61,7 +63,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="pratica_nome"
                         id="pratica_nome"
-                        value="<?= esc(old('pratica_nome', $row->pratica_nome ?? '')) ?>"
+                        value="<?= esc(old('pratica_nome', $row->pratica_nome ?? ($context['pratica_nome'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pratica_nome']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pratica_nome-error"
                         aria-invalid="<?= isset($errors['pratica_nome']) ? 'true' : 'false' ?>"
@@ -88,12 +90,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['pratica_agenzia_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('pratica_agenzia_id', $row->pratica_agenzia_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('pratica_agenzia_id', $row->pratica_agenzia_id ?? ($context['pratica_agenzia_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="pratica_agenzia_id"
+                            data-base-url="<?= site_url('agenzie/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('agenzie/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['pratica_agenzia_id'])): ?>
                         <div id="pratica_agenzia_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['pratica_agenzia_id']) ?>
@@ -108,7 +131,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="pratica_1"
                         id="pratica_1"
-                        value="<?= esc(old('pratica_1', $row->pratica_1 ?? '')) ?>"
+                        value="<?= esc(old('pratica_1', $row->pratica_1 ?? ($context['pratica_1'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pratica_1']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pratica_1-error"
                         aria-invalid="<?= isset($errors['pratica_1']) ? 'true' : 'false' ?>"
@@ -128,7 +151,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="pratica_2"
                         id="pratica_2"
-                        value="<?= esc(old('pratica_2', $row->pratica_2 ?? '')) ?>"
+                        value="<?= esc(old('pratica_2', $row->pratica_2 ?? ($context['pratica_2'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pratica_2']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pratica_2-error"
                         aria-invalid="<?= isset($errors['pratica_2']) ? 'true' : 'false' ?>"
@@ -148,7 +171,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="pratica_note"
                         id="pratica_note"
-                        value="<?= esc(old('pratica_note', $row->pratica_note ?? '')) ?>"
+                        value="<?= esc(old('pratica_note', $row->pratica_note ?? ($context['pratica_note'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pratica_note']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pratica_note-error"
                         aria-invalid="<?= isset($errors['pratica_note']) ? 'true' : 'false' ?>"
@@ -167,7 +190,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="pratica_stato"
                         id="pratica_stato"
-                        value="<?= esc(old('pratica_stato', $row->pratica_stato ?? '')) ?>"
+                        value="<?= esc(old('pratica_stato', $row->pratica_stato ?? ($context['pratica_stato'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pratica_stato']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pratica_stato-error"
                         aria-invalid="<?= isset($errors['pratica_stato']) ? 'true' : 'false' ?>"
@@ -186,7 +209,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="pratiche_utente_id"
                         id="pratiche_utente_id"
-                        value="<?= esc(old('pratiche_utente_id', $row->pratiche_utente_id ?? '')) ?>"
+                        value="<?= esc(old('pratiche_utente_id', $row->pratiche_utente_id ?? ($context['pratiche_utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pratiche_utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pratiche_utente_id-error"
                         aria-invalid="<?= isset($errors['pratiche_utente_id']) ? 'true' : 'false' ?>"
@@ -238,6 +261,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -282,6 +306,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -289,6 +314,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

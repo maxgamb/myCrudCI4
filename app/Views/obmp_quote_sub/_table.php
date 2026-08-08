@@ -68,9 +68,50 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->obmp_quote_sub_id ?? '') ?></td>
-                                <td><?= esc($row->obmp_quote_quote_lg ?? $row->obmp_quote_id ?? '') ?></td>
-                                <td><?= esc($row->hotel_id ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->obmp_quote_sub_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'obmp_quote_sub_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->obmp_quote_sub_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->obmp_quote_sub_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->obmp_quote_id ?? '') !== ''): ?><a href="<?= site_url('obmp_quote/view/' . rawurlencode((string) $row->obmp_quote_id)) ?>" class="text-decoration-none"><?= esc($row->obmp_quote__obmp_quote_id__label ?? $row->obmp_quote_id ?? '') ?></a><?php else: ?><?= esc($row->obmp_quote__obmp_quote_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'obmp_quote_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->obmp_quote_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->obmp_quote_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td><?= esc($row->hotel_id ?? '') ?></td>
                                 <td><?= esc($row->quote_sub_jeson ?? '') ?></td>
                                 <td><?= esc($row->quote_sub_data ?? '') ?></td>
                                 <td><?= esc($row->randomd_string ?? '') ?></td>

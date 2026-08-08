@@ -16,7 +16,7 @@ final class UtentiResource
   5 => 'hotel_id',
   6 => 'utenti_livello',
   7 => 'utenti_Utente_id',
-  8 => 'staff_nome',
+  8 => 'staff__staff_id__label',
 );
     private const WRITABLE = array (
   0 => 'staff_id',

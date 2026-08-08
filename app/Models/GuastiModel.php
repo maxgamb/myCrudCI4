@@ -138,14 +138,24 @@ final class GuastiModel extends Model
   array (
     'table' => 'camere',
     'key' => 'camera_id',
-    'label' => 'tipologia_camera',
+    'displayField' => 'tipologia_camera',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'tipologia_camera',
+    ),
     'mode' => 'select',
   ),
   'hotel_id' => 
   array (
     'table' => 'hotels',
     'key' => 'hotel_id',
-    'label' => 'nome_hotel',
+    'displayField' => 'nome_hotel',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'nome_hotel',
+    ),
     'mode' => 'select',
   ),
 );
@@ -167,8 +177,8 @@ final class GuastiModel extends Model
             'guasti.guasto_data AS guasto_data',
             'guasti.guasto_utente_id AS guasto_utente_id',
             'guasti.guasto_data_record AS guasto_data_record',
-            'camere__camera_id.tipologia_camera AS camere_tipologia_camera',
-            'hotels__hotel_id.nome_hotel AS hotels_nome_hotel'
+            'camere__camera_id.tipologia_camera AS camere__camera_id__label',
+            'hotels__hotel_id.nome_hotel AS hotels__hotel_id__label'
         ]);
         $builder->join('camere AS camere__camera_id', 'camere__camera_id.camera_id = guasti.camera_id', 'left');
         $builder->join('hotels AS hotels__hotel_id', 'hotels__hotel_id.hotel_id = guasti.hotel_id', 'left');
@@ -190,8 +200,8 @@ final class GuastiModel extends Model
             'guasti.guasto_stato AS guasto_stato',
             'guasti.guasto_data AS guasto_data',
             'guasti.guasto_utente_id AS guasto_utente_id',
-            'camere__camera_id.tipologia_camera AS camere_tipologia_camera',
-            'hotels__hotel_id.nome_hotel AS hotels_nome_hotel'
+            'camere__camera_id.tipologia_camera AS camere__camera_id__label',
+            'hotels__hotel_id.nome_hotel AS hotels__hotel_id__label'
         ]);
         $builder->join('camere AS camere__camera_id', 'camere__camera_id.camera_id = guasti.camera_id', 'left');
         $builder->join('hotels AS hotels__hotel_id', 'hotels__hotel_id.hotel_id = guasti.hotel_id', 'left');
@@ -275,8 +285,8 @@ final class GuastiModel extends Model
             'guasti.guasto_stato AS guasto_stato',
             'guasti.guasto_data AS guasto_data',
             'guasti.guasto_utente_id AS guasto_utente_id',
-            'camere__camera_id.tipologia_camera AS camere_tipologia_camera',
-            'hotels__hotel_id.nome_hotel AS hotels_nome_hotel'
+            'camere__camera_id.tipologia_camera AS camere__camera_id__label',
+            'hotels__hotel_id.nome_hotel AS hotels__hotel_id__label'
         ]);
         $builder->join('camere AS camere__camera_id', 'camere__camera_id.camera_id = guasti.camera_id', 'left');
         $builder->join('hotels AS hotels__hotel_id', 'hotels__hotel_id.hotel_id = guasti.hotel_id', 'left');
@@ -484,31 +494,37 @@ final class GuastiModel extends Model
     public function getCamereCameraIdOptions(): array
     {
         return $this->db->table('camere')
-            ->select(['camera_id', 'tipologia_camera'])
+            ->select(array (
+  0 => 'camera_id',
+  1 => 'tipologia_camera',
+))
             ->orderBy('tipologia_camera', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     /** Restituisce le opzioni della relazione hotel_id. */
     public function getHotelsHotelIdOptions(): array
     {
         return $this->db->table('hotels')
-            ->select(['hotel_id', 'nome_hotel'])
+            ->select(array (
+  0 => 'hotel_id',
+  1 => 'nome_hotel',
+))
             ->orderBy('nome_hotel', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     public function relationOptions(): array
     {
         return [
-            'camera_id' => $this->toOptions($this->getCamereCameraIdOptions(), 'camera_id', 'tipologia_camera'),
-            'hotel_id' => $this->toOptions($this->getHotelsHotelIdOptions(), 'hotel_id', 'nome_hotel'),
+            'camera_id' => $this->toRelationOptions($this->getCamereCameraIdOptions(), 'camera_id'),
+            'hotel_id' => $this->toRelationOptions($this->getHotelsHotelIdOptions(), 'hotel_id'),
         ];
     }
 
     /**
      * Ricerca server-side delle opzioni per relazioni grandi.
-     * Tabella, chiave e campo label arrivano solo dalla whitelist generata.
+     * Tabella, chiave e campi descrittivi arrivano solo dalla whitelist generata.
      *
      * @return list<array{id:string,text:string}>
      */
@@ -519,36 +535,100 @@ final class GuastiModel extends Model
         }
 
         $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
         $limit = max(1, min(100, $limit));
         $builder = $this->db->table((string) $definition['table'])
-            ->select([(string) $definition['key'], (string) $definition['label']])
-            ->orderBy((string) $definition['label'], 'ASC')
+            ->select($selectFields)
+            ->orderBy((string) $definition['displayField'], 'ASC')
             ->limit($limit);
 
         $query = trim($query);
-        if ($query !== '') {
-            $builder->like((string) $definition['label'], $query, 'after');
+        if ($query !== '' && $displayFields !== []) {
+            $builder->groupStart();
+            foreach ($displayFields as $index => $displayColumn) {
+                if ($index === 0) {
+                    $builder->like((string) $displayColumn, $query, 'after');
+                } else {
+                    $builder->orLike((string) $displayColumn, $query, 'after');
+                }
+            }
+            $builder->groupEnd();
         }
 
         $rows = $builder->get()->getResultArray();
         $result = [];
         foreach ($rows as $row) {
             $result[] = [
-                'id' => (string) ($row[(string) $definition['key']] ?? ''),
-                'text' => (string) ($row[(string) $definition['label']] ?? ''),
+                'id' => (string) ($row[$key] ?? ''),
+                'text' => $this->formatRelationLabel($row, $definition),
             ];
         }
 
         return $result;
     }
 
-    private function toOptions(array $rows, string $key, string $label): array
+    /** Restituisce una FK valida e la sua descrizione; usato dal Create contestuale. */
+    public function relationOptionById(string $field, int|string $id): ?array
     {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return null;
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
+        $row = $this->db->table((string) $definition['table'])
+            ->select($selectFields)
+            ->where($key, $id)
+            ->limit(1)
+            ->get()
+            ->getRowArray();
+
+        if (!is_array($row)) {
+            return null;
+        }
+
+        return [
+            'id' => (string) ($row[$key] ?? ''),
+            'text' => $this->formatRelationLabel($row, $definition),
+        ];
+    }
+
+    private function toRelationOptions(array $rows, string $field): array
+    {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return [];
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
         $options = [];
         foreach ($rows as $row) {
-            $options[(string) $row->{$key}] = (string) $row->{$label};
+            if (!is_array($row)) {
+                continue;
+            }
+            $options[(string) ($row[$key] ?? '')] = $this->formatRelationLabel($row, $definition);
         }
         return $options;
+    }
+
+    private function formatRelationLabel(array $row, array $definition): string
+    {
+        $template = trim((string) ($definition['displayTemplate'] ?? ''));
+        if ($template === '') {
+            return trim((string) ($row[(string) $definition['displayField']] ?? ''));
+        }
+
+        $label = preg_replace_callback(
+            '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+            static fn (array $match): string => (string) ($row[$match[1]] ?? ''),
+            $template
+        );
+
+        return trim((string) $label);
     }
 
     public function loadHasMany(int|string $parentId): array

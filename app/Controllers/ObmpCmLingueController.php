@@ -110,11 +110,36 @@ final class ObmpCmLingueController extends BaseController
 
     public function create()
     {
+        // Le sole FK esplicitamente abilitate dal Builder possono essere
+        // ricevute dalla query string. Prima di usarle verifichiamo che il
+        // record padre esista realmente: hidden/select/input non fanno
+        // differenza dal punto di vista della sicurezza.
+        $context = [];
+        $contextLabels = [];
+        foreach (array (
+  0 => 'obmp_cm_rooms_id',
+) as $field) {
+            $requested = $this->request->getGet($field);
+            if (!is_scalar($requested) || trim((string) $requested) === '') {
+                continue;
+            }
+
+            $option = $this->gateway->relationOptionById($field, (string) $requested);
+            if ($option === null) {
+                throw PageNotFoundException::forPageNotFound('Valore FK non valido per ' . $field . '.');
+            }
+
+            $context[$field] = (string) $option['id'];
+            $contextLabels[$field] = (string) $option['text'];
+        }
+
         return view('obmp_cm_lingue/create', [
             'title' => 'Nuovo record',
             'row' => null,
             'errors' => session('errors') ?? [],
             'options' => $this->gateway->relationOptions(),
+            'context' => $context,
+            'contextLabels' => $contextLabels,
             'submissionToken' => $this->submissionGuard->create('store'),
         ]);
     }

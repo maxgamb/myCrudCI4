@@ -26,7 +26,7 @@ final class CassaResource
   15 => 'nexi_cod_aut',
   16 => 'nexi_codTrans',
   17 => 'nexi_pan',
-  18 => 'agenda_preno_arr_ore',
+  18 => 'agenda__preno_id__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

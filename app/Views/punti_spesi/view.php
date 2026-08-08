@@ -18,10 +18,10 @@
                             <td><?= esc($row->hotel_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('PuntiSpesi.cliente_id')) ?></th>
-                            <td><?= esc($row->cliente_id ?? '') ?></td>
+                            <td><a href="<?= site_url('clienti/view/' . rawurlencode((string) ($row->cliente_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->clienti__cliente_id__label ?? $row->cliente_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('PuntiSpesi.conto_id')) ?></th>
-                            <td><?= esc($row->conto_id ?? '') ?></td>
+                            <td><a href="<?= site_url('conti/view/' . rawurlencode((string) ($row->conto_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->conti__conto_id__label ?? $row->conto_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('PuntiSpesi.punti')) ?></th>
                             <td><?= esc($row->punti ?? '') ?></td>

@@ -183,10 +183,10 @@ components:
           type: string
           nullable: true
           maxLength: 200
-        'obmp_cm_obmp_cm_id_hotel_agenzia':
+        'obmp_cm__obmp_cm_id__label':
           type: string
           nullable: true
-        'tipologia_camera_nome_tipologia':
+        'tipologia_camera__obmp_cm_rooms_tipologia_id__label':
           type: string
           nullable: true
     ObmpCmRoomsCreate:

@@ -47,8 +47,28 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->app_ip_id ?? '') ?></td>
-                                <td><?= esc($row->ip_aderss ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->app_ip_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'app_ip_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->app_ip_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->app_ip_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->ip_aderss ?? '') ?></td>
                                 <td><?= esc($row->Livello ?? '') ?></td>
                                 <td><?= esc($row->data ?? '') ?></td>
                                 <td class="text-end text-nowrap">

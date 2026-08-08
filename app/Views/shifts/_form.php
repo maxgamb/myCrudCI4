@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -50,12 +52,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['staff_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('staff_id', $row->staff_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('staff_id', $row->staff_id ?? ($context['staff_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="staff_id"
+                            data-base-url="<?= site_url('staff/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('staff/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['staff_id'])): ?>
                         <div id="staff_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['staff_id']) ?>
@@ -70,7 +93,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -90,7 +113,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="shift_date"
                         id="shift_date"
-                        value="<?= esc(old('shift_date', $row->shift_date ?? '')) ?>"
+                        value="<?= esc(old('shift_date', $row->shift_date ?? ($context['shift_date'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['shift_date']) ? 'is-invalid' : '' ?>"
                         aria-describedby="shift_date-error"
                         aria-invalid="<?= isset($errors['shift_date']) ? 'true' : 'false' ?>"
@@ -110,7 +133,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="position"
                         id="position"
-                        value="<?= esc(old('position', $row->position ?? '')) ?>"
+                        value="<?= esc(old('position', $row->position ?? ($context['position'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['position']) ? 'is-invalid' : '' ?>"
                         aria-describedby="position-error"
                         aria-invalid="<?= isset($errors['position']) ? 'true' : 'false' ?>"
@@ -130,7 +153,7 @@ $submissionToken = $submissionToken ?? '';
                         type="time"
                         name="shift_time"
                         id="shift_time"
-                        value="<?= esc(old('shift_time', $row->shift_time ?? '')) ?>"
+                        value="<?= esc(old('shift_time', $row->shift_time ?? ($context['shift_time'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['shift_time']) ? 'is-invalid' : '' ?>"
                         aria-describedby="shift_time-error"
                         aria-invalid="<?= isset($errors['shift_time']) ? 'true' : 'false' ?>"
@@ -183,6 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -227,6 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -234,6 +259,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

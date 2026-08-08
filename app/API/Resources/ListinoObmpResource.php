@@ -19,8 +19,8 @@ final class ListinoObmpResource
   8 => 'ref_session',
   9 => 'ref_cookie',
   10 => 'listino_obmp_datarecord',
-  11 => 'listino_nome_obmp_listino_nome',
-  12 => 'obmp_cm_rooms_obmp_cm_rooms_room_note',
+  11 => 'listino_nome_obmp__listino_nome_id__label',
+  12 => 'obmp_cm_rooms__tipologia_id__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

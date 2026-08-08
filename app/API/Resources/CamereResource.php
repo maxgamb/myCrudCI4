@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\API\Resources;
 
-/** Serializza la risorsa camere secondo la configurazione del Builder. */
+/** Serializza la risorsa camere senza esporre campi sensibili. */
 final class CamereResource
 {
     private const READABLE = array (
@@ -20,8 +20,9 @@ final class CamereResource
   9 => 'camere_bagno',
   10 => 'camere_edificio',
   11 => 'review_tot',
-  12 => 'camere_utente_id',
-  13 => 'tipologia_camera_nome_tipologia',
+  12 => 'camere_data_record',
+  13 => 'camere_utente_id',
+  14 => 'tipologia_camera_nome_tipologia',
 );
     private const WRITABLE = array (
   0 => 'camera_id',
@@ -36,19 +37,40 @@ final class CamereResource
   9 => 'camere_bagno',
   10 => 'camere_edificio',
   11 => 'review_tot',
-  12 => 'camere_utente_id',
+  12 => 'camere_data_record',
+  13 => 'camere_utente_id',
 );
     private const FILTERABLE = array (
   0 => 'camera_id',
   1 => 'hotel_id',
   2 => 'numero_camera',
-  3 => 'tipologia_id',
+  3 => 'tipologia_camera',
+  4 => 'tipologia_id',
+  5 => 'camere_max_pax',
+  6 => 'camere_metri_quadri',
+  7 => 'camere_vista',
+  8 => 'camere_piano',
+  9 => 'camere_bagno',
+  10 => 'camere_edificio',
+  11 => 'review_tot',
+  12 => 'camere_data_record',
+  13 => 'camere_utente_id',
 );
     private const SORTABLE = array (
   0 => 'camera_id',
   1 => 'hotel_id',
   2 => 'numero_camera',
-  3 => 'tipologia_id',
+  3 => 'tipologia_camera',
+  4 => 'tipologia_id',
+  5 => 'camere_max_pax',
+  6 => 'camere_metri_quadri',
+  7 => 'camere_vista',
+  8 => 'camere_piano',
+  9 => 'camere_bagno',
+  10 => 'camere_edificio',
+  11 => 'review_tot',
+  12 => 'camere_data_record',
+  13 => 'camere_utente_id',
 );
 
     public static function make(object|array $record): array

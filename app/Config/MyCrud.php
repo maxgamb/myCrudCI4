@@ -2,11 +2,12 @@
 
 namespace Config;
 
+use App\Libraries\MyCrud\MyCrudVersion;
 use CodeIgniter\Config\BaseConfig;
 
 class MyCrud extends BaseConfig
 {
-    public string $version = '2.8.0-dev1';
+    public string $version = MyCrudVersion::VERSION;
 
     /**
      * Directory base usata dal writer. Ogni generatore deve passare un percorso

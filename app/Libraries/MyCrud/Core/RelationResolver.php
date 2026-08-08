@@ -85,7 +85,13 @@ final class RelationResolver
                     'parentTable' => $parentTable,
                     'parentKey' => $parentColumn,
                     'displayField' => $displayField,
-                    'alias' => $parentTable . '_' . $displayField,
+                    'displayTemplate' => '',
+                    // Elenco whitelist dei campi che il Builder può usare per
+                    // costruire la descrizione leggibile della relazione.
+                    'availableDisplayFields' => $this->availableDisplayFields($parentInfo, $parentColumn),
+                    // Alias stabile: non cambia quando lo sviluppatore sceglie
+                    // un altro displayField o un template descrittivo.
+                    'alias' => $parentTable . '__' . $childColumn . '__label',
                     'rowEstimate' => $rowEstimate,
                     // Lato generatore: proponiamo AJAX soltanto per relazioni
                     // grandi; lo sviluppatore può cambiare modalità nel Builder.
@@ -190,6 +196,34 @@ final class RelationResolver
         }
 
         return (string) ($tableInfo['primaryKey'] ?? $excludedField);
+    }
+
+
+    /** @return list<string> */
+    private function availableDisplayFields(array $tableInfo, string $keyField): array
+    {
+        $fields = [];
+
+        foreach ($tableInfo['columns'] ?? [] as $column) {
+            $name = (string) ($column['name'] ?? '');
+            $type = strtolower((string) ($column['type'] ?? ''));
+
+            if ($name === '' || $name === 'deleted_at') {
+                continue;
+            }
+
+            if (str_contains($type, 'blob') || str_contains($type, 'binary')) {
+                continue;
+            }
+
+            $fields[] = $name;
+        }
+
+        if ($keyField !== '' && !in_array($keyField, $fields, true)) {
+            array_unshift($fields, $keyField);
+        }
+
+        return array_values(array_unique($fields));
     }
 
     private function displayColumns(array $tableInfo, string $foreignKey): array

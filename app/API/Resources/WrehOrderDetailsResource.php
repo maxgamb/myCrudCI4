@@ -14,8 +14,8 @@ final class WrehOrderDetailsResource
   3 => 'quantity',
   4 => 'price',
   5 => 'utente_id',
-  6 => 'wreh_orders_status',
-  7 => 'wreh_products_name',
+  6 => 'wreh_orders__order_id__label',
+  7 => 'wreh_products__product_id__label',
 );
     private const WRITABLE = array (
   0 => 'order_id',

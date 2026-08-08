@@ -133,7 +133,7 @@ components:
         'utenti_Utente_id':
           type: integer
           format: int32
-        'staff_nome':
+        'staff__staff_id__label':
           type: string
           nullable: true
     UtentiCreate:

@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="etichetta_lg"
                         id="etichetta_lg"
-                        value="<?= esc(old('etichetta_lg', $row->etichetta_lg ?? '')) ?>"
+                        value="<?= esc(old('etichetta_lg', $row->etichetta_lg ?? ($context['etichetta_lg'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['etichetta_lg']) ? 'is-invalid' : '' ?>"
                         aria-describedby="etichetta_lg-error"
                         aria-invalid="<?= isset($errors['etichetta_lg']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="en"
                         id="en"
-                        value="<?= esc(old('en', $row->en ?? '')) ?>"
+                        value="<?= esc(old('en', $row->en ?? ($context['en'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['en']) ? 'is-invalid' : '' ?>"
                         aria-describedby="en-error"
                         aria-invalid="<?= isset($errors['en']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="it"
                         id="it"
-                        value="<?= esc(old('it', $row->it ?? '')) ?>"
+                        value="<?= esc(old('it', $row->it ?? ($context['it'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['it']) ? 'is-invalid' : '' ?>"
                         aria-describedby="it-error"
                         aria-invalid="<?= isset($errors['it']) ? 'true' : 'false' ?>"
@@ -102,7 +104,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="es"
                         id="es"
-                        value="<?= esc(old('es', $row->es ?? '')) ?>"
+                        value="<?= esc(old('es', $row->es ?? ($context['es'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['es']) ? 'is-invalid' : '' ?>"
                         aria-describedby="es-error"
                         aria-invalid="<?= isset($errors['es']) ? 'true' : 'false' ?>"
@@ -122,7 +124,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="fr"
                         id="fr"
-                        value="<?= esc(old('fr', $row->fr ?? '')) ?>"
+                        value="<?= esc(old('fr', $row->fr ?? ($context['fr'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['fr']) ? 'is-invalid' : '' ?>"
                         aria-describedby="fr-error"
                         aria-invalid="<?= isset($errors['fr']) ? 'true' : 'false' ?>"
@@ -142,7 +144,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="de"
                         id="de"
-                        value="<?= esc(old('de', $row->de ?? '')) ?>"
+                        value="<?= esc(old('de', $row->de ?? ($context['de'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['de']) ? 'is-invalid' : '' ?>"
                         aria-describedby="de-error"
                         aria-invalid="<?= isset($errors['de']) ? 'true' : 'false' ?>"
@@ -162,7 +164,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="reparto_id"
                         id="reparto_id"
-                        value="<?= esc(old('reparto_id', $row->reparto_id ?? '')) ?>"
+                        value="<?= esc(old('reparto_id', $row->reparto_id ?? ($context['reparto_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['reparto_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="reparto_id-error"
                         aria-invalid="<?= isset($errors['reparto_id']) ? 'true' : 'false' ?>"
@@ -215,6 +217,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -259,6 +262,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -266,6 +270,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

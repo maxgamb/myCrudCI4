@@ -17,7 +17,7 @@ final class PraticheResource
   6 => 'pratica_note',
   7 => 'pratica_stato',
   8 => 'pratiche_utente_id',
-  9 => 'agenzie_agenzia_tipologia',
+  9 => 'agenzie__pratica_agenzia_id__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

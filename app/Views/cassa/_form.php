@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -68,12 +70,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['preno_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('preno_id', $row->preno_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('preno_id', $row->preno_id ?? ($context['preno_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="preno_id"
+                            data-base-url="<?= site_url('agenda/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('agenda/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['preno_id'])): ?>
                         <div id="preno_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['preno_id']) ?>
@@ -88,7 +111,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="out_conto"
                         id="out_conto"
-                        value="<?= esc(old('out_conto', $row->out_conto ?? '')) ?>"
+                        value="<?= esc(old('out_conto', $row->out_conto ?? ($context['out_conto'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['out_conto']) ? 'is-invalid' : '' ?>"
                         aria-describedby="out_conto-error"
                         aria-invalid="<?= isset($errors['out_conto']) ? 'true' : 'false' ?>"
@@ -107,7 +130,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="conto_id"
                         id="conto_id"
-                        value="<?= esc(old('conto_id', $row->conto_id ?? '')) ?>"
+                        value="<?= esc(old('conto_id', $row->conto_id ?? ($context['conto_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['conto_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="conto_id-error"
                         aria-invalid="<?= isset($errors['conto_id']) ? 'true' : 'false' ?>"
@@ -126,7 +149,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="totale_importo"
                         id="totale_importo"
-                        value="<?= esc(old('totale_importo', $row->totale_importo ?? '')) ?>"
+                        value="<?= esc(old('totale_importo', $row->totale_importo ?? ($context['totale_importo'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['totale_importo']) ? 'is-invalid' : '' ?>"
                         aria-describedby="totale_importo-error"
                         aria-invalid="<?= isset($errors['totale_importo']) ? 'true' : 'false' ?>"
@@ -145,7 +168,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="totale_modificato"
                         id="totale_modificato"
-                        value="<?= esc(old('totale_modificato', $row->totale_modificato ?? '')) ?>"
+                        value="<?= esc(old('totale_modificato', $row->totale_modificato ?? ($context['totale_modificato'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['totale_modificato']) ? 'is-invalid' : '' ?>"
                         aria-describedby="totale_modificato-error"
                         aria-invalid="<?= isset($errors['totale_modificato']) ? 'true' : 'false' ?>"
@@ -164,7 +187,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="pagamento_importo_pag"
                         id="pagamento_importo_pag"
-                        value="<?= esc(old('pagamento_importo_pag', $row->pagamento_importo_pag ?? '')) ?>"
+                        value="<?= esc(old('pagamento_importo_pag', $row->pagamento_importo_pag ?? ($context['pagamento_importo_pag'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pagamento_importo_pag']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pagamento_importo_pag-error"
                         aria-invalid="<?= isset($errors['pagamento_importo_pag']) ? 'true' : 'false' ?>"
@@ -183,7 +206,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="pagamento_forma"
                         id="pagamento_forma"
-                        value="<?= esc(old('pagamento_forma', $row->pagamento_forma ?? '')) ?>"
+                        value="<?= esc(old('pagamento_forma', $row->pagamento_forma ?? ($context['pagamento_forma'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pagamento_forma']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pagamento_forma-error"
                         aria-invalid="<?= isset($errors['pagamento_forma']) ? 'true' : 'false' ?>"
@@ -203,7 +226,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="cassa_stato_camera"
                         id="cassa_stato_camera"
-                        value="<?= esc(old('cassa_stato_camera', $row->cassa_stato_camera ?? '')) ?>"
+                        value="<?= esc(old('cassa_stato_camera', $row->cassa_stato_camera ?? ($context['cassa_stato_camera'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['cassa_stato_camera']) ? 'is-invalid' : '' ?>"
                         aria-describedby="cassa_stato_camera-error"
                         aria-invalid="<?= isset($errors['cassa_stato_camera']) ? 'true' : 'false' ?>"
@@ -223,7 +246,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="sospeso"
                         id="sospeso"
-                        value="<?= esc(old('sospeso', $row->sospeso ?? '')) ?>"
+                        value="<?= esc(old('sospeso', $row->sospeso ?? ($context['sospeso'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['sospeso']) ? 'is-invalid' : '' ?>"
                         aria-describedby="sospeso-error"
                         aria-invalid="<?= isset($errors['sospeso']) ? 'true' : 'false' ?>"
@@ -243,7 +266,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="fattura_numero"
                         id="fattura_numero"
-                        value="<?= esc(old('fattura_numero', $row->fattura_numero ?? '')) ?>"
+                        value="<?= esc(old('fattura_numero', $row->fattura_numero ?? ($context['fattura_numero'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['fattura_numero']) ? 'is-invalid' : '' ?>"
                         aria-describedby="fattura_numero-error"
                         aria-invalid="<?= isset($errors['fattura_numero']) ? 'true' : 'false' ?>"
@@ -262,7 +285,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nome_pagante"
                         id="nome_pagante"
-                        value="<?= esc(old('nome_pagante', $row->nome_pagante ?? '')) ?>"
+                        value="<?= esc(old('nome_pagante', $row->nome_pagante ?? ($context['nome_pagante'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nome_pagante']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nome_pagante-error"
                         aria-invalid="<?= isset($errors['nome_pagante']) ? 'true' : 'false' ?>"
@@ -282,7 +305,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="cassa_utente_id"
                         id="cassa_utente_id"
-                        value="<?= esc(old('cassa_utente_id', $row->cassa_utente_id ?? '')) ?>"
+                        value="<?= esc(old('cassa_utente_id', $row->cassa_utente_id ?? ($context['cassa_utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['cassa_utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="cassa_utente_id-error"
                         aria-invalid="<?= isset($errors['cassa_utente_id']) ? 'true' : 'false' ?>"
@@ -301,7 +324,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="divisa"
                         id="divisa"
-                        value="<?= esc(old('divisa', $row->divisa ?? '')) ?>"
+                        value="<?= esc(old('divisa', $row->divisa ?? ($context['divisa'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['divisa']) ? 'is-invalid' : '' ?>"
                         aria-describedby="divisa-error"
                         aria-invalid="<?= isset($errors['divisa']) ? 'true' : 'false' ?>"
@@ -321,7 +344,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nexi_cod_aut"
                         id="nexi_cod_aut"
-                        value="<?= esc(old('nexi_cod_aut', $row->nexi_cod_aut ?? '')) ?>"
+                        value="<?= esc(old('nexi_cod_aut', $row->nexi_cod_aut ?? ($context['nexi_cod_aut'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nexi_cod_aut']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nexi_cod_aut-error"
                         aria-invalid="<?= isset($errors['nexi_cod_aut']) ? 'true' : 'false' ?>"
@@ -341,7 +364,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nexi_codTrans"
                         id="nexi_codTrans"
-                        value="<?= esc(old('nexi_codTrans', $row->nexi_codTrans ?? '')) ?>"
+                        value="<?= esc(old('nexi_codTrans', $row->nexi_codTrans ?? ($context['nexi_codTrans'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nexi_codTrans']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nexi_codTrans-error"
                         aria-invalid="<?= isset($errors['nexi_codTrans']) ? 'true' : 'false' ?>"
@@ -361,7 +384,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="nexi_pan"
                         id="nexi_pan"
-                        value="<?= esc(old('nexi_pan', $row->nexi_pan ?? '')) ?>"
+                        value="<?= esc(old('nexi_pan', $row->nexi_pan ?? ($context['nexi_pan'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nexi_pan']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nexi_pan-error"
                         aria-invalid="<?= isset($errors['nexi_pan']) ? 'true' : 'false' ?>"
@@ -414,6 +437,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -458,6 +482,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -465,6 +490,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

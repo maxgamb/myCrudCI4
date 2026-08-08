@@ -13,7 +13,7 @@ final class ContiNoteResource
   2 => 'hotel_id',
   3 => 'conto_nota_testo',
   4 => 'note_conto_utente_id',
-  5 => 'conti_trattamento_sog',
+  5 => 'conti__conto_id__label',
 );
     private const WRITABLE = array (
   0 => 'conto_id',

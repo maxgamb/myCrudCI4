@@ -100,14 +100,24 @@ final class RefCostiTipologiaModel extends Model
   array (
     'table' => 'costi_var',
     'key' => 'costi_var_id',
-    'label' => 'costi_var_sub_1',
+    'displayField' => 'costi_var_sub_1',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'costi_var_sub_1',
+    ),
     'mode' => 'select',
   ),
   'tipologia_id' => 
   array (
     'table' => 'tipologia_camera',
     'key' => 'tipologia_id',
-    'label' => 'nome_tipologia',
+    'displayField' => 'nome_tipologia',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'nome_tipologia',
+    ),
     'mode' => 'select',
   ),
 );
@@ -127,8 +137,8 @@ final class RefCostiTipologiaModel extends Model
             'ref_costi_tipologia.check_out AS check_out',
             'ref_costi_tipologia.utente_id AS utente_id',
             'ref_costi_tipologia.ref_costi_data_record AS ref_costi_data_record',
-            'costi_var__costi_var_id.costi_var_sub_1 AS costi_var_costi_var_sub_1',
-            'tipologia_camera__tipologia_id.nome_tipologia AS tipologia_camera_nome_tipologia'
+            'costi_var__costi_var_id.costi_var_sub_1 AS costi_var__costi_var_id__label',
+            'tipologia_camera__tipologia_id.nome_tipologia AS tipologia_camera__tipologia_id__label'
         ]);
         $builder->join('costi_var AS costi_var__costi_var_id', 'costi_var__costi_var_id.costi_var_id = ref_costi_tipologia.costi_var_id', 'left');
         $builder->join('tipologia_camera AS tipologia_camera__tipologia_id', 'tipologia_camera__tipologia_id.tipologia_id = ref_costi_tipologia.tipologia_id', 'left');
@@ -148,8 +158,8 @@ final class RefCostiTipologiaModel extends Model
             'ref_costi_tipologia.days AS days',
             'ref_costi_tipologia.check_out AS check_out',
             'ref_costi_tipologia.utente_id AS utente_id',
-            'costi_var__costi_var_id.costi_var_sub_1 AS costi_var_costi_var_sub_1',
-            'tipologia_camera__tipologia_id.nome_tipologia AS tipologia_camera_nome_tipologia'
+            'costi_var__costi_var_id.costi_var_sub_1 AS costi_var__costi_var_id__label',
+            'tipologia_camera__tipologia_id.nome_tipologia AS tipologia_camera__tipologia_id__label'
         ]);
         $builder->join('costi_var AS costi_var__costi_var_id', 'costi_var__costi_var_id.costi_var_id = ref_costi_tipologia.costi_var_id', 'left');
         $builder->join('tipologia_camera AS tipologia_camera__tipologia_id', 'tipologia_camera__tipologia_id.tipologia_id = ref_costi_tipologia.tipologia_id', 'left');
@@ -231,8 +241,8 @@ final class RefCostiTipologiaModel extends Model
             'ref_costi_tipologia.days AS days',
             'ref_costi_tipologia.check_out AS check_out',
             'ref_costi_tipologia.utente_id AS utente_id',
-            'costi_var__costi_var_id.costi_var_sub_1 AS costi_var_costi_var_sub_1',
-            'tipologia_camera__tipologia_id.nome_tipologia AS tipologia_camera_nome_tipologia'
+            'costi_var__costi_var_id.costi_var_sub_1 AS costi_var__costi_var_id__label',
+            'tipologia_camera__tipologia_id.nome_tipologia AS tipologia_camera__tipologia_id__label'
         ]);
         $builder->join('costi_var AS costi_var__costi_var_id', 'costi_var__costi_var_id.costi_var_id = ref_costi_tipologia.costi_var_id', 'left');
         $builder->join('tipologia_camera AS tipologia_camera__tipologia_id', 'tipologia_camera__tipologia_id.tipologia_id = ref_costi_tipologia.tipologia_id', 'left');
@@ -440,31 +450,37 @@ final class RefCostiTipologiaModel extends Model
     public function getCostiVarCostiVarIdOptions(): array
     {
         return $this->db->table('costi_var')
-            ->select(['costi_var_id', 'costi_var_sub_1'])
+            ->select(array (
+  0 => 'costi_var_id',
+  1 => 'costi_var_sub_1',
+))
             ->orderBy('costi_var_sub_1', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     /** Restituisce le opzioni della relazione tipologia_id. */
     public function getTipologiaCameraTipologiaIdOptions(): array
     {
         return $this->db->table('tipologia_camera')
-            ->select(['tipologia_id', 'nome_tipologia'])
+            ->select(array (
+  0 => 'tipologia_id',
+  1 => 'nome_tipologia',
+))
             ->orderBy('nome_tipologia', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     public function relationOptions(): array
     {
         return [
-            'costi_var_id' => $this->toOptions($this->getCostiVarCostiVarIdOptions(), 'costi_var_id', 'costi_var_sub_1'),
-            'tipologia_id' => $this->toOptions($this->getTipologiaCameraTipologiaIdOptions(), 'tipologia_id', 'nome_tipologia'),
+            'costi_var_id' => $this->toRelationOptions($this->getCostiVarCostiVarIdOptions(), 'costi_var_id'),
+            'tipologia_id' => $this->toRelationOptions($this->getTipologiaCameraTipologiaIdOptions(), 'tipologia_id'),
         ];
     }
 
     /**
      * Ricerca server-side delle opzioni per relazioni grandi.
-     * Tabella, chiave e campo label arrivano solo dalla whitelist generata.
+     * Tabella, chiave e campi descrittivi arrivano solo dalla whitelist generata.
      *
      * @return list<array{id:string,text:string}>
      */
@@ -475,36 +491,100 @@ final class RefCostiTipologiaModel extends Model
         }
 
         $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
         $limit = max(1, min(100, $limit));
         $builder = $this->db->table((string) $definition['table'])
-            ->select([(string) $definition['key'], (string) $definition['label']])
-            ->orderBy((string) $definition['label'], 'ASC')
+            ->select($selectFields)
+            ->orderBy((string) $definition['displayField'], 'ASC')
             ->limit($limit);
 
         $query = trim($query);
-        if ($query !== '') {
-            $builder->like((string) $definition['label'], $query, 'after');
+        if ($query !== '' && $displayFields !== []) {
+            $builder->groupStart();
+            foreach ($displayFields as $index => $displayColumn) {
+                if ($index === 0) {
+                    $builder->like((string) $displayColumn, $query, 'after');
+                } else {
+                    $builder->orLike((string) $displayColumn, $query, 'after');
+                }
+            }
+            $builder->groupEnd();
         }
 
         $rows = $builder->get()->getResultArray();
         $result = [];
         foreach ($rows as $row) {
             $result[] = [
-                'id' => (string) ($row[(string) $definition['key']] ?? ''),
-                'text' => (string) ($row[(string) $definition['label']] ?? ''),
+                'id' => (string) ($row[$key] ?? ''),
+                'text' => $this->formatRelationLabel($row, $definition),
             ];
         }
 
         return $result;
     }
 
-    private function toOptions(array $rows, string $key, string $label): array
+    /** Restituisce una FK valida e la sua descrizione; usato dal Create contestuale. */
+    public function relationOptionById(string $field, int|string $id): ?array
     {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return null;
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
+        $row = $this->db->table((string) $definition['table'])
+            ->select($selectFields)
+            ->where($key, $id)
+            ->limit(1)
+            ->get()
+            ->getRowArray();
+
+        if (!is_array($row)) {
+            return null;
+        }
+
+        return [
+            'id' => (string) ($row[$key] ?? ''),
+            'text' => $this->formatRelationLabel($row, $definition),
+        ];
+    }
+
+    private function toRelationOptions(array $rows, string $field): array
+    {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return [];
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
         $options = [];
         foreach ($rows as $row) {
-            $options[(string) $row->{$key}] = (string) $row->{$label};
+            if (!is_array($row)) {
+                continue;
+            }
+            $options[(string) ($row[$key] ?? '')] = $this->formatRelationLabel($row, $definition);
         }
         return $options;
+    }
+
+    private function formatRelationLabel(array $row, array $definition): string
+    {
+        $template = trim((string) ($definition['displayTemplate'] ?? ''));
+        if ($template === '') {
+            return trim((string) ($row[(string) $definition['displayField']] ?? ''));
+        }
+
+        $label = preg_replace_callback(
+            '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+            static fn (array $match): string => (string) ($row[$match[1]] ?? ''),
+            $template
+        );
+
+        return trim((string) $label);
     }
 
     public function loadHasMany(int|string $parentId): array

@@ -86,11 +86,71 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->obmp_board_id ?? '') ?></td>
-                                <td><?= esc($row->obmp_board_title ?? '') ?></td>
-                                <td><?= esc($row->obmp_board ?? '') ?></td>
-                                <td><?= esc($row->obmp_board_cod ?? '') ?></td>
-                                <td><?= esc($row->board_lg ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->obmp_board_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'obmp_board_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->obmp_board_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->obmp_board_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->obmp_board_title ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'obmp_board_title',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->obmp_board_title,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->obmp_board_title) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->obmp_board ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->obmp_board_cod ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'obmp_board_cod',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->obmp_board_cod,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->obmp_board_cod) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->board_lg ?? '') ?></td>
                                 <td class="text-end text-nowrap">
                                     <?php $id = $row->obmp_board_id ?? ''; ?>
                                     <div class="btn-group btn-group-sm" role="group" aria-label="Azioni record">

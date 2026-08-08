@@ -122,7 +122,7 @@ components:
         'ref_a_c_datarecord':
           type: string
           format: date-time
-        'agenda_preno_arr_ore':
+        'agenda__preno_id__label':
           type: string
           nullable: true
     RefAgendaClientiCreate:

@@ -13,7 +13,7 @@ final class RefAgendaClientiResource
   2 => 'clienti_id',
   3 => 'tipologia_id',
   4 => 'ref_a_c_datarecord',
-  5 => 'agenda_preno_arr_ore',
+  5 => 'agenda__preno_id__label',
 );
     private const WRITABLE = array (
   0 => 'preno_id',

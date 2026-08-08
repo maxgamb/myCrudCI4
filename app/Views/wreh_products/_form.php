@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -50,12 +52,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['costi_area_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('costi_area_id', $row->costi_area_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('costi_area_id', $row->costi_area_id ?? ($context['costi_area_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="costi_area_id"
+                            data-base-url="<?= site_url('costi_area/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('costi_area/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['costi_area_id'])): ?>
                         <div id="costi_area_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['costi_area_id']) ?>
@@ -70,7 +93,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="name"
                         id="name"
-                        value="<?= esc(old('name', $row->name ?? '')) ?>"
+                        value="<?= esc(old('name', $row->name ?? ($context['name'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['name']) ? 'is-invalid' : '' ?>"
                         aria-describedby="name-error"
                         aria-invalid="<?= isset($errors['name']) ? 'true' : 'false' ?>"
@@ -93,7 +116,7 @@ $submissionToken = $submissionToken ?? '';
                         aria-describedby="description-error"
                         aria-invalid="<?= isset($errors['description']) ? 'true' : 'false' ?>"
                         maxlength="65535"
-                    ><?= esc(old('description', $row->description ?? '')) ?></textarea>
+                    ><?= esc(old('description', $row->description ?? ($context['description'] ?? ''))) ?></textarea>
                     <?php if (!empty($errors['description'])): ?>
                         <div id="description-error" class="invalid-feedback d-block">
                             <?= esc($errors['description']) ?>
@@ -108,7 +131,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="price"
                         id="price"
-                        value="<?= esc(old('price', $row->price ?? '')) ?>"
+                        value="<?= esc(old('price', $row->price ?? ($context['price'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['price']) ? 'is-invalid' : '' ?>"
                         aria-describedby="price-error"
                         aria-invalid="<?= isset($errors['price']) ? 'true' : 'false' ?>"
@@ -128,7 +151,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="stock_quantity"
                         id="stock_quantity"
-                        value="<?= esc(old('stock_quantity', $row->stock_quantity ?? '')) ?>"
+                        value="<?= esc(old('stock_quantity', $row->stock_quantity ?? ($context['stock_quantity'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['stock_quantity']) ? 'is-invalid' : '' ?>"
                         aria-describedby="stock_quantity-error"
                         aria-invalid="<?= isset($errors['stock_quantity']) ? 'true' : 'false' ?>"
@@ -155,12 +178,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['supplier_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('supplier_id', $row->supplier_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('supplier_id', $row->supplier_id ?? ($context['supplier_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="supplier_id"
+                            data-base-url="<?= site_url('wreh_suppliers/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('wreh_suppliers/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['supplier_id'])): ?>
                         <div id="supplier_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['supplier_id']) ?>
@@ -208,6 +252,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -252,6 +297,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -259,6 +305,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

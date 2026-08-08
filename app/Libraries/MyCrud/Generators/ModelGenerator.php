@@ -139,16 +139,22 @@ final class ModelGenerator
         foreach ($config['relations']['belongsTo'] ?? [] as $field => $relation) {
             $parentTable = (string) $relation['parentTable'];
             $parentKey = (string) $relation['parentKey'];
-            $displayField = (string) $relation['displayField'];
-            $alias = (string) ($relation['alias'] ?? ($parentTable . '_' . $displayField));
+            $fieldConfig = (array) ($config['fields'][$field] ?? []);
+            $displayField = (string) ($fieldConfig['relationDisplayField'] ?? $relation['displayField'] ?? $parentKey);
+            $displayTemplate = trim((string) ($fieldConfig['relationDisplayTemplate'] ?? $relation['displayTemplate'] ?? ''));
+            $availableDisplayFields = array_values((array) ($relation['availableDisplayFields'] ?? []));
+            $displayFields = $this->relationDisplayFields($displayField, $displayTemplate, $availableDisplayFields);
+            $alias = (string) ($relation['alias'] ?? ($parentTable . '__' . $field . '__label'));
             $joinAlias = preg_replace('/[^a-zA-Z0-9_]/', '_', $parentTable . '__' . $field) ?: $parentTable;
+            $displaySql = $this->relationDisplaySql($joinAlias, $displayField, $displayTemplate, $displayFields);
+            $displaySelect = var_export($displaySql . ' AS ' . $alias, true);
 
-            $detailSelects[] = "'{$joinAlias}.{$displayField} AS {$alias}'";
+            $detailSelects[] = $displaySelect;
             if (in_array((string) $field, $listFields, true)) {
-                $listSelects[] = "'{$joinAlias}.{$displayField} AS {$alias}'";
+                $listSelects[] = $displaySelect;
             }
             if (in_array((string) $field, $exportFields, true)) {
-                $csvSelects[] = "'{$joinAlias}.{$displayField} AS {$alias}'";
+                $csvSelects[] = $displaySelect;
             }
             $joinLine = "        \$builder->join('{$parentTable} AS {$joinAlias}', '{$joinAlias}.{$parentKey} = {$table}.{$field}', 'left');";
             $detailJoinLines[] = $joinLine;
@@ -165,25 +171,29 @@ final class ModelGenerator
             $relationSearchDefinitions[(string) $field] = [
                 'table' => $parentTable,
                 'key' => $parentKey,
-                'label' => $displayField,
+                'displayField' => $displayField,
+                'displayTemplate' => $displayTemplate,
+                'displayFields' => $displayFields,
                 'mode' => $relationMode,
             ];
 
             if ($relationMode === 'select') {
                 $method = 'get' . Naming::tableClass($parentTable) . Naming::studly((string) $field) . 'Options';
+                $selectFields = array_values(array_unique(array_merge([$parentKey], $displayFields)));
+                $selectFieldsCode = var_export($selectFields, true);
                 $optionMethods[] = <<<PHP
     /** Restituisce le opzioni della relazione {$field}. */
     public function {$method}(): array
     {
         return \$this->db->table('{$parentTable}')
-            ->select(['{$parentKey}', '{$displayField}'])
+            ->select({$selectFieldsCode})
             ->orderBy('{$displayField}', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
 
 PHP;
-                $optionMapLines[] = "            '{$field}' => \$this->toOptions(\$this->{$method}(), '{$parentKey}', '{$displayField}'),";
+                $optionMapLines[] = "            '{$field}' => \$this->toRelationOptions(\$this->{$method}(), '{$field}'),";
             }
         }
 
@@ -194,8 +204,16 @@ PHP;
                 continue;
             }
 
-            $childTable = (string) $relation['childTable'];
-            $foreignKey = (string) $relation['foreignKey'];
+            $childTable = trim((string) ($relation['childTable'] ?? ''));
+            $foreignKey = trim((string) ($relation['foreignKey'] ?? ''));
+
+            // Difesa ulteriore: una relazione incompleta non deve interrompere
+            // l'intera generazione. Il merge 2.8 scarta già le relazioni stale,
+            // ma qui evitiamo fatal/warning anche con config legacy anomale.
+            if ($childTable === '' || $foreignKey === '') {
+                continue;
+            }
+
             $childPk = (string) ($relation['primaryKey'] ?? 'id');
             $methodSuffix = Naming::studly($childTable) . 'By' . Naming::studly($foreignKey);
             $getMethod = 'get' . $methodSuffix;
@@ -609,7 +627,7 @@ final class {$class} extends Model
 
     /**
      * Ricerca server-side delle opzioni per relazioni grandi.
-     * Tabella, chiave e campo label arrivano solo dalla whitelist generata.
+     * Tabella, chiave e campi descrittivi arrivano solo dalla whitelist generata.
      *
      * @return list<array{id:string,text:string}>
      */
@@ -620,36 +638,100 @@ final class {$class} extends Model
         }
 
         \$definition = self::RELATION_SEARCHES[\$field];
+        \$key = (string) \$definition['key'];
+        \$displayFields = array_values((array) (\$definition['displayFields'] ?? []));
+        \$selectFields = array_values(array_unique(array_merge([\$key], \$displayFields)));
         \$limit = max(1, min(100, \$limit));
         \$builder = \$this->db->table((string) \$definition['table'])
-            ->select([(string) \$definition['key'], (string) \$definition['label']])
-            ->orderBy((string) \$definition['label'], 'ASC')
+            ->select(\$selectFields)
+            ->orderBy((string) \$definition['displayField'], 'ASC')
             ->limit(\$limit);
 
         \$query = trim(\$query);
-        if (\$query !== '') {
-            \$builder->like((string) \$definition['label'], \$query, 'after');
+        if (\$query !== '' && \$displayFields !== []) {
+            \$builder->groupStart();
+            foreach (\$displayFields as \$index => \$displayColumn) {
+                if (\$index === 0) {
+                    \$builder->like((string) \$displayColumn, \$query, 'after');
+                } else {
+                    \$builder->orLike((string) \$displayColumn, \$query, 'after');
+                }
+            }
+            \$builder->groupEnd();
         }
 
         \$rows = \$builder->get()->getResultArray();
         \$result = [];
         foreach (\$rows as \$row) {
             \$result[] = [
-                'id' => (string) (\$row[(string) \$definition['key']] ?? ''),
-                'text' => (string) (\$row[(string) \$definition['label']] ?? ''),
+                'id' => (string) (\$row[\$key] ?? ''),
+                'text' => \$this->formatRelationLabel(\$row, \$definition),
             ];
         }
 
         return \$result;
     }
 
-    private function toOptions(array \$rows, string \$key, string \$label): array
+    /** Restituisce una FK valida e la sua descrizione; usato dal Create contestuale. */
+    public function relationOptionById(string \$field, int|string \$id): ?array
     {
+        if (!isset(self::RELATION_SEARCHES[\$field])) {
+            return null;
+        }
+
+        \$definition = self::RELATION_SEARCHES[\$field];
+        \$key = (string) \$definition['key'];
+        \$displayFields = array_values((array) (\$definition['displayFields'] ?? []));
+        \$selectFields = array_values(array_unique(array_merge([\$key], \$displayFields)));
+        \$row = \$this->db->table((string) \$definition['table'])
+            ->select(\$selectFields)
+            ->where(\$key, \$id)
+            ->limit(1)
+            ->get()
+            ->getRowArray();
+
+        if (!is_array(\$row)) {
+            return null;
+        }
+
+        return [
+            'id' => (string) (\$row[\$key] ?? ''),
+            'text' => \$this->formatRelationLabel(\$row, \$definition),
+        ];
+    }
+
+    private function toRelationOptions(array \$rows, string \$field): array
+    {
+        if (!isset(self::RELATION_SEARCHES[\$field])) {
+            return [];
+        }
+
+        \$definition = self::RELATION_SEARCHES[\$field];
+        \$key = (string) \$definition['key'];
         \$options = [];
         foreach (\$rows as \$row) {
-            \$options[(string) \$row->{\$key}] = (string) \$row->{\$label};
+            if (!is_array(\$row)) {
+                continue;
+            }
+            \$options[(string) (\$row[\$key] ?? '')] = \$this->formatRelationLabel(\$row, \$definition);
         }
         return \$options;
+    }
+
+    private function formatRelationLabel(array \$row, array \$definition): string
+    {
+        \$template = trim((string) (\$definition['displayTemplate'] ?? ''));
+        if (\$template === '') {
+            return trim((string) (\$row[(string) \$definition['displayField']] ?? ''));
+        }
+
+        \$label = preg_replace_callback(
+            '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+            static fn (array \$match): string => (string) (\$row[\$match[1]] ?? ''),
+            \$template
+        );
+
+        return trim((string) \$label);
     }
 
 {$childrenMethodsCode}    public function loadHasMany(int|string \$parentId): array
@@ -665,4 +747,69 @@ PHP;
 
         return $this->writeGenerated("Generated/Models/{$class}.php", $content, $force);
     }
+
+    /** @return list<string> */
+    private function relationDisplayFields(string $displayField, string $template, array $availableFields): array
+    {
+        $allowed = array_fill_keys(array_values(array_filter(
+            $availableFields,
+            static fn ($value): bool => is_string($value) && $value !== ''
+        )), true);
+        $fields = [];
+
+        if ($template !== '') {
+            preg_match_all('/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/', $template, $matches);
+            foreach ($matches[1] ?? [] as $name) {
+                if (isset($allowed[$name])) {
+                    $fields[] = (string) $name;
+                }
+            }
+        }
+
+        if ($displayField !== '' && ($allowed === [] || isset($allowed[$displayField]))) {
+            array_unshift($fields, $displayField);
+        }
+
+        return array_values(array_unique(array_filter($fields)));
+    }
+
+    private function relationDisplaySql(string $alias, string $displayField, string $template, array $displayFields): string
+    {
+        if ($template === '') {
+            return $alias . '.' . $displayField;
+        }
+
+        $allowed = array_fill_keys($displayFields, true);
+        $parts = preg_split(
+            '/(\{[a-zA-Z_][a-zA-Z0-9_]*\})/',
+            $template,
+            -1,
+            PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY
+        ) ?: [];
+        $sqlParts = [];
+        $hasColumn = false;
+
+        foreach ($parts as $part) {
+            if (preg_match('/^\{([a-zA-Z_][a-zA-Z0-9_]*)\}$/', $part, $match) === 1) {
+                $column = (string) $match[1];
+                if (isset($allowed[$column])) {
+                    $sqlParts[] = "COALESCE(CAST({$alias}.{$column} AS CHAR), '')";
+                    $hasColumn = true;
+                }
+                continue;
+            }
+
+            $literal = str_replace("'", "''", $part);
+            if ($literal !== '') {
+                $sqlParts[] = "'{$literal}'";
+            }
+        }
+
+        if (!$hasColumn || $sqlParts === []) {
+            return $alias . '.' . $displayField;
+        }
+
+        return 'TRIM(CONCAT(' . implode(', ', $sqlParts) . '))';
+    }
+
 }

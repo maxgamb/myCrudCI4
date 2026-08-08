@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -61,7 +63,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="manut_priorita"
                         id="manut_priorita"
-                        value="<?= esc(old('manut_priorita', $row->manut_priorita ?? '')) ?>"
+                        value="<?= esc(old('manut_priorita', $row->manut_priorita ?? ($context['manut_priorita'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['manut_priorita']) ? 'is-invalid' : '' ?>"
                         aria-describedby="manut_priorita-error"
                         aria-invalid="<?= isset($errors['manut_priorita']) ? 'true' : 'false' ?>"
@@ -81,7 +83,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="manut_area_guasto"
                         id="manut_area_guasto"
-                        value="<?= esc(old('manut_area_guasto', $row->manut_area_guasto ?? '')) ?>"
+                        value="<?= esc(old('manut_area_guasto', $row->manut_area_guasto ?? ($context['manut_area_guasto'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['manut_area_guasto']) ? 'is-invalid' : '' ?>"
                         aria-describedby="manut_area_guasto-error"
                         aria-invalid="<?= isset($errors['manut_area_guasto']) ? 'true' : 'false' ?>"
@@ -101,7 +103,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="manut_piano"
                         id="manut_piano"
-                        value="<?= esc(old('manut_piano', $row->manut_piano ?? '')) ?>"
+                        value="<?= esc(old('manut_piano', $row->manut_piano ?? ($context['manut_piano'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['manut_piano']) ? 'is-invalid' : '' ?>"
                         aria-describedby="manut_piano-error"
                         aria-invalid="<?= isset($errors['manut_piano']) ? 'true' : 'false' ?>"
@@ -121,7 +123,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="manut_camera"
                         id="manut_camera"
-                        value="<?= esc(old('manut_camera', $row->manut_camera ?? '')) ?>"
+                        value="<?= esc(old('manut_camera', $row->manut_camera ?? ($context['manut_camera'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['manut_camera']) ? 'is-invalid' : '' ?>"
                         aria-describedby="manut_camera-error"
                         aria-invalid="<?= isset($errors['manut_camera']) ? 'true' : 'false' ?>"
@@ -141,7 +143,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="manut_descrizione"
                         id="manut_descrizione"
-                        value="<?= esc(old('manut_descrizione', $row->manut_descrizione ?? '')) ?>"
+                        value="<?= esc(old('manut_descrizione', $row->manut_descrizione ?? ($context['manut_descrizione'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['manut_descrizione']) ? 'is-invalid' : '' ?>"
                         aria-describedby="manut_descrizione-error"
                         aria-invalid="<?= isset($errors['manut_descrizione']) ? 'true' : 'false' ?>"
@@ -160,7 +162,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="manut_data_segnalazione"
                         id="manut_data_segnalazione"
-                        value="<?= esc(old('manut_data_segnalazione', $row->manut_data_segnalazione ?? '')) ?>"
+                        value="<?= esc(old('manut_data_segnalazione', $row->manut_data_segnalazione ?? ($context['manut_data_segnalazione'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['manut_data_segnalazione']) ? 'is-invalid' : '' ?>"
                         aria-describedby="manut_data_segnalazione-error"
                         aria-invalid="<?= isset($errors['manut_data_segnalazione']) ? 'true' : 'false' ?>"
@@ -180,7 +182,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="manut_stato"
                         id="manut_stato"
-                        value="<?= esc(old('manut_stato', $row->manut_stato ?? '')) ?>"
+                        value="<?= esc(old('manut_stato', $row->manut_stato ?? ($context['manut_stato'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['manut_stato']) ? 'is-invalid' : '' ?>"
                         aria-describedby="manut_stato-error"
                         aria-invalid="<?= isset($errors['manut_stato']) ? 'true' : 'false' ?>"
@@ -233,6 +235,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -277,6 +280,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -284,6 +288,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

@@ -249,7 +249,7 @@ components:
           type: integer
           format: int32
           nullable: true
-        'agenzie_agenzia_tipologia':
+        'agenzie__agenzia_id__label':
           type: string
           nullable: true
     ObmpCmCreate:

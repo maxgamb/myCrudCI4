@@ -13,7 +13,7 @@ final class ModificaAgendaResource
   2 => 'mod_agenda_valori',
   3 => 'mod_preno_data_records',
   4 => 'modifica_agenda_adebiti_utente_id',
-  5 => 'agenda_preno_arr_ore',
+  5 => 'agenda__mod_agenda_id__label',
 );
     private const WRITABLE = array (
   0 => 'mod_preno_id',

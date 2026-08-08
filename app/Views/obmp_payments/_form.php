@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_payment_cod"
                         id="obmp_payment_cod"
-                        value="<?= esc(old('obmp_payment_cod', $row->obmp_payment_cod ?? '')) ?>"
+                        value="<?= esc(old('obmp_payment_cod', $row->obmp_payment_cod ?? ($context['obmp_payment_cod'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_payment_cod']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_payment_cod-error"
                         aria-invalid="<?= isset($errors['obmp_payment_cod']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_payment_title"
                         id="obmp_payment_title"
-                        value="<?= esc(old('obmp_payment_title', $row->obmp_payment_title ?? '')) ?>"
+                        value="<?= esc(old('obmp_payment_title', $row->obmp_payment_title ?? ($context['obmp_payment_title'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_payment_title']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_payment_title-error"
                         aria-invalid="<?= isset($errors['obmp_payment_title']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_payment"
                         id="obmp_payment"
-                        value="<?= esc(old('obmp_payment', $row->obmp_payment ?? '')) ?>"
+                        value="<?= esc(old('obmp_payment', $row->obmp_payment ?? ($context['obmp_payment'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_payment']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_payment-error"
                         aria-invalid="<?= isset($errors['obmp_payment']) ? 'true' : 'false' ?>"
@@ -102,7 +104,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="obmp_payment_value"
                         id="obmp_payment_value"
-                        value="<?= esc(old('obmp_payment_value', $row->obmp_payment_value ?? '')) ?>"
+                        value="<?= esc(old('obmp_payment_value', $row->obmp_payment_value ?? ($context['obmp_payment_value'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_payment_value']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_payment_value-error"
                         aria-invalid="<?= isset($errors['obmp_payment_value']) ? 'true' : 'false' ?>"
@@ -122,7 +124,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="payment_lg"
                         id="payment_lg"
-                        value="<?= esc(old('payment_lg', $row->payment_lg ?? '')) ?>"
+                        value="<?= esc(old('payment_lg', $row->payment_lg ?? ($context['payment_lg'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['payment_lg']) ? 'is-invalid' : '' ?>"
                         aria-describedby="payment_lg-error"
                         aria-invalid="<?= isset($errors['payment_lg']) ? 'true' : 'false' ?>"
@@ -175,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -219,6 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -226,6 +230,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

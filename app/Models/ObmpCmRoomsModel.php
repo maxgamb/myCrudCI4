@@ -139,14 +139,24 @@ final class ObmpCmRoomsModel extends Model
   array (
     'table' => 'obmp_cm',
     'key' => 'obmp_cm_id',
-    'label' => 'obmp_cm_id_hotel_agenzia',
+    'displayField' => 'obmp_cm_id_hotel_agenzia',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'obmp_cm_id_hotel_agenzia',
+    ),
     'mode' => 'select',
   ),
   'obmp_cm_rooms_tipologia_id' => 
   array (
     'table' => 'tipologia_camera',
     'key' => 'tipologia_id',
-    'label' => 'nome_tipologia',
+    'displayField' => 'nome_tipologia',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'nome_tipologia',
+    ),
     'mode' => 'select',
   ),
 );
@@ -177,8 +187,8 @@ final class ObmpCmRoomsModel extends Model
             'obmp_cm_rooms.obmp_cm_rooms_foto700 AS obmp_cm_rooms_foto700',
             'obmp_cm_rooms.obmp_cm_rooms_data_record AS obmp_cm_rooms_data_record',
             'obmp_cm_rooms.obmp_cm_rooms_utente_id AS obmp_cm_rooms_utente_id',
-            'obmp_cm__obmp_cm_id.obmp_cm_id_hotel_agenzia AS obmp_cm_obmp_cm_id_hotel_agenzia',
-            'tipologia_camera__obmp_cm_rooms_tipologia_id.nome_tipologia AS tipologia_camera_nome_tipologia'
+            'obmp_cm__obmp_cm_id.obmp_cm_id_hotel_agenzia AS obmp_cm__obmp_cm_id__label',
+            'tipologia_camera__obmp_cm_rooms_tipologia_id.nome_tipologia AS tipologia_camera__obmp_cm_rooms_tipologia_id__label'
         ]);
         $builder->join('obmp_cm AS obmp_cm__obmp_cm_id', 'obmp_cm__obmp_cm_id.obmp_cm_id = obmp_cm_rooms.obmp_cm_id', 'left');
         $builder->join('tipologia_camera AS tipologia_camera__obmp_cm_rooms_tipologia_id', 'tipologia_camera__obmp_cm_rooms_tipologia_id.tipologia_id = obmp_cm_rooms.obmp_cm_rooms_tipologia_id', 'left');
@@ -200,8 +210,8 @@ final class ObmpCmRoomsModel extends Model
             'obmp_cm_rooms.obmp_cm_rooms_room_var_prezzo AS obmp_cm_rooms_room_var_prezzo',
             'obmp_cm_rooms.obmp_cm_rooms_room_min_prezzo AS obmp_cm_rooms_room_min_prezzo',
             'obmp_cm_rooms.obmp_cm_rooms_trattamento AS obmp_cm_rooms_trattamento',
-            'obmp_cm__obmp_cm_id.obmp_cm_id_hotel_agenzia AS obmp_cm_obmp_cm_id_hotel_agenzia',
-            'tipologia_camera__obmp_cm_rooms_tipologia_id.nome_tipologia AS tipologia_camera_nome_tipologia'
+            'obmp_cm__obmp_cm_id.obmp_cm_id_hotel_agenzia AS obmp_cm__obmp_cm_id__label',
+            'tipologia_camera__obmp_cm_rooms_tipologia_id.nome_tipologia AS tipologia_camera__obmp_cm_rooms_tipologia_id__label'
         ]);
         $builder->join('obmp_cm AS obmp_cm__obmp_cm_id', 'obmp_cm__obmp_cm_id.obmp_cm_id = obmp_cm_rooms.obmp_cm_id', 'left');
         $builder->join('tipologia_camera AS tipologia_camera__obmp_cm_rooms_tipologia_id', 'tipologia_camera__obmp_cm_rooms_tipologia_id.tipologia_id = obmp_cm_rooms.obmp_cm_rooms_tipologia_id', 'left');
@@ -294,8 +304,8 @@ final class ObmpCmRoomsModel extends Model
             'obmp_cm_rooms.obmp_cm_rooms_foto270 AS obmp_cm_rooms_foto270',
             'obmp_cm_rooms.obmp_cm_rooms_foto700 AS obmp_cm_rooms_foto700',
             'obmp_cm_rooms.obmp_cm_rooms_utente_id AS obmp_cm_rooms_utente_id',
-            'obmp_cm__obmp_cm_id.obmp_cm_id_hotel_agenzia AS obmp_cm_obmp_cm_id_hotel_agenzia',
-            'tipologia_camera__obmp_cm_rooms_tipologia_id.nome_tipologia AS tipologia_camera_nome_tipologia'
+            'obmp_cm__obmp_cm_id.obmp_cm_id_hotel_agenzia AS obmp_cm__obmp_cm_id__label',
+            'tipologia_camera__obmp_cm_rooms_tipologia_id.nome_tipologia AS tipologia_camera__obmp_cm_rooms_tipologia_id__label'
         ]);
         $builder->join('obmp_cm AS obmp_cm__obmp_cm_id', 'obmp_cm__obmp_cm_id.obmp_cm_id = obmp_cm_rooms.obmp_cm_id', 'left');
         $builder->join('tipologia_camera AS tipologia_camera__obmp_cm_rooms_tipologia_id', 'tipologia_camera__obmp_cm_rooms_tipologia_id.tipologia_id = obmp_cm_rooms.obmp_cm_rooms_tipologia_id', 'left');
@@ -503,31 +513,37 @@ final class ObmpCmRoomsModel extends Model
     public function getObmpCmObmpCmIdOptions(): array
     {
         return $this->db->table('obmp_cm')
-            ->select(['obmp_cm_id', 'obmp_cm_id_hotel_agenzia'])
+            ->select(array (
+  0 => 'obmp_cm_id',
+  1 => 'obmp_cm_id_hotel_agenzia',
+))
             ->orderBy('obmp_cm_id_hotel_agenzia', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     /** Restituisce le opzioni della relazione obmp_cm_rooms_tipologia_id. */
     public function getTipologiaCameraObmpCmRoomsTipologiaIdOptions(): array
     {
         return $this->db->table('tipologia_camera')
-            ->select(['tipologia_id', 'nome_tipologia'])
+            ->select(array (
+  0 => 'tipologia_id',
+  1 => 'nome_tipologia',
+))
             ->orderBy('nome_tipologia', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     public function relationOptions(): array
     {
         return [
-            'obmp_cm_id' => $this->toOptions($this->getObmpCmObmpCmIdOptions(), 'obmp_cm_id', 'obmp_cm_id_hotel_agenzia'),
-            'obmp_cm_rooms_tipologia_id' => $this->toOptions($this->getTipologiaCameraObmpCmRoomsTipologiaIdOptions(), 'tipologia_id', 'nome_tipologia'),
+            'obmp_cm_id' => $this->toRelationOptions($this->getObmpCmObmpCmIdOptions(), 'obmp_cm_id'),
+            'obmp_cm_rooms_tipologia_id' => $this->toRelationOptions($this->getTipologiaCameraObmpCmRoomsTipologiaIdOptions(), 'obmp_cm_rooms_tipologia_id'),
         ];
     }
 
     /**
      * Ricerca server-side delle opzioni per relazioni grandi.
-     * Tabella, chiave e campo label arrivano solo dalla whitelist generata.
+     * Tabella, chiave e campi descrittivi arrivano solo dalla whitelist generata.
      *
      * @return list<array{id:string,text:string}>
      */
@@ -538,36 +554,100 @@ final class ObmpCmRoomsModel extends Model
         }
 
         $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
         $limit = max(1, min(100, $limit));
         $builder = $this->db->table((string) $definition['table'])
-            ->select([(string) $definition['key'], (string) $definition['label']])
-            ->orderBy((string) $definition['label'], 'ASC')
+            ->select($selectFields)
+            ->orderBy((string) $definition['displayField'], 'ASC')
             ->limit($limit);
 
         $query = trim($query);
-        if ($query !== '') {
-            $builder->like((string) $definition['label'], $query, 'after');
+        if ($query !== '' && $displayFields !== []) {
+            $builder->groupStart();
+            foreach ($displayFields as $index => $displayColumn) {
+                if ($index === 0) {
+                    $builder->like((string) $displayColumn, $query, 'after');
+                } else {
+                    $builder->orLike((string) $displayColumn, $query, 'after');
+                }
+            }
+            $builder->groupEnd();
         }
 
         $rows = $builder->get()->getResultArray();
         $result = [];
         foreach ($rows as $row) {
             $result[] = [
-                'id' => (string) ($row[(string) $definition['key']] ?? ''),
-                'text' => (string) ($row[(string) $definition['label']] ?? ''),
+                'id' => (string) ($row[$key] ?? ''),
+                'text' => $this->formatRelationLabel($row, $definition),
             ];
         }
 
         return $result;
     }
 
-    private function toOptions(array $rows, string $key, string $label): array
+    /** Restituisce una FK valida e la sua descrizione; usato dal Create contestuale. */
+    public function relationOptionById(string $field, int|string $id): ?array
     {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return null;
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
+        $row = $this->db->table((string) $definition['table'])
+            ->select($selectFields)
+            ->where($key, $id)
+            ->limit(1)
+            ->get()
+            ->getRowArray();
+
+        if (!is_array($row)) {
+            return null;
+        }
+
+        return [
+            'id' => (string) ($row[$key] ?? ''),
+            'text' => $this->formatRelationLabel($row, $definition),
+        ];
+    }
+
+    private function toRelationOptions(array $rows, string $field): array
+    {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return [];
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
         $options = [];
         foreach ($rows as $row) {
-            $options[(string) $row->{$key}] = (string) $row->{$label};
+            if (!is_array($row)) {
+                continue;
+            }
+            $options[(string) ($row[$key] ?? '')] = $this->formatRelationLabel($row, $definition);
         }
         return $options;
+    }
+
+    private function formatRelationLabel(array $row, array $definition): string
+    {
+        $template = trim((string) ($definition['displayTemplate'] ?? ''));
+        if ($template === '') {
+            return trim((string) ($row[(string) $definition['displayField']] ?? ''));
+        }
+
+        $label = preg_replace_callback(
+            '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+            static fn (array $match): string => (string) ($row[$match[1]] ?? ''),
+            $template
+        );
+
+        return trim((string) $label);
     }
 
     /** Carica al massimo una riga in più per determinare se esistono altri risultati. */

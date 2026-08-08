@@ -179,7 +179,7 @@ components:
           type: integer
           format: int32
           nullable: true
-        'conti_trattamento_sog':
+        'conti__mod_conto_id__label':
           type: string
           nullable: true
     ModificaContiCreate:

@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -49,12 +51,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['agenzia_listini_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('agenzia_listini_id', $row->agenzia_listini_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('agenzia_listini_id', $row->agenzia_listini_id ?? ($context['agenzia_listini_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="agenzia_listini_id"
+                            data-base-url="<?= site_url('agenzia_listini/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('agenzia_listini/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['agenzia_listini_id'])): ?>
                         <div id="agenzia_listini_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['agenzia_listini_id']) ?>
@@ -76,12 +99,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['agenzia_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('agenzia_id', $row->agenzia_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('agenzia_id', $row->agenzia_id ?? ($context['agenzia_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="agenzia_id"
+                            data-base-url="<?= site_url('agenzie/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('agenzie/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['agenzia_id'])): ?>
                         <div id="agenzia_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['agenzia_id']) ?>
@@ -96,7 +140,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -115,7 +159,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="agenzia_limite_vendita"
                         id="agenzia_limite_vendita"
-                        value="<?= esc(old('agenzia_limite_vendita', $row->agenzia_limite_vendita ?? '')) ?>"
+                        value="<?= esc(old('agenzia_limite_vendita', $row->agenzia_limite_vendita ?? ($context['agenzia_limite_vendita'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_limite_vendita']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_limite_vendita-error"
                         aria-invalid="<?= isset($errors['agenzia_limite_vendita']) ? 'true' : 'false' ?>"
@@ -134,7 +178,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="agenzia_ab_limite_vendita"
                         id="agenzia_ab_limite_vendita"
-                        value="<?= esc(old('agenzia_ab_limite_vendita', $row->agenzia_ab_limite_vendita ?? '')) ?>"
+                        value="<?= esc(old('agenzia_ab_limite_vendita', $row->agenzia_ab_limite_vendita ?? ($context['agenzia_ab_limite_vendita'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_ab_limite_vendita']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_ab_limite_vendita-error"
                         aria-invalid="<?= isset($errors['agenzia_ab_limite_vendita']) ? 'true' : 'false' ?>"
@@ -153,7 +197,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="agenzia_max_vendita"
                         id="agenzia_max_vendita"
-                        value="<?= esc(old('agenzia_max_vendita', $row->agenzia_max_vendita ?? '')) ?>"
+                        value="<?= esc(old('agenzia_max_vendita', $row->agenzia_max_vendita ?? ($context['agenzia_max_vendita'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_max_vendita']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_max_vendita-error"
                         aria-invalid="<?= isset($errors['agenzia_max_vendita']) ? 'true' : 'false' ?>"
@@ -172,7 +216,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="agenzia_ab_max_vendita"
                         id="agenzia_ab_max_vendita"
-                        value="<?= esc(old('agenzia_ab_max_vendita', $row->agenzia_ab_max_vendita ?? '')) ?>"
+                        value="<?= esc(old('agenzia_ab_max_vendita', $row->agenzia_ab_max_vendita ?? ($context['agenzia_ab_max_vendita'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_ab_max_vendita']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_ab_max_vendita-error"
                         aria-invalid="<?= isset($errors['agenzia_ab_max_vendita']) ? 'true' : 'false' ?>"
@@ -191,7 +235,7 @@ $submissionToken = $submissionToken ?? '';
                         type="datetime-local"
                         name="ref_agenzia_datarecord"
                         id="ref_agenzia_datarecord"
-                        value="<?= esc(old('ref_agenzia_datarecord', isset($row->ref_agenzia_datarecord) ? str_replace(' ', 'T', substr((string) $row->ref_agenzia_datarecord, 0, 16)) : '')) ?>"
+                        value="<?= esc(old('ref_agenzia_datarecord', isset($row->ref_agenzia_datarecord) ? str_replace(' ', 'T', substr((string) $row->ref_agenzia_datarecord, 0, 16)) : ($context['ref_agenzia_datarecord'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['ref_agenzia_datarecord']) ? 'is-invalid' : '' ?>"
                         aria-describedby="ref_agenzia_datarecord-error"
                         aria-invalid="<?= isset($errors['ref_agenzia_datarecord']) ? 'true' : 'false' ?>"
@@ -243,6 +287,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -287,6 +332,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -294,6 +340,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

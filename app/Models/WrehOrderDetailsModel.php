@@ -95,14 +95,24 @@ final class WrehOrderDetailsModel extends Model
   array (
     'table' => 'wreh_orders',
     'key' => 'order_id',
-    'label' => 'status',
+    'displayField' => 'status',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'status',
+    ),
     'mode' => 'select',
   ),
   'product_id' => 
   array (
     'table' => 'wreh_products',
     'key' => 'product_id',
-    'label' => 'name',
+    'displayField' => 'name',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'name',
+    ),
     'mode' => 'select',
   ),
 );
@@ -119,8 +129,8 @@ final class WrehOrderDetailsModel extends Model
             'wreh_order_details.quantity AS quantity',
             'wreh_order_details.price AS price',
             'wreh_order_details.utente_id AS utente_id',
-            'wreh_orders__order_id.status AS wreh_orders_status',
-            'wreh_products__product_id.name AS wreh_products_name'
+            'wreh_orders__order_id.status AS wreh_orders__order_id__label',
+            'wreh_products__product_id.name AS wreh_products__product_id__label'
         ]);
         $builder->join('wreh_orders AS wreh_orders__order_id', 'wreh_orders__order_id.order_id = wreh_order_details.order_id', 'left');
         $builder->join('wreh_products AS wreh_products__product_id', 'wreh_products__product_id.product_id = wreh_order_details.product_id', 'left');
@@ -138,8 +148,8 @@ final class WrehOrderDetailsModel extends Model
             'wreh_order_details.quantity AS quantity',
             'wreh_order_details.price AS price',
             'wreh_order_details.utente_id AS utente_id',
-            'wreh_orders__order_id.status AS wreh_orders_status',
-            'wreh_products__product_id.name AS wreh_products_name'
+            'wreh_orders__order_id.status AS wreh_orders__order_id__label',
+            'wreh_products__product_id.name AS wreh_products__product_id__label'
         ]);
         $builder->join('wreh_orders AS wreh_orders__order_id', 'wreh_orders__order_id.order_id = wreh_order_details.order_id', 'left');
         $builder->join('wreh_products AS wreh_products__product_id', 'wreh_products__product_id.product_id = wreh_order_details.product_id', 'left');
@@ -219,8 +229,8 @@ final class WrehOrderDetailsModel extends Model
             'wreh_order_details.quantity AS quantity',
             'wreh_order_details.price AS price',
             'wreh_order_details.utente_id AS utente_id',
-            'wreh_orders__order_id.status AS wreh_orders_status',
-            'wreh_products__product_id.name AS wreh_products_name'
+            'wreh_orders__order_id.status AS wreh_orders__order_id__label',
+            'wreh_products__product_id.name AS wreh_products__product_id__label'
         ]);
         $builder->join('wreh_orders AS wreh_orders__order_id', 'wreh_orders__order_id.order_id = wreh_order_details.order_id', 'left');
         $builder->join('wreh_products AS wreh_products__product_id', 'wreh_products__product_id.product_id = wreh_order_details.product_id', 'left');
@@ -428,31 +438,37 @@ final class WrehOrderDetailsModel extends Model
     public function getWrehOrdersOrderIdOptions(): array
     {
         return $this->db->table('wreh_orders')
-            ->select(['order_id', 'status'])
+            ->select(array (
+  0 => 'order_id',
+  1 => 'status',
+))
             ->orderBy('status', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     /** Restituisce le opzioni della relazione product_id. */
     public function getWrehProductsProductIdOptions(): array
     {
         return $this->db->table('wreh_products')
-            ->select(['product_id', 'name'])
+            ->select(array (
+  0 => 'product_id',
+  1 => 'name',
+))
             ->orderBy('name', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     public function relationOptions(): array
     {
         return [
-            'order_id' => $this->toOptions($this->getWrehOrdersOrderIdOptions(), 'order_id', 'status'),
-            'product_id' => $this->toOptions($this->getWrehProductsProductIdOptions(), 'product_id', 'name'),
+            'order_id' => $this->toRelationOptions($this->getWrehOrdersOrderIdOptions(), 'order_id'),
+            'product_id' => $this->toRelationOptions($this->getWrehProductsProductIdOptions(), 'product_id'),
         ];
     }
 
     /**
      * Ricerca server-side delle opzioni per relazioni grandi.
-     * Tabella, chiave e campo label arrivano solo dalla whitelist generata.
+     * Tabella, chiave e campi descrittivi arrivano solo dalla whitelist generata.
      *
      * @return list<array{id:string,text:string}>
      */
@@ -463,36 +479,100 @@ final class WrehOrderDetailsModel extends Model
         }
 
         $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
         $limit = max(1, min(100, $limit));
         $builder = $this->db->table((string) $definition['table'])
-            ->select([(string) $definition['key'], (string) $definition['label']])
-            ->orderBy((string) $definition['label'], 'ASC')
+            ->select($selectFields)
+            ->orderBy((string) $definition['displayField'], 'ASC')
             ->limit($limit);
 
         $query = trim($query);
-        if ($query !== '') {
-            $builder->like((string) $definition['label'], $query, 'after');
+        if ($query !== '' && $displayFields !== []) {
+            $builder->groupStart();
+            foreach ($displayFields as $index => $displayColumn) {
+                if ($index === 0) {
+                    $builder->like((string) $displayColumn, $query, 'after');
+                } else {
+                    $builder->orLike((string) $displayColumn, $query, 'after');
+                }
+            }
+            $builder->groupEnd();
         }
 
         $rows = $builder->get()->getResultArray();
         $result = [];
         foreach ($rows as $row) {
             $result[] = [
-                'id' => (string) ($row[(string) $definition['key']] ?? ''),
-                'text' => (string) ($row[(string) $definition['label']] ?? ''),
+                'id' => (string) ($row[$key] ?? ''),
+                'text' => $this->formatRelationLabel($row, $definition),
             ];
         }
 
         return $result;
     }
 
-    private function toOptions(array $rows, string $key, string $label): array
+    /** Restituisce una FK valida e la sua descrizione; usato dal Create contestuale. */
+    public function relationOptionById(string $field, int|string $id): ?array
     {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return null;
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
+        $row = $this->db->table((string) $definition['table'])
+            ->select($selectFields)
+            ->where($key, $id)
+            ->limit(1)
+            ->get()
+            ->getRowArray();
+
+        if (!is_array($row)) {
+            return null;
+        }
+
+        return [
+            'id' => (string) ($row[$key] ?? ''),
+            'text' => $this->formatRelationLabel($row, $definition),
+        ];
+    }
+
+    private function toRelationOptions(array $rows, string $field): array
+    {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return [];
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
         $options = [];
         foreach ($rows as $row) {
-            $options[(string) $row->{$key}] = (string) $row->{$label};
+            if (!is_array($row)) {
+                continue;
+            }
+            $options[(string) ($row[$key] ?? '')] = $this->formatRelationLabel($row, $definition);
         }
         return $options;
+    }
+
+    private function formatRelationLabel(array $row, array $definition): string
+    {
+        $template = trim((string) ($definition['displayTemplate'] ?? ''));
+        if ($template === '') {
+            return trim((string) ($row[(string) $definition['displayField']] ?? ''));
+        }
+
+        $label = preg_replace_callback(
+            '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+            static fn (array $match): string => (string) ($row[$match[1]] ?? ''),
+            $template
+        );
+
+        return trim((string) $label);
     }
 
     public function loadHasMany(int|string $parentId): array

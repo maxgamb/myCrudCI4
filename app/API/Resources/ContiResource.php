@@ -31,8 +31,8 @@ final class ContiResource
   20 => 'acconto',
   21 => 'conto_pag_modalita',
   22 => 'conti_utente_id',
-  23 => 'camere_tipologia_camera',
-  24 => 'foglio_giorno_date_foglio',
+  23 => 'camere__camera_id__label',
+  24 => 'foglio_giorno__foglio_id__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

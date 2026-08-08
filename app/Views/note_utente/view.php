@@ -18,7 +18,7 @@
                             <td><?= esc($row->note_utente_rispondi_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('NoteUtente.Utente_id')) ?></th>
-                            <td><?= esc($row->Utente_id ?? '') ?></td>
+                            <td><a href="<?= site_url('utenti/view/' . rawurlencode((string) ($row->Utente_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->utenti__Utente_id__label ?? $row->Utente_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('NoteUtente.hotel_id')) ?></th>
                             <td><?= esc($row->hotel_id ?? '') ?></td>

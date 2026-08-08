@@ -66,9 +66,50 @@
                         <?php foreach ($rows as $row): ?>
                             <tr>
                                 <td><?= esc($row->colore_nome ?? '') ?></td>
-                                <td><?= esc($row->colore_codice ?? '') ?></td>
-                                <td><?= esc($row->agenda_preno_arr_ore ?? $row->col_preno_id ?? '') ?></td>
-                                <td class="text-end text-nowrap">
+                                <td>
+                                    <?php if ((string) ($row->colore_codice ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'colore_codice',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->colore_codice,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->colore_codice) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->col_preno_id ?? '') !== ''): ?><a href="<?= site_url('agenda/view/' . rawurlencode((string) $row->col_preno_id)) ?>" class="text-decoration-none"><?= esc($row->agenda__col_preno_id__label ?? $row->col_preno_id ?? '') ?></a><?php else: ?><?= esc($row->agenda__col_preno_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'col_preno_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->col_preno_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->col_preno_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td class="text-end text-nowrap">
                                     <?php $id = $row->colore_nome ?? ''; ?>
                                     <div class="btn-group btn-group-sm" role="group" aria-label="Azioni record">
                                         <a href="<?= site_url('colori/view/' . rawurlencode((string) $id)) ?>" class="btn btn-outline-info" title="Visualizza">

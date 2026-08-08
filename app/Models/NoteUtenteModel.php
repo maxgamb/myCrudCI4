@@ -90,7 +90,12 @@ final class NoteUtenteModel extends Model
   array (
     'table' => 'utenti',
     'key' => 'Utente_id',
-    'label' => 'Nome_Utente',
+    'displayField' => 'Nome_Utente',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'Nome_Utente',
+    ),
     'mode' => 'select',
   ),
 );
@@ -113,7 +118,7 @@ final class NoteUtenteModel extends Model
             'note_utente.note_utente_al AS note_utente_al',
             'note_utente.note_utente_data AS note_utente_data',
             'note_utente.note_utente_data_record AS note_utente_data_record',
-            'utenti__Utente_id.Nome_Utente AS utenti_Nome_Utente'
+            'utenti__Utente_id.Nome_Utente AS utenti__Utente_id__label'
         ]);
         $builder->join('utenti AS utenti__Utente_id', 'utenti__Utente_id.Utente_id = note_utente.Utente_id', 'left');
         return $builder;
@@ -134,7 +139,7 @@ final class NoteUtenteModel extends Model
             'note_utente.note_utente_stato AS note_utente_stato',
             'note_utente.note_utente_dal AS note_utente_dal',
             'note_utente.note_utente_data AS note_utente_data',
-            'utenti__Utente_id.Nome_Utente AS utenti_Nome_Utente'
+            'utenti__Utente_id.Nome_Utente AS utenti__Utente_id__label'
         ]);
         $builder->join('utenti AS utenti__Utente_id', 'utenti__Utente_id.Utente_id = note_utente.Utente_id', 'left');
         return $builder;
@@ -218,7 +223,7 @@ final class NoteUtenteModel extends Model
             'note_utente.note_utente_dal AS note_utente_dal',
             'note_utente.note_utente_al AS note_utente_al',
             'note_utente.note_utente_data AS note_utente_data',
-            'utenti__Utente_id.Nome_Utente AS utenti_Nome_Utente'
+            'utenti__Utente_id.Nome_Utente AS utenti__Utente_id__label'
         ]);
         $builder->join('utenti AS utenti__Utente_id', 'utenti__Utente_id.Utente_id = note_utente.Utente_id', 'left');
         $this->applyListFilters($builder, $filters, true);
@@ -425,21 +430,24 @@ final class NoteUtenteModel extends Model
     public function getUtentiUtenteIdOptions(): array
     {
         return $this->db->table('utenti')
-            ->select(['Utente_id', 'Nome_Utente'])
+            ->select(array (
+  0 => 'Utente_id',
+  1 => 'Nome_Utente',
+))
             ->orderBy('Nome_Utente', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     public function relationOptions(): array
     {
         return [
-            'Utente_id' => $this->toOptions($this->getUtentiUtenteIdOptions(), 'Utente_id', 'Nome_Utente'),
+            'Utente_id' => $this->toRelationOptions($this->getUtentiUtenteIdOptions(), 'Utente_id'),
         ];
     }
 
     /**
      * Ricerca server-side delle opzioni per relazioni grandi.
-     * Tabella, chiave e campo label arrivano solo dalla whitelist generata.
+     * Tabella, chiave e campi descrittivi arrivano solo dalla whitelist generata.
      *
      * @return list<array{id:string,text:string}>
      */
@@ -450,36 +458,100 @@ final class NoteUtenteModel extends Model
         }
 
         $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
         $limit = max(1, min(100, $limit));
         $builder = $this->db->table((string) $definition['table'])
-            ->select([(string) $definition['key'], (string) $definition['label']])
-            ->orderBy((string) $definition['label'], 'ASC')
+            ->select($selectFields)
+            ->orderBy((string) $definition['displayField'], 'ASC')
             ->limit($limit);
 
         $query = trim($query);
-        if ($query !== '') {
-            $builder->like((string) $definition['label'], $query, 'after');
+        if ($query !== '' && $displayFields !== []) {
+            $builder->groupStart();
+            foreach ($displayFields as $index => $displayColumn) {
+                if ($index === 0) {
+                    $builder->like((string) $displayColumn, $query, 'after');
+                } else {
+                    $builder->orLike((string) $displayColumn, $query, 'after');
+                }
+            }
+            $builder->groupEnd();
         }
 
         $rows = $builder->get()->getResultArray();
         $result = [];
         foreach ($rows as $row) {
             $result[] = [
-                'id' => (string) ($row[(string) $definition['key']] ?? ''),
-                'text' => (string) ($row[(string) $definition['label']] ?? ''),
+                'id' => (string) ($row[$key] ?? ''),
+                'text' => $this->formatRelationLabel($row, $definition),
             ];
         }
 
         return $result;
     }
 
-    private function toOptions(array $rows, string $key, string $label): array
+    /** Restituisce una FK valida e la sua descrizione; usato dal Create contestuale. */
+    public function relationOptionById(string $field, int|string $id): ?array
     {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return null;
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
+        $row = $this->db->table((string) $definition['table'])
+            ->select($selectFields)
+            ->where($key, $id)
+            ->limit(1)
+            ->get()
+            ->getRowArray();
+
+        if (!is_array($row)) {
+            return null;
+        }
+
+        return [
+            'id' => (string) ($row[$key] ?? ''),
+            'text' => $this->formatRelationLabel($row, $definition),
+        ];
+    }
+
+    private function toRelationOptions(array $rows, string $field): array
+    {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return [];
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
         $options = [];
         foreach ($rows as $row) {
-            $options[(string) $row->{$key}] = (string) $row->{$label};
+            if (!is_array($row)) {
+                continue;
+            }
+            $options[(string) ($row[$key] ?? '')] = $this->formatRelationLabel($row, $definition);
         }
         return $options;
+    }
+
+    private function formatRelationLabel(array $row, array $definition): string
+    {
+        $template = trim((string) ($definition['displayTemplate'] ?? ''));
+        if ($template === '') {
+            return trim((string) ($row[(string) $definition['displayField']] ?? ''));
+        }
+
+        $label = preg_replace_callback(
+            '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+            static fn (array $match): string => (string) ($row[$match[1]] ?? ''),
+            $template
+        );
+
+        return trim((string) $label);
     }
 
     public function loadHasMany(int|string $parentId): array

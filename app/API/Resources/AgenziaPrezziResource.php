@@ -27,7 +27,7 @@ final class AgenziaPrezziResource
   16 => 'agenzia_prezzi_nome',
   17 => 'agenzia_prezzi_note',
   18 => 'agenzia_prezzi_datarecord',
-  19 => 'agenzia_listini_agenzia_listini_nome',
+  19 => 'agenzia_listini__agenzia_prezzi_id__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

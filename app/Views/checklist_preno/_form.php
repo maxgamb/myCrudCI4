@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="preno_id"
                         id="preno_id"
-                        value="<?= esc(old('preno_id', $row->preno_id ?? '')) ?>"
+                        value="<?= esc(old('preno_id', $row->preno_id ?? ($context['preno_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['preno_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="preno_id-error"
                         aria-invalid="<?= isset($errors['preno_id']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="preno_dal"
                         id="preno_dal"
-                        value="<?= esc(old('preno_dal', $row->preno_dal ?? '')) ?>"
+                        value="<?= esc(old('preno_dal', $row->preno_dal ?? ($context['preno_dal'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['preno_dal']) ? 'is-invalid' : '' ?>"
                         aria-describedby="preno_dal-error"
                         aria-invalid="<?= isset($errors['preno_dal']) ? 'true' : 'false' ?>"
@@ -102,7 +104,7 @@ $submissionToken = $submissionToken ?? '';
                         type="email"
                         name="email"
                         id="email"
-                        value="<?= esc(old('email', $row->email ?? '')) ?>"
+                        value="<?= esc(old('email', $row->email ?? ($context['email'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>"
                         aria-describedby="email-error"
                         aria-invalid="<?= isset($errors['email']) ? 'true' : 'false' ?>"
@@ -122,7 +124,7 @@ $submissionToken = $submissionToken ?? '';
                         type="email"
                         name="email_pms"
                         id="email_pms"
-                        value="<?= esc(old('email_pms', $row->email_pms ?? '')) ?>"
+                        value="<?= esc(old('email_pms', $row->email_pms ?? ($context['email_pms'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['email_pms']) ? 'is-invalid' : '' ?>"
                         aria-describedby="email_pms-error"
                         aria-invalid="<?= isset($errors['email_pms']) ? 'true' : 'false' ?>"
@@ -142,7 +144,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="lista"
                         id="lista"
-                        value="<?= esc(old('lista', $row->lista ?? '')) ?>"
+                        value="<?= esc(old('lista', $row->lista ?? ($context['lista'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['lista']) ? 'is-invalid' : '' ?>"
                         aria-describedby="lista-error"
                         aria-invalid="<?= isset($errors['lista']) ? 'true' : 'false' ?>"
@@ -162,7 +164,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="lista_pms"
                         id="lista_pms"
-                        value="<?= esc(old('lista_pms', $row->lista_pms ?? '')) ?>"
+                        value="<?= esc(old('lista_pms', $row->lista_pms ?? ($context['lista_pms'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['lista_pms']) ? 'is-invalid' : '' ?>"
                         aria-describedby="lista_pms-error"
                         aria-invalid="<?= isset($errors['lista_pms']) ? 'true' : 'false' ?>"
@@ -182,7 +184,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="pagamento"
                         id="pagamento"
-                        value="<?= esc(old('pagamento', $row->pagamento ?? '')) ?>"
+                        value="<?= esc(old('pagamento', $row->pagamento ?? ($context['pagamento'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pagamento']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pagamento-error"
                         aria-invalid="<?= isset($errors['pagamento']) ? 'true' : 'false' ?>"
@@ -202,7 +204,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="tassa"
                         id="tassa"
-                        value="<?= esc(old('tassa', $row->tassa ?? '')) ?>"
+                        value="<?= esc(old('tassa', $row->tassa ?? ($context['tassa'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['tassa']) ? 'is-invalid' : '' ?>"
                         aria-describedby="tassa-error"
                         aria-invalid="<?= isset($errors['tassa']) ? 'true' : 'false' ?>"
@@ -222,7 +224,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="proforma"
                         id="proforma"
-                        value="<?= esc(old('proforma', $row->proforma ?? '')) ?>"
+                        value="<?= esc(old('proforma', $row->proforma ?? ($context['proforma'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['proforma']) ? 'is-invalid' : '' ?>"
                         aria-describedby="proforma-error"
                         aria-invalid="<?= isset($errors['proforma']) ? 'true' : 'false' ?>"
@@ -242,7 +244,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="proforma_pms"
                         id="proforma_pms"
-                        value="<?= esc(old('proforma_pms', $row->proforma_pms ?? '')) ?>"
+                        value="<?= esc(old('proforma_pms', $row->proforma_pms ?? ($context['proforma_pms'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['proforma_pms']) ? 'is-invalid' : '' ?>"
                         aria-describedby="proforma_pms-error"
                         aria-invalid="<?= isset($errors['proforma_pms']) ? 'true' : 'false' ?>"
@@ -262,7 +264,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="bonifico"
                         id="bonifico"
-                        value="<?= esc(old('bonifico', $row->bonifico ?? '')) ?>"
+                        value="<?= esc(old('bonifico', $row->bonifico ?? ($context['bonifico'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['bonifico']) ? 'is-invalid' : '' ?>"
                         aria-describedby="bonifico-error"
                         aria-invalid="<?= isset($errors['bonifico']) ? 'true' : 'false' ?>"
@@ -282,7 +284,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="importo"
                         id="importo"
-                        value="<?= esc(old('importo', $row->importo ?? '')) ?>"
+                        value="<?= esc(old('importo', $row->importo ?? ($context['importo'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['importo']) ? 'is-invalid' : '' ?>"
                         aria-describedby="importo-error"
                         aria-invalid="<?= isset($errors['importo']) ? 'true' : 'false' ?>"
@@ -302,7 +304,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="note"
                         id="note"
-                        value="<?= esc(old('note', $row->note ?? '')) ?>"
+                        value="<?= esc(old('note', $row->note ?? ($context['note'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['note']) ? 'is-invalid' : '' ?>"
                         aria-describedby="note-error"
                         aria-invalid="<?= isset($errors['note']) ? 'true' : 'false' ?>"
@@ -322,7 +324,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="data_check"
                         id="data_check"
-                        value="<?= esc(old('data_check', $row->data_check ?? '')) ?>"
+                        value="<?= esc(old('data_check', $row->data_check ?? ($context['data_check'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['data_check']) ? 'is-invalid' : '' ?>"
                         aria-describedby="data_check-error"
                         aria-invalid="<?= isset($errors['data_check']) ? 'true' : 'false' ?>"
@@ -342,7 +344,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="utente_id"
                         id="utente_id"
-                        value="<?= esc(old('utente_id', $row->utente_id ?? '')) ?>"
+                        value="<?= esc(old('utente_id', $row->utente_id ?? ($context['utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="utente_id-error"
                         aria-invalid="<?= isset($errors['utente_id']) ? 'true' : 'false' ?>"
@@ -395,6 +397,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -439,6 +442,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -446,6 +450,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

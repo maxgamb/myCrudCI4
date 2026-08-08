@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="woucher_agenzia_id"
                         id="woucher_agenzia_id"
-                        value="<?= esc(old('woucher_agenzia_id', $row->woucher_agenzia_id ?? '')) ?>"
+                        value="<?= esc(old('woucher_agenzia_id', $row->woucher_agenzia_id ?? ($context['woucher_agenzia_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_agenzia_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_agenzia_id-error"
                         aria-invalid="<?= isset($errors['woucher_agenzia_id']) ? 'true' : 'false' ?>"
@@ -61,7 +63,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="woucher_preno_id"
                         id="woucher_preno_id"
-                        value="<?= esc(old('woucher_preno_id', $row->woucher_preno_id ?? '')) ?>"
+                        value="<?= esc(old('woucher_preno_id', $row->woucher_preno_id ?? ($context['woucher_preno_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_preno_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_preno_id-error"
                         aria-invalid="<?= isset($errors['woucher_preno_id']) ? 'true' : 'false' ?>"
@@ -80,7 +82,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="woucher_hotel_id"
                         id="woucher_hotel_id"
-                        value="<?= esc(old('woucher_hotel_id', $row->woucher_hotel_id ?? '')) ?>"
+                        value="<?= esc(old('woucher_hotel_id', $row->woucher_hotel_id ?? ($context['woucher_hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_hotel_id-error"
                         aria-invalid="<?= isset($errors['woucher_hotel_id']) ? 'true' : 'false' ?>"
@@ -99,7 +101,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="woucher_in"
                         id="woucher_in"
-                        value="<?= esc(old('woucher_in', $row->woucher_in ?? '')) ?>"
+                        value="<?= esc(old('woucher_in', $row->woucher_in ?? ($context['woucher_in'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_in']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_in-error"
                         aria-invalid="<?= isset($errors['woucher_in']) ? 'true' : 'false' ?>"
@@ -119,7 +121,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="woucher_notti"
                         id="woucher_notti"
-                        value="<?= esc(old('woucher_notti', $row->woucher_notti ?? '')) ?>"
+                        value="<?= esc(old('woucher_notti', $row->woucher_notti ?? ($context['woucher_notti'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_notti']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_notti-error"
                         aria-invalid="<?= isset($errors['woucher_notti']) ? 'true' : 'false' ?>"
@@ -138,7 +140,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="woucher_out"
                         id="woucher_out"
-                        value="<?= esc(old('woucher_out', $row->woucher_out ?? '')) ?>"
+                        value="<?= esc(old('woucher_out', $row->woucher_out ?? ($context['woucher_out'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_out']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_out-error"
                         aria-invalid="<?= isset($errors['woucher_out']) ? 'true' : 'false' ?>"
@@ -158,7 +160,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="woucher_numero"
                         id="woucher_numero"
-                        value="<?= esc(old('woucher_numero', $row->woucher_numero ?? '')) ?>"
+                        value="<?= esc(old('woucher_numero', $row->woucher_numero ?? ($context['woucher_numero'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_numero']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_numero-error"
                         aria-invalid="<?= isset($errors['woucher_numero']) ? 'true' : 'false' ?>"
@@ -178,7 +180,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="woucher_serie"
                         id="woucher_serie"
-                        value="<?= esc(old('woucher_serie', $row->woucher_serie ?? '')) ?>"
+                        value="<?= esc(old('woucher_serie', $row->woucher_serie ?? ($context['woucher_serie'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_serie']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_serie-error"
                         aria-invalid="<?= isset($errors['woucher_serie']) ? 'true' : 'false' ?>"
@@ -198,7 +200,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="woucher_singole"
                         id="woucher_singole"
-                        value="<?= esc(old('woucher_singole', $row->woucher_singole ?? '')) ?>"
+                        value="<?= esc(old('woucher_singole', $row->woucher_singole ?? ($context['woucher_singole'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_singole']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_singole-error"
                         aria-invalid="<?= isset($errors['woucher_singole']) ? 'true' : 'false' ?>"
@@ -217,7 +219,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="woucher_singole_staff"
                         id="woucher_singole_staff"
-                        value="<?= esc(old('woucher_singole_staff', $row->woucher_singole_staff ?? '')) ?>"
+                        value="<?= esc(old('woucher_singole_staff', $row->woucher_singole_staff ?? ($context['woucher_singole_staff'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_singole_staff']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_singole_staff-error"
                         aria-invalid="<?= isset($errors['woucher_singole_staff']) ? 'true' : 'false' ?>"
@@ -236,7 +238,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="woucher_doppia"
                         id="woucher_doppia"
-                        value="<?= esc(old('woucher_doppia', $row->woucher_doppia ?? '')) ?>"
+                        value="<?= esc(old('woucher_doppia', $row->woucher_doppia ?? ($context['woucher_doppia'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_doppia']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_doppia-error"
                         aria-invalid="<?= isset($errors['woucher_doppia']) ? 'true' : 'false' ?>"
@@ -255,7 +257,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="woucher_tripla"
                         id="woucher_tripla"
-                        value="<?= esc(old('woucher_tripla', $row->woucher_tripla ?? '')) ?>"
+                        value="<?= esc(old('woucher_tripla', $row->woucher_tripla ?? ($context['woucher_tripla'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_tripla']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_tripla-error"
                         aria-invalid="<?= isset($errors['woucher_tripla']) ? 'true' : 'false' ?>"
@@ -274,7 +276,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="woucher_quadrupla"
                         id="woucher_quadrupla"
-                        value="<?= esc(old('woucher_quadrupla', $row->woucher_quadrupla ?? '')) ?>"
+                        value="<?= esc(old('woucher_quadrupla', $row->woucher_quadrupla ?? ($context['woucher_quadrupla'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_quadrupla']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_quadrupla-error"
                         aria-invalid="<?= isset($errors['woucher_quadrupla']) ? 'true' : 'false' ?>"
@@ -293,7 +295,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="woucher_cildren_n"
                         id="woucher_cildren_n"
-                        value="<?= esc(old('woucher_cildren_n', $row->woucher_cildren_n ?? '')) ?>"
+                        value="<?= esc(old('woucher_cildren_n', $row->woucher_cildren_n ?? ($context['woucher_cildren_n'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_cildren_n']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_cildren_n-error"
                         aria-invalid="<?= isset($errors['woucher_cildren_n']) ? 'true' : 'false' ?>"
@@ -312,7 +314,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="woucher_doppia_studenti"
                         id="woucher_doppia_studenti"
-                        value="<?= esc(old('woucher_doppia_studenti', $row->woucher_doppia_studenti ?? '')) ?>"
+                        value="<?= esc(old('woucher_doppia_studenti', $row->woucher_doppia_studenti ?? ($context['woucher_doppia_studenti'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_doppia_studenti']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_doppia_studenti-error"
                         aria-invalid="<?= isset($errors['woucher_doppia_studenti']) ? 'true' : 'false' ?>"
@@ -331,7 +333,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="woucher_tripla_studenti"
                         id="woucher_tripla_studenti"
-                        value="<?= esc(old('woucher_tripla_studenti', $row->woucher_tripla_studenti ?? '')) ?>"
+                        value="<?= esc(old('woucher_tripla_studenti', $row->woucher_tripla_studenti ?? ($context['woucher_tripla_studenti'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_tripla_studenti']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_tripla_studenti-error"
                         aria-invalid="<?= isset($errors['woucher_tripla_studenti']) ? 'true' : 'false' ?>"
@@ -350,7 +352,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="woucher_quadrupla_studenti"
                         id="woucher_quadrupla_studenti"
-                        value="<?= esc(old('woucher_quadrupla_studenti', $row->woucher_quadrupla_studenti ?? '')) ?>"
+                        value="<?= esc(old('woucher_quadrupla_studenti', $row->woucher_quadrupla_studenti ?? ($context['woucher_quadrupla_studenti'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_quadrupla_studenti']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_quadrupla_studenti-error"
                         aria-invalid="<?= isset($errors['woucher_quadrupla_studenti']) ? 'true' : 'false' ?>"
@@ -369,7 +371,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="woucher_quintupla_studenti"
                         id="woucher_quintupla_studenti"
-                        value="<?= esc(old('woucher_quintupla_studenti', $row->woucher_quintupla_studenti ?? '')) ?>"
+                        value="<?= esc(old('woucher_quintupla_studenti', $row->woucher_quintupla_studenti ?? ($context['woucher_quintupla_studenti'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_quintupla_studenti']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_quintupla_studenti-error"
                         aria-invalid="<?= isset($errors['woucher_quintupla_studenti']) ? 'true' : 'false' ?>"
@@ -388,7 +390,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="woucher_tot_pax"
                         id="woucher_tot_pax"
-                        value="<?= esc(old('woucher_tot_pax', $row->woucher_tot_pax ?? '')) ?>"
+                        value="<?= esc(old('woucher_tot_pax', $row->woucher_tot_pax ?? ($context['woucher_tot_pax'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_tot_pax']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_tot_pax-error"
                         aria-invalid="<?= isset($errors['woucher_tot_pax']) ? 'true' : 'false' ?>"
@@ -407,7 +409,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="woucher_tot_adulti"
                         id="woucher_tot_adulti"
-                        value="<?= esc(old('woucher_tot_adulti', $row->woucher_tot_adulti ?? '')) ?>"
+                        value="<?= esc(old('woucher_tot_adulti', $row->woucher_tot_adulti ?? ($context['woucher_tot_adulti'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_tot_adulti']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_tot_adulti-error"
                         aria-invalid="<?= isset($errors['woucher_tot_adulti']) ? 'true' : 'false' ?>"
@@ -426,7 +428,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="woucher_tot_studenti"
                         id="woucher_tot_studenti"
-                        value="<?= esc(old('woucher_tot_studenti', $row->woucher_tot_studenti ?? '')) ?>"
+                        value="<?= esc(old('woucher_tot_studenti', $row->woucher_tot_studenti ?? ($context['woucher_tot_studenti'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_tot_studenti']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_tot_studenti-error"
                         aria-invalid="<?= isset($errors['woucher_tot_studenti']) ? 'true' : 'false' ?>"
@@ -445,7 +447,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="woucher_note"
                         id="woucher_note"
-                        value="<?= esc(old('woucher_note', $row->woucher_note ?? '')) ?>"
+                        value="<?= esc(old('woucher_note', $row->woucher_note ?? ($context['woucher_note'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['woucher_note']) ? 'is-invalid' : '' ?>"
                         aria-describedby="woucher_note-error"
                         aria-invalid="<?= isset($errors['woucher_note']) ? 'true' : 'false' ?>"
@@ -497,6 +499,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -541,6 +544,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -548,6 +552,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

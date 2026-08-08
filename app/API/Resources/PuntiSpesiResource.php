@@ -15,8 +15,8 @@ final class PuntiSpesiResource
   4 => 'punti',
   5 => 'data',
   6 => 'utente_id',
-  7 => 'clienti_camara_tipologia',
-  8 => 'conti_trattamento_sog',
+  7 => 'clienti__cliente_id__label',
+  8 => 'conti__conto_id__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

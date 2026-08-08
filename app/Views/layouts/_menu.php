@@ -9,6 +9,12 @@ $menuType = in_array($menuConfig->type ?? 'vertical', ['vertical', 'horizontal']
     ? $menuConfig->type
     : 'vertical';
 $menuGroups = (array) ($menuConfig->groups ?? []);
+$menuSearch = (bool) ($menuConfig->search ?? true);
+$menuFavorites = (bool) ($menuConfig->favorites ?? true);
 ?>
 
-<?= view('layouts/_menu_' . $menuType, ['menuGroups' => $menuGroups]) ?>
+<?= view('layouts/_menu_' . $menuType, [
+    'menuGroups' => $menuGroups,
+    'menuSearch' => $menuSearch,
+    'menuFavorites' => $menuFavorites,
+]) ?>

@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -50,12 +52,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['obmp_cm_rooms_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('obmp_cm_rooms_id', $row->obmp_cm_rooms_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('obmp_cm_rooms_id', $row->obmp_cm_rooms_id ?? ($context['obmp_cm_rooms_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="obmp_cm_rooms_id"
+                            data-base-url="<?= site_url('obmp_cm_rooms/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('obmp_cm_rooms/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['obmp_cm_rooms_id'])): ?>
                         <div id="obmp_cm_rooms_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['obmp_cm_rooms_id']) ?>
@@ -70,7 +93,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -90,7 +113,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cm_lingue_codice"
                         id="obmp_cm_lingue_codice"
-                        value="<?= esc(old('obmp_cm_lingue_codice', $row->obmp_cm_lingue_codice ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_lingue_codice', $row->obmp_cm_lingue_codice ?? ($context['obmp_cm_lingue_codice'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_lingue_codice']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_lingue_codice-error"
                         aria-invalid="<?= isset($errors['obmp_cm_lingue_codice']) ? 'true' : 'false' ?>"
@@ -110,7 +133,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cm_lingue_nome"
                         id="obmp_cm_lingue_nome"
-                        value="<?= esc(old('obmp_cm_lingue_nome', $row->obmp_cm_lingue_nome ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_lingue_nome', $row->obmp_cm_lingue_nome ?? ($context['obmp_cm_lingue_nome'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_lingue_nome']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_lingue_nome-error"
                         aria-invalid="<?= isset($errors['obmp_cm_lingue_nome']) ? 'true' : 'false' ?>"
@@ -130,7 +153,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cm_lingue_descrizione"
                         id="obmp_cm_lingue_descrizione"
-                        value="<?= esc(old('obmp_cm_lingue_descrizione', $row->obmp_cm_lingue_descrizione ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_lingue_descrizione', $row->obmp_cm_lingue_descrizione ?? ($context['obmp_cm_lingue_descrizione'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_lingue_descrizione']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_lingue_descrizione-error"
                         aria-invalid="<?= isset($errors['obmp_cm_lingue_descrizione']) ? 'true' : 'false' ?>"
@@ -150,7 +173,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cm_lingue_html1"
                         id="obmp_cm_lingue_html1"
-                        value="<?= esc(old('obmp_cm_lingue_html1', $row->obmp_cm_lingue_html1 ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_lingue_html1', $row->obmp_cm_lingue_html1 ?? ($context['obmp_cm_lingue_html1'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_lingue_html1']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_lingue_html1-error"
                         aria-invalid="<?= isset($errors['obmp_cm_lingue_html1']) ? 'true' : 'false' ?>"
@@ -169,7 +192,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cm_lingue_html2"
                         id="obmp_cm_lingue_html2"
-                        value="<?= esc(old('obmp_cm_lingue_html2', $row->obmp_cm_lingue_html2 ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_lingue_html2', $row->obmp_cm_lingue_html2 ?? ($context['obmp_cm_lingue_html2'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_lingue_html2']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_lingue_html2-error"
                         aria-invalid="<?= isset($errors['obmp_cm_lingue_html2']) ? 'true' : 'false' ?>"
@@ -188,7 +211,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cm_lingue_html3"
                         id="obmp_cm_lingue_html3"
-                        value="<?= esc(old('obmp_cm_lingue_html3', $row->obmp_cm_lingue_html3 ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_lingue_html3', $row->obmp_cm_lingue_html3 ?? ($context['obmp_cm_lingue_html3'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_lingue_html3']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_lingue_html3-error"
                         aria-invalid="<?= isset($errors['obmp_cm_lingue_html3']) ? 'true' : 'false' ?>"
@@ -207,7 +230,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cm_lingue_note"
                         id="obmp_cm_lingue_note"
-                        value="<?= esc(old('obmp_cm_lingue_note', $row->obmp_cm_lingue_note ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_lingue_note', $row->obmp_cm_lingue_note ?? ($context['obmp_cm_lingue_note'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_lingue_note']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_lingue_note-error"
                         aria-invalid="<?= isset($errors['obmp_cm_lingue_note']) ? 'true' : 'false' ?>"
@@ -227,7 +250,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cm_lingue_politiche"
                         id="obmp_cm_lingue_politiche"
-                        value="<?= esc(old('obmp_cm_lingue_politiche', $row->obmp_cm_lingue_politiche ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_lingue_politiche', $row->obmp_cm_lingue_politiche ?? ($context['obmp_cm_lingue_politiche'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_lingue_politiche']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_lingue_politiche-error"
                         aria-invalid="<?= isset($errors['obmp_cm_lingue_politiche']) ? 'true' : 'false' ?>"
@@ -247,7 +270,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cm_lingue_condizioni"
                         id="obmp_cm_lingue_condizioni"
-                        value="<?= esc(old('obmp_cm_lingue_condizioni', $row->obmp_cm_lingue_condizioni ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_lingue_condizioni', $row->obmp_cm_lingue_condizioni ?? ($context['obmp_cm_lingue_condizioni'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_lingue_condizioni']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_lingue_condizioni-error"
                         aria-invalid="<?= isset($errors['obmp_cm_lingue_condizioni']) ? 'true' : 'false' ?>"
@@ -267,7 +290,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cm_lingue_utente_id"
                         id="obmp_cm_lingue_utente_id"
-                        value="<?= esc(old('obmp_cm_lingue_utente_id', $row->obmp_cm_lingue_utente_id ?? '')) ?>"
+                        value="<?= esc(old('obmp_cm_lingue_utente_id', $row->obmp_cm_lingue_utente_id ?? ($context['obmp_cm_lingue_utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cm_lingue_utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cm_lingue_utente_id-error"
                         aria-invalid="<?= isset($errors['obmp_cm_lingue_utente_id']) ? 'true' : 'false' ?>"
@@ -320,6 +343,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -364,6 +388,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -371,6 +396,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

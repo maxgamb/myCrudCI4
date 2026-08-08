@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -68,12 +70,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['sospeso_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('sospeso_id', $row->sospeso_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('sospeso_id', $row->sospeso_id ?? ($context['sospeso_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="sospeso_id"
+                            data-base-url="<?= site_url('sospesi/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('sospesi/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['sospeso_id'])): ?>
                         <div id="sospeso_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['sospeso_id']) ?>
@@ -88,7 +111,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="paga_sosp_importo"
                         id="paga_sosp_importo"
-                        value="<?= esc(old('paga_sosp_importo', $row->paga_sosp_importo ?? '')) ?>"
+                        value="<?= esc(old('paga_sosp_importo', $row->paga_sosp_importo ?? ($context['paga_sosp_importo'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['paga_sosp_importo']) ? 'is-invalid' : '' ?>"
                         aria-describedby="paga_sosp_importo-error"
                         aria-invalid="<?= isset($errors['paga_sosp_importo']) ? 'true' : 'false' ?>"
@@ -107,7 +130,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="data_pagamento"
                         id="data_pagamento"
-                        value="<?= esc(old('data_pagamento', $row->data_pagamento ?? '')) ?>"
+                        value="<?= esc(old('data_pagamento', $row->data_pagamento ?? ($context['data_pagamento'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['data_pagamento']) ? 'is-invalid' : '' ?>"
                         aria-describedby="data_pagamento-error"
                         aria-invalid="<?= isset($errors['data_pagamento']) ? 'true' : 'false' ?>"
@@ -127,7 +150,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="paga_modalita"
                         id="paga_modalita"
-                        value="<?= esc(old('paga_modalita', $row->paga_modalita ?? '')) ?>"
+                        value="<?= esc(old('paga_modalita', $row->paga_modalita ?? ($context['paga_modalita'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['paga_modalita']) ? 'is-invalid' : '' ?>"
                         aria-describedby="paga_modalita-error"
                         aria-invalid="<?= isset($errors['paga_modalita']) ? 'true' : 'false' ?>"
@@ -147,7 +170,7 @@ $submissionToken = $submissionToken ?? '';
                         type="datetime-local"
                         name="data_rec_paga_sosp"
                         id="data_rec_paga_sosp"
-                        value="<?= esc(old('data_rec_paga_sosp', isset($row->data_rec_paga_sosp) ? str_replace(' ', 'T', substr((string) $row->data_rec_paga_sosp, 0, 16)) : '')) ?>"
+                        value="<?= esc(old('data_rec_paga_sosp', isset($row->data_rec_paga_sosp) ? str_replace(' ', 'T', substr((string) $row->data_rec_paga_sosp, 0, 16)) : ($context['data_rec_paga_sosp'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['data_rec_paga_sosp']) ? 'is-invalid' : '' ?>"
                         aria-describedby="data_rec_paga_sosp-error"
                         aria-invalid="<?= isset($errors['data_rec_paga_sosp']) ? 'true' : 'false' ?>"
@@ -166,7 +189,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="pagamenti_sospesi_utente_id"
                         id="pagamenti_sospesi_utente_id"
-                        value="<?= esc(old('pagamenti_sospesi_utente_id', $row->pagamenti_sospesi_utente_id ?? '')) ?>"
+                        value="<?= esc(old('pagamenti_sospesi_utente_id', $row->pagamenti_sospesi_utente_id ?? ($context['pagamenti_sospesi_utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['pagamenti_sospesi_utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="pagamenti_sospesi_utente_id-error"
                         aria-invalid="<?= isset($errors['pagamenti_sospesi_utente_id']) ? 'true' : 'false' ?>"
@@ -218,6 +241,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -262,6 +286,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -269,6 +294,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

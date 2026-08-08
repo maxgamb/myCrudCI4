@@ -157,19 +157,19 @@ components:
           type: integer
           format: int32
           nullable: true
-        'obmp_board_obmp_board_title':
+        'obmp_board__obmp_board_cod__label':
           type: string
           nullable: true
-        'obmp_cancellations_obmp_cancellation_title':
+        'obmp_cancellations__obmp_cancellation_cod__label':
           type: string
           nullable: true
-        'obmp_cm_rooms_obmp_cm_rooms_room_note':
+        'obmp_cm_rooms__obmp_cm_rooms_id__label':
           type: string
           nullable: true
-        'obmp_payments_obmp_payment_title':
+        'obmp_payments__obmp_payment_cod__label':
           type: string
           nullable: true
-        'obmp_restrictions_hotel_id':
+        'obmp_restrictions__obmp_restriction_id__label':
           type: string
           nullable: true
     ObmpRatesCreate:

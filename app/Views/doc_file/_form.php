@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -50,12 +52,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['hotel_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('hotel_id', $row->hotel_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="hotel_id"
+                            data-base-url="<?= site_url('hotels/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('hotels/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['hotel_id'])): ?>
                         <div id="hotel_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['hotel_id']) ?>
@@ -70,7 +93,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="doc_dipar_id"
                         id="doc_dipar_id"
-                        value="<?= esc(old('doc_dipar_id', $row->doc_dipar_id ?? '')) ?>"
+                        value="<?= esc(old('doc_dipar_id', $row->doc_dipar_id ?? ($context['doc_dipar_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['doc_dipar_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="doc_dipar_id-error"
                         aria-invalid="<?= isset($errors['doc_dipar_id']) ? 'true' : 'false' ?>"
@@ -90,7 +113,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="doc_protocollo"
                         id="doc_protocollo"
-                        value="<?= esc(old('doc_protocollo', $row->doc_protocollo ?? '')) ?>"
+                        value="<?= esc(old('doc_protocollo', $row->doc_protocollo ?? ($context['doc_protocollo'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['doc_protocollo']) ? 'is-invalid' : '' ?>"
                         aria-describedby="doc_protocollo-error"
                         aria-invalid="<?= isset($errors['doc_protocollo']) ? 'true' : 'false' ?>"
@@ -110,7 +133,7 @@ $submissionToken = $submissionToken ?? '';
                         type="url"
                         name="doc_url_file"
                         id="doc_url_file"
-                        value="<?= esc(old('doc_url_file', $row->doc_url_file ?? '')) ?>"
+                        value="<?= esc(old('doc_url_file', $row->doc_url_file ?? ($context['doc_url_file'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['doc_url_file']) ? 'is-invalid' : '' ?>"
                         aria-describedby="doc_url_file-error"
                         aria-invalid="<?= isset($errors['doc_url_file']) ? 'true' : 'false' ?>"
@@ -130,7 +153,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="doc_note"
                         id="doc_note"
-                        value="<?= esc(old('doc_note', $row->doc_note ?? '')) ?>"
+                        value="<?= esc(old('doc_note', $row->doc_note ?? ($context['doc_note'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['doc_note']) ? 'is-invalid' : '' ?>"
                         aria-describedby="doc_note-error"
                         aria-invalid="<?= isset($errors['doc_note']) ? 'true' : 'false' ?>"
@@ -150,7 +173,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="doc_utente_id"
                         id="doc_utente_id"
-                        value="<?= esc(old('doc_utente_id', $row->doc_utente_id ?? '')) ?>"
+                        value="<?= esc(old('doc_utente_id', $row->doc_utente_id ?? ($context['doc_utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['doc_utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="doc_utente_id-error"
                         aria-invalid="<?= isset($errors['doc_utente_id']) ? 'true' : 'false' ?>"
@@ -203,6 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -247,6 +271,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -254,6 +279,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

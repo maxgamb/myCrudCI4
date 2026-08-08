@@ -20,7 +20,7 @@ final class CostiVarResource
   9 => 'costi_var_prezzo_uso',
   10 => 'mag_prezzo_lavaggio',
   11 => 'costi_var_addebbito',
-  12 => 'costi_area_costi_area_nome',
+  12 => 'costi_area__costi_area_id__label',
 );
     private const WRITABLE = array (
   0 => 'costi_area_id',

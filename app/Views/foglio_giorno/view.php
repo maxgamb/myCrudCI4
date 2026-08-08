@@ -21,13 +21,13 @@
                             <td><?= esc($row->conto_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('FoglioGiorno.camera_id')) ?></th>
-                            <td><?= esc($row->camera_id ?? '') ?></td>
+                            <td><a href="<?= site_url('camere/view/' . rawurlencode((string) ($row->camera_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->camere__camera_id__label ?? $row->camera_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('FoglioGiorno.preno_id')) ?></th>
-                            <td><?= esc($row->preno_id ?? '') ?></td>
+                            <td><a href="<?= site_url('agenda/view/' . rawurlencode((string) ($row->preno_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->agenda__preno_id__label ?? $row->preno_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('FoglioGiorno.tipologia_id')) ?></th>
-                            <td><?= esc($row->tipologia_id ?? '') ?></td>
+                            <td><a href="<?= site_url('tipologia_camera/view/' . rawurlencode((string) ($row->tipologia_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->tipologia_camera__tipologia_id__label ?? $row->tipologia_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('FoglioGiorno.numero_camera')) ?></th>
                             <td><?= esc($row->numero_camera ?? '') ?></td>
@@ -54,7 +54,7 @@
                             <td><?= esc($row->stato_camera ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('FoglioGiorno.preno_agenzia')) ?></th>
-                            <td><?= esc($row->preno_agenzia ?? '') ?></td>
+                            <td><a href="<?= site_url('agenzie/view/' . rawurlencode((string) ($row->preno_agenzia ?? ''))) ?>" class="text-decoration-none"><?= esc($row->agenzie__preno_agenzia__label ?? $row->preno_agenzia ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('FoglioGiorno.foglio_utente_id')) ?></th>
                             <td><?= esc($row->foglio_utente_id ?? '') ?></td>

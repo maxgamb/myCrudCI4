@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="company"
                         id="company"
-                        value="<?= esc(old('company', $row->company ?? '')) ?>"
+                        value="<?= esc(old('company', $row->company ?? ($context['company'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['company']) ? 'is-invalid' : '' ?>"
                         aria-describedby="company-error"
                         aria-invalid="<?= isset($errors['company']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="contact_name"
                         id="contact_name"
-                        value="<?= esc(old('contact_name', $row->contact_name ?? '')) ?>"
+                        value="<?= esc(old('contact_name', $row->contact_name ?? ($context['contact_name'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['contact_name']) ? 'is-invalid' : '' ?>"
                         aria-describedby="contact_name-error"
                         aria-invalid="<?= isset($errors['contact_name']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="phone"
                         id="phone"
-                        value="<?= esc(old('phone', $row->phone ?? '')) ?>"
+                        value="<?= esc(old('phone', $row->phone ?? ($context['phone'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['phone']) ? 'is-invalid' : '' ?>"
                         aria-describedby="phone-error"
                         aria-invalid="<?= isset($errors['phone']) ? 'true' : 'false' ?>"
@@ -102,7 +104,7 @@ $submissionToken = $submissionToken ?? '';
                         type="email"
                         name="email"
                         id="email"
-                        value="<?= esc(old('email', $row->email ?? '')) ?>"
+                        value="<?= esc(old('email', $row->email ?? ($context['email'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>"
                         aria-describedby="email-error"
                         aria-invalid="<?= isset($errors['email']) ? 'true' : 'false' ?>"
@@ -125,7 +127,7 @@ $submissionToken = $submissionToken ?? '';
                         aria-describedby="address-error"
                         aria-invalid="<?= isset($errors['address']) ? 'true' : 'false' ?>"
                         maxlength="65535"
-                    ><?= esc(old('address', $row->address ?? '')) ?></textarea>
+                    ><?= esc(old('address', $row->address ?? ($context['address'] ?? ''))) ?></textarea>
                     <?php if (!empty($errors['address'])): ?>
                         <div id="address-error" class="invalid-feedback d-block">
                             <?= esc($errors['address']) ?>
@@ -140,7 +142,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="utente_id"
                         id="utente_id"
-                        value="<?= esc(old('utente_id', $row->utente_id ?? '')) ?>"
+                        value="<?= esc(old('utente_id', $row->utente_id ?? ($context['utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="utente_id-error"
                         aria-invalid="<?= isset($errors['utente_id']) ? 'true' : 'false' ?>"
@@ -192,6 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -236,6 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -243,6 +247,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

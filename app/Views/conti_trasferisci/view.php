@@ -24,7 +24,7 @@
                             <td><?= esc($row->hotel_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ContiTrasferisci.adebito_id')) ?></th>
-                            <td><?= esc($row->adebito_id ?? '') ?></td>
+                            <td><a href="<?= site_url('adebiti/view/' . rawurlencode((string) ($row->adebito_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->adebiti__adebito_id__label ?? $row->adebito_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('ContiTrasferisci.conti_tra_data')) ?></th>
                             <td><?= esc($row->conti_tra_data ?? '') ?></td>

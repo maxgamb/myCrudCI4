@@ -91,11 +91,72 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->images_id ?? '') ?></td>
-                                <td><?= esc($row->hotel_id ?? '') ?></td>
-                                <td><?= esc($row->camera_id ?? '') ?></td>
-                                <td><?= esc($row->obmp_cm_rooms_obmp_cm_rooms_room_note ?? $row->obmp_cm_rooms_id ?? '') ?></td>
-                                <td><?= esc($row->tipologia_id ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->images_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'images_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->images_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->images_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td>
+                                    <?php if ((string) ($row->hotel_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'hotel_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->hotel_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->hotel_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->camera_id ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->obmp_cm_rooms_id ?? '') !== ''): ?><a href="<?= site_url('obmp_cm_rooms/view/' . rawurlencode((string) $row->obmp_cm_rooms_id)) ?>" class="text-decoration-none"><?= esc($row->obmp_cm_rooms__obmp_cm_rooms_id__label ?? $row->obmp_cm_rooms_id ?? '') ?></a><?php else: ?><?= esc($row->obmp_cm_rooms__obmp_cm_rooms_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'obmp_cm_rooms_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->obmp_cm_rooms_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->obmp_cm_rooms_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td><?= esc($row->tipologia_id ?? '') ?></td>
                                 <td><?= esc($row->img_small ?? '') ?></td>
                                 <td><?= esc($row->img_medium ?? '') ?></td>
                                 <td><?= esc($row->img_large ?? '') ?></td>

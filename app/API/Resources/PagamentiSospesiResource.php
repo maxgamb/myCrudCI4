@@ -16,7 +16,7 @@ final class PagamentiSospesiResource
   5 => 'paga_modalita',
   6 => 'data_rec_paga_sosp',
   7 => 'pagamenti_sospesi_utente_id',
-  8 => 'sospesi_sospeso_id',
+  8 => 'sospesi__sospeso_id__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

@@ -17,7 +17,7 @@ final class TaxPagamentoResource
   6 => 'tassa_stato',
   7 => 'data_pagamento',
   8 => 'tax_pagamento_utente_id',
-  9 => 'conti_trattamento_sog',
+  9 => 'conti__conto_id__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

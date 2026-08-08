@@ -36,7 +36,7 @@ final class SidaeResource
   25 => 'data',
   26 => 'idElemento',
   27 => 'utente_id',
-  28 => 'conti_trattamento_sog',
+  28 => 'conti__conto_id__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

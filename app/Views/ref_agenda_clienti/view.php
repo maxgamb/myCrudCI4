@@ -15,7 +15,7 @@
                             <td><?= esc($row->ref_agenda_cliente ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('RefAgendaClienti.preno_id')) ?></th>
-                            <td><?= esc($row->preno_id ?? '') ?></td>
+                            <td><a href="<?= site_url('agenda/view/' . rawurlencode((string) ($row->preno_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->agenda__preno_id__label ?? $row->preno_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('RefAgendaClienti.clienti_id')) ?></th>
                             <td><?= esc($row->clienti_id ?? '') ?></td>

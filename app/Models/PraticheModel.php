@@ -102,7 +102,12 @@ final class PraticheModel extends Model
   array (
     'table' => 'agenzie',
     'key' => 'agenzia_id',
-    'label' => 'agenzia_tipologia',
+    'displayField' => 'agenzia_tipologia',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'agenzia_tipologia',
+    ),
     'mode' => 'select',
   ),
 );
@@ -123,7 +128,7 @@ final class PraticheModel extends Model
             'pratiche.pratica_stato AS pratica_stato',
             'pratiche.pratica_data_record AS pratica_data_record',
             'pratiche.pratiche_utente_id AS pratiche_utente_id',
-            'agenzie__pratica_agenzia_id.agenzia_tipologia AS agenzie_agenzia_tipologia'
+            'agenzie__pratica_agenzia_id.agenzia_tipologia AS agenzie__pratica_agenzia_id__label'
         ]);
         $builder->join('agenzie AS agenzie__pratica_agenzia_id', 'agenzie__pratica_agenzia_id.agenzia_id = pratiche.pratica_agenzia_id', 'left');
         return $builder;
@@ -142,7 +147,7 @@ final class PraticheModel extends Model
             'pratiche.pratica_2 AS pratica_2',
             'pratiche.pratica_stato AS pratica_stato',
             'pratiche.pratiche_utente_id AS pratiche_utente_id',
-            'agenzie__pratica_agenzia_id.agenzia_tipologia AS agenzie_agenzia_tipologia'
+            'agenzie__pratica_agenzia_id.agenzia_tipologia AS agenzie__pratica_agenzia_id__label'
         ]);
         $builder->join('agenzie AS agenzie__pratica_agenzia_id', 'agenzie__pratica_agenzia_id.agenzia_id = pratiche.pratica_agenzia_id', 'left');
         return $builder;
@@ -224,7 +229,7 @@ final class PraticheModel extends Model
             'pratiche.pratica_note AS pratica_note',
             'pratiche.pratica_stato AS pratica_stato',
             'pratiche.pratiche_utente_id AS pratiche_utente_id',
-            'agenzie__pratica_agenzia_id.agenzia_tipologia AS agenzie_agenzia_tipologia'
+            'agenzie__pratica_agenzia_id.agenzia_tipologia AS agenzie__pratica_agenzia_id__label'
         ]);
         $builder->join('agenzie AS agenzie__pratica_agenzia_id', 'agenzie__pratica_agenzia_id.agenzia_id = pratiche.pratica_agenzia_id', 'left');
         $this->applyListFilters($builder, $filters, true);
@@ -431,21 +436,24 @@ final class PraticheModel extends Model
     public function getAgenziePraticaAgenziaIdOptions(): array
     {
         return $this->db->table('agenzie')
-            ->select(['agenzia_id', 'agenzia_tipologia'])
+            ->select(array (
+  0 => 'agenzia_id',
+  1 => 'agenzia_tipologia',
+))
             ->orderBy('agenzia_tipologia', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     public function relationOptions(): array
     {
         return [
-            'pratica_agenzia_id' => $this->toOptions($this->getAgenziePraticaAgenziaIdOptions(), 'agenzia_id', 'agenzia_tipologia'),
+            'pratica_agenzia_id' => $this->toRelationOptions($this->getAgenziePraticaAgenziaIdOptions(), 'pratica_agenzia_id'),
         ];
     }
 
     /**
      * Ricerca server-side delle opzioni per relazioni grandi.
-     * Tabella, chiave e campo label arrivano solo dalla whitelist generata.
+     * Tabella, chiave e campi descrittivi arrivano solo dalla whitelist generata.
      *
      * @return list<array{id:string,text:string}>
      */
@@ -456,36 +464,100 @@ final class PraticheModel extends Model
         }
 
         $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
         $limit = max(1, min(100, $limit));
         $builder = $this->db->table((string) $definition['table'])
-            ->select([(string) $definition['key'], (string) $definition['label']])
-            ->orderBy((string) $definition['label'], 'ASC')
+            ->select($selectFields)
+            ->orderBy((string) $definition['displayField'], 'ASC')
             ->limit($limit);
 
         $query = trim($query);
-        if ($query !== '') {
-            $builder->like((string) $definition['label'], $query, 'after');
+        if ($query !== '' && $displayFields !== []) {
+            $builder->groupStart();
+            foreach ($displayFields as $index => $displayColumn) {
+                if ($index === 0) {
+                    $builder->like((string) $displayColumn, $query, 'after');
+                } else {
+                    $builder->orLike((string) $displayColumn, $query, 'after');
+                }
+            }
+            $builder->groupEnd();
         }
 
         $rows = $builder->get()->getResultArray();
         $result = [];
         foreach ($rows as $row) {
             $result[] = [
-                'id' => (string) ($row[(string) $definition['key']] ?? ''),
-                'text' => (string) ($row[(string) $definition['label']] ?? ''),
+                'id' => (string) ($row[$key] ?? ''),
+                'text' => $this->formatRelationLabel($row, $definition),
             ];
         }
 
         return $result;
     }
 
-    private function toOptions(array $rows, string $key, string $label): array
+    /** Restituisce una FK valida e la sua descrizione; usato dal Create contestuale. */
+    public function relationOptionById(string $field, int|string $id): ?array
     {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return null;
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
+        $row = $this->db->table((string) $definition['table'])
+            ->select($selectFields)
+            ->where($key, $id)
+            ->limit(1)
+            ->get()
+            ->getRowArray();
+
+        if (!is_array($row)) {
+            return null;
+        }
+
+        return [
+            'id' => (string) ($row[$key] ?? ''),
+            'text' => $this->formatRelationLabel($row, $definition),
+        ];
+    }
+
+    private function toRelationOptions(array $rows, string $field): array
+    {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return [];
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
         $options = [];
         foreach ($rows as $row) {
-            $options[(string) $row->{$key}] = (string) $row->{$label};
+            if (!is_array($row)) {
+                continue;
+            }
+            $options[(string) ($row[$key] ?? '')] = $this->formatRelationLabel($row, $definition);
         }
         return $options;
+    }
+
+    private function formatRelationLabel(array $row, array $definition): string
+    {
+        $template = trim((string) ($definition['displayTemplate'] ?? ''));
+        if ($template === '') {
+            return trim((string) ($row[(string) $definition['displayField']] ?? ''));
+        }
+
+        $label = preg_replace_callback(
+            '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+            static fn (array $match): string => (string) ($row[$match[1]] ?? ''),
+            $template
+        );
+
+        return trim((string) $label);
     }
 
     /** Carica al massimo una riga in più per determinare se esistono altri risultati. */

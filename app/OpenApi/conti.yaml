@@ -223,10 +223,10 @@ components:
           type: integer
           format: int32
           nullable: true
-        'camere_tipologia_camera':
+        'camere__camera_id__label':
           type: string
           nullable: true
-        'foglio_giorno_date_foglio':
+        'foglio_giorno__foglio_id__label':
           type: string
           nullable: true
     ContiCreate:

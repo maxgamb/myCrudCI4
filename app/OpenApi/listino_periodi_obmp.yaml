@@ -129,7 +129,7 @@ components:
         'listino_periodi':
           type: string
           format: date-time
-        'listino_nome_obmp_listino_nome':
+        'listino_nome_obmp__listino_nome_id__label':
           type: string
           nullable: true
     ListinoPeriodiObmpCreate:

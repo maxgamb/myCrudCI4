@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="camara_id"
                         id="camara_id"
-                        value="<?= esc(old('camara_id', $row->camara_id ?? '')) ?>"
+                        value="<?= esc(old('camara_id', $row->camara_id ?? ($context['camara_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['camara_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="camara_id-error"
                         aria-invalid="<?= isset($errors['camara_id']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="tipologia_id"
                         id="tipologia_id"
-                        value="<?= esc(old('tipologia_id', $row->tipologia_id ?? '')) ?>"
+                        value="<?= esc(old('tipologia_id', $row->tipologia_id ?? ($context['tipologia_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['tipologia_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="tipologia_id-error"
                         aria-invalid="<?= isset($errors['tipologia_id']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="voto"
                         id="voto"
-                        value="<?= esc(old('voto', $row->voto ?? '')) ?>"
+                        value="<?= esc(old('voto', $row->voto ?? ($context['voto'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['voto']) ? 'is-invalid' : '' ?>"
                         aria-describedby="voto-error"
                         aria-invalid="<?= isset($errors['voto']) ? 'true' : 'false' ?>"
@@ -102,7 +104,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="nesting_utente_id"
                         id="nesting_utente_id"
-                        value="<?= esc(old('nesting_utente_id', $row->nesting_utente_id ?? '')) ?>"
+                        value="<?= esc(old('nesting_utente_id', $row->nesting_utente_id ?? ($context['nesting_utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['nesting_utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="nesting_utente_id-error"
                         aria-invalid="<?= isset($errors['nesting_utente_id']) ? 'true' : 'false' ?>"
@@ -155,6 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -199,6 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -206,6 +210,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

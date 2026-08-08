@@ -66,9 +66,50 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->agenda_preno_arr_ore ?? $row->mod_agenda_id ?? '') ?></td>
-                                <td><?= esc($row->mod_preno_id ?? '') ?></td>
-                                <td><?= esc($row->mod_preno_data_records ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->mod_agenda_id ?? '') !== ''): ?><a href="<?= site_url('agenda/view/' . rawurlencode((string) $row->mod_agenda_id)) ?>" class="text-decoration-none"><?= esc($row->agenda__mod_agenda_id__label ?? $row->mod_agenda_id ?? '') ?></a><?php else: ?><?= esc($row->agenda__mod_agenda_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'mod_agenda_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->mod_agenda_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->mod_agenda_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td>
+                                    <?php if ((string) ($row->mod_preno_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'mod_preno_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->mod_preno_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->mod_preno_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->mod_preno_data_records ?? '') ?></td>
                                 <td><?= esc($row->modifica_agenda_adebiti_utente_id ?? '') ?></td>
                                 <td class="text-end text-nowrap">
                                     <?php $id = $row->mod_agenda_id ?? ''; ?>

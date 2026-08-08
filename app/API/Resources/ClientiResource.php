@@ -65,7 +65,7 @@ final class ClientiResource
   54 => 'lingua',
   55 => 'password',
   56 => 'clienti_utente_id',
-  57 => 'refer_clienti_conto_id',
+  57 => 'refer_clienti__clienti_id__label',
 );
     private const WRITABLE = array (
   0 => 'preno_id',

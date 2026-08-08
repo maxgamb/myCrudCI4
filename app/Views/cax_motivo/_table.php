@@ -46,8 +46,28 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->cax_motivo_id ?? '') ?></td>
-                                <td><?= esc($row->etichetta ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->cax_motivo_id ?? '') !== ''): ?>
+                                        <?php
+                                        $quickFilters = array_values((array) ($filters ?? []));
+                                        $quickFilters[] = [
+                                            'field' => 'cax_motivo_id',
+                                            'operator' => 'eq',
+                                            'value' => (string) $row->cax_motivo_id,
+                                            'logic' => 'and',
+                                        ];
+                                        $quickQuery = array_replace((array) ($query ?? []), [
+                                            'filters' => $quickFilters,
+                                            'page' => 1,
+                                        ]);
+                                        ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link text-decoration-none"
+                                            title="Filtra per questo valore"
+                                        ><?= esc($row->cax_motivo_id) ?></a>
+                                    <?php endif; ?>
+                                </td>                                <td><?= esc($row->etichetta ?? '') ?></td>
                                 <td><?= esc($row->data ?? '') ?></td>
                                 <td class="text-end text-nowrap">
                                     <?php $id = $row->cax_motivo_id ?? ''; ?>

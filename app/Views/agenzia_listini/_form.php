@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -61,7 +63,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_listini_nome"
                         id="agenzia_listini_nome"
-                        value="<?= esc(old('agenzia_listini_nome', $row->agenzia_listini_nome ?? '')) ?>"
+                        value="<?= esc(old('agenzia_listini_nome', $row->agenzia_listini_nome ?? ($context['agenzia_listini_nome'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_listini_nome']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_listini_nome-error"
                         aria-invalid="<?= isset($errors['agenzia_listini_nome']) ? 'true' : 'false' ?>"
@@ -81,7 +83,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_listini_note"
                         id="agenzia_listini_note"
-                        value="<?= esc(old('agenzia_listini_note', $row->agenzia_listini_note ?? '')) ?>"
+                        value="<?= esc(old('agenzia_listini_note', $row->agenzia_listini_note ?? ($context['agenzia_listini_note'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_listini_note']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_listini_note-error"
                         aria-invalid="<?= isset($errors['agenzia_listini_note']) ? 'true' : 'false' ?>"
@@ -101,7 +103,7 @@ $submissionToken = $submissionToken ?? '';
                         type="datetime-local"
                         name="agenzia_listini_datarecord"
                         id="agenzia_listini_datarecord"
-                        value="<?= esc(old('agenzia_listini_datarecord', isset($row->agenzia_listini_datarecord) ? str_replace(' ', 'T', substr((string) $row->agenzia_listini_datarecord, 0, 16)) : '')) ?>"
+                        value="<?= esc(old('agenzia_listini_datarecord', isset($row->agenzia_listini_datarecord) ? str_replace(' ', 'T', substr((string) $row->agenzia_listini_datarecord, 0, 16)) : ($context['agenzia_listini_datarecord'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_listini_datarecord']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_listini_datarecord-error"
                         aria-invalid="<?= isset($errors['agenzia_listini_datarecord']) ? 'true' : 'false' ?>"
@@ -153,6 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -197,6 +200,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -204,6 +208,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

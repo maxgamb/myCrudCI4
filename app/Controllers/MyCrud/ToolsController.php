@@ -58,12 +58,21 @@ class ToolsController extends BaseController
     }
 
 
-    /** Mostra il tool che costruisce il menu applicativo da tabelle e relazioni SQL. */
+    /**
+     * Mostra il Menu Builder guidato.
+     *
+     * Lo schema DB fornisce soltanto voci disponibili e relazioni informative:
+     * l'aggregazione finale viene decisa esplicitamente dallo sviluppatore.
+     */
     public function menu(): string
     {
+        $data = (new MenuBuilderService())->builderData();
+
         return view('mycrud/menu_builder', [
             'title' => 'Generatore Menu',
-            'items' => (new MenuBuilderService())->suggestedItems(),
+            'items' => $data['items'],
+            'related' => $data['related'],
+            'relationCount' => $data['relationCount'],
         ]);
     }
 

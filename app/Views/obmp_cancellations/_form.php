@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cancellation_cod"
                         id="obmp_cancellation_cod"
-                        value="<?= esc(old('obmp_cancellation_cod', $row->obmp_cancellation_cod ?? '')) ?>"
+                        value="<?= esc(old('obmp_cancellation_cod', $row->obmp_cancellation_cod ?? ($context['obmp_cancellation_cod'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cancellation_cod']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cancellation_cod-error"
                         aria-invalid="<?= isset($errors['obmp_cancellation_cod']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cancellation_title"
                         id="obmp_cancellation_title"
-                        value="<?= esc(old('obmp_cancellation_title', $row->obmp_cancellation_title ?? '')) ?>"
+                        value="<?= esc(old('obmp_cancellation_title', $row->obmp_cancellation_title ?? ($context['obmp_cancellation_title'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cancellation_title']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cancellation_title-error"
                         aria-invalid="<?= isset($errors['obmp_cancellation_title']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="obmp_cancellation"
                         id="obmp_cancellation"
-                        value="<?= esc(old('obmp_cancellation', $row->obmp_cancellation ?? '')) ?>"
+                        value="<?= esc(old('obmp_cancellation', $row->obmp_cancellation ?? ($context['obmp_cancellation'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cancellation']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cancellation-error"
                         aria-invalid="<?= isset($errors['obmp_cancellation']) ? 'true' : 'false' ?>"
@@ -102,7 +104,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="obmp_cancellation_day"
                         id="obmp_cancellation_day"
-                        value="<?= esc(old('obmp_cancellation_day', $row->obmp_cancellation_day ?? '')) ?>"
+                        value="<?= esc(old('obmp_cancellation_day', $row->obmp_cancellation_day ?? ($context['obmp_cancellation_day'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['obmp_cancellation_day']) ? 'is-invalid' : '' ?>"
                         aria-describedby="obmp_cancellation_day-error"
                         aria-invalid="<?= isset($errors['obmp_cancellation_day']) ? 'true' : 'false' ?>"
@@ -122,7 +124,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="cancellation_lg"
                         id="cancellation_lg"
-                        value="<?= esc(old('cancellation_lg', $row->cancellation_lg ?? '')) ?>"
+                        value="<?= esc(old('cancellation_lg', $row->cancellation_lg ?? ($context['cancellation_lg'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['cancellation_lg']) ? 'is-invalid' : '' ?>"
                         aria-describedby="cancellation_lg-error"
                         aria-invalid="<?= isset($errors['cancellation_lg']) ? 'true' : 'false' ?>"
@@ -175,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -219,6 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -226,6 +230,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

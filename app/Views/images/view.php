@@ -21,7 +21,7 @@
                             <td><?= esc($row->camera_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Images.obmp_cm_rooms_id')) ?></th>
-                            <td><?= esc($row->obmp_cm_rooms_id ?? '') ?></td>
+                            <td><a href="<?= site_url('obmp_cm_rooms/view/' . rawurlencode((string) ($row->obmp_cm_rooms_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->obmp_cm_rooms__obmp_cm_rooms_id__label ?? $row->obmp_cm_rooms_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Images.tipologia_id')) ?></th>
                             <td><?= esc($row->tipologia_id ?? '') ?></td>

@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -49,12 +51,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['listino_nome_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('listino_nome_id', $row->listino_nome_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('listino_nome_id', $row->listino_nome_id ?? ($context['listino_nome_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="listino_nome_id"
+                            data-base-url="<?= site_url('listino_nome_obmp/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('listino_nome_obmp/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['listino_nome_id'])): ?>
                         <div id="listino_nome_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['listino_nome_id']) ?>
@@ -69,7 +92,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="listino_periodi_flex"
                         id="listino_periodi_flex"
-                        value="<?= esc(old('listino_periodi_flex', $row->listino_periodi_flex ?? '')) ?>"
+                        value="<?= esc(old('listino_periodi_flex', $row->listino_periodi_flex ?? ($context['listino_periodi_flex'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['listino_periodi_flex']) ? 'is-invalid' : '' ?>"
                         aria-describedby="listino_periodi_flex-error"
                         aria-invalid="<?= isset($errors['listino_periodi_flex']) ? 'true' : 'false' ?>"
@@ -88,7 +111,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="listino_dal"
                         id="listino_dal"
-                        value="<?= esc(old('listino_dal', $row->listino_dal ?? '')) ?>"
+                        value="<?= esc(old('listino_dal', $row->listino_dal ?? ($context['listino_dal'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['listino_dal']) ? 'is-invalid' : '' ?>"
                         aria-describedby="listino_dal-error"
                         aria-invalid="<?= isset($errors['listino_dal']) ? 'true' : 'false' ?>"
@@ -108,7 +131,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="listino_al"
                         id="listino_al"
-                        value="<?= esc(old('listino_al', $row->listino_al ?? '')) ?>"
+                        value="<?= esc(old('listino_al', $row->listino_al ?? ($context['listino_al'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['listino_al']) ? 'is-invalid' : '' ?>"
                         aria-describedby="listino_al-error"
                         aria-invalid="<?= isset($errors['listino_al']) ? 'true' : 'false' ?>"
@@ -128,7 +151,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -147,7 +170,7 @@ $submissionToken = $submissionToken ?? '';
                         type="datetime-local"
                         name="listino_periodi"
                         id="listino_periodi"
-                        value="<?= esc(old('listino_periodi', isset($row->listino_periodi) ? str_replace(' ', 'T', substr((string) $row->listino_periodi, 0, 16)) : '')) ?>"
+                        value="<?= esc(old('listino_periodi', isset($row->listino_periodi) ? str_replace(' ', 'T', substr((string) $row->listino_periodi, 0, 16)) : ($context['listino_periodi'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['listino_periodi']) ? 'is-invalid' : '' ?>"
                         aria-describedby="listino_periodi-error"
                         aria-invalid="<?= isset($errors['listino_periodi']) ? 'true' : 'false' ?>"
@@ -199,6 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -243,6 +267,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -250,6 +275,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

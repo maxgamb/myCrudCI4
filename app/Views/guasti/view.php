@@ -15,10 +15,10 @@
                             <td><?= esc($row->guasto_id ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Guasti.hotel_id')) ?></th>
-                            <td><?= esc($row->hotel_id ?? '') ?></td>
+                            <td><a href="<?= site_url('hotels/view/' . rawurlencode((string) ($row->hotel_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->hotels__hotel_id__label ?? $row->hotel_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Guasti.camera_id')) ?></th>
-                            <td><?= esc($row->camera_id ?? '') ?></td>
+                            <td><a href="<?= site_url('camere/view/' . rawurlencode((string) ($row->camera_id ?? ''))) ?>" class="text-decoration-none"><?= esc($row->camere__camera_id__label ?? $row->camera_id ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Guasti.guasto_priorita')) ?></th>
                             <td><?= esc($row->guasto_priorita ?? '') ?></td>

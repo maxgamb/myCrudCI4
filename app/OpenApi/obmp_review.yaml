@@ -231,7 +231,7 @@ components:
           type: string
           format: date
           nullable: true
-        'conti_trattamento_sog':
+        'conti__conto_id__label':
           type: string
           nullable: true
     ObmpReviewCreate:

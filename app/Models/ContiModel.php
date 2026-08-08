@@ -249,14 +249,24 @@ final class ContiModel extends Model
   array (
     'table' => 'camere',
     'key' => 'camera_id',
-    'label' => 'tipologia_camera',
+    'displayField' => 'tipologia_camera',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'tipologia_camera',
+    ),
     'mode' => 'select',
   ),
   'foglio_id' => 
   array (
     'table' => 'foglio_giorno',
     'key' => 'foglio_id',
-    'label' => 'date_foglio',
+    'displayField' => 'date_foglio',
+    'displayTemplate' => '',
+    'displayFields' => 
+    array (
+      0 => 'date_foglio',
+    ),
     'mode' => 'select',
   ),
 );
@@ -291,8 +301,8 @@ final class ContiModel extends Model
             'conti.conto_pag_modalita AS conto_pag_modalita',
             'conti.data_record AS data_record',
             'conti.conti_utente_id AS conti_utente_id',
-            'camere__camera_id.tipologia_camera AS camere_tipologia_camera',
-            'foglio_giorno__foglio_id.date_foglio AS foglio_giorno_date_foglio'
+            'camere__camera_id.tipologia_camera AS camere__camera_id__label',
+            'foglio_giorno__foglio_id.date_foglio AS foglio_giorno__foglio_id__label'
         ]);
         $builder->join('camere AS camere__camera_id', 'camere__camera_id.camera_id = conti.camera_id', 'left');
         $builder->join('foglio_giorno AS foglio_giorno__foglio_id', 'foglio_giorno__foglio_id.foglio_id = conti.foglio_id', 'left');
@@ -314,8 +324,8 @@ final class ContiModel extends Model
             'conti.prezzo AS prezzo',
             'conti.nome_cliente AS nome_cliente',
             'conti.conti_stato_camere AS conti_stato_camere',
-            'camere__camera_id.tipologia_camera AS camere_tipologia_camera',
-            'foglio_giorno__foglio_id.date_foglio AS foglio_giorno_date_foglio'
+            'camere__camera_id.tipologia_camera AS camere__camera_id__label',
+            'foglio_giorno__foglio_id.date_foglio AS foglio_giorno__foglio_id__label'
         ]);
         $builder->join('camere AS camere__camera_id', 'camere__camera_id.camera_id = conti.camera_id', 'left');
         $builder->join('foglio_giorno AS foglio_giorno__foglio_id', 'foglio_giorno__foglio_id.foglio_id = conti.foglio_id', 'left');
@@ -412,8 +422,8 @@ final class ContiModel extends Model
             'conti.acconto AS acconto',
             'conti.conto_pag_modalita AS conto_pag_modalita',
             'conti.conti_utente_id AS conti_utente_id',
-            'camere__camera_id.tipologia_camera AS camere_tipologia_camera',
-            'foglio_giorno__foglio_id.date_foglio AS foglio_giorno_date_foglio'
+            'camere__camera_id.tipologia_camera AS camere__camera_id__label',
+            'foglio_giorno__foglio_id.date_foglio AS foglio_giorno__foglio_id__label'
         ]);
         $builder->join('camere AS camere__camera_id', 'camere__camera_id.camera_id = conti.camera_id', 'left');
         $builder->join('foglio_giorno AS foglio_giorno__foglio_id', 'foglio_giorno__foglio_id.foglio_id = conti.foglio_id', 'left');
@@ -621,31 +631,37 @@ final class ContiModel extends Model
     public function getCamereCameraIdOptions(): array
     {
         return $this->db->table('camere')
-            ->select(['camera_id', 'tipologia_camera'])
+            ->select(array (
+  0 => 'camera_id',
+  1 => 'tipologia_camera',
+))
             ->orderBy('tipologia_camera', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     /** Restituisce le opzioni della relazione foglio_id. */
     public function getFoglioGiornoFoglioIdOptions(): array
     {
         return $this->db->table('foglio_giorno')
-            ->select(['foglio_id', 'date_foglio'])
+            ->select(array (
+  0 => 'foglio_id',
+  1 => 'date_foglio',
+))
             ->orderBy('date_foglio', 'ASC')
             ->get()
-            ->getResult();
+            ->getResultArray();
     }
     public function relationOptions(): array
     {
         return [
-            'camera_id' => $this->toOptions($this->getCamereCameraIdOptions(), 'camera_id', 'tipologia_camera'),
-            'foglio_id' => $this->toOptions($this->getFoglioGiornoFoglioIdOptions(), 'foglio_id', 'date_foglio'),
+            'camera_id' => $this->toRelationOptions($this->getCamereCameraIdOptions(), 'camera_id'),
+            'foglio_id' => $this->toRelationOptions($this->getFoglioGiornoFoglioIdOptions(), 'foglio_id'),
         ];
     }
 
     /**
      * Ricerca server-side delle opzioni per relazioni grandi.
-     * Tabella, chiave e campo label arrivano solo dalla whitelist generata.
+     * Tabella, chiave e campi descrittivi arrivano solo dalla whitelist generata.
      *
      * @return list<array{id:string,text:string}>
      */
@@ -656,36 +672,100 @@ final class ContiModel extends Model
         }
 
         $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
         $limit = max(1, min(100, $limit));
         $builder = $this->db->table((string) $definition['table'])
-            ->select([(string) $definition['key'], (string) $definition['label']])
-            ->orderBy((string) $definition['label'], 'ASC')
+            ->select($selectFields)
+            ->orderBy((string) $definition['displayField'], 'ASC')
             ->limit($limit);
 
         $query = trim($query);
-        if ($query !== '') {
-            $builder->like((string) $definition['label'], $query, 'after');
+        if ($query !== '' && $displayFields !== []) {
+            $builder->groupStart();
+            foreach ($displayFields as $index => $displayColumn) {
+                if ($index === 0) {
+                    $builder->like((string) $displayColumn, $query, 'after');
+                } else {
+                    $builder->orLike((string) $displayColumn, $query, 'after');
+                }
+            }
+            $builder->groupEnd();
         }
 
         $rows = $builder->get()->getResultArray();
         $result = [];
         foreach ($rows as $row) {
             $result[] = [
-                'id' => (string) ($row[(string) $definition['key']] ?? ''),
-                'text' => (string) ($row[(string) $definition['label']] ?? ''),
+                'id' => (string) ($row[$key] ?? ''),
+                'text' => $this->formatRelationLabel($row, $definition),
             ];
         }
 
         return $result;
     }
 
-    private function toOptions(array $rows, string $key, string $label): array
+    /** Restituisce una FK valida e la sua descrizione; usato dal Create contestuale. */
+    public function relationOptionById(string $field, int|string $id): ?array
     {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return null;
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
+        $displayFields = array_values((array) ($definition['displayFields'] ?? []));
+        $selectFields = array_values(array_unique(array_merge([$key], $displayFields)));
+        $row = $this->db->table((string) $definition['table'])
+            ->select($selectFields)
+            ->where($key, $id)
+            ->limit(1)
+            ->get()
+            ->getRowArray();
+
+        if (!is_array($row)) {
+            return null;
+        }
+
+        return [
+            'id' => (string) ($row[$key] ?? ''),
+            'text' => $this->formatRelationLabel($row, $definition),
+        ];
+    }
+
+    private function toRelationOptions(array $rows, string $field): array
+    {
+        if (!isset(self::RELATION_SEARCHES[$field])) {
+            return [];
+        }
+
+        $definition = self::RELATION_SEARCHES[$field];
+        $key = (string) $definition['key'];
         $options = [];
         foreach ($rows as $row) {
-            $options[(string) $row->{$key}] = (string) $row->{$label};
+            if (!is_array($row)) {
+                continue;
+            }
+            $options[(string) ($row[$key] ?? '')] = $this->formatRelationLabel($row, $definition);
         }
         return $options;
+    }
+
+    private function formatRelationLabel(array $row, array $definition): string
+    {
+        $template = trim((string) ($definition['displayTemplate'] ?? ''));
+        if ($template === '') {
+            return trim((string) ($row[(string) $definition['displayField']] ?? ''));
+        }
+
+        $label = preg_replace_callback(
+            '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+            static fn (array $match): string => (string) ($row[$match[1]] ?? ''),
+            $template
+        );
+
+        return trim((string) $label);
     }
 
     /** Carica al massimo una riga in più per determinare se esistono altri risultati. */

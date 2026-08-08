@@ -24,10 +24,10 @@ final class FoglioGiornoResource
   13 => 'stato_camera',
   14 => 'preno_agenzia',
   15 => 'foglio_utente_id',
-  16 => 'agenda_preno_arr_ore',
-  17 => 'agenzie_agenzia_tipologia',
-  18 => 'camere_tipologia_camera',
-  19 => 'tipologia_camera_nome_tipologia',
+  16 => 'agenda__preno_id__label',
+  17 => 'agenzie__preno_agenzia__label',
+  18 => 'camere__camera_id__label',
+  19 => 'tipologia_camera__tipologia_id__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

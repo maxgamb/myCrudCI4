@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="log_nome"
                         id="log_nome"
-                        value="<?= esc(old('log_nome', $row->log_nome ?? '')) ?>"
+                        value="<?= esc(old('log_nome', $row->log_nome ?? ($context['log_nome'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['log_nome']) ? 'is-invalid' : '' ?>"
                         aria-describedby="log_nome-error"
                         aria-invalid="<?= isset($errors['log_nome']) ? 'true' : 'false' ?>"
@@ -62,7 +64,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="log_pass"
                         id="log_pass"
-                        value="<?= esc(old('log_pass', $row->log_pass ?? '')) ?>"
+                        value="<?= esc(old('log_pass', $row->log_pass ?? ($context['log_pass'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['log_pass']) ? 'is-invalid' : '' ?>"
                         aria-describedby="log_pass-error"
                         aria-invalid="<?= isset($errors['log_pass']) ? 'true' : 'false' ?>"
@@ -82,7 +84,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="log_ip"
                         id="log_ip"
-                        value="<?= esc(old('log_ip', $row->log_ip ?? '')) ?>"
+                        value="<?= esc(old('log_ip', $row->log_ip ?? ($context['log_ip'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['log_ip']) ? 'is-invalid' : '' ?>"
                         aria-describedby="log_ip-error"
                         aria-invalid="<?= isset($errors['log_ip']) ? 'true' : 'false' ?>"
@@ -102,7 +104,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="log_out"
                         id="log_out"
-                        value="<?= esc(old('log_out', $row->log_out ?? '')) ?>"
+                        value="<?= esc(old('log_out', $row->log_out ?? ($context['log_out'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['log_out']) ? 'is-invalid' : '' ?>"
                         aria-describedby="log_out-error"
                         aria-invalid="<?= isset($errors['log_out']) ? 'true' : 'false' ?>"
@@ -122,7 +124,7 @@ $submissionToken = $submissionToken ?? '';
                         type="datetime-local"
                         name="log_time"
                         id="log_time"
-                        value="<?= esc(old('log_time', isset($row->log_time) ? str_replace(' ', 'T', substr((string) $row->log_time, 0, 16)) : '')) ?>"
+                        value="<?= esc(old('log_time', isset($row->log_time) ? str_replace(' ', 'T', substr((string) $row->log_time, 0, 16)) : ($context['log_time'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['log_time']) ? 'is-invalid' : '' ?>"
                         aria-describedby="log_time-error"
                         aria-invalid="<?= isset($errors['log_time']) ? 'true' : 'false' ?>"
@@ -174,6 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -218,6 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -225,6 +229,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

@@ -51,8 +51,29 @@
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?= esc($row->prodotti_nome_prodotto ?? $row->prodotti_lista_id ?? '') ?></td>
-                                <td><?= esc($row->prod_lista_mone ?? '') ?></td>
+                                <td>
+                                    <?php if ((string) ($row->prodotti_lista_id ?? '') !== ''): ?><a href="<?= site_url('prodotti/view/' . rawurlencode((string) $row->prodotti_lista_id)) ?>" class="text-decoration-none"><?= esc($row->prodotti__prodotti_lista_id__label ?? $row->prodotti_lista_id ?? '') ?></a><?php else: ?><?= esc($row->prodotti__prodotti_lista_id__label ?? '') ?><?php endif; ?>
+                                    <?php
+                                    $quickFilters = array_values((array) ($filters ?? []));
+                                    $quickFilters[] = [
+                                        'field' => 'prodotti_lista_id',
+                                        'operator' => 'eq',
+                                        'value' => (string) ($row->prodotti_lista_id ?? ''),
+                                        'logic' => 'and',
+                                    ];
+                                    $quickQuery = array_replace((array) ($query ?? []), [
+                                        'filters' => $quickFilters,
+                                        'page' => 1,
+                                    ]);
+                                    ?>
+                                    <?php if ((string) ($row->prodotti_lista_id ?? '') !== ''): ?>
+                                        <a
+                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
+                                            class="js-list-link ms-1 text-decoration-none"
+                                            title="Filtra per questo valore"
+                                            aria-label="Filtra per questo valore"
+                                        ><i class="bi bi-funnel"></i></a>
+                                    <?php endif; ?>                                </td>                                <td><?= esc($row->prod_lista_mone ?? '') ?></td>
                                 <td><?= esc($row->prod_lista_descrixione ?? '') ?></td>
                                 <td><?= esc($row->prod_lista_allergenici ?? '') ?></td>
                                 <td><?= esc($row->prod_lista_costo_unitario ?? '') ?></td>

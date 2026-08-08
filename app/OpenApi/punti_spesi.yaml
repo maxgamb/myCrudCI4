@@ -133,10 +133,10 @@ components:
         'utente_id':
           type: integer
           format: int32
-        'clienti_camara_tipologia':
+        'clienti__cliente_id__label':
           type: string
           nullable: true
-        'conti_trattamento_sog':
+        'conti__conto_id__label':
           type: string
           nullable: true
     PuntiSpesiCreate:

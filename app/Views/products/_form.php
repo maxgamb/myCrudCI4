@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="name"
                         id="name"
-                        value="<?= esc(old('name', $row->name ?? '')) ?>"
+                        value="<?= esc(old('name', $row->name ?? ($context['name'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['name']) ? 'is-invalid' : '' ?>"
                         aria-describedby="name-error"
                         aria-invalid="<?= isset($errors['name']) ? 'true' : 'false' ?>"
@@ -65,7 +67,7 @@ $submissionToken = $submissionToken ?? '';
                         aria-describedby="description-error"
                         aria-invalid="<?= isset($errors['description']) ? 'true' : 'false' ?>"
                         maxlength="65535"
-                    ><?= esc(old('description', $row->description ?? '')) ?></textarea>
+                    ><?= esc(old('description', $row->description ?? ($context['description'] ?? ''))) ?></textarea>
                     <?php if (!empty($errors['description'])): ?>
                         <div id="description-error" class="invalid-feedback d-block">
                             <?= esc($errors['description']) ?>
@@ -80,7 +82,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="price"
                         id="price"
-                        value="<?= esc(old('price', $row->price ?? '')) ?>"
+                        value="<?= esc(old('price', $row->price ?? ($context['price'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['price']) ? 'is-invalid' : '' ?>"
                         aria-describedby="price-error"
                         aria-invalid="<?= isset($errors['price']) ? 'true' : 'false' ?>"
@@ -100,7 +102,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="stock_quantity"
                         id="stock_quantity"
-                        value="<?= esc(old('stock_quantity', $row->stock_quantity ?? '')) ?>"
+                        value="<?= esc(old('stock_quantity', $row->stock_quantity ?? ($context['stock_quantity'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['stock_quantity']) ? 'is-invalid' : '' ?>"
                         aria-describedby="stock_quantity-error"
                         aria-invalid="<?= isset($errors['stock_quantity']) ? 'true' : 'false' ?>"
@@ -120,7 +122,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="supplier_id"
                         id="supplier_id"
-                        value="<?= esc(old('supplier_id', $row->supplier_id ?? '')) ?>"
+                        value="<?= esc(old('supplier_id', $row->supplier_id ?? ($context['supplier_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['supplier_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="supplier_id-error"
                         aria-invalid="<?= isset($errors['supplier_id']) ? 'true' : 'false' ?>"
@@ -172,6 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -216,6 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -223,6 +227,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

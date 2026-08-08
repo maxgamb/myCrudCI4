@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -50,12 +52,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['hotel_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('hotel_id', $row->hotel_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="hotel_id"
+                            data-base-url="<?= site_url('hotels/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('hotels/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['hotel_id'])): ?>
                         <div id="hotel_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['hotel_id']) ?>
@@ -77,12 +100,33 @@ $submissionToken = $submissionToken ?? '';
                         <?php foreach (($options['camera_id'] ?? []) as $optionValue => $optionLabel): ?>
                             <option
                                 value="<?= esc($optionValue) ?>"
-                                <?= (string) old('camera_id', $row->camera_id ?? '') === (string) $optionValue ? 'selected' : '' ?>
+                                <?= (string) old('camera_id', $row->camera_id ?? ($context['camera_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
                             >
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
+                    </select>                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="camera_id"
+                            data-base-url="<?= site_url('camere/view') ?>"
+                            title="Apri record padre"
+                            aria-label="Apri record padre"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>                        <a
+                            href="<?= site_url('camere/create') ?>"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary"
+                            title="Nuovo record padre"
+                            aria-label="Nuovo record padre"
+                        >
+                            <i class="bi bi-plus-lg"></i>
+                        </a>                    </div>
                     <?php if (!empty($errors['camera_id'])): ?>
                         <div id="camera_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['camera_id']) ?>
@@ -97,7 +141,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="guasto_priorita"
                         id="guasto_priorita"
-                        value="<?= esc(old('guasto_priorita', $row->guasto_priorita ?? '')) ?>"
+                        value="<?= esc(old('guasto_priorita', $row->guasto_priorita ?? ($context['guasto_priorita'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['guasto_priorita']) ? 'is-invalid' : '' ?>"
                         aria-describedby="guasto_priorita-error"
                         aria-invalid="<?= isset($errors['guasto_priorita']) ? 'true' : 'false' ?>"
@@ -116,7 +160,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="guasto_area"
                         id="guasto_area"
-                        value="<?= esc(old('guasto_area', $row->guasto_area ?? '')) ?>"
+                        value="<?= esc(old('guasto_area', $row->guasto_area ?? ($context['guasto_area'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['guasto_area']) ? 'is-invalid' : '' ?>"
                         aria-describedby="guasto_area-error"
                         aria-invalid="<?= isset($errors['guasto_area']) ? 'true' : 'false' ?>"
@@ -136,7 +180,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="guasto_piano"
                         id="guasto_piano"
-                        value="<?= esc(old('guasto_piano', $row->guasto_piano ?? '')) ?>"
+                        value="<?= esc(old('guasto_piano', $row->guasto_piano ?? ($context['guasto_piano'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['guasto_piano']) ? 'is-invalid' : '' ?>"
                         aria-describedby="guasto_piano-error"
                         aria-invalid="<?= isset($errors['guasto_piano']) ? 'true' : 'false' ?>"
@@ -156,7 +200,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="guasto_note"
                         id="guasto_note"
-                        value="<?= esc(old('guasto_note', $row->guasto_note ?? '')) ?>"
+                        value="<?= esc(old('guasto_note', $row->guasto_note ?? ($context['guasto_note'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['guasto_note']) ? 'is-invalid' : '' ?>"
                         aria-describedby="guasto_note-error"
                         aria-invalid="<?= isset($errors['guasto_note']) ? 'true' : 'false' ?>"
@@ -176,7 +220,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="guasto_stato"
                         id="guasto_stato"
-                        value="<?= esc(old('guasto_stato', $row->guasto_stato ?? '')) ?>"
+                        value="<?= esc(old('guasto_stato', $row->guasto_stato ?? ($context['guasto_stato'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['guasto_stato']) ? 'is-invalid' : '' ?>"
                         aria-describedby="guasto_stato-error"
                         aria-invalid="<?= isset($errors['guasto_stato']) ? 'true' : 'false' ?>"
@@ -195,7 +239,7 @@ $submissionToken = $submissionToken ?? '';
                         type="date"
                         name="guasto_data"
                         id="guasto_data"
-                        value="<?= esc(old('guasto_data', $row->guasto_data ?? '')) ?>"
+                        value="<?= esc(old('guasto_data', $row->guasto_data ?? ($context['guasto_data'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['guasto_data']) ? 'is-invalid' : '' ?>"
                         aria-describedby="guasto_data-error"
                         aria-invalid="<?= isset($errors['guasto_data']) ? 'true' : 'false' ?>"
@@ -214,7 +258,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="guasto_utente_id"
                         id="guasto_utente_id"
-                        value="<?= esc(old('guasto_utente_id', $row->guasto_utente_id ?? '')) ?>"
+                        value="<?= esc(old('guasto_utente_id', $row->guasto_utente_id ?? ($context['guasto_utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['guasto_utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="guasto_utente_id-error"
                         aria-invalid="<?= isset($errors['guasto_utente_id']) ? 'true' : 'false' ?>"
@@ -267,6 +311,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -311,6 +356,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -318,6 +364,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

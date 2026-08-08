@@ -23,8 +23,8 @@ final class SospesiResource
   12 => 'sospeso_note',
   13 => 'sospeso_stato',
   14 => 'sospesi_utente_id',
-  15 => 'agenzie_agenzia_tipologia',
-  16 => 'pratiche_pratica_nome',
+  15 => 'agenzie__sopeso_societa__label',
+  16 => 'pratiche__sospeso_pratica_id__label',
 );
     private const WRITABLE = array (
   0 => 'hotel_id',

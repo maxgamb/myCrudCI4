@@ -5,6 +5,8 @@ $formAction = $formAction ?? current_url();
 $row = $row ?? null;
 $errors = $errors ?? [];
 $options = $options ?? [];
+$context = $context ?? [];
+$contextLabels = $contextLabels ?? [];
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -42,7 +44,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="hotel_id"
                         id="hotel_id"
-                        value="<?= esc(old('hotel_id', $row->hotel_id ?? '')) ?>"
+                        value="<?= esc(old('hotel_id', $row->hotel_id ?? ($context['hotel_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['hotel_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="hotel_id-error"
                         aria-invalid="<?= isset($errors['hotel_id']) ? 'true' : 'false' ?>"
@@ -61,7 +63,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_tipologia"
                         id="agenzia_tipologia"
-                        value="<?= esc(old('agenzia_tipologia', $row->agenzia_tipologia ?? '')) ?>"
+                        value="<?= esc(old('agenzia_tipologia', $row->agenzia_tipologia ?? ($context['agenzia_tipologia'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_tipologia']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_tipologia-error"
                         aria-invalid="<?= isset($errors['agenzia_tipologia']) ? 'true' : 'false' ?>"
@@ -81,7 +83,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_nome"
                         id="agenzia_nome"
-                        value="<?= esc(old('agenzia_nome', $row->agenzia_nome ?? '')) ?>"
+                        value="<?= esc(old('agenzia_nome', $row->agenzia_nome ?? ($context['agenzia_nome'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_nome']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_nome-error"
                         aria-invalid="<?= isset($errors['agenzia_nome']) ? 'true' : 'false' ?>"
@@ -101,7 +103,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_via"
                         id="agenzia_via"
-                        value="<?= esc(old('agenzia_via', $row->agenzia_via ?? '')) ?>"
+                        value="<?= esc(old('agenzia_via', $row->agenzia_via ?? ($context['agenzia_via'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_via']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_via-error"
                         aria-invalid="<?= isset($errors['agenzia_via']) ? 'true' : 'false' ?>"
@@ -121,7 +123,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_citta"
                         id="agenzia_citta"
-                        value="<?= esc(old('agenzia_citta', $row->agenzia_citta ?? '')) ?>"
+                        value="<?= esc(old('agenzia_citta', $row->agenzia_citta ?? ($context['agenzia_citta'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_citta']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_citta-error"
                         aria-invalid="<?= isset($errors['agenzia_citta']) ? 'true' : 'false' ?>"
@@ -141,7 +143,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_state"
                         id="agenzia_state"
-                        value="<?= esc(old('agenzia_state', $row->agenzia_state ?? '')) ?>"
+                        value="<?= esc(old('agenzia_state', $row->agenzia_state ?? ($context['agenzia_state'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_state']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_state-error"
                         aria-invalid="<?= isset($errors['agenzia_state']) ? 'true' : 'false' ?>"
@@ -161,7 +163,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_country"
                         id="agenzia_country"
-                        value="<?= esc(old('agenzia_country', $row->agenzia_country ?? '')) ?>"
+                        value="<?= esc(old('agenzia_country', $row->agenzia_country ?? ($context['agenzia_country'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_country']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_country-error"
                         aria-invalid="<?= isset($errors['agenzia_country']) ? 'true' : 'false' ?>"
@@ -181,7 +183,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_cap"
                         id="agenzia_cap"
-                        value="<?= esc(old('agenzia_cap', $row->agenzia_cap ?? '')) ?>"
+                        value="<?= esc(old('agenzia_cap', $row->agenzia_cap ?? ($context['agenzia_cap'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_cap']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_cap-error"
                         aria-invalid="<?= isset($errors['agenzia_cap']) ? 'true' : 'false' ?>"
@@ -201,7 +203,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_tel"
                         id="agenzia_tel"
-                        value="<?= esc(old('agenzia_tel', $row->agenzia_tel ?? '')) ?>"
+                        value="<?= esc(old('agenzia_tel', $row->agenzia_tel ?? ($context['agenzia_tel'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_tel']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_tel-error"
                         aria-invalid="<?= isset($errors['agenzia_tel']) ? 'true' : 'false' ?>"
@@ -221,7 +223,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_fax"
                         id="agenzia_fax"
-                        value="<?= esc(old('agenzia_fax', $row->agenzia_fax ?? '')) ?>"
+                        value="<?= esc(old('agenzia_fax', $row->agenzia_fax ?? ($context['agenzia_fax'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_fax']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_fax-error"
                         aria-invalid="<?= isset($errors['agenzia_fax']) ? 'true' : 'false' ?>"
@@ -241,7 +243,7 @@ $submissionToken = $submissionToken ?? '';
                         type="email"
                         name="agenzia_email"
                         id="agenzia_email"
-                        value="<?= esc(old('agenzia_email', $row->agenzia_email ?? '')) ?>"
+                        value="<?= esc(old('agenzia_email', $row->agenzia_email ?? ($context['agenzia_email'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_email']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_email-error"
                         aria-invalid="<?= isset($errors['agenzia_email']) ? 'true' : 'false' ?>"
@@ -261,7 +263,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_web"
                         id="agenzia_web"
-                        value="<?= esc(old('agenzia_web', $row->agenzia_web ?? '')) ?>"
+                        value="<?= esc(old('agenzia_web', $row->agenzia_web ?? ($context['agenzia_web'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_web']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_web-error"
                         aria-invalid="<?= isset($errors['agenzia_web']) ? 'true' : 'false' ?>"
@@ -281,7 +283,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_par_iva"
                         id="agenzia_par_iva"
-                        value="<?= esc(old('agenzia_par_iva', $row->agenzia_par_iva ?? '')) ?>"
+                        value="<?= esc(old('agenzia_par_iva', $row->agenzia_par_iva ?? ($context['agenzia_par_iva'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_par_iva']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_par_iva-error"
                         aria-invalid="<?= isset($errors['agenzia_par_iva']) ? 'true' : 'false' ?>"
@@ -301,7 +303,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_par_cf"
                         id="agenzia_par_cf"
-                        value="<?= esc(old('agenzia_par_cf', $row->agenzia_par_cf ?? '')) ?>"
+                        value="<?= esc(old('agenzia_par_cf', $row->agenzia_par_cf ?? ($context['agenzia_par_cf'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_par_cf']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_par_cf-error"
                         aria-invalid="<?= isset($errors['agenzia_par_cf']) ? 'true' : 'false' ?>"
@@ -321,7 +323,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_pec"
                         id="agenzia_pec"
-                        value="<?= esc(old('agenzia_pec', $row->agenzia_pec ?? '')) ?>"
+                        value="<?= esc(old('agenzia_pec', $row->agenzia_pec ?? ($context['agenzia_pec'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_pec']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_pec-error"
                         aria-invalid="<?= isset($errors['agenzia_pec']) ? 'true' : 'false' ?>"
@@ -341,7 +343,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_sid"
                         id="agenzia_sid"
-                        value="<?= esc(old('agenzia_sid', $row->agenzia_sid ?? '')) ?>"
+                        value="<?= esc(old('agenzia_sid', $row->agenzia_sid ?? ($context['agenzia_sid'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_sid']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_sid-error"
                         aria-invalid="<?= isset($errors['agenzia_sid']) ? 'true' : 'false' ?>"
@@ -361,7 +363,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_referente"
                         id="agenzia_referente"
-                        value="<?= esc(old('agenzia_referente', $row->agenzia_referente ?? '')) ?>"
+                        value="<?= esc(old('agenzia_referente', $row->agenzia_referente ?? ($context['agenzia_referente'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_referente']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_referente-error"
                         aria-invalid="<?= isset($errors['agenzia_referente']) ? 'true' : 'false' ?>"
@@ -381,7 +383,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_banca_nome"
                         id="agenzia_banca_nome"
-                        value="<?= esc(old('agenzia_banca_nome', $row->agenzia_banca_nome ?? '')) ?>"
+                        value="<?= esc(old('agenzia_banca_nome', $row->agenzia_banca_nome ?? ($context['agenzia_banca_nome'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_banca_nome']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_banca_nome-error"
                         aria-invalid="<?= isset($errors['agenzia_banca_nome']) ? 'true' : 'false' ?>"
@@ -401,7 +403,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_banca_iban"
                         id="agenzia_banca_iban"
-                        value="<?= esc(old('agenzia_banca_iban', $row->agenzia_banca_iban ?? '')) ?>"
+                        value="<?= esc(old('agenzia_banca_iban', $row->agenzia_banca_iban ?? ($context['agenzia_banca_iban'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_banca_iban']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_banca_iban-error"
                         aria-invalid="<?= isset($errors['agenzia_banca_iban']) ? 'true' : 'false' ?>"
@@ -421,7 +423,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_banca_swift"
                         id="agenzia_banca_swift"
-                        value="<?= esc(old('agenzia_banca_swift', $row->agenzia_banca_swift ?? '')) ?>"
+                        value="<?= esc(old('agenzia_banca_swift', $row->agenzia_banca_swift ?? ($context['agenzia_banca_swift'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_banca_swift']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_banca_swift-error"
                         aria-invalid="<?= isset($errors['agenzia_banca_swift']) ? 'true' : 'false' ?>"
@@ -441,7 +443,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_banca_iata"
                         id="agenzia_banca_iata"
-                        value="<?= esc(old('agenzia_banca_iata', $row->agenzia_banca_iata ?? '')) ?>"
+                        value="<?= esc(old('agenzia_banca_iata', $row->agenzia_banca_iata ?? ($context['agenzia_banca_iata'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_banca_iata']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_banca_iata-error"
                         aria-invalid="<?= isset($errors['agenzia_banca_iata']) ? 'true' : 'false' ?>"
@@ -461,7 +463,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_cc_tipo"
                         id="agenzia_cc_tipo"
-                        value="<?= esc(old('agenzia_cc_tipo', $row->agenzia_cc_tipo ?? '')) ?>"
+                        value="<?= esc(old('agenzia_cc_tipo', $row->agenzia_cc_tipo ?? ($context['agenzia_cc_tipo'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_cc_tipo']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_cc_tipo-error"
                         aria-invalid="<?= isset($errors['agenzia_cc_tipo']) ? 'true' : 'false' ?>"
@@ -481,7 +483,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_cc_nome"
                         id="agenzia_cc_nome"
-                        value="<?= esc(old('agenzia_cc_nome', $row->agenzia_cc_nome ?? '')) ?>"
+                        value="<?= esc(old('agenzia_cc_nome', $row->agenzia_cc_nome ?? ($context['agenzia_cc_nome'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_cc_nome']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_cc_nome-error"
                         aria-invalid="<?= isset($errors['agenzia_cc_nome']) ? 'true' : 'false' ?>"
@@ -501,7 +503,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_cc_numero"
                         id="agenzia_cc_numero"
-                        value="<?= esc(old('agenzia_cc_numero', $row->agenzia_cc_numero ?? '')) ?>"
+                        value="<?= esc(old('agenzia_cc_numero', $row->agenzia_cc_numero ?? ($context['agenzia_cc_numero'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_cc_numero']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_cc_numero-error"
                         aria-invalid="<?= isset($errors['agenzia_cc_numero']) ? 'true' : 'false' ?>"
@@ -521,7 +523,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_cc_scadenza"
                         id="agenzia_cc_scadenza"
-                        value="<?= esc(old('agenzia_cc_scadenza', $row->agenzia_cc_scadenza ?? '')) ?>"
+                        value="<?= esc(old('agenzia_cc_scadenza', $row->agenzia_cc_scadenza ?? ($context['agenzia_cc_scadenza'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_cc_scadenza']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_cc_scadenza-error"
                         aria-invalid="<?= isset($errors['agenzia_cc_scadenza']) ? 'true' : 'false' ?>"
@@ -541,7 +543,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_cc_cod_sicurezza"
                         id="agenzia_cc_cod_sicurezza"
-                        value="<?= esc(old('agenzia_cc_cod_sicurezza', $row->agenzia_cc_cod_sicurezza ?? '')) ?>"
+                        value="<?= esc(old('agenzia_cc_cod_sicurezza', $row->agenzia_cc_cod_sicurezza ?? ($context['agenzia_cc_cod_sicurezza'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_cc_cod_sicurezza']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_cc_cod_sicurezza-error"
                         aria-invalid="<?= isset($errors['agenzia_cc_cod_sicurezza']) ? 'true' : 'false' ?>"
@@ -561,7 +563,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_login"
                         id="agenzia_login"
-                        value="<?= esc(old('agenzia_login', $row->agenzia_login ?? '')) ?>"
+                        value="<?= esc(old('agenzia_login', $row->agenzia_login ?? ($context['agenzia_login'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_login']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_login-error"
                         aria-invalid="<?= isset($errors['agenzia_login']) ? 'true' : 'false' ?>"
@@ -581,7 +583,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_password"
                         id="agenzia_password"
-                        value="<?= esc(old('agenzia_password', $row->agenzia_password ?? '')) ?>"
+                        value="<?= esc(old('agenzia_password', $row->agenzia_password ?? ($context['agenzia_password'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_password']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_password-error"
                         aria-invalid="<?= isset($errors['agenzia_password']) ? 'true' : 'false' ?>"
@@ -601,7 +603,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_ab_web"
                         id="agenzia_ab_web"
-                        value="<?= esc(old('agenzia_ab_web', $row->agenzia_ab_web ?? '')) ?>"
+                        value="<?= esc(old('agenzia_ab_web', $row->agenzia_ab_web ?? ($context['agenzia_ab_web'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_ab_web']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_ab_web-error"
                         aria-invalid="<?= isset($errors['agenzia_ab_web']) ? 'true' : 'false' ?>"
@@ -621,7 +623,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_ab_affiliati"
                         id="agenzia_ab_affiliati"
-                        value="<?= esc(old('agenzia_ab_affiliati', $row->agenzia_ab_affiliati ?? '')) ?>"
+                        value="<?= esc(old('agenzia_ab_affiliati', $row->agenzia_ab_affiliati ?? ($context['agenzia_ab_affiliati'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_ab_affiliati']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_ab_affiliati-error"
                         aria-invalid="<?= isset($errors['agenzia_ab_affiliati']) ? 'true' : 'false' ?>"
@@ -641,7 +643,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_ad_vis"
                         id="agenzia_ad_vis"
-                        value="<?= esc(old('agenzia_ad_vis', $row->agenzia_ad_vis ?? '')) ?>"
+                        value="<?= esc(old('agenzia_ad_vis', $row->agenzia_ad_vis ?? ($context['agenzia_ad_vis'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_ad_vis']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_ad_vis-error"
                         aria-invalid="<?= isset($errors['agenzia_ad_vis']) ? 'true' : 'false' ?>"
@@ -661,7 +663,7 @@ $submissionToken = $submissionToken ?? '';
                         type="text"
                         name="agenzia_ab_sospeso"
                         id="agenzia_ab_sospeso"
-                        value="<?= esc(old('agenzia_ab_sospeso', $row->agenzia_ab_sospeso ?? '')) ?>"
+                        value="<?= esc(old('agenzia_ab_sospeso', $row->agenzia_ab_sospeso ?? ($context['agenzia_ab_sospeso'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzia_ab_sospeso']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzia_ab_sospeso-error"
                         aria-invalid="<?= isset($errors['agenzia_ab_sospeso']) ? 'true' : 'false' ?>"
@@ -681,7 +683,7 @@ $submissionToken = $submissionToken ?? '';
                         type="number"
                         name="agenzie_utente_id"
                         id="agenzie_utente_id"
-                        value="<?= esc(old('agenzie_utente_id', $row->agenzie_utente_id ?? '')) ?>"
+                        value="<?= esc(old('agenzie_utente_id', $row->agenzie_utente_id ?? ($context['agenzie_utente_id'] ?? ''))) ?>"
                         class="form-control <?= isset($errors['agenzie_utente_id']) ? 'is-invalid' : '' ?>"
                         aria-describedby="agenzie_utente_id-error"
                         aria-invalid="<?= isset($errors['agenzie_utente_id']) ? 'true' : 'false' ?>"
@@ -733,6 +735,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         input.addEventListener('input', function () {
             valueTarget.value = '';
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             results.classList.add('d-none');
             results.innerHTML = '';
             window.clearTimeout(timer);
@@ -777,6 +780,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = results.options[results.selectedIndex];
             if (!selected) return;
             valueTarget.value = selected.value;
+            valueTarget.dispatchEvent(new Event('change', {bubbles: true}));
             input.value = selected.textContent || '';
             results.classList.add('d-none');
         });
@@ -784,6 +788,31 @@ document.addEventListener('DOMContentLoaded', function () {
         results.addEventListener('dblclick', function () {
             results.dispatchEvent(new Event('change'));
         });
+    });
+
+    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // qualunque sia il controllo usato (hidden, select, input o select AJAX).
+    const refreshParentLink = function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        if (!source) return;
+        const value = String(source.value || '').trim();
+        const baseUrl = String(link.dataset.baseUrl || '').replace(/\/$/, '');
+        if (value === '' || baseUrl === '') {
+            link.href = '#';
+            link.classList.add('disabled');
+            link.setAttribute('aria-disabled', 'true');
+            return;
+        }
+        link.href = baseUrl + '/' + encodeURIComponent(value);
+        link.classList.remove('disabled');
+        link.removeAttribute('aria-disabled');
+    };
+
+    document.querySelectorAll('.js-relation-parent-link').forEach(function (link) {
+        const source = document.getElementById(link.dataset.valueSource || '');
+        refreshParentLink(link);
+        source?.addEventListener('change', function () { refreshParentLink(link); });
+        source?.addEventListener('input', function () { refreshParentLink(link); });
     });
 
     form.addEventListener('submit', function (event) {

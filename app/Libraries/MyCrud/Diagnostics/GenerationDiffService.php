@@ -15,8 +15,8 @@ use RuntimeException;
  * Confronta il codice che la versione corrente genererebbe con il progetto.
  *
  * La generazione di confronto avviene in writable/ e non modifica né app/
- * né app/Generated/. Il target predefinito è app/, cioè il codice operativo
- * che lo sviluppatore può avere personalizzato dopo la generazione iniziale.
+ * né app/Generated/. Il report distingue i file propri del CRUD dai file
+ * infrastrutturali condivisi e può fornire il numero di righe aggiunte/rimosse.
  */
 final class GenerationDiffService
 {
@@ -73,10 +73,10 @@ final class GenerationDiffService
             $generatedRoot = $temporaryBase . 'Generated' . DIRECTORY_SEPARATOR;
             $files = $this->collectFiles($generatedRoot);
             $rows = [];
-            $summary = [
-                'new' => 0,
-                'changed' => 0,
-                'unchanged' => 0,
+            $summary = $this->emptySummary();
+            $summaryByCategory = [
+                'crud' => $this->emptySummary(),
+                'shared' => $this->emptySummary(),
             ];
 
             foreach ($files as $relative => $proposedPath) {
@@ -92,13 +92,26 @@ final class GenerationDiffService
                         : 'changed';
                 }
 
+                $category = $this->classifyFile($relative);
                 $summary[$status]++;
+                $summaryByCategory[$category][$status]++;
+
+                $details = ['added' => 0, 'removed' => 0];
+                if ($status !== 'unchanged') {
+                    $details = $this->lineChangeStats(
+                        is_file($currentPath) ? $currentPath : null,
+                        $proposedPath
+                    );
+                }
+
                 $rows[$relative] = [
                     'status' => $status,
+                    'category' => $category,
                     'currentPath' => $currentPath,
                     'proposedPath' => $proposedPath,
                     'currentHash' => is_file($currentPath) ? hash_file('sha256', $currentPath) : null,
                     'proposedHash' => hash_file('sha256', $proposedPath),
+                    'details' => $details,
                 ];
             }
 
@@ -112,12 +125,121 @@ final class GenerationDiffService
                 'schemaDrift' => !empty($resolved['schemaDrift']),
                 'configPath' => $resolved['configPath'],
                 'summary' => $summary,
+                'summaryByCategory' => $summaryByCategory,
                 'files' => $rows,
             ];
         } finally {
             $settings->generatedPath = $originalGeneratedPath;
             $this->removeDirectory($temporaryBase);
         }
+    }
+
+    /** @return array{new:int,changed:int,unchanged:int} */
+    private function emptySummary(): array
+    {
+        return [
+            'new' => 0,
+            'changed' => 0,
+            'unchanged' => 0,
+        ];
+    }
+
+    /**
+     * I file condivisi appartengono all'infrastruttura runtime e possono essere
+     * usati da più CRUD. Tutto il resto è considerato specifico del CRUD.
+     */
+    private function classifyFile(string $relative): string
+    {
+        $relative = str_replace('\\', '/', $relative);
+
+        if ($relative === 'Controllers/Api/BaseApiController.php') {
+            return 'shared';
+        }
+
+        foreach ([
+            'Libraries/Crud/',
+            'Views/Pagers/',
+            'Views/layouts/',
+            'Config/',
+        ] as $prefix) {
+            if (str_starts_with($relative, $prefix)) {
+                return 'shared';
+            }
+        }
+
+        return 'crud';
+    }
+
+    /**
+     * Restituisce quante righe sarebbero aggiunte e rimosse.
+     * Usa la lunghezza della longest common subsequence per restare
+     * indipendente dal comando shell `diff` e funzionare anche fuori Linux.
+     *
+     * @return array{added:int,removed:int}
+     */
+    private function lineChangeStats(?string $currentPath, string $proposedPath): array
+    {
+        $proposed = file($proposedPath, FILE_IGNORE_NEW_LINES);
+        $proposed = is_array($proposed) ? $proposed : [];
+
+        if ($currentPath === null || !is_file($currentPath)) {
+            return [
+                'added' => count($proposed),
+                'removed' => 0,
+            ];
+        }
+
+        $current = file($currentPath, FILE_IGNORE_NEW_LINES);
+        $current = is_array($current) ? $current : [];
+
+        if ($current === $proposed) {
+            return ['added' => 0, 'removed' => 0];
+        }
+
+        $lcs = $this->lcsLength($current, $proposed);
+
+        return [
+            'added' => max(0, count($proposed) - $lcs),
+            'removed' => max(0, count($current) - $lcs),
+        ];
+    }
+
+    /**
+     * Calcola la LCS usando due sole righe della matrice dinamica.
+     * La memoria resta quindi proporzionale al file più corto.
+     *
+     * @param list<string> $left
+     * @param list<string> $right
+     */
+    private function lcsLength(array $left, array $right): int
+    {
+        if ($left === [] || $right === []) {
+            return 0;
+        }
+
+        // Mantiene la seconda dimensione più corta per ridurre la memoria.
+        if (count($right) > count($left)) {
+            [$left, $right] = [$right, $left];
+        }
+
+        $columns = count($right);
+        $previous = array_fill(0, $columns + 1, 0);
+
+        foreach ($left as $leftLine) {
+            $current = array_fill(0, $columns + 1, 0);
+
+            for ($column = 1; $column <= $columns; $column++) {
+                if ($leftLine === $right[$column - 1]) {
+                    $current[$column] = $previous[$column - 1] + 1;
+                } else {
+                    $current[$column] = max($previous[$column], $current[$column - 1]);
+                }
+            }
+
+            $previous = $current;
+        }
+
+        return $previous[$columns];
     }
 
     /** @return array<string,string> */

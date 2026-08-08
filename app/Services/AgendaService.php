@@ -73,6 +73,12 @@ final class AgendaService
         return $this->model->searchRelationOptions($field, $query, $limit);
     }
 
+    /** Restituisce una FK valida con la relativa descrizione. */
+    public function relationOptionById(string $field, int|string $id): ?array
+    {
+        return $this->model->relationOptionById($field, $id);
+    }
+
     public function loadHasMany(int|string $parentId): array
     {
         return $this->model->loadHasMany($parentId);

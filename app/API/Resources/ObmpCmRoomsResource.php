@@ -27,8 +27,8 @@ final class ObmpCmRoomsResource
   16 => 'obmp_cm_rooms_foto270',
   17 => 'obmp_cm_rooms_foto700',
   18 => 'obmp_cm_rooms_utente_id',
-  19 => 'obmp_cm_obmp_cm_id_hotel_agenzia',
-  20 => 'tipologia_camera_nome_tipologia',
+  19 => 'obmp_cm__obmp_cm_id__label',
+  20 => 'tipologia_camera__obmp_cm_rooms_tipologia_id__label',
 );
     private const WRITABLE = array (
   0 => 'obmp_cm_id',
