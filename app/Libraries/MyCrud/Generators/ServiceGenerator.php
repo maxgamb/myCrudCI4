@@ -16,12 +16,12 @@ final class ServiceGenerator
         $class = (string) $config['classes']['service'];
         $modelClass = (string) $config['classes']['model'];
         $entity = (string) $config['classes']['entity'];
-        $primaryKey = (string) $config['primaryKey'];
         $useEntity = !empty($config['features']['entity']);
         $apiEnabled = !empty($config['features']['api']);
         $entityUse = $useEntity ? "use App\\Entities\\{$entity};\n" : '';
         $passwordFields = [];
         $automaticDateFields = [];
+        $databaseManagedFields = [];
         foreach ((array) ($config['fields'] ?? []) as $field) {
             $name = (string) ($field['name'] ?? '');
             $inputType = (string) ($field['inputType'] ?? 'text');
@@ -29,8 +29,12 @@ final class ServiceGenerator
             if (FieldPolicy::isPassword($name, $inputType)) {
                 $passwordFields[] = $name;
             }
+            if (!empty($field['databaseManaged'])) {
+                $databaseManagedFields[] = $name;
+            }
             if (
-                preg_match('/(?:^|_)(?:data_record|recorded_at)(?:$|_)/i', $name) === 1
+                empty($field['databaseManaged'])
+                && preg_match('/(?:^|_)(?:data_record|recorded_at)(?:$|_)/i', $name) === 1
                 && in_array($type, ['date', 'datetime', 'timestamp'], true)
             ) {
                 $automaticDateFields[$name] = $type === 'date' ? 'Y-m-d' : 'Y-m-d H:i:s';
@@ -38,21 +42,7 @@ final class ServiceGenerator
         }
         $passwordFieldsCode = var_export(array_values(array_unique($passwordFields)), true);
         $automaticDateFieldsCode = var_export($automaticDateFields, true);
-        $createBody = $useEntity
-            ? "        \$id = \$this->model->insert(new {$entity}(\$data), true);"
-            : "        \$id = \$this->model->insert(\$data, true);";
-
-        $primaryAutoIncrement = false;
-        foreach ($config['fields'] as $field) {
-            if ((string) ($field['name'] ?? '') === $primaryKey) {
-                $primaryAutoIncrement = !empty($field['autoIncrement']);
-                break;
-            }
-        }
-
-        $returnCreatedId = $primaryAutoIncrement
-            ? "        return is_int(\$id) ? \$id : (string) \$id;"
-            : "        if (array_key_exists('{$primaryKey}', \$data) && (is_int(\$data['{$primaryKey}']) || is_string(\$data['{$primaryKey}']))) {\n            return \$data['{$primaryKey}'];\n        }\n        return is_int(\$id) ? \$id : (string) \$id;";
+        $databaseManagedFieldsCode = var_export(array_values(array_unique($databaseManagedFields)), true);
 
         $softMethods = !empty($config['features']['softDeletes']) ? <<<PHP
     public function deletedList(): array
@@ -103,6 +93,7 @@ final class {$class}
 {
     private const PASSWORD_FIELDS = {$passwordFieldsCode};
     private const AUTOMATIC_DATE_FIELDS = {$automaticDateFieldsCode};
+    private const DATABASE_MANAGED_FIELDS = {$databaseManagedFieldsCode};
 
     public function __construct(private readonly {$modelClass} \$model = new {$modelClass}())
     {
@@ -165,15 +156,10 @@ final class {$class}
         return \$this->model->loadHasMany(\$parentId);
     }
 
-    public function create(array \$data): int|string
+    public function create(array \$data, array \$related = []): int|string
     {
         \$data = \$this->prepareData(\$data, false);
-{$createBody}
-        if (\$id === false) {
-            throw new RuntimeException(implode(' ', \$this->model->errors()) ?: 'Inserimento non riuscito.');
-        }
-        \$this->model->clearListCountCache();
-{$returnCreatedId}
+        return \$this->model->createRecord(\$data, \$related);
     }
 
     public function update(int|string \$id, array \$data): void
@@ -188,6 +174,10 @@ final class {$class}
 
     private function prepareData(array \$data, bool \$isUpdate): array
     {
+        foreach (self::DATABASE_MANAGED_FIELDS as \$field) {
+            unset(\$data[\$field]);
+        }
+
         if (!\$isUpdate) {
             foreach (self::AUTOMATIC_DATE_FIELDS as \$field => \$format) {
                 if (!isset(\$data[\$field]) || trim((string) \$data[\$field]) === '') {

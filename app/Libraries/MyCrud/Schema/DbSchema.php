@@ -57,13 +57,13 @@ class DbSchema
             [$table]
         )->getResultArray();
 
-        $primaryKey = null;
+        $primaryKeys = [];
         foreach ($columns as $column) {
             if (($column['columnKey'] ?? '') === 'PRI') {
-                $primaryKey = $column['name'];
-                break;
+                $primaryKeys[] = (string) $column['name'];
             }
         }
+        $primaryKey = $primaryKeys[0] ?? ($columns[0]['name'] ?? 'id');
 
         $foreignKeys = $this->db->query(
             'SELECT COLUMN_NAME AS childColumn,
@@ -94,7 +94,8 @@ class DbSchema
         $stats = $this->db->query(
             'SELECT TABLE_ROWS AS rowEstimate,
                     DATA_LENGTH AS dataLength,
-                    INDEX_LENGTH AS indexLength
+                    INDEX_LENGTH AS indexLength,
+                    TABLE_TYPE AS tableType
              FROM information_schema.TABLES
              WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?
              LIMIT 1',
@@ -103,7 +104,14 @@ class DbSchema
 
         return [
             'name' => $table,
-            'primaryKey' => $primaryKey ?? ($columns[0]['name'] ?? 'id'),
+            // primaryKey resta per compatibilità con CI4 Model e con i generatori
+            // esistenti; primaryKeys descrive invece la PK reale completa.
+            'primaryKey' => (string) $primaryKey,
+            'primaryKeys' => array_values($primaryKeys),
+            'hasPrimaryKey' => $primaryKeys !== [],
+            'compositePrimaryKey' => count($primaryKeys) > 1,
+            'tableType' => strtoupper((string) ($stats['tableType'] ?? 'BASE TABLE')),
+            'isView' => strtoupper((string) ($stats['tableType'] ?? 'BASE TABLE')) === 'VIEW',
             'columns' => $columns,
             'foreignKeys' => $foreignKeys,
             'indexes' => $indexes,

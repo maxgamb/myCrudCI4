@@ -13,13 +13,20 @@ $results = $report->results();
                 <i class="bi bi-activity me-1"></i>
                 Doctor <?= esc($table) ?>
             </h1>
-            <p class="text-muted mb-0">Controllo configurazione, schema, indici e relazioni.</p>
+            <p class="text-muted mb-0">Controllo database e configurazione persistente del CRUD.</p>
         </div>
 
         <a href="<?= site_url('mycrud') ?>" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left me-1"></i>
             Dashboard
         </a>
+    </div>
+
+    <div class="alert alert-light border py-2 mb-3">
+        <i class="bi bi-info-circle me-1"></i>
+        <strong>Ambito Doctor:</strong> schema DB + <code>app/MyCrudConfig/<?= esc($table) ?>.php</code>.
+        Non analizza i file operativi in <code>app/</code> né quelli in <code>app/Generated/</code>;
+        per confrontare i file usa <strong>Diff</strong>.
     </div>
 
     <div class="d-flex flex-wrap gap-2 mb-3">

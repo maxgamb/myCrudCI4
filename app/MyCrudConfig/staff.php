@@ -14,20 +14,16 @@ return array (
   'order' => 
   array (
     0 => 'staff_id',
-    1 => 'cognome',
-    2 => 'nome',
-    3 => 'citta',
-    4 => 'provincia',
-    5 => 'staff_nazione',
-    6 => 'indirizzo',
-    7 => 'telefono',
-    8 => 'cellulare',
-    9 => 'email',
-    10 => 'genere',
-    11 => 'reparto_id',
-    12 => 'staff_stato',
-    13 => 'staff_datarecod',
-    14 => 'utente_id',
+    1 => 'first_name',
+    2 => 'last_name',
+    3 => 'address_id',
+    4 => 'picture',
+    5 => 'email',
+    6 => 'store_id',
+    7 => 'active',
+    8 => 'username',
+    9 => 'password',
+    10 => 'last_update',
   ),
   'fields' => 
   array (
@@ -46,6 +42,12 @@ return array (
         'acceptContext' => false,
         'createParentLink' => false,
       ),
+      'relationNavigationCustomized' => false,
+      'relationCreate' => 
+      array (
+        'enabled' => false,
+      ),
+      'uiVisibilityCustomized' => true,
       'attributes' => 
       array (
         'boolean' => 
@@ -68,7 +70,7 @@ return array (
         'filterMode' => 'exact',
       ),
     ),
-    'cognome' => 
+    'first_name' => 
     array (
       'label' => '',
       'inputType' => 'text',
@@ -83,6 +85,12 @@ return array (
         'acceptContext' => false,
         'createParentLink' => false,
       ),
+      'relationNavigationCustomized' => false,
+      'relationCreate' => 
+      array (
+        'enabled' => false,
+      ),
+      'uiVisibilityCustomized' => true,
       'attributes' => 
       array (
         'boolean' => 
@@ -91,7 +99,7 @@ return array (
         ),
         'values' => 
         array (
-          'maxlength' => '200',
+          'maxlength' => '45',
         ),
       ),
       'ui' => 
@@ -107,7 +115,7 @@ return array (
         'filterMode' => 'prefix',
       ),
     ),
-    'nome' => 
+    'last_name' => 
     array (
       'label' => '',
       'inputType' => 'text',
@@ -122,6 +130,12 @@ return array (
         'acceptContext' => false,
         'createParentLink' => false,
       ),
+      'relationNavigationCustomized' => false,
+      'relationCreate' => 
+      array (
+        'enabled' => false,
+      ),
+      'uiVisibilityCustomized' => true,
       'attributes' => 
       array (
         'boolean' => 
@@ -130,7 +144,7 @@ return array (
         ),
         'values' => 
         array (
-          'maxlength' => '200',
+          'maxlength' => '45',
         ),
       ),
       'ui' => 
@@ -146,21 +160,27 @@ return array (
         'filterMode' => 'prefix',
       ),
     ),
-    'citta' => 
+    'address_id' => 
     array (
       'label' => '',
-      'inputType' => 'text',
+      'inputType' => 'select',
       'width' => 6,
-      'relationMode' => '',
-      'relationDisplayField' => '',
+      'relationMode' => 'select',
+      'relationDisplayField' => 'address',
       'relationDisplayTemplate' => '',
       'relationNavigation' => 
       array (
         'quickFilter' => false,
-        'parentLink' => false,
+        'parentLink' => true,
         'acceptContext' => false,
         'createParentLink' => false,
       ),
+      'relationNavigationCustomized' => true,
+      'relationCreate' => 
+      array (
+        'enabled' => false,
+      ),
+      'uiVisibilityCustomized' => true,
       'attributes' => 
       array (
         'boolean' => 
@@ -169,26 +189,25 @@ return array (
         ),
         'values' => 
         array (
-          'maxlength' => '200',
         ),
       ),
       'ui' => 
       array (
-        'searchable' => false,
-        'sortable' => false,
+        'searchable' => true,
+        'sortable' => true,
         'visibleIndex' => true,
         'visibleForm' => true,
         'visibleView' => true,
         'sensitive' => false,
         'exportable' => true,
         'apiVisible' => true,
-        'filterMode' => 'prefix',
+        'filterMode' => 'exact',
       ),
     ),
-    'provincia' => 
+    'picture' => 
     array (
       'label' => '',
-      'inputType' => 'text',
+      'inputType' => 'textarea',
       'width' => 6,
       'relationMode' => '',
       'relationDisplayField' => '',
@@ -200,34 +219,39 @@ return array (
         'acceptContext' => false,
         'createParentLink' => false,
       ),
+      'relationNavigationCustomized' => false,
+      'relationCreate' => 
+      array (
+        'enabled' => false,
+      ),
+      'uiVisibilityCustomized' => true,
       'attributes' => 
       array (
         'boolean' => 
         array (
-          0 => 'required',
         ),
         'values' => 
         array (
-          'maxlength' => '100',
+          'maxlength' => '65535',
         ),
       ),
       'ui' => 
       array (
         'searchable' => false,
         'sortable' => false,
-        'visibleIndex' => true,
+        'visibleIndex' => false,
         'visibleForm' => true,
-        'visibleView' => true,
+        'visibleView' => false,
         'sensitive' => false,
-        'exportable' => true,
-        'apiVisible' => true,
+        'exportable' => false,
+        'apiVisible' => false,
         'filterMode' => 'prefix',
       ),
     ),
-    'staff_nazione' => 
+    'email' => 
     array (
       'label' => '',
-      'inputType' => 'text',
+      'inputType' => 'email',
       'width' => 6,
       'relationMode' => '',
       'relationDisplayField' => '',
@@ -239,11 +263,16 @@ return array (
         'acceptContext' => false,
         'createParentLink' => false,
       ),
+      'relationNavigationCustomized' => false,
+      'relationCreate' => 
+      array (
+        'enabled' => false,
+      ),
+      'uiVisibilityCustomized' => true,
       'attributes' => 
       array (
         'boolean' => 
         array (
-          0 => 'required',
         ),
         'values' => 
         array (
@@ -263,21 +292,27 @@ return array (
         'filterMode' => 'prefix',
       ),
     ),
-    'indirizzo' => 
+    'store_id' => 
     array (
       'label' => '',
-      'inputType' => 'text',
+      'inputType' => 'select',
       'width' => 6,
-      'relationMode' => '',
-      'relationDisplayField' => '',
+      'relationMode' => 'select',
+      'relationDisplayField' => 'store_id',
       'relationDisplayTemplate' => '',
       'relationNavigation' => 
       array (
-        'quickFilter' => false,
-        'parentLink' => false,
-        'acceptContext' => false,
+        'quickFilter' => true,
+        'parentLink' => true,
+        'acceptContext' => true,
         'createParentLink' => false,
       ),
+      'relationNavigationCustomized' => true,
+      'relationCreate' => 
+      array (
+        'enabled' => true,
+      ),
+      'uiVisibilityCustomized' => true,
       'attributes' => 
       array (
         'boolean' => 
@@ -286,26 +321,25 @@ return array (
         ),
         'values' => 
         array (
-          'maxlength' => '200',
         ),
       ),
       'ui' => 
       array (
-        'searchable' => false,
-        'sortable' => false,
+        'searchable' => true,
+        'sortable' => true,
         'visibleIndex' => true,
         'visibleForm' => true,
         'visibleView' => true,
         'sensitive' => false,
         'exportable' => true,
         'apiVisible' => true,
-        'filterMode' => 'prefix',
+        'filterMode' => 'exact',
       ),
     ),
-    'telefono' => 
+    'active' => 
     array (
       'label' => '',
-      'inputType' => 'text',
+      'inputType' => 'checkbox',
       'width' => 6,
       'relationMode' => '',
       'relationDisplayField' => '',
@@ -317,201 +351,12 @@ return array (
         'acceptContext' => false,
         'createParentLink' => false,
       ),
-      'attributes' => 
+      'relationNavigationCustomized' => false,
+      'relationCreate' => 
       array (
-        'boolean' => 
-        array (
-          0 => 'required',
-        ),
-        'values' => 
-        array (
-          'maxlength' => '40',
-        ),
+        'enabled' => false,
       ),
-      'ui' => 
-      array (
-        'searchable' => false,
-        'sortable' => false,
-        'visibleIndex' => true,
-        'visibleForm' => true,
-        'visibleView' => true,
-        'sensitive' => false,
-        'exportable' => true,
-        'apiVisible' => true,
-        'filterMode' => 'prefix',
-      ),
-    ),
-    'cellulare' => 
-    array (
-      'label' => '',
-      'inputType' => 'text',
-      'width' => 6,
-      'relationMode' => '',
-      'relationDisplayField' => '',
-      'relationDisplayTemplate' => '',
-      'relationNavigation' => 
-      array (
-        'quickFilter' => false,
-        'parentLink' => false,
-        'acceptContext' => false,
-        'createParentLink' => false,
-      ),
-      'attributes' => 
-      array (
-        'boolean' => 
-        array (
-          0 => 'required',
-        ),
-        'values' => 
-        array (
-          'maxlength' => '40',
-        ),
-      ),
-      'ui' => 
-      array (
-        'searchable' => false,
-        'sortable' => false,
-        'visibleIndex' => false,
-        'visibleForm' => true,
-        'visibleView' => true,
-        'sensitive' => false,
-        'exportable' => true,
-        'apiVisible' => true,
-        'filterMode' => 'prefix',
-      ),
-    ),
-    'email' => 
-    array (
-      'label' => '',
-      'inputType' => 'email',
-      'width' => 6,
-      'relationMode' => '',
-      'relationDisplayField' => '',
-      'relationDisplayTemplate' => '',
-      'relationNavigation' => 
-      array (
-        'quickFilter' => false,
-        'parentLink' => false,
-        'acceptContext' => false,
-        'createParentLink' => false,
-      ),
-      'attributes' => 
-      array (
-        'boolean' => 
-        array (
-          0 => 'required',
-        ),
-        'values' => 
-        array (
-          'maxlength' => '40',
-        ),
-      ),
-      'ui' => 
-      array (
-        'searchable' => false,
-        'sortable' => false,
-        'visibleIndex' => true,
-        'visibleForm' => true,
-        'visibleView' => true,
-        'sensitive' => false,
-        'exportable' => true,
-        'apiVisible' => true,
-        'filterMode' => 'prefix',
-      ),
-    ),
-    'genere' => 
-    array (
-      'label' => '',
-      'inputType' => 'text',
-      'width' => 6,
-      'relationMode' => '',
-      'relationDisplayField' => '',
-      'relationDisplayTemplate' => '',
-      'relationNavigation' => 
-      array (
-        'quickFilter' => false,
-        'parentLink' => false,
-        'acceptContext' => false,
-        'createParentLink' => false,
-      ),
-      'attributes' => 
-      array (
-        'boolean' => 
-        array (
-          0 => 'required',
-        ),
-        'values' => 
-        array (
-          'maxlength' => '2',
-        ),
-      ),
-      'ui' => 
-      array (
-        'searchable' => false,
-        'sortable' => false,
-        'visibleIndex' => false,
-        'visibleForm' => true,
-        'visibleView' => true,
-        'sensitive' => false,
-        'exportable' => true,
-        'apiVisible' => true,
-        'filterMode' => 'prefix',
-      ),
-    ),
-    'reparto_id' => 
-    array (
-      'label' => '',
-      'inputType' => 'text',
-      'width' => 6,
-      'relationMode' => '',
-      'relationDisplayField' => '',
-      'relationDisplayTemplate' => '',
-      'relationNavigation' => 
-      array (
-        'quickFilter' => false,
-        'parentLink' => false,
-        'acceptContext' => false,
-        'createParentLink' => false,
-      ),
-      'attributes' => 
-      array (
-        'boolean' => 
-        array (
-          0 => 'required',
-        ),
-        'values' => 
-        array (
-          'maxlength' => '20',
-        ),
-      ),
-      'ui' => 
-      array (
-        'searchable' => false,
-        'sortable' => false,
-        'visibleIndex' => false,
-        'visibleForm' => true,
-        'visibleView' => true,
-        'sensitive' => false,
-        'exportable' => true,
-        'apiVisible' => true,
-        'filterMode' => 'prefix',
-      ),
-    ),
-    'staff_stato' => 
-    array (
-      'label' => '',
-      'inputType' => 'number',
-      'width' => 6,
-      'relationMode' => '',
-      'relationDisplayField' => '',
-      'relationDisplayTemplate' => '',
-      'relationNavigation' => 
-      array (
-        'quickFilter' => false,
-        'parentLink' => false,
-        'acceptContext' => false,
-        'createParentLink' => false,
-      ),
+      'uiVisibilityCustomized' => true,
       'attributes' => 
       array (
         'boolean' => 
@@ -535,7 +380,96 @@ return array (
         'filterMode' => 'exact',
       ),
     ),
-    'staff_datarecod' => 
+    'username' => 
+    array (
+      'label' => '',
+      'inputType' => 'text',
+      'width' => 6,
+      'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
+      'relationNavigationCustomized' => false,
+      'relationCreate' => 
+      array (
+        'enabled' => false,
+      ),
+      'uiVisibilityCustomized' => true,
+      'attributes' => 
+      array (
+        'boolean' => 
+        array (
+          0 => 'required',
+        ),
+        'values' => 
+        array (
+          'maxlength' => '16',
+        ),
+      ),
+      'ui' => 
+      array (
+        'searchable' => false,
+        'sortable' => false,
+        'visibleIndex' => true,
+        'visibleForm' => true,
+        'visibleView' => true,
+        'sensitive' => false,
+        'exportable' => true,
+        'apiVisible' => true,
+        'filterMode' => 'prefix',
+      ),
+    ),
+    'password' => 
+    array (
+      'label' => '',
+      'inputType' => 'text',
+      'width' => 6,
+      'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
+      'relationNavigationCustomized' => false,
+      'relationCreate' => 
+      array (
+        'enabled' => false,
+      ),
+      'uiVisibilityCustomized' => true,
+      'attributes' => 
+      array (
+        'boolean' => 
+        array (
+        ),
+        'values' => 
+        array (
+          'maxlength' => '40',
+        ),
+      ),
+      'ui' => 
+      array (
+        'searchable' => false,
+        'sortable' => false,
+        'visibleIndex' => true,
+        'visibleForm' => true,
+        'visibleView' => true,
+        'sensitive' => false,
+        'exportable' => true,
+        'apiVisible' => true,
+        'filterMode' => 'prefix',
+      ),
+    ),
+    'last_update' => 
     array (
       'label' => '',
       'inputType' => 'datetime-local',
@@ -550,6 +484,12 @@ return array (
         'acceptContext' => false,
         'createParentLink' => false,
       ),
+      'relationNavigationCustomized' => false,
+      'relationCreate' => 
+      array (
+        'enabled' => false,
+      ),
+      'uiVisibilityCustomized' => true,
       'attributes' => 
       array (
         'boolean' => 
@@ -563,51 +503,13 @@ return array (
       array (
         'searchable' => false,
         'sortable' => false,
-        'visibleIndex' => false,
-        'visibleForm' => true,
+        'visibleIndex' => true,
+        'visibleForm' => false,
         'visibleView' => true,
         'sensitive' => false,
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'range',
-      ),
-    ),
-    'utente_id' => 
-    array (
-      'label' => '',
-      'inputType' => 'number',
-      'width' => 6,
-      'relationMode' => '',
-      'relationDisplayField' => '',
-      'relationDisplayTemplate' => '',
-      'relationNavigation' => 
-      array (
-        'quickFilter' => false,
-        'parentLink' => false,
-        'acceptContext' => false,
-        'createParentLink' => false,
-      ),
-      'attributes' => 
-      array (
-        'boolean' => 
-        array (
-          0 => 'required',
-        ),
-        'values' => 
-        array (
-        ),
-      ),
-      'ui' => 
-      array (
-        'searchable' => false,
-        'sortable' => false,
-        'visibleIndex' => false,
-        'visibleForm' => true,
-        'visibleView' => true,
-        'sensitive' => false,
-        'exportable' => true,
-        'apiVisible' => true,
-        'filterMode' => 'exact',
       ),
     ),
   ),
@@ -621,41 +523,32 @@ return array (
   array (
     'hasMany' => 
     array (
-      'shifts__staff_id' => 
+      'payment__staff_id' => 
       array (
         'enabled' => true,
-        'title' => 'Shifts',
+        'title' => 'Payment',
         'icon' => 'bi-diagram-3',
         'limit' => 20,
         'showCount' => true,
         'showViewButton' => true,
-        'columns' => 
-        array (
-          0 => 'id',
-          1 => 'hotel_id',
-          2 => 'shift_date',
-          3 => 'position',
-          4 => 'shift_time',
-          5 => 'data_record',
-        ),
       ),
-      'utenti__staff_id' => 
+      'rental__staff_id' => 
       array (
         'enabled' => true,
-        'title' => 'Utenti',
+        'title' => 'Rental',
         'icon' => 'bi-diagram-3',
         'limit' => 20,
         'showCount' => true,
         'showViewButton' => true,
-        'columns' => 
-        array (
-          0 => 'Utente_id',
-          1 => 'Nome_Utente',
-          2 => 'Pass_Utente',
-          3 => 'Email_Utente',
-          4 => 'hotel_id',
-          5 => 'utenti_livello',
-        ),
+      ),
+      'store__manager_staff_id' => 
+      array (
+        'enabled' => true,
+        'title' => 'Store',
+        'icon' => 'bi-diagram-3',
+        'limit' => 20,
+        'showCount' => true,
+        'showViewButton' => true,
       ),
     ),
   ),
@@ -665,9 +558,9 @@ return array (
   ),
   '_meta' => 
   array (
-    'generatorVersion' => '2.8.0-dev9',
-    'savedAt' => '2026-08-08T15:46:31+00:00',
-    'schemaFingerprint' => 'd19b4fe6b38273a25c2886146b7ee64ce8d25574642db4fb80f856deaa4b52b1',
-    'configHash' => 'fa5cbe72ac4477af1dce0f4747e9bfe0ab6a6f81f84d3e9bb359607e6cb73dbb',
+    'generatorVersion' => '2.8.0-dev31',
+    'savedAt' => '2026-08-10T15:05:47+00:00',
+    'schemaFingerprint' => '0c4b1729221fa8da9c9aebb44695885e82dde8471eb877c9e7407790eb7c4f18',
+    'configHash' => '2fa6501c3f22eef47a6dd4048c6d670bfd4264b4a6dbcdc172531a0a1e0e1308',
   ),
 );

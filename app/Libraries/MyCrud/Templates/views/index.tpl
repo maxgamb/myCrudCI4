@@ -2,22 +2,30 @@
 <?= $this->section('content') ?>
 
 <?php /* Vista elenco del sito: filtri dinamici, AJAX progressivo, export e Pager CI4. */ ?>
+<?php
+$navigationContext = (array) ($navigationContext ?? []);
+$navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navigationContext);
+?>
 
 <div class="container-fluid px-0">
+    <nav aria-label="breadcrumb" class="mb-2">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="<?= site_url('/') ?>">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{TABLE}}</li>
+        </ol>
+    </nav>
+
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
         <div>
             <h1 class="h3 mb-0">{{TABLE}}</h1>
-            <small class="text-muted">Tabella Bootstrap, Pager CI4 e caricamento AJAX</small>
+            <small class="text-muted">Elenco</small>
         </div>
         <div class="d-flex flex-wrap gap-2">
-            <a href="<?= site_url('{{TABLE}}/create') ?>" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Nuovo
+{{CREATE_BUTTON}}            <a id="exportCsvButton" href="<?= site_url('{{TABLE}}/export-csv') . $navigationQuery ?>" class="btn btn-outline-success" title="Esporta i risultati filtrati in CSV">
+                <i class="bi bi-filetype-csv me-1" aria-hidden="true"></i> CSV
             </a>
-            <a id="exportCsvButton" href="<?= site_url('{{TABLE}}/export-csv') ?>" class="btn btn-success">
-                <i class="bi bi-filetype-csv"></i> Esporta CSV
-            </a>
-            <a id="exportWordButton" href="<?= site_url('{{TABLE}}/export-word') ?>" class="btn btn-outline-primary">
-                <i class="bi bi-file-earmark-word"></i> Esporta Word
+            <a id="exportWordButton" href="<?= site_url('{{TABLE}}/export-word') . $navigationQuery ?>" class="btn btn-outline-primary" title="Esporta i risultati filtrati in Word">
+                <i class="bi bi-file-earmark-word me-1" aria-hidden="true"></i> Word
             </a>
 {{TRASH_BUTTON}}        </div>
     </div>
@@ -55,6 +63,7 @@
             'sort' => $sort ?? '{{PRIMARY_KEY}}',
             'direction' => $direction ?? 'desc',
             'query' => $query ?? [],
+            'navigationContext' => $navigationContext,
         ]) ?>
     </div>
 </div>
@@ -65,6 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('crudTableContainer');
     const exportCsvButton = document.getElementById('exportCsvButton');
     const exportWordButton = document.getElementById('exportWordButton');
+    const createRecordButton = document.getElementById('createRecordButton');
+    const navigationContextFields = {{NAVIGATION_CONTEXT_FIELDS_JSON}};
+    const simpleFilterFields = {{SIMPLE_FILTER_FIELDS_JSON}};
     let activeRequest = null;
 
     if (!form || !container || !exportCsvButton || !exportWordButton) {
@@ -73,15 +85,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const formParameters = () => new URLSearchParams(new FormData(form));
 
-    const exportParameters = () => {
-        const params = formParameters();
-        params.delete('page');
-        params.delete('perPage');
+    const mergeNavigationContext = (params, sourceUrl) => {
+        navigationContextFields.forEach(field => {
+            const value = sourceUrl.searchParams.get(field);
+            if (value !== null && value !== '' && !params.has(field)) {
+                // Il parametro FK resta esplicito anche se il filtro avanzato
+                // contiene lo stesso campo: serve come contesto di navigazione.
+                params.set(field, value);
+            }
+        });
         return params;
     };
 
-    const updateExportUrls = () => {
-        const params = exportParameters().toString();
+    const exportParameters = (sourceUrl = new URL(window.location.href)) => {
+        const params = formParameters();
+        params.delete('page');
+        params.delete('perPage');
+
+        // Un filtro rapido AJAX vive nella query string (es. ?title=ZHIVAGO+CORE)
+        // ma non modifica il form filtri già renderizzato. Per CSV/Word copiamo
+        // quindi dalla URL corrente solo i campi ammessi dalla stessa whitelist
+        // server-side usata da CrudListRequest per la forma corta ?campo=valore.
+        simpleFilterFields.forEach(field => {
+            const value = sourceUrl.searchParams.get(field);
+            if (value !== null && value !== '') {
+                params.set(field, value);
+            }
+        });
+
+        return mergeNavigationContext(params, sourceUrl);
+    };
+
+    const updateActionUrls = (source = window.location.href) => {
+        const sourceUrl = new URL(source, window.location.origin);
+        const context = new URLSearchParams();
+        navigationContextFields.forEach(field => {
+            const value = sourceUrl.searchParams.get(field);
+            if (value !== null && value !== '') {
+                context.set(field, value);
+            }
+        });
+
+        if (createRecordButton) {
+            const createUrl = new URL(createRecordButton.dataset.baseUrl, window.location.origin);
+            createUrl.search = context.toString();
+            createRecordButton.href = createUrl.toString();
+        }
+
+        const params = exportParameters(sourceUrl).toString();
         const csvUrl = new URL("<?= site_url('{{TABLE}}/export-csv') ?>", window.location.origin);
         const wordUrl = new URL("<?= site_url('{{TABLE}}/export-word') ?>", window.location.origin);
         csvUrl.search = params;
@@ -117,6 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (updateHistory) {
                 window.history.pushState({}, '', url);
             }
+            updateActionUrls(url);
         } catch (error) {
             if (error.name !== 'AbortError') {
                 console.error(error);
@@ -134,9 +186,9 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', event => {
         event.preventDefault();
         const url = new URL(form.action, window.location.origin);
-        url.search = formParameters().toString();
+        const params = mergeNavigationContext(formParameters(), new URL(window.location.href));
+        url.search = params.toString();
         url.searchParams.set('page', '1');
-        updateExportUrls();
         loadTable(url.toString());
     });
 
@@ -161,12 +213,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         event.preventDefault();
         const url = new URL(link.href, window.location.origin);
-        const params = formParameters();
 
-        for (const [name, value] of params.entries()) {
-            if (value !== '') {
-                url.searchParams.set(name, value);
+        // I link generati dal server contengono già lo stato corrente della
+        // lista. In particolare i filtri rapidi usano la forma corta
+        // `?campo=valore`: non riconvertirli qui in `filters[...]`.
+        if (link.matches('.pagination a')) {
+            const current = new URLSearchParams(window.location.search);
+            const target = new URLSearchParams(url.search);
+            for (const [name, value] of current.entries()) {
+                if (!name.startsWith('page')) {
+                    target.set(name, value);
+                }
             }
+            url.search = target.toString();
         }
 
         if (link.dataset.sort) {
@@ -181,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     window.addEventListener('popstate', () => window.location.reload());
-    updateExportUrls();
+    updateActionUrls();
 });
 </script>
 

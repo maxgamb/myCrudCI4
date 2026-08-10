@@ -87,7 +87,8 @@ final class CrudListRequest
     public static function fromRequest(
         IncomingRequest $request,
         string $defaultSort,
-        array $allowedPerPage = [25, 50, 100]
+        array $allowedPerPage = [25, 50, 100],
+        array $simpleFilterFields = []
     ): self {
         $allowedPerPage = array_values(array_unique(array_map('intval', $allowedPerPage)));
         $allowedPerPage = array_values(array_filter(
@@ -107,14 +108,58 @@ final class CrudListRequest
             ? 'asc'
             : 'desc';
 
+        $query = (array) $request->getGet();
+        $filters = self::normalizeFilters((array) ($query['filters'] ?? []));
+        $filters = array_merge($filters, self::normalizeSimpleFilters($query, $simpleFilterFields));
+
         return new self(
-            filters: self::normalizeFilters((array) ($request->getGet('filters') ?? [])),
-            page: max(1, (int) ($request->getGet('page') ?? 1)),
+            filters: $filters,
+            page: max(1, (int) ($query['page'] ?? 1)),
             perPage: $perPage,
-            sort: trim((string) ($request->getGet('sort') ?? $defaultSort)) ?: $defaultSort,
+            sort: trim((string) ($query['sort'] ?? $defaultSort)) ?: $defaultSort,
             direction: $direction,
-            query: (array) $request->getGet(),
+            query: $query,
         );
+    }
+
+    /**
+     * Converte la forma corta `?campo=valore` nello stesso filtro `eq` usato
+     * dal motore dinamico. La whitelist viene generata dal CRUD e comprende
+     * solo campi realmente filtrabili; i parametri vuoti vengono ignorati.
+     *
+     * @param array<string,mixed> $query
+     * @param list<string> $allowedFields
+     * @return list<array{field:string,operator:string,value:mixed,value_to:mixed,logic:string}>
+     */
+    private static function normalizeSimpleFilters(array $query, array $allowedFields): array
+    {
+        $allowed = array_fill_keys(array_values(array_unique(array_map('strval', $allowedFields))), true);
+        if ($allowed === []) {
+            return [];
+        }
+
+        $normalized = [];
+        foreach ($query as $field => $value) {
+            $field = (string) $field;
+            if (!isset($allowed[$field]) || is_array($value) || $value === null) {
+                continue;
+            }
+
+            $value = (string) $value;
+            if ($value === '') {
+                continue;
+            }
+
+            $normalized[] = [
+                'field' => $field,
+                'operator' => 'eq',
+                'value' => $value,
+                'value_to' => null,
+                'logic' => 'and',
+            ];
+        }
+
+        return $normalized;
     }
 
     /**
@@ -228,7 +273,7 @@ final class CrudInputProcessor
         array $passwordFields = [],
         bool $hashPasswords = false
     ): array {
-        unset($data['_submission_token']);
+        unset($data['_submission_token'], $data['_context'], $data['_related'], $data['_related_new']);
 
         $csrfName = csrf_token();
         if ($csrfName !== '') {
@@ -323,9 +368,10 @@ final class CrudExporter
         array $filters,
         callable $countProvider,
         callable $rowProvider,
-        string $primaryKey,
+        string|array $primaryKey,
         int $chunkSize = 2000,
-        int $maximumRows = 150000
+        int $maximumRows = 150000,
+        int $unfilteredMaximumRows = 0
     ) {
         $format = strtolower(trim($format));
         $headers = $this->headers($languageGroup, $fields);
@@ -341,7 +387,8 @@ final class CrudExporter
                 $rowProvider,
                 $primaryKey,
                 $chunkSize,
-                $maximumRows
+                $maximumRows,
+                $unfilteredMaximumRows
             ),
             'word' => $this->word(
                 $response,
@@ -353,7 +400,8 @@ final class CrudExporter
                 $rowProvider,
                 $primaryKey,
                 $chunkSize,
-                $maximumRows
+                $maximumRows,
+                $unfilteredMaximumRows
             ),
             default => throw new RuntimeException('Formato export non supportato.'),
         };
@@ -367,11 +415,15 @@ final class CrudExporter
         array $filters,
         callable $countProvider,
         callable $rowProvider,
-        string $primaryKey,
+        string|array $primaryKey,
         int $chunkSize,
-        int $maximumRows
+        int $maximumRows,
+        int $unfilteredMaximumRows
     ) {
         $total = (int) $countProvider($filters);
+        if ($unfilteredMaximumRows > 0 && $filters === [] && $total > $unfilteredMaximumRows) {
+            throw new RuntimeException('EXPORT_UNFILTERED_LIMIT:CSV');
+        }
         if ($total > $maximumRows) {
             throw new RuntimeException('EXPORT_LIMIT:CSV');
         }
@@ -407,11 +459,15 @@ final class CrudExporter
         array $filters,
         callable $countProvider,
         callable $rowProvider,
-        string $primaryKey,
+        string|array $primaryKey,
         int $chunkSize,
-        int $maximumRows
+        int $maximumRows,
+        int $unfilteredMaximumRows
     ) {
         $total = (int) $countProvider($filters);
+        if ($unfilteredMaximumRows > 0 && $filters === [] && $total > $unfilteredMaximumRows) {
+            throw new RuntimeException('EXPORT_UNFILTERED_LIMIT:WORD');
+        }
         if ($total > $maximumRows) {
             throw new RuntimeException('EXPORT_LIMIT:WORD');
         }
@@ -460,7 +516,7 @@ final class CrudExporter
     private function iterateRows(
         array $filters,
         callable $rowProvider,
-        string $primaryKey,
+        string|array $primaryKey,
         int $chunkSize,
         callable $consumer
     ): void {
@@ -478,17 +534,31 @@ final class CrudExporter
         } while (count($rows) === $chunkSize && $cursor !== null);
     }
 
-    private function nextCursor(array $rows, string $primaryKey): int|string|null
+    private function nextCursor(array $rows, string|array $primaryKey): int|string|null
     {
         if ($rows === []) {
             return null;
         }
 
         $last = end($rows);
+        if (!is_array($last)) {
+            return null;
+        }
 
-        return is_array($last) && isset($last[$primaryKey])
-            ? $last[$primaryKey]
-            : null;
+        if (is_string($primaryKey)) {
+            return isset($last[$primaryKey]) ? $last[$primaryKey] : null;
+        }
+
+        $cursor = [];
+        foreach ($primaryKey as $key) {
+            $key = (string) $key;
+            if ($key === '' || !array_key_exists($key, $last)) {
+                return null;
+            }
+            $cursor[$key] = $last[$key];
+        }
+
+        return $cursor === [] ? null : json_encode($cursor, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
     private function temporaryFile(string $prefix): string

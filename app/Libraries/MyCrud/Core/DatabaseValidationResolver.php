@@ -13,7 +13,7 @@ final class DatabaseValidationResolver
     /** @return list<string> */
     public function rulesFor(array $field, string $table, string $primaryKey, bool $update = false): array
     {
-        if (!empty($field['primary']) && !empty($field['autoIncrement'])) {
+        if ((!empty($field['primary']) && !empty($field['autoIncrement'])) || !empty($field['databaseManaged'])) {
             return [];
         }
 
@@ -23,9 +23,10 @@ final class DatabaseValidationResolver
         $maxLength = (int) ($field['maxLength'] ?? 0);
 
         if ($maxLength > 0 && $maxLength <= 65535) {
-            $rules[] = str_starts_with($columnType, 'char(')
-                ? 'exact_length[' . $maxLength . ']'
-                : 'max_length[' . $maxLength . ']';
+            // CHAR(n) indica la capacità massima della colonna DB, non una
+            // lunghezza applicativa obbligatoria. exact_length deve restare
+            // una scelta esplicita del programmatore/Builder.
+            $rules[] = 'max_length[' . $maxLength . ']';
         }
 
         if (preg_match('/tinyint|smallint|mediumint|bigint|int/', $type) === 1) {

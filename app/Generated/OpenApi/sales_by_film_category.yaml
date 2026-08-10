@@ -1,0 +1,49 @@
+openapi: 3.0.3
+info:
+  title: 'sales_by_film_category API'
+  version: 1.0.0
+paths:
+  /api/v1/sales_by_film_category:
+    get:
+      summary: 'Elenco read-only sales_by_film_category'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['category'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato read-only
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesByFilmCategoryListResponse'
+components:
+  schemas:
+    SalesByFilmCategoryRead:
+      type: object
+      properties:
+        'category':
+          type: string
+          maxLength: 25
+        'total_sales':
+          type: number
+          format: double
+          nullable: true
+    SalesByFilmCategoryListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SalesByFilmCategoryRead'
+        meta: { type: object }
+        links: { type: object }

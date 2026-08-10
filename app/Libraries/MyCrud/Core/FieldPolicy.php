@@ -70,6 +70,34 @@ final class FieldPolicy
         ) === 1;
     }
 
+    /**
+     * Riconosce i TIMESTAMP/DATETIME interamente gestiti dal database:
+     * DEFAULT CURRENT_TIMESTAMP + ON UPDATE CURRENT_TIMESTAMP.
+     *
+     * Questi campi sono leggibili, ma non devono essere inviati dai form/API
+     * né inclusi nelle regole di validazione o negli allowedFields del Model.
+     */
+    public static function isDatabaseManagedTimestamp(array $field): bool
+    {
+        $type = strtolower(trim((string) ($field['type'] ?? '')));
+        if (!in_array($type, ['timestamp', 'datetime'], true)) {
+            return false;
+        }
+
+        $default = trim((string) ($field['default'] ?? $field['defaultValue'] ?? ''));
+        $extra = strtolower(trim((string) ($field['extra'] ?? '')));
+
+        $currentTimestampDefault = preg_match(
+            '/^current_timestamp(?:\([0-9]*\))?$/i',
+            $default
+        ) === 1;
+
+        $autoOnUpdate = !empty($field['autoOnUpdate'])
+            || preg_match('/on\s+update\s+current_timestamp(?:\([0-9]*\))?/i', $extra) === 1;
+
+        return $currentTimestampDefault && $autoOnUpdate;
+    }
+
     public static function isTechnical(string $name, string $softDeleteField = 'deleted_at'): bool
     {
         $name = strtolower($name);
@@ -85,6 +113,13 @@ final class FieldPolicy
         ) === 1;
     }
 
+    public static function isSpatial(string $type): bool
+    {
+        $type = strtolower(trim($type));
+
+        return preg_match('/^(?:geometry|point|linestring|polygon|multipoint|multilinestring|multipolygon|geometrycollection)$/', $type) === 1;
+    }
+
     public static function isLargeOrBinary(string $type, string $inputType = ''): bool
     {
         $type = strtolower($type);
@@ -92,6 +127,7 @@ final class FieldPolicy
 
         return in_array($inputType, ['file', 'image'], true)
             || str_contains($type, 'blob')
-            || str_contains($type, 'binary');
+            || str_contains($type, 'binary')
+            || self::isSpatial($type);
     }
 }

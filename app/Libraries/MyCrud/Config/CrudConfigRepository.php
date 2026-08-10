@@ -205,6 +205,10 @@ final class CrudConfigRepository
                 'columnType'    => (string) ($field['columnType'] ?? ''),
                 'nullable'      => (bool) ($field['nullable'] ?? false),
                 'default'       => $field['default'] ?? null,
+                'extra'         => (string) ($field['extra'] ?? ''),
+                'defaultGenerated' => (bool) ($field['defaultGenerated'] ?? false),
+                'autoOnUpdate'  => (bool) ($field['autoOnUpdate'] ?? false),
+                'databaseManaged' => (bool) ($field['databaseManaged'] ?? false),
                 'primary'       => (bool) ($field['primary'] ?? false),
                 'autoIncrement' => (bool) ($field['autoIncrement'] ?? false),
                 'index'         => [
@@ -221,9 +225,12 @@ final class CrudConfigRepository
         }
 
         $shape = [
-            'table'      => (string) ($config['table'] ?? ''),
-            'primaryKey' => (string) ($config['primaryKey'] ?? ''),
-            'fields'     => $fields,
+            'table'        => (string) ($config['table'] ?? ''),
+            'tableType'    => (string) ($config['tableType'] ?? 'BASE TABLE'),
+            'isView'       => !empty($config['isView']),
+            'primaryKey'   => (string) ($config['primaryKey'] ?? ''),
+            'primaryKeys'  => array_values((array) ($config['primaryKeys'] ?? [])),
+            'fields'       => $fields,
         ];
 
         return hash('sha256', json_encode(
@@ -265,6 +272,11 @@ final class CrudConfigRepository
                     'acceptContext' => !empty($field['relationNavigation']['acceptContext']),
                     'createParentLink' => !empty($field['relationNavigation']['createParentLink']),
                 ],
+                'relationNavigationCustomized' => !empty($field['relationNavigationCustomized']),
+                'relationCreate' => [
+                    'enabled' => !empty($field['relationCreate']['enabled']),
+                ],
+                'uiVisibilityCustomized' => !empty($field['uiVisibilityCustomized']),
                 'attributes'   => [
                     'boolean' => array_values((array) ($field['attributes']['boolean'] ?? [])),
                     'values'  => (array) ($field['attributes']['values'] ?? []),
@@ -287,7 +299,8 @@ final class CrudConfigRepository
                 'limit'          => (int) ($relation['limit'] ?? 20),
                 'showCount'      => !empty($relation['showCount']),
                 'showViewButton' => !empty($relation['showViewButton']),
-                'columns'        => array_values((array) ($relation['columns'] ?? [])),
+                // Le colonne hasMany non vengono persistite: derivano sempre
+                // dallo schema corrente e vengono generate integralmente.
             ];
         }
 

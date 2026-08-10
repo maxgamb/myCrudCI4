@@ -1,0 +1,67 @@
+openapi: 3.0.3
+info:
+  title: 'film_actor API'
+  version: 1.0.0
+paths:
+  /api/v1/film_actor:
+    get:
+      summary: 'Elenco read-only film_actor'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[actor_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[film_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['actor_id', 'film_id'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato read-only
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilmActorListResponse'
+components:
+  schemas:
+    FilmActorRead:
+      type: object
+      properties:
+        'actor_id':
+          type: integer
+          format: int32
+        'film_id':
+          type: integer
+          format: int32
+        'last_update':
+          type: string
+          format: date-time
+        'actor_id__label':
+          type: string
+          nullable: true
+        'film_id__label':
+          type: string
+          nullable: true
+    FilmActorListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilmActorRead'
+        meta: { type: object }
+        links: { type: object }

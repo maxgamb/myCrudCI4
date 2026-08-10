@@ -1,0 +1,172 @@
+openapi: 3.0.3
+info:
+  title: 'city API'
+  version: 1.0.0
+paths:
+  /api/v1/city:
+    get:
+      summary: 'Elenco city'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[city_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[country_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['city_id', 'country_id'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CityListResponse'
+    post:
+      summary: Crea record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CityCreate'
+      responses:
+        '201':
+          description: Record creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CityCreatedResponse'
+        '422': { description: Errore di validazione }
+  /api/v1/city/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Dettaglio record
+      responses:
+        '200':
+          description: Record trovato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CityRead'
+        '404': { description: Record non trovato }
+    put:
+      summary: Aggiornamento completo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CityUpdate'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    patch:
+      summary: Aggiornamento parziale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CityPatch'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    delete:
+      summary: Elimina record
+      responses:
+        '204': { description: Record eliminato }
+components:
+  schemas:
+    CityRead:
+      type: object
+      properties:
+        'city_id':
+          type: integer
+          format: int32
+        'city':
+          type: string
+          maxLength: 50
+        'country_id':
+          type: integer
+          format: int32
+        'last_update':
+          type: string
+          format: date-time
+        'country_id__label':
+          type: string
+          nullable: true
+    CityCreate:
+      type: object
+      required:
+        - 'city'
+        - 'country_id'
+      properties:
+        'city':
+          type: string
+          maxLength: 50
+        'country_id':
+          type: integer
+          format: int32
+    CityUpdate:
+      type: object
+      required:
+        - 'city'
+        - 'country_id'
+      properties:
+        'city':
+          type: string
+          maxLength: 50
+        'country_id':
+          type: integer
+          format: int32
+    CityPatch:
+      type: object
+      properties:
+        'city':
+          type: string
+          maxLength: 50
+        'country_id':
+          type: integer
+          format: int32
+    CityListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CityRead'
+        meta: { type: object }
+        links: { type: object }
+    CityCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            'city_id':
+              type: integer
+              format: int32
+        meta: { type: object }
+        links: { type: object }

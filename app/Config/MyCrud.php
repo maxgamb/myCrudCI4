@@ -44,8 +44,14 @@ class MyCrud extends BaseConfig
     public int $listCountCacheSeconds = 60;
     public int $csvChunkSize = 2000;
     public int $csvMaximumRows = 150000;
+    public int $csvUnfilteredMaximumRows = 25000;
     public int $wordChunkSize = 1000;
-    public int $wordMaximumRows = 50000;
+    public int $wordMaximumRows = 10000;
+    public int $wordUnfilteredMaximumRows = 5000;
+
+    /** Anteprima tabellare: il contenuto completo resta in dettaglio/form/export. */
+    public int $mediumTextPreviewLength = 250;
+    public int $longTextPreviewLength = 350;
 
     /**
      * Le relazioni con molte righe vengono proposte come select AJAX.

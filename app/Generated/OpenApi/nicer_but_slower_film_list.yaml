@@ -1,0 +1,71 @@
+openapi: 3.0.3
+info:
+  title: 'nicer_but_slower_film_list API'
+  version: 1.0.0
+paths:
+  /api/v1/nicer_but_slower_film_list:
+    get:
+      summary: 'Elenco read-only nicer_but_slower_film_list'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['FID'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato read-only
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NicerButSlowerFilmListListResponse'
+components:
+  schemas:
+    NicerButSlowerFilmListRead:
+      type: object
+      properties:
+        'FID':
+          type: integer
+          format: int32
+        'title':
+          type: string
+          maxLength: 128
+        'description':
+          type: string
+          nullable: true
+          maxLength: 65535
+        'category':
+          type: string
+          nullable: true
+          maxLength: 25
+        'price':
+          type: number
+          format: double
+        'length':
+          type: integer
+          format: int32
+          nullable: true
+        'rating':
+          type: string
+          nullable: true
+          maxLength: 5
+        'actors':
+          type: string
+          nullable: true
+          maxLength: 65535
+    NicerButSlowerFilmListListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/NicerButSlowerFilmListRead'
+        meta: { type: object }
+        links: { type: object }

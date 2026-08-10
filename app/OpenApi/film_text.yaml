@@ -1,0 +1,178 @@
+openapi: 3.0.3
+info:
+  title: 'film_text API'
+  version: 1.0.0
+paths:
+  /api/v1/film_text:
+    get:
+      summary: 'Elenco film_text'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[film_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[title]'
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['film_id', 'title'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilmTextListResponse'
+    post:
+      summary: Crea record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilmTextCreate'
+      responses:
+        '201':
+          description: Record creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilmTextCreatedResponse'
+        '422': { description: Errore di validazione }
+  /api/v1/film_text/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Dettaglio record
+      responses:
+        '200':
+          description: Record trovato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FilmTextRead'
+        '404': { description: Record non trovato }
+    put:
+      summary: Aggiornamento completo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilmTextUpdate'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    patch:
+      summary: Aggiornamento parziale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilmTextPatch'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    delete:
+      summary: Elimina record
+      responses:
+        '204': { description: Record eliminato }
+components:
+  schemas:
+    FilmTextRead:
+      type: object
+      properties:
+        'film_id':
+          type: integer
+          format: int32
+        'title':
+          type: string
+          maxLength: 255
+        'description':
+          type: string
+          nullable: true
+          maxLength: 65535
+    FilmTextCreate:
+      type: object
+      required:
+        - 'film_id'
+        - 'title'
+      properties:
+        'film_id':
+          type: integer
+          format: int32
+        'title':
+          type: string
+          maxLength: 255
+        'description':
+          type: string
+          nullable: true
+          maxLength: 65535
+    FilmTextUpdate:
+      type: object
+      required:
+        - 'film_id'
+        - 'title'
+      properties:
+        'film_id':
+          type: integer
+          format: int32
+        'title':
+          type: string
+          maxLength: 255
+        'description':
+          type: string
+          nullable: true
+          maxLength: 65535
+    FilmTextPatch:
+      type: object
+      properties:
+        'film_id':
+          type: integer
+          format: int32
+        'title':
+          type: string
+          maxLength: 255
+        'description':
+          type: string
+          nullable: true
+          maxLength: 65535
+    FilmTextListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilmTextRead'
+        meta: { type: object }
+        links: { type: object }
+    FilmTextCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            'film_id':
+              type: integer
+              format: int32
+        meta: { type: object }
+        links: { type: object }

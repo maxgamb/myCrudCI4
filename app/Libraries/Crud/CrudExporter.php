@@ -38,9 +38,10 @@ final class CrudExporter
         array $filters,
         callable $countProvider,
         callable $rowProvider,
-        string $primaryKey,
+        string|array $primaryKey,
         int $chunkSize = 2000,
-        int $maximumRows = 150000
+        int $maximumRows = 150000,
+        int $unfilteredMaximumRows = 0
     ) {
         $format = strtolower(trim($format));
         $headers = $this->headers($languageGroup, $fields);
@@ -56,7 +57,8 @@ final class CrudExporter
                 $rowProvider,
                 $primaryKey,
                 $chunkSize,
-                $maximumRows
+                $maximumRows,
+                $unfilteredMaximumRows
             ),
             'word' => $this->word(
                 $response,
@@ -68,7 +70,8 @@ final class CrudExporter
                 $rowProvider,
                 $primaryKey,
                 $chunkSize,
-                $maximumRows
+                $maximumRows,
+                $unfilteredMaximumRows
             ),
             default => throw new RuntimeException('Formato export non supportato.'),
         };
@@ -82,11 +85,15 @@ final class CrudExporter
         array $filters,
         callable $countProvider,
         callable $rowProvider,
-        string $primaryKey,
+        string|array $primaryKey,
         int $chunkSize,
-        int $maximumRows
+        int $maximumRows,
+        int $unfilteredMaximumRows
     ) {
         $total = (int) $countProvider($filters);
+        if ($unfilteredMaximumRows > 0 && $filters === [] && $total > $unfilteredMaximumRows) {
+            throw new RuntimeException('EXPORT_UNFILTERED_LIMIT:CSV');
+        }
         if ($total > $maximumRows) {
             throw new RuntimeException('EXPORT_LIMIT:CSV');
         }
@@ -122,11 +129,15 @@ final class CrudExporter
         array $filters,
         callable $countProvider,
         callable $rowProvider,
-        string $primaryKey,
+        string|array $primaryKey,
         int $chunkSize,
-        int $maximumRows
+        int $maximumRows,
+        int $unfilteredMaximumRows
     ) {
         $total = (int) $countProvider($filters);
+        if ($unfilteredMaximumRows > 0 && $filters === [] && $total > $unfilteredMaximumRows) {
+            throw new RuntimeException('EXPORT_UNFILTERED_LIMIT:WORD');
+        }
         if ($total > $maximumRows) {
             throw new RuntimeException('EXPORT_LIMIT:WORD');
         }
@@ -175,7 +186,7 @@ final class CrudExporter
     private function iterateRows(
         array $filters,
         callable $rowProvider,
-        string $primaryKey,
+        string|array $primaryKey,
         int $chunkSize,
         callable $consumer
     ): void {
@@ -193,17 +204,31 @@ final class CrudExporter
         } while (count($rows) === $chunkSize && $cursor !== null);
     }
 
-    private function nextCursor(array $rows, string $primaryKey): int|string|null
+    private function nextCursor(array $rows, string|array $primaryKey): int|string|null
     {
         if ($rows === []) {
             return null;
         }
 
         $last = end($rows);
+        if (!is_array($last)) {
+            return null;
+        }
 
-        return is_array($last) && isset($last[$primaryKey])
-            ? $last[$primaryKey]
-            : null;
+        if (is_string($primaryKey)) {
+            return isset($last[$primaryKey]) ? $last[$primaryKey] : null;
+        }
+
+        $cursor = [];
+        foreach ($primaryKey as $key) {
+            $key = (string) $key;
+            if ($key === '' || !array_key_exists($key, $last)) {
+                return null;
+            }
+            $cursor[$key] = $last[$key];
+        }
+
+        return $cursor === [] ? null : json_encode($cursor, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
     private function temporaryFile(string $prefix): string

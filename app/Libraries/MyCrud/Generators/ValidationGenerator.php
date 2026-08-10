@@ -19,11 +19,15 @@ final class ValidationGenerator
         $resolver = new DatabaseValidationResolver();
         $create = [];
         $update = [];
+        $relatedCreate = [];
         $manageTimestamps = !empty($config['features']['timestamps'])
             && isset($config['fields']['created_at'], $config['fields']['updated_at']);
 
         foreach ($config['fields'] as $field) {
             if (!empty($field['primary']) && !empty($field['autoIncrement'])) {
+                continue;
+            }
+            if (!empty($field['databaseManaged'])) {
                 continue;
             }
 
@@ -66,6 +70,31 @@ final class ValidationGenerator
             }
         }
 
+        foreach ((array) ($config['relations']['belongsTo'] ?? []) as $fieldName => $relation) {
+            $fieldConfig = (array) ($config['fields'][$fieldName] ?? []);
+            if (empty($fieldConfig['relationCreate']['enabled'])) {
+                continue;
+            }
+
+            $definition = (array) ($relation['relatedCreate'] ?? []);
+            if (empty($definition['available'])) {
+                continue;
+            }
+
+            $parentTable = (string) ($definition['table'] ?? $relation['parentTable'] ?? '');
+            $parentKey = (string) ($definition['key'] ?? $relation['parentKey'] ?? 'id');
+            $rulesForRelation = [];
+            foreach ((array) ($definition['fields'] ?? []) as $parentFieldName => $parentField) {
+                $parentRules = $resolver->rulesFor((array) $parentField, $parentTable, $parentKey, false);
+                if ($parentRules !== []) {
+                    $rulesForRelation[(string) $parentFieldName] = implode('|', array_unique($parentRules));
+                }
+            }
+            if ($rulesForRelation !== []) {
+                $relatedCreate[(string) $fieldName] = $rulesForRelation;
+            }
+        }
+
         $content = "<?php\n\ndeclare(strict_types=1);\n\nnamespace App\\Validation;\n\nfinal class {$class}\n{\n"
             . "    public static function createRules(): array\n    {\n        return "
             . var_export($create, true) . ";\n    }\n\n"
@@ -74,6 +103,9 @@ final class ValidationGenerator
             . "        foreach (\$rules as \$field => \$rule) {\n"
             . "            \$rules[\$field] = str_replace('{id}', (string) \$id, \$rule);\n"
             . "        }\n        return \$rules;\n    }\n\n"
+            . "    /** Regole dei record padre creati nello stesso submit. */\n"
+            . "    public static function relatedCreateRules(): array\n    {\n        return "
+            . var_export($relatedCreate, true) . ";\n    }\n\n"
             . "    public static function messages(): array\n    {\n        return [];\n    }\n}\n";
 
         return $this->writeGenerated("Generated/Validation/{$class}.php", $content, $force);

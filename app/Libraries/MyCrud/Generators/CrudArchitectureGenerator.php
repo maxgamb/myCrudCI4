@@ -82,9 +82,23 @@ final class CrudArchitectureGenerator
             ? !empty($features['timestamps'])
             : true;
 
-        if (empty($config['softDelete']['available'])) {
+        if (empty($config['softDelete']['available']) || !empty($features['readOnly'])) {
             $features['softDeletes'] = false;
         }
+
+        $features['readOnly'] = !empty($features['readOnly']);
+        $features['createAllowed'] = array_key_exists('createAllowed', $features)
+            ? !empty($features['createAllowed'])
+            : !$features['readOnly'];
+        $features['writable'] = array_key_exists('writable', $features)
+            ? !empty($features['writable'])
+            : !$features['readOnly'];
+        $features['recordDetail'] = array_key_exists('recordDetail', $features)
+            ? !empty($features['recordDetail'])
+            : !$features['readOnly'];
+        $features['recordActions'] = array_key_exists('recordActions', $features)
+            ? !empty($features['recordActions'])
+            : $features['recordDetail'];
 
         $config['architecture'] = $architecture;
         $config['features'] = $features;

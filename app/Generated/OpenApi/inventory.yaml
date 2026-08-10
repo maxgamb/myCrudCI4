@@ -1,0 +1,180 @@
+openapi: 3.0.3
+info:
+  title: 'inventory API'
+  version: 1.0.0
+paths:
+  /api/v1/inventory:
+    get:
+      summary: 'Elenco inventory'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[inventory_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[film_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[store_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['inventory_id', 'film_id', 'store_id'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryListResponse'
+    post:
+      summary: Crea record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryCreate'
+      responses:
+        '201':
+          description: Record creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryCreatedResponse'
+        '422': { description: Errore di validazione }
+  /api/v1/inventory/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Dettaglio record
+      responses:
+        '200':
+          description: Record trovato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/InventoryRead'
+        '404': { description: Record non trovato }
+    put:
+      summary: Aggiornamento completo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryUpdate'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    patch:
+      summary: Aggiornamento parziale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryPatch'
+      responses:
+        '200': { description: Record aggiornato }
+        '422': { description: Errore di validazione }
+    delete:
+      summary: Elimina record
+      responses:
+        '204': { description: Record eliminato }
+components:
+  schemas:
+    InventoryRead:
+      type: object
+      properties:
+        'inventory_id':
+          type: integer
+          format: int32
+        'film_id':
+          type: integer
+          format: int32
+        'store_id':
+          type: integer
+          format: int32
+        'last_update':
+          type: string
+          format: date-time
+        'film_id__label':
+          type: string
+          nullable: true
+        'store_id__label':
+          type: string
+          nullable: true
+    InventoryCreate:
+      type: object
+      required:
+        - 'film_id'
+        - 'store_id'
+      properties:
+        'film_id':
+          type: integer
+          format: int32
+        'store_id':
+          type: integer
+          format: int32
+    InventoryUpdate:
+      type: object
+      required:
+        - 'film_id'
+        - 'store_id'
+      properties:
+        'film_id':
+          type: integer
+          format: int32
+        'store_id':
+          type: integer
+          format: int32
+    InventoryPatch:
+      type: object
+      properties:
+        'film_id':
+          type: integer
+          format: int32
+        'store_id':
+          type: integer
+          format: int32
+    InventoryListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/InventoryRead'
+        meta: { type: object }
+        links: { type: object }
+    InventoryCreatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            'inventory_id':
+              type: integer
+              format: int32
+        meta: { type: object }
+        links: { type: object }

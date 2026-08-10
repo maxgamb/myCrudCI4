@@ -30,7 +30,8 @@ final class CrudListRequest
     public static function fromRequest(
         IncomingRequest $request,
         string $defaultSort,
-        array $allowedPerPage = [25, 50, 100]
+        array $allowedPerPage = [25, 50, 100],
+        array $simpleFilterFields = []
     ): self {
         $allowedPerPage = array_values(array_unique(array_map('intval', $allowedPerPage)));
         $allowedPerPage = array_values(array_filter(
@@ -50,14 +51,58 @@ final class CrudListRequest
             ? 'asc'
             : 'desc';
 
+        $query = (array) $request->getGet();
+        $filters = self::normalizeFilters((array) ($query['filters'] ?? []));
+        $filters = array_merge($filters, self::normalizeSimpleFilters($query, $simpleFilterFields));
+
         return new self(
-            filters: self::normalizeFilters((array) ($request->getGet('filters') ?? [])),
-            page: max(1, (int) ($request->getGet('page') ?? 1)),
+            filters: $filters,
+            page: max(1, (int) ($query['page'] ?? 1)),
             perPage: $perPage,
-            sort: trim((string) ($request->getGet('sort') ?? $defaultSort)) ?: $defaultSort,
+            sort: trim((string) ($query['sort'] ?? $defaultSort)) ?: $defaultSort,
             direction: $direction,
-            query: (array) $request->getGet(),
+            query: $query,
         );
+    }
+
+    /**
+     * Converte la forma corta `?campo=valore` nello stesso filtro `eq` usato
+     * dal motore dinamico. La whitelist viene generata dal CRUD e comprende
+     * solo campi realmente filtrabili; i parametri vuoti vengono ignorati.
+     *
+     * @param array<string,mixed> $query
+     * @param list<string> $allowedFields
+     * @return list<array{field:string,operator:string,value:mixed,value_to:mixed,logic:string}>
+     */
+    private static function normalizeSimpleFilters(array $query, array $allowedFields): array
+    {
+        $allowed = array_fill_keys(array_values(array_unique(array_map('strval', $allowedFields))), true);
+        if ($allowed === []) {
+            return [];
+        }
+
+        $normalized = [];
+        foreach ($query as $field => $value) {
+            $field = (string) $field;
+            if (!isset($allowed[$field]) || is_array($value) || $value === null) {
+                continue;
+            }
+
+            $value = (string) $value;
+            if ($value === '') {
+                continue;
+            }
+
+            $normalized[] = [
+                'field' => $field,
+                'operator' => 'eq',
+                'value' => $value,
+                'value_to' => null,
+                'logic' => 'and',
+            ];
+        }
+
+        return $normalized;
     }
 
     /**

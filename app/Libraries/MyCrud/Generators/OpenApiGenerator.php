@@ -14,6 +14,8 @@ final class OpenApiGenerator
         $table = (string) $config['table'];
         $pk = (string) $config['primaryKey'];
         $softDeleteField = (string) ($config['softDelete']['field'] ?? 'deleted_at');
+        $readOnly = !empty($config['features']['readOnly']);
+        $recordDetail = !empty($config['features']['recordDetail']);
         $timestampsEnabled = !empty($config['features']['timestamps'])
             && isset($config['fields']['created_at'], $config['fields']['updated_at']);
 
@@ -33,7 +35,8 @@ final class OpenApiGenerator
             $ui = (array) ($field['ui'] ?? []);
             $attributes = (array) ($field['attributes']['boolean'] ?? []);
             $primaryAuto = !empty($field['primary']) && !empty($field['autoIncrement']);
-            $managedField = (!empty($config['features']['softDeletes']) && $name === $softDeleteField)
+            $managedField = !empty($field['databaseManaged'])
+                || (!empty($config['features']['softDeletes']) && $name === $softDeleteField)
                 || ($timestampsEnabled && in_array($name, ['created_at', 'updated_at'], true));
             $index = (array) ($field['index'] ?? []);
             $indexEligible = !empty($index['primary'])
@@ -41,7 +44,7 @@ final class OpenApiGenerator
                 || !empty($index['leading']);
 
             $apiVisible = !array_key_exists('apiVisible', $ui) || !empty($ui['apiVisible']);
-            $writable = !$primaryAuto
+            $writable = !$readOnly && !$primaryAuto
                 && !$managedField
                 && !empty($ui['visibleForm'])
                 && !in_array('disabled', $attributes, true)
@@ -98,6 +101,10 @@ final class OpenApiGenerator
                     'inputType' => 'text',
                 ];
             }
+        }
+
+        if ($readOnly) {
+            return $this->generateReadOnly($config, $readFields, $filterFields, $sortableFields, $recordDetail, $force);
         }
 
         $resourceName = $this->schemaName($table, 'Read');
@@ -334,6 +341,89 @@ final class OpenApiGenerator
         }
 
         return ['string', null];
+    }
+
+    private function generateReadOnly(
+        array $config,
+        array $readFields,
+        array $filterFields,
+        array $sortableFields,
+        bool $recordDetail,
+        bool $force
+    ): array {
+        unset($recordDetail);
+        $table = (string) $config['table'];
+        $resourceName = $this->schemaName($table, 'Read');
+        $listName = $this->schemaName($table, 'ListResponse');
+        $lines = [
+            'openapi: 3.0.3',
+            'info:',
+            '  title: ' . $this->yamlScalar($table . ' API'),
+            '  version: 1.0.0',
+            'paths:',
+            '  /api/v1/' . $table . ':',
+            '    get:',
+            '      summary: ' . $this->yamlScalar('Elenco read-only ' . $table),
+            '      parameters:',
+            '        - name: page',
+            '          in: query',
+            '          schema: { type: integer, minimum: 1 }',
+            '        - name: perPage',
+            '          in: query',
+            '          schema: { type: integer, minimum: 1, maximum: 100 }',
+        ];
+
+        foreach ($filterFields as $name => $field) {
+            [$type, $format] = $this->openApiType($field);
+            $lines[] = '        - name: ' . $this->yamlScalar('filter[' . $name . ']');
+            $lines[] = '          in: query';
+            $lines[] = '          schema:';
+            $lines[] = '            type: ' . $type;
+            if ($format !== null) {
+                $lines[] = '            format: ' . $format;
+            }
+        }
+
+        $sortEnum = implode(', ', array_map([$this, 'yamlInlineScalar'], array_values(array_unique($sortableFields))));
+        $lines = array_merge($lines, [
+            '        - name: sort',
+            '          in: query',
+            '          schema: { type: string, enum: [' . $sortEnum . '] }',
+            '        - name: direction',
+            '          in: query',
+            '          schema: { type: string, enum: [asc, desc] }',
+            '      responses:',
+            "        '200':",
+            '          description: Elenco paginato read-only',
+            '          content:',
+            '            application/json:',
+            '              schema:',
+            '                $ref: ' . $this->yamlScalar('#/components/schemas/' . $listName),
+            'components:',
+            '  schemas:',
+        ]);
+
+        $lines = array_merge(
+            $lines,
+            $this->objectSchemaLines($resourceName, $readFields, []),
+            [
+                '    ' . $listName . ':',
+                '      type: object',
+                '      properties:',
+                '        data:',
+                '          type: array',
+                '          items:',
+                '            $ref: ' . $this->yamlScalar('#/components/schemas/' . $resourceName),
+                '        meta: { type: object }',
+                '        links: { type: object }',
+            ]
+        );
+
+        return $this->writeGenerated(
+            'Generated/OpenApi/' . $table . '.yaml',
+            implode("\n", $lines) . "\n",
+            $force
+        );
     }
 
     private function schemaName(string $table, string $suffix): string

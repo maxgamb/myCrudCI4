@@ -23,6 +23,8 @@ final class ControllerGenerator
     {
         $table = (string) $config['table'];
         $primaryKey = (string) $config['primaryKey'];
+        $primaryKeys = array_values((array) ($config['primaryKeys'] ?? [$primaryKey]));
+        $exportCursorKeyCode = count($primaryKeys) > 1 ? var_export($primaryKeys, true) : var_export($primaryKey, true);
         $architecture = (string) ($config['architecture'] ?? 'basic');
         $languageFile = (string) ($config['languageFile'] ?? 'Fields');
         $controller = (string) $config['classes']['controller'];
@@ -32,13 +34,18 @@ final class ControllerGenerator
         $rulesUse = "use App\\Validation\\{$rules};";
         $useService = !empty($config['features']['service']);
         $softDeleteEnabled = !empty($config['features']['softDeletes']);
+        $createAllowed = !empty($config['features']['createAllowed']);
+        $writable = !empty($config['features']['writable']);
+        $recordDetail = !empty($config['features']['recordDetail']);
         $deletedField = (string) ($config['softDelete']['field'] ?? 'deleted_at');
 
         $myCrudConfig = config('MyCrud');
         $csvChunkSize = max(100, min(5000, (int) ($myCrudConfig->csvChunkSize ?? 2000)));
         $csvMaximumRows = max(1000, (int) ($myCrudConfig->csvMaximumRows ?? 150000));
+        $csvUnfilteredMaximumRows = max(0, (int) ($myCrudConfig->csvUnfilteredMaximumRows ?? 25000));
         $wordChunkSize = max(100, min(5000, (int) ($myCrudConfig->wordChunkSize ?? $csvChunkSize)));
-        $wordMaximumRows = max(1000, (int) ($myCrudConfig->wordMaximumRows ?? 50000));
+        $wordMaximumRows = max(1000, (int) ($myCrudConfig->wordMaximumRows ?? 10000));
+        $wordUnfilteredMaximumRows = max(0, (int) ($myCrudConfig->wordUnfilteredMaximumRows ?? 5000));
         $defaultPerPage = max(25, min(100, (int) ($myCrudConfig->defaultPerPage ?? 25)));
         $maximumPerPage = max($defaultPerPage, min(500, (int) ($myCrudConfig->maximumPerPage ?? 100)));
         $relationAjaxLimit = max(1, min(100, (int) ($myCrudConfig->relationAjaxLimit ?? 20)));
@@ -61,6 +68,9 @@ final class ControllerGenerator
         $passwords = [];
         $automaticDateFields = [];
         $managed = [];
+        $simpleFilterFields = [];
+        $navigationContextFields = [];
+        $relatedCreateFields = [];
         $timestampsEnabled = !empty($config['features']['timestamps'])
             && isset($config['fields']['created_at'], $config['fields']['updated_at']);
 
@@ -68,6 +78,19 @@ final class ControllerGenerator
             $name = (string) ($field['name'] ?? '');
             $type = strtolower((string) ($field['type'] ?? ''));
             $inputType = strtolower((string) ($field['inputType'] ?? 'text'));
+
+            if (
+                !empty($field['foreignKey'])
+                && preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/D', $name) === 1
+            ) {
+                $navigationContextFields[] = $name;
+                if (
+                    !empty($field['relationCreate']['enabled'])
+                    && !empty($field['foreignKey']['relatedCreate']['available'])
+                ) {
+                    $relatedCreateFields[$name] = array_values(array_keys((array) ($field['foreignKey']['relatedCreate']['fields'] ?? [])));
+                }
+            }
 
             if ($name === $primaryKey) {
                 $primaryAutoIncrement = !empty($field['autoIncrement']);
@@ -84,16 +107,31 @@ final class ControllerGenerator
                 $passwords[] = $name;
             }
             if (
-                preg_match('/(?:^|_)(?:data_record|recorded_at)(?:$|_)/i', $name) === 1
+                empty($field['databaseManaged'])
+                && preg_match('/(?:^|_)(?:data_record|recorded_at)(?:$|_)/i', $name) === 1
                 && in_array($type, ['date', 'datetime', 'timestamp'], true)
             ) {
                 $automaticDateFields[$name] = $type === 'date' ? 'Y-m-d' : 'Y-m-d H:i:s';
             }
             if (
-                ($timestampsEnabled && in_array($name, ['created_at', 'updated_at'], true))
+                !empty($field['databaseManaged'])
+                || ($timestampsEnabled && in_array($name, ['created_at', 'updated_at'], true))
                 || ($softDeleteEnabled && $name === $deletedField)
             ) {
                 $managed[] = $name;
+            }
+
+            $ui = (array) ($field['ui'] ?? []);
+            $index = (array) ($field['index'] ?? []);
+            $indexEligible = !empty($index['primary']) || !empty($index['unique']) || !empty($index['leading']);
+            $sensitive = !empty($ui['sensitive']) || FieldPolicy::isSensitive($name, $inputType);
+            if (
+                !$sensitive
+                && !empty($ui['searchable'])
+                && $indexEligible
+                && preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/D', $name) === 1
+            ) {
+                $simpleFilterFields[] = $name;
             }
         }
 
@@ -102,6 +140,9 @@ final class ControllerGenerator
         $passwordsCode = var_export(array_values(array_unique($passwords)), true);
         $automaticDateFieldsCode = var_export($automaticDateFields, true);
         $managedCode = var_export(array_values(array_unique($managed)), true);
+        $simpleFilterFieldsCode = var_export(array_values(array_unique($simpleFilterFields)), true);
+        $navigationContextFieldsCode = var_export(array_values(array_unique($navigationContextFields)), true);
+        $relatedCreateFieldsCode = var_export($relatedCreateFields, true);
 
         $gatewayUse = $useService
             ? "use App\\Services\\{$service};"
@@ -118,7 +159,7 @@ final class ControllerGenerator
         if ($useService) {
             $listCall = "\$this->gateway->listPage(\$listRequest->filters, \$listRequest->page, \$listRequest->perPage, \$listRequest->sort, \$listRequest->direction)";
             $findCall = "\$this->gateway->find(\$id)";
-            $createCode = "            \$this->gateway->create(\$data);";
+            $createCode = "            \$this->gateway->create(\$data, \$related);";
             $updateCode = "            \$this->gateway->update(\$id, \$data);";
             $deleteCode = "            \$this->gateway->delete(\$id);";
             $exportFieldsCall = "\$this->gateway->exportFields()";
@@ -130,16 +171,7 @@ final class ControllerGenerator
         } else {
             $listCall = "\$this->gateway->getListPage(\$listRequest->filters, \$listRequest->page, \$listRequest->perPage, \$listRequest->sort, \$listRequest->direction)";
             $findCall = "\$this->gateway->getDetail(\$id)";
-            $returnCreatedId = $primaryAutoIncrement
-                ? ''
-                : "\n            // PK non autoincrementale: l'ID resta quello ricevuto dal form.\n";
-            $createCode = <<<PHP
-            \$createdId = \$this->gateway->insert(\$data, true);
-            if (\$createdId === false) {
-                throw new RuntimeException(implode(' ', \$this->gateway->errors()) ?: 'Inserimento non riuscito.');
-            }
-            \$this->gateway->clearListCountCache();{$returnCreatedId}
-PHP;
+            $createCode = "            \$this->gateway->createRecord(\$data, \$related);";
             $updateCode = <<<PHP
             if (!\$this->gateway->update(\$id, \$data)) {
                 throw new RuntimeException(implode(' ', \$this->gateway->errors()) ?: 'Aggiornamento non riuscito.');
@@ -169,7 +201,16 @@ PHP;
 PHP;
         }
 
-        $unsetCreatePrimaryKey = $primaryAutoIncrement ? "        unset(\$data['{$primaryKey}']);\n" : '';
+        $autoIncrementFields = [];
+        foreach ((array) ($config['fields'] ?? []) as $fieldName => $fieldConfig) {
+            if (!empty($fieldConfig['autoIncrement'])) {
+                $autoIncrementFields[] = (string) $fieldName;
+            }
+        }
+        $unsetCreatePrimaryKey = '';
+        foreach (array_values(array_unique($autoIncrementFields)) as $autoIncrementField) {
+            $unsetCreatePrimaryKey .= "        unset(\$data['" . addslashes($autoIncrementField) . "']);\n";
+        }
 
         $softMethods = $softDeleteEnabled ? <<<PHP
     /** Mostra i record eliminati logicamente. */
@@ -218,6 +259,138 @@ PHP : '';
         }
         $relationContextFieldsCode = var_export(array_values(array_unique($relationContextFields)), true);
 
+        $viewMethod = $recordDetail ? <<<PHP
+    public function view(int|string \$id)
+    {
+        \$row = \$this->findRecordOrFail(\$id);
+        \$navigationContext = \$this->navigationContextFromQuery();
+
+        return view('{$table}/view', [
+            'title' => 'Dettaglio',
+            'row' => \$row,
+            'children' => \$this->gateway->loadHasMany(\$id),
+            'navigationContext' => \$navigationContext,
+        ]);
+    }
+
+PHP : '';
+
+        $createMethods = $createAllowed ? <<<PHP
+    public function create()
+    {
+        \$navigationContext = \$this->navigationContextFromQuery();
+        \$context = [];
+        \$contextLabels = [];
+        foreach ({$relationContextFieldsCode} as \$field) {
+            \$requested = \$navigationContext[\$field] ?? null;
+            if (!is_scalar(\$requested) || trim((string) \$requested) === '') {
+                continue;
+            }
+            \$option = \$this->gateway->relationOptionById(\$field, (string) \$requested);
+            if (\$option === null) {
+                throw PageNotFoundException::forPageNotFound('Valore FK non valido per ' . \$field . '.');
+            }
+            \$context[\$field] = (string) \$option['id'];
+            \$contextLabels[\$field] = (string) \$option['text'];
+        }
+
+        return view('{$table}/create', [
+            'title' => 'Nuovo record',
+            'row' => null,
+            'errors' => session('errors') ?? [],
+            'options' => \$this->gateway->relationOptions(),
+            'context' => \$context,
+            'contextLabels' => \$contextLabels,
+            'navigationContext' => \$navigationContext,
+            'submissionToken' => \$this->submissionGuard->create('store'),
+        ]);
+    }
+
+    public function store()
+    {
+        \$navigationContext = \$this->navigationContextFromPost();
+        if (!\$this->submissionGuard->consume('store', \$this->request->getPost('_submission_token'))) {
+            return redirect()->back()->withInput()->with('error', 'Il form è già stato inviato oppure è scaduto.');
+        }
+
+        \$related = \$this->relatedCreateDataFromPost();
+        \$createRules = {$rules}::createRules();
+        foreach (array_keys(\$related) as \$relatedField) {
+            // La FK viene prodotta dalla creazione del padre nella stessa
+            // transazione, quindi non può essere obbligatoria prima dell'INSERT.
+            unset(\$createRules[\$relatedField]);
+        }
+        if (!\$this->validate(\$createRules, {$rules}::messages())) {
+            return redirect()->back()->withInput()->with('errors', \$this->validator->getErrors());
+        }
+
+        \$relatedErrors = \$this->validateRelatedCreates(\$related);
+        if (\$relatedErrors !== []) {
+            return redirect()->back()->withInput()->with('errors', \$relatedErrors);
+        }
+
+        \$data = \$this->formData(false);
+{$unsetCreatePrimaryKey}        try {
+{$createCode}
+        } catch (Throwable \$e) {
+            return redirect()->back()->withInput()->with('error', \$e->getMessage());
+        }
+        return redirect()->to(\$this->contextUrl('{$table}', \$navigationContext))->with('message', 'Record creato correttamente.');
+    }
+
+PHP : '';
+
+        $writeMethods = $writable ? <<<PHP
+    public function edit(int|string \$id)
+    {
+        \$navigationContext = \$this->navigationContextFromQuery();
+
+        return view('{$table}/edit', [
+            'title' => 'Modifica record',
+            'row' => \$this->findRecordOrFail(\$id),
+            'errors' => session('errors') ?? [],
+            'options' => \$this->gateway->relationOptions(),
+            'navigationContext' => \$navigationContext,
+            'submissionToken' => \$this->submissionGuard->create('update_' . (string) \$id),
+        ]);
+    }
+
+    public function update(int|string \$id)
+    {
+        \$navigationContext = \$this->navigationContextFromPost();
+        if (!\$this->submissionGuard->consume('update_' . (string) \$id, \$this->request->getPost('_submission_token'))) {
+            return redirect()->back()->withInput()->with('error', 'Il form è già stato inviato oppure è scaduto.');
+        }
+        if (!\$this->validate({$rules}::updateRules(\$id), {$rules}::messages())) {
+            return redirect()->back()->withInput()->with('errors', \$this->validator->getErrors());
+        }
+        \$data = \$this->formData(true);
+        unset(\$data['{$primaryKey}']);
+        try {
+{$updateCode}
+        } catch (Throwable \$e) {
+            return redirect()->back()->withInput()->with('error', \$e->getMessage());
+        }
+        return redirect()->to(\$this->contextUrl('{$table}', \$navigationContext))->with('message', 'Record aggiornato correttamente.');
+    }
+
+    public function delete(int|string \$id)
+    {
+        \$navigationContext = \$this->navigationContextFromPost();
+        if (\$navigationContext === []) {
+            \$navigationContext = \$this->navigationContextFromQuery();
+        }
+
+        try {
+{$deleteCode}
+        } catch (Throwable \$e) {
+            return redirect()->to(\$this->contextUrl('{$table}', \$navigationContext))->with('error', \$e->getMessage());
+        }
+        return redirect()->to(\$this->contextUrl('{$table}', \$navigationContext))->with('message', 'Record eliminato correttamente.');
+    }
+
+PHP : '';
+
         $content = <<<PHP
 <?php
 
@@ -246,9 +419,23 @@ final class {$controller} extends BaseController
 {
     /** Limiti export configurati al momento della generazione. */
     private const EXPORT_OPTIONS = [
-        'csv' => ['chunkSize' => {$csvChunkSize}, 'maximumRows' => {$csvMaximumRows}],
-        'word' => ['chunkSize' => {$wordChunkSize}, 'maximumRows' => {$wordMaximumRows}],
+        'csv' => [
+            'chunkSize' => {$csvChunkSize},
+            'maximumRows' => {$csvMaximumRows},
+            'unfilteredMaximumRows' => {$csvUnfilteredMaximumRows},
+        ],
+        'word' => [
+            'chunkSize' => {$wordChunkSize},
+            'maximumRows' => {$wordMaximumRows},
+            'unfilteredMaximumRows' => {$wordUnfilteredMaximumRows},
+        ],
     ];
+
+    /** Solo le FK reali della tabella possono viaggiare come contesto URL. */
+    private const NAVIGATION_CONTEXT_FIELDS = {$navigationContextFieldsCode};
+
+    /** FK autorizzate alla creazione atomica del record padre nello stesso form. */
+    private const RELATED_CREATE_FIELDS = {$relatedCreateFieldsCode};
 
     private {$gatewayType} \$gateway;
     private CrudExporter \$exporter;
@@ -271,15 +458,18 @@ final class {$controller} extends BaseController
         \$listRequest = CrudListRequest::fromRequest(
             \$this->request,
             '{$primaryKey}',
-            {$allowedPerPageCode}
+            {$allowedPerPageCode},
+            {$simpleFilterFieldsCode}
         );
 
+        \$navigationContext = \$this->navigationContextFromQuery();
         \$data = {$listCall};
         \$data += [
             'title' => '{$table}',
             'primaryKey' => '{$primaryKey}',
             'filters' => \$listRequest->filters,
             'query' => \$listRequest->query,
+            'navigationContext' => \$navigationContext,
         ];
 
         if (\$this->request->isAJAX()) {
@@ -314,115 +504,7 @@ final class {$controller} extends BaseController
         return \$this->export('word');
     }
 
-    public function view(int|string \$id)
-    {
-        \$row = \$this->findRecordOrFail(\$id);
-
-        return view('{$table}/view', [
-            'title' => 'Dettaglio',
-            'row' => \$row,
-            'children' => \$this->gateway->loadHasMany(\$id),
-        ]);
-    }
-
-    public function create()
-    {
-        // Le sole FK esplicitamente abilitate dal Builder possono essere
-        // ricevute dalla query string. Prima di usarle verifichiamo che il
-        // record padre esista realmente: hidden/select/input non fanno
-        // differenza dal punto di vista della sicurezza.
-        \$context = [];
-        \$contextLabels = [];
-        foreach ({$relationContextFieldsCode} as \$field) {
-            \$requested = \$this->request->getGet(\$field);
-            if (!is_scalar(\$requested) || trim((string) \$requested) === '') {
-                continue;
-            }
-
-            \$option = \$this->gateway->relationOptionById(\$field, (string) \$requested);
-            if (\$option === null) {
-                throw PageNotFoundException::forPageNotFound('Valore FK non valido per ' . \$field . '.');
-            }
-
-            \$context[\$field] = (string) \$option['id'];
-            \$contextLabels[\$field] = (string) \$option['text'];
-        }
-
-        return view('{$table}/create', [
-            'title' => 'Nuovo record',
-            'row' => null,
-            'errors' => session('errors') ?? [],
-            'options' => \$this->gateway->relationOptions(),
-            'context' => \$context,
-            'contextLabels' => \$contextLabels,
-            'submissionToken' => \$this->submissionGuard->create('store'),
-        ]);
-    }
-
-    public function store()
-    {
-        if (!\$this->submissionGuard->consume('store', \$this->request->getPost('_submission_token'))) {
-            return redirect()->back()->withInput()->with('error', 'Il form è già stato inviato oppure è scaduto.');
-        }
-        if (!\$this->validate({$rules}::createRules(), {$rules}::messages())) {
-            return redirect()->back()->withInput()->with('errors', \$this->validator->getErrors());
-        }
-
-        \$data = \$this->formData(false);
-{$unsetCreatePrimaryKey}
-        try {
-{$createCode}
-        } catch (Throwable \$e) {
-            return redirect()->back()->withInput()->with('error', \$e->getMessage());
-        }
-
-        return redirect()->to(site_url('{$table}'))->with('message', 'Record creato correttamente.');
-    }
-
-    public function edit(int|string \$id)
-    {
-        return view('{$table}/edit', [
-            'title' => 'Modifica record',
-            'row' => \$this->findRecordOrFail(\$id),
-            'errors' => session('errors') ?? [],
-            'options' => \$this->gateway->relationOptions(),
-            'submissionToken' => \$this->submissionGuard->create('update_' . (string) \$id),
-        ]);
-    }
-
-    public function update(int|string \$id)
-    {
-        if (!\$this->submissionGuard->consume('update_' . (string) \$id, \$this->request->getPost('_submission_token'))) {
-            return redirect()->back()->withInput()->with('error', 'Il form è già stato inviato oppure è scaduto.');
-        }
-        if (!\$this->validate({$rules}::updateRules(\$id), {$rules}::messages())) {
-            return redirect()->back()->withInput()->with('errors', \$this->validator->getErrors());
-        }
-
-        \$data = \$this->formData(true);
-        unset(\$data['{$primaryKey}']);
-
-        try {
-{$updateCode}
-        } catch (Throwable \$e) {
-            return redirect()->back()->withInput()->with('error', \$e->getMessage());
-        }
-
-        return redirect()->to(site_url('{$table}'))->with('message', 'Record aggiornato correttamente.');
-    }
-
-    public function delete(int|string \$id)
-    {
-        try {
-{$deleteCode}
-        } catch (Throwable \$e) {
-            return redirect()->to(site_url('{$table}'))->with('error', \$e->getMessage());
-        }
-
-        return redirect()->to(site_url('{$table}'))->with('message', 'Record eliminato correttamente.');
-    }
-
-{$softMethods}    /**
+{$viewMethod}{$createMethods}{$writeMethods}{$softMethods}    /**
      * Unifica CSV e Word: cambia solo il writer selezionato dalla libreria runtime.
      */
     private function export(string \$format)
@@ -432,7 +514,7 @@ final class {$controller} extends BaseController
             throw new RuntimeException('Formato export non supportato.');
         }
 
-        \$listRequest = CrudListRequest::fromRequest(\$this->request, '{$primaryKey}', {$allowedPerPageCode});
+        \$listRequest = CrudListRequest::fromRequest(\$this->request, '{$primaryKey}', {$allowedPerPageCode}, {$simpleFilterFieldsCode});
 
         try {
             return \$this->exporter->download(
@@ -444,13 +526,17 @@ final class {$controller} extends BaseController
                 filters: \$listRequest->filters,
                 countProvider: fn (array \$filters): int => {$exportCountCall},
                 rowProvider: fn (array \$filters, int \$limit, int|string|null \$after): array => {$exportRowsCall},
-                primaryKey: '{$primaryKey}',
+                primaryKey: {$exportCursorKeyCode},
                 chunkSize: (int) \$options['chunkSize'],
-                maximumRows: (int) \$options['maximumRows']
+                maximumRows: (int) \$options['maximumRows'],
+                unfilteredMaximumRows: (int) \$options['unfilteredMaximumRows']
             );
         } catch (RuntimeException \$e) {
+            if (str_starts_with(\$e->getMessage(), 'EXPORT_UNFILTERED_LIMIT:')) {
+                return \$this->exportLimitRedirect(strtoupper(\$format), true);
+            }
             if (str_starts_with(\$e->getMessage(), 'EXPORT_LIMIT:')) {
-                return \$this->exportLimitRedirect(strtoupper(\$format));
+                return \$this->exportLimitRedirect(strtoupper(\$format), false);
             }
             throw \$e;
         }
@@ -490,10 +576,102 @@ final class {$controller} extends BaseController
         );
     }
 
-    private function exportLimitRedirect(string \$format)
+    /** @return array<string,array<string,mixed>> */
+    private function relatedCreateDataFromPost(): array
     {
-        return redirect()->to(site_url('{$table}') . '?' . http_build_query((array) \$this->request->getGet()))
-            ->with('error', 'Applicare filtri più restrittivi prima di esportare in ' . \$format . '.');
+        \$flags = \$this->request->getPost('_related_new');
+        \$payload = \$this->request->getPost('_related');
+        \$flags = is_array(\$flags) ? \$flags : [];
+        \$payload = is_array(\$payload) ? \$payload : [];
+        \$related = [];
+
+        foreach (self::RELATED_CREATE_FIELDS as \$field => \$allowedFields) {
+            if (empty(\$flags[\$field]) || !isset(\$payload[\$field]) || !is_array(\$payload[\$field])) {
+                continue;
+            }
+            \$allowed = array_fill_keys((array) \$allowedFields, true);
+            \$related[\$field] = array_intersect_key(\$payload[\$field], \$allowed);
+        }
+
+        return \$related;
+    }
+
+    /** @return array<string,string> */
+    private function validateRelatedCreates(array \$related): array
+    {
+        if (\$related === []) {
+            return [];
+        }
+
+        \$definitions = {$rules}::relatedCreateRules();
+        \$errors = [];
+        foreach (\$related as \$field => \$payload) {
+            \$relationRules = (array) (\$definitions[\$field] ?? []);
+            if (\$relationRules === []) {
+                continue;
+            }
+
+            \$validation = service('validation');
+            \$validation->reset();
+            \$validation->setRules(\$relationRules);
+            if (\$validation->run(\$payload)) {
+                continue;
+            }
+
+            foreach (\$validation->getErrors() as \$relatedField => \$message) {
+                \$errors[\$field . '__related__' . \$relatedField] = (string) \$message;
+            }
+        }
+
+        return \$errors;
+    }
+
+    /** @return array<string,string> */
+    private function navigationContextFromQuery(): array
+    {
+        return \$this->sanitizeNavigationContext((array) \$this->request->getGet());
+    }
+
+    /** @return array<string,string> */
+    private function navigationContextFromPost(): array
+    {
+        \$context = \$this->request->getPost('_context');
+
+        return \$this->sanitizeNavigationContext(is_array(\$context) ? \$context : []);
+    }
+
+    /** @return array<string,string> */
+    private function sanitizeNavigationContext(array \$source): array
+    {
+        \$context = [];
+        foreach (self::NAVIGATION_CONTEXT_FIELDS as \$field) {
+            \$value = \$source[\$field] ?? null;
+            if (!is_scalar(\$value) || trim((string) \$value) === '') {
+                continue;
+            }
+            \$context[\$field] = (string) \$value;
+        }
+
+        return \$context;
+    }
+
+    private function contextUrl(string \$path, array \$context): string
+    {
+        \$url = site_url(\$path);
+
+        return \$context === [] ? \$url : \$url . '?' . http_build_query(\$context);
+    }
+
+    private function exportLimitRedirect(string \$format, bool \$unfiltered)
+    {
+        \$message = \$unfiltered
+            ? 'La tabella contiene troppi record per un export senza filtri. Applicare almeno un filtro prima di esportare in ' . \$format . '.'
+            : 'Il numero di record supera il limite configurato per ' . \$format . '. Applicare filtri più restrittivi.';
+
+        \$query = (array) \$this->request->getGet();
+        \$url = site_url('{$table}') . (\$query === [] ? '' : '?' . http_build_query(\$query));
+
+        return redirect()->to(\$url)->with('error', \$message);
     }
 }
 

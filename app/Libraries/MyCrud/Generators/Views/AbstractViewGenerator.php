@@ -36,6 +36,55 @@ abstract class AbstractViewGenerator
         return 'lang(' . var_export($languageKey, true) . ')';
     }
 
+    /**
+     * Build a PHP object-property expression preserving the exact DB column name.
+     *
+     * Always uses the quoted dynamic-property form, e.g. $row->{'zip code'},
+     * so generated views remain valid even when a column is not a valid PHP
+     * identifier.
+     */
+    protected function objectProperty(string $object, string $property): string
+    {
+        return '$' . ltrim($object, '$') . '->{' . var_export($property, true) . '}';
+    }
+
+    /**
+     * Rendering compatto dei soli campi testuali molto grandi nelle tabelle.
+     * Il valore completo resta invariato in DB, dettaglio, form ed export.
+     */
+    protected function tabularValueMarkup(string $expression, string $type, string $key = 'value'): string
+    {
+        $type = strtolower(trim($type));
+        $config = config('MyCrud');
+        $limit = match ($type) {
+            'mediumtext' => max(50, (int) ($config->mediumTextPreviewLength ?? 250)),
+            'longtext' => max(50, (int) ($config->longTextPreviewLength ?? 350)),
+            default => 0,
+        };
+
+        if ($limit <= 0) {
+            return "<?= esc({$expression} ?? '') ?>";
+        }
+
+        $suffix = substr(sha1($key), 0, 8);
+
+        return <<<PHP
+<?php
+                                    \$__crudValue_{$suffix} = (string) ({$expression} ?? '');
+                                    \$__crudLimit_{$suffix} = {$limit};
+                                    if (function_exists('mb_strlen') && function_exists('mb_substr')) {
+                                        \$__crudShown_{$suffix} = mb_strlen(\$__crudValue_{$suffix}, 'UTF-8') > \$__crudLimit_{$suffix}
+                                            ? mb_substr(\$__crudValue_{$suffix}, 0, \$__crudLimit_{$suffix} - 1, 'UTF-8') . '…'
+                                            : \$__crudValue_{$suffix};
+                                    } else {
+                                        \$__crudShown_{$suffix} = strlen(\$__crudValue_{$suffix}) > \$__crudLimit_{$suffix}
+                                            ? substr(\$__crudValue_{$suffix}, 0, \$__crudLimit_{$suffix} - 3) . '...'
+                                            : \$__crudValue_{$suffix};
+                                    }
+                                    ?><?= esc(\$__crudShown_{$suffix}) ?>
+PHP;
+    }
+
     protected function attributesString(array $field): string
     {
         $parts = [];

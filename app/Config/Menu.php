@@ -7,1109 +7,290 @@ use CodeIgniter\Config\BaseConfig;
 /**
  * Configurazione del menu applicativo generata da myCrudGpt.
  *
- * Questo file appartiene al sito finale e non dipende dal generatore.
- * Puoi cambiare liberamente tipo, gruppi, etichette, icone, route e ordine.
+ * Il file appartiene al sito finale e non dipende dal generatore.
+ * Puoi modificare liberamente tipo, gruppi, sottogruppi, label, icone,
+ * preferiti, route e ordine.
  */
 final class Menu extends BaseConfig
 {
     /** Renderer predefinito: vertical oppure horizontal. */
     public string $type = 'vertical';
 
+    /** Mostra la ricerca locale nel menu. */
+    public bool $search = true;
+
+    /** Mostra la sezione Preferiti quando esistono voci favorite. */
+    public bool $favorites = true;
+
     /** @var list<array<string, mixed>> */
     public array $groups = array (
   0 => 
   array (
-    'label' => 'Prodotti',
+    'label' => 'Store',
     'icon' => 'bi-folder2-open',
     'order' => 10,
     'items' => 
     array (
       0 => 
       array (
-        'label' => 'Adebiti',
-        'route' => 'adebiti',
+        'label' => 'Store',
+        'route' => 'store',
         'icon' => 'bi-table',
         'order' => 10,
-        'table' => 'adebiti',
+        'favorite' => false,
+        'table' => 'store',
       ),
-      1 => 
+    ),
+    'subgroups' => 
+    array (
+      0 => 
       array (
-        'label' => 'Prodotti',
-        'route' => 'prodotti',
-        'icon' => 'bi-table',
-        'order' => 20,
-        'table' => 'prodotti',
-      ),
-      2 => 
-      array (
-        'label' => 'Prodotti Lista',
-        'route' => 'prodotti_lista',
-        'icon' => 'bi-table',
-        'order' => 30,
-        'table' => 'prodotti_lista',
+        'label' => 'inventory',
+        'order' => 10,
+        'items' => 
+        array (
+          0 => 
+          array (
+            'label' => 'Inventory',
+            'route' => 'inventory',
+            'icon' => 'bi-table',
+            'order' => 10,
+            'favorite' => false,
+            'table' => 'inventory',
+          ),
+        ),
       ),
     ),
   ),
   1 => 
   array (
-    'label' => 'Agenzie',
+    'label' => 'Customer',
     'icon' => 'bi-folder2-open',
     'order' => 20,
     'items' => 
     array (
       0 => 
       array (
-        'label' => 'Agenda',
-        'route' => 'agenda',
+        'label' => 'Customer',
+        'route' => 'customer',
         'icon' => 'bi-table',
         'order' => 10,
-        'table' => 'agenda',
+        'favorite' => false,
+        'table' => 'customer',
       ),
-      1 => 
-      array (
-        'label' => 'Agenzie',
-        'route' => 'agenzie',
-        'icon' => 'bi-table',
-        'order' => 20,
-        'table' => 'agenzie',
-      ),
-      2 => 
-      array (
-        'label' => 'Obmp Cm',
-        'route' => 'obmp_cm',
-        'icon' => 'bi-table',
-        'order' => 30,
-        'table' => 'obmp_cm',
-      ),
-      3 => 
-      array (
-        'label' => 'Obmp Ref Event',
-        'route' => 'obmp_ref_event',
-        'icon' => 'bi-table',
-        'order' => 40,
-        'table' => 'obmp_ref_event',
-      ),
-      4 => 
-      array (
-        'label' => 'Pratiche',
-        'route' => 'pratiche',
-        'icon' => 'bi-table',
-        'order' => 50,
-        'table' => 'pratiche',
-      ),
-      5 => 
-      array (
-        'label' => 'Sospesi',
-        'route' => 'sospesi',
-        'icon' => 'bi-table',
-        'order' => 60,
-        'table' => 'sospesi',
-      ),
+    ),
+    'subgroups' => 
+    array (
     ),
   ),
   2 => 
   array (
-    'label' => 'Agenzia Listini',
+    'label' => 'Staff',
     'icon' => 'bi-folder2-open',
     'order' => 30,
     'items' => 
     array (
       0 => 
       array (
-        'label' => 'Agenzia Listini',
-        'route' => 'agenzia_listini',
-        'icon' => 'bi-table',
+        'label' => 'Staff',
+        'route' => 'staff',
+        'icon' => 'bi-person-badge',
         'order' => 10,
-        'table' => 'agenzia_listini',
+        'favorite' => false,
+        'table' => 'staff',
       ),
-      1 => 
-      array (
-        'label' => 'Agenzia Prezzi',
-        'route' => 'agenzia_prezzi',
-        'icon' => 'bi-table',
-        'order' => 20,
-        'table' => 'agenzia_prezzi',
-      ),
-      2 => 
-      array (
-        'label' => 'Ref Agenzia Listini',
-        'route' => 'ref_agenzia_listini',
-        'icon' => 'bi-table',
-        'order' => 30,
-        'table' => 'ref_agenzia_listini',
-      ),
+    ),
+    'subgroups' => 
+    array (
     ),
   ),
   3 => 
   array (
-    'label' => 'Principale',
+    'label' => 'Actor',
     'icon' => 'bi-folder2-open',
     'order' => 40,
     'items' => 
     array (
       0 => 
       array (
-        'label' => 'App Ip',
-        'route' => 'app_ip',
+        'label' => 'Actor',
+        'route' => 'actor',
         'icon' => 'bi-table',
         'order' => 10,
-        'table' => 'app_ip',
+        'favorite' => false,
+        'table' => 'actor',
       ),
       1 => 
       array (
-        'label' => 'Banca Hotel',
-        'route' => 'banca_hotel',
+        'label' => 'Actor Info',
+        'route' => 'actor_info',
         'icon' => 'bi-table',
         'order' => 20,
-        'table' => 'banca_hotel',
+        'favorite' => false,
+        'table' => 'actor_info',
       ),
-      2 => 
-      array (
-        'label' => 'Black List',
-        'route' => 'black_list',
-        'icon' => 'bi-table',
-        'order' => 30,
-        'table' => 'black_list',
-      ),
-      3 => 
-      array (
-        'label' => 'Camere Nesting',
-        'route' => 'camere_nesting',
-        'icon' => 'bi-table',
-        'order' => 40,
-        'table' => 'camere_nesting',
-      ),
-      4 => 
-      array (
-        'label' => 'Cax Motivo',
-        'route' => 'cax_motivo',
-        'icon' => 'bi-table',
-        'order' => 50,
-        'table' => 'cax_motivo',
-      ),
-      5 => 
-      array (
-        'label' => 'Checklist Preno',
-        'route' => 'checklist_preno',
-        'icon' => 'bi-table',
-        'order' => 60,
-        'table' => 'checklist_preno',
-      ),
-      6 => 
-      array (
-        'label' => 'Ci Sessions',
-        'route' => 'ci_sessions',
-        'icon' => 'bi-table',
-        'order' => 70,
-        'table' => 'ci_sessions',
-      ),
-      7 => 
-      array (
-        'label' => 'Codici Stato',
-        'route' => 'codici_stato',
-        'icon' => 'bi-table',
-        'order' => 80,
-        'table' => 'codici_stato',
-      ),
-      8 => 
-      array (
-        'label' => 'Competitori',
-        'route' => 'competitori',
-        'icon' => 'bi-table',
-        'order' => 90,
-        'table' => 'competitori',
-      ),
-      9 => 
-      array (
-        'label' => 'Comuni',
-        'route' => 'comuni',
-        'icon' => 'bi-table',
-        'order' => 100,
-        'table' => 'comuni',
-      ),
-      10 => 
-      array (
-        'label' => 'Ef Price Table',
-        'route' => 'ef_price_table',
-        'icon' => 'bi-table',
-        'order' => 110,
-        'table' => 'ef_price_table',
-      ),
-      11 => 
-      array (
-        'label' => 'Ef Tipologia',
-        'route' => 'ef_tipologia',
-        'icon' => 'bi-table',
-        'order' => 120,
-        'table' => 'ef_tipologia',
-      ),
-      12 => 
-      array (
-        'label' => 'Email Ai History',
-        'route' => 'email_ai_history',
-        'icon' => 'bi-table',
-        'order' => 130,
-        'table' => 'email_ai_history',
-      ),
-      13 => 
-      array (
-        'label' => 'Emails',
-        'route' => 'emails',
-        'icon' => 'bi-table',
-        'order' => 140,
-        'table' => 'emails',
-      ),
-      14 => 
-      array (
-        'label' => 'Lettere',
-        'route' => 'lettere',
-        'icon' => 'bi-table',
-        'order' => 150,
-        'table' => 'lettere',
-      ),
-      15 => 
-      array (
-        'label' => 'Log In',
-        'route' => 'log_in',
-        'icon' => 'bi-table',
-        'order' => 160,
-        'table' => 'log_in',
-      ),
-      16 => 
-      array (
-        'label' => 'Log Obmp',
-        'route' => 'log_obmp',
-        'icon' => 'bi-table',
-        'order' => 170,
-        'table' => 'log_obmp',
-      ),
-      17 => 
-      array (
-        'label' => 'Log Obmp Full',
-        'route' => 'log_obmp_full',
-        'icon' => 'bi-table',
-        'order' => 180,
-        'table' => 'log_obmp_full',
-      ),
-      18 => 
-      array (
-        'label' => 'Log Richieste',
-        'route' => 'log_richieste',
-        'icon' => 'bi-table',
-        'order' => 190,
-        'table' => 'log_richieste',
-      ),
-      19 => 
-      array (
-        'label' => 'Manutenzioni',
-        'route' => 'manutenzioni',
-        'icon' => 'bi-table',
-        'order' => 200,
-        'table' => 'manutenzioni',
-      ),
-      20 => 
-      array (
-        'label' => 'Nazioni',
-        'route' => 'nazioni',
-        'icon' => 'bi-table',
-        'order' => 210,
-        'table' => 'nazioni',
-      ),
-      21 => 
-      array (
-        'label' => 'Nazioni Bandiera',
-        'route' => 'nazioni_bandiera',
-        'icon' => 'bi-table',
-        'order' => 220,
-        'table' => 'nazioni_bandiera',
-      ),
-      22 => 
-      array (
-        'label' => 'Nazioni Linque',
-        'route' => 'nazioni_linque',
-        'icon' => 'bi-table',
-        'order' => 230,
-        'table' => 'nazioni_linque',
-      ),
-      23 => 
-      array (
-        'label' => 'Obmp Affiliati',
-        'route' => 'obmp_affiliati',
-        'icon' => 'bi-table',
-        'order' => 240,
-        'table' => 'obmp_affiliati',
-      ),
-      24 => 
-      array (
-        'label' => 'Parsed Emails',
-        'route' => 'parsed_emails',
-        'icon' => 'bi-table',
-        'order' => 250,
-        'table' => 'parsed_emails',
-      ),
-      25 => 
-      array (
-        'label' => 'Prezzi',
-        'route' => 'prezzi',
-        'icon' => 'bi-table',
-        'order' => 260,
-        'table' => 'prezzi',
-      ),
-      26 => 
-      array (
-        'label' => 'Prezzi Competitori',
-        'route' => 'prezzi_competitori',
-        'icon' => 'bi-table',
-        'order' => 270,
-        'table' => 'prezzi_competitori',
-      ),
-      27 => 
-      array (
-        'label' => 'Products',
-        'route' => 'products',
-        'icon' => 'bi-table',
-        'order' => 280,
-        'table' => 'products',
-      ),
-      28 => 
-      array (
-        'label' => 'Province',
-        'route' => 'province',
-        'icon' => 'bi-table',
-        'order' => 290,
-        'table' => 'province',
-      ),
-      29 => 
-      array (
-        'label' => 'Regioni',
-        'route' => 'regioni',
-        'icon' => 'bi-table',
-        'order' => 300,
-        'table' => 'regioni',
-      ),
-      30 => 
-      array (
-        'label' => 'Registro Ps',
-        'route' => 'registro_ps',
-        'icon' => 'bi-table',
-        'order' => 310,
-        'table' => 'registro_ps',
-      ),
-      31 => 
-      array (
-        'label' => 'Tex Lingue',
-        'route' => 'tex_lingue',
-        'icon' => 'bi-table',
-        'order' => 320,
-        'table' => 'tex_lingue',
-      ),
-      32 => 
-      array (
-        'label' => 'Tip Doc',
-        'route' => 'tip_doc',
-        'icon' => 'bi-table',
-        'order' => 330,
-        'table' => 'tip_doc',
-      ),
-      33 => 
-      array (
-        'label' => 'Tipoallogiati',
-        'route' => 'tipoallogiati',
-        'icon' => 'bi-table',
-        'order' => 340,
-        'table' => 'tipoallogiati',
-      ),
-      34 => 
-      array (
-        'label' => 'Token',
-        'route' => 'token',
-        'icon' => 'bi-table',
-        'order' => 350,
-        'table' => 'token',
-      ),
-      35 => 
-      array (
-        'label' => 'Win Booking',
-        'route' => 'win_booking',
-        'icon' => 'bi-table',
-        'order' => 360,
-        'table' => 'win_booking',
-      ),
-      36 => 
-      array (
-        'label' => 'Woucher',
-        'route' => 'woucher',
-        'icon' => 'bi-table',
-        'order' => 370,
-        'table' => 'woucher',
-      ),
+    ),
+    'subgroups' => 
+    array (
     ),
   ),
   4 => 
   array (
-    'label' => 'Tipologia Camera',
+    'label' => 'Films',
     'icon' => 'bi-folder2-open',
     'order' => 50,
     'items' => 
     array (
       0 => 
       array (
-        'label' => 'Camere',
-        'route' => 'camere',
+        'label' => 'Film',
+        'route' => 'film',
         'icon' => 'bi-table',
         'order' => 10,
-        'table' => 'camere',
+        'favorite' => false,
+        'table' => 'film',
       ),
       1 => 
       array (
-        'label' => 'Tipologia Camera',
-        'route' => 'tipologia_camera',
+        'label' => 'Category',
+        'route' => 'category',
         'icon' => 'bi-table',
         'order' => 20,
-        'table' => 'tipologia_camera',
+        'favorite' => false,
+        'table' => 'category',
       ),
+      2 => 
+      array (
+        'label' => 'Language',
+        'route' => 'language',
+        'icon' => 'bi-table',
+        'order' => 30,
+        'favorite' => false,
+        'table' => 'language',
+      ),
+    ),
+    'subgroups' => 
+    array (
     ),
   ),
   5 => 
   array (
-    'label' => 'Agenda',
+    'label' => 'Rental',
     'icon' => 'bi-folder2-open',
     'order' => 60,
     'items' => 
     array (
       0 => 
       array (
-        'label' => 'Cassa',
-        'route' => 'cassa',
+        'label' => 'Rental',
+        'route' => 'rental',
         'icon' => 'bi-table',
         'order' => 10,
-        'table' => 'cassa',
+        'favorite' => false,
+        'table' => 'rental',
       ),
-      1 => 
-      array (
-        'label' => 'Colori',
-        'route' => 'colori',
-        'icon' => 'bi-table',
-        'order' => 20,
-        'table' => 'colori',
-      ),
-      2 => 
-      array (
-        'label' => 'Foglio Giorno',
-        'route' => 'foglio_giorno',
-        'icon' => 'bi-table',
-        'order' => 30,
-        'table' => 'foglio_giorno',
-      ),
-      3 => 
-      array (
-        'label' => 'Modifica Agenda',
-        'route' => 'modifica_agenda',
-        'icon' => 'bi-table',
-        'order' => 40,
-        'table' => 'modifica_agenda',
-      ),
-      4 => 
-      array (
-        'label' => 'Ref Agenda Clienti',
-        'route' => 'ref_agenda_clienti',
-        'icon' => 'bi-table',
-        'order' => 50,
-        'table' => 'ref_agenda_clienti',
-      ),
-      5 => 
-      array (
-        'label' => 'Ref Agenzia Preno',
-        'route' => 'ref_agenzia_preno',
-        'icon' => 'bi-table',
-        'order' => 60,
-        'table' => 'ref_agenzia_preno',
-      ),
-      6 => 
-      array (
-        'label' => 'Ref Obmp Booking',
-        'route' => 'ref_obmp_booking',
-        'icon' => 'bi-table',
-        'order' => 70,
-        'table' => 'ref_obmp_booking',
-      ),
+    ),
+    'subgroups' => 
+    array (
     ),
   ),
   6 => 
   array (
-    'label' => 'Refer Clienti',
+    'label' => 'Payment',
     'icon' => 'bi-folder2-open',
     'order' => 70,
     'items' => 
     array (
       0 => 
       array (
-        'label' => 'Clienti',
-        'route' => 'clienti',
-        'icon' => 'bi-table',
+        'label' => 'Payment',
+        'route' => 'payment',
+        'icon' => 'bi-credit-card',
         'order' => 10,
-        'table' => 'clienti',
+        'favorite' => false,
+        'table' => 'payment',
       ),
+    ),
+    'subgroups' => 
+    array (
     ),
   ),
   7 => 
   array (
-    'label' => 'Camere',
+    'label' => 'Address',
     'icon' => 'bi-folder2-open',
     'order' => 80,
     'items' => 
     array (
       0 => 
       array (
-        'label' => 'Conti',
-        'route' => 'conti',
+        'label' => 'Address',
+        'route' => 'address',
         'icon' => 'bi-table',
         'order' => 10,
-        'table' => 'conti',
+        'favorite' => false,
+        'table' => 'address',
       ),
       1 => 
       array (
-        'label' => 'Guasti',
-        'route' => 'guasti',
+        'label' => 'Country',
+        'route' => 'country',
         'icon' => 'bi-table',
         'order' => 20,
-        'table' => 'guasti',
+        'favorite' => false,
+        'table' => 'country',
       ),
+      2 => 
+      array (
+        'label' => 'City',
+        'route' => 'city',
+        'icon' => 'bi-table',
+        'order' => 30,
+        'favorite' => false,
+        'table' => 'city',
+      ),
+    ),
+    'subgroups' => 
+    array (
     ),
   ),
   8 => 
   array (
-    'label' => 'Conti',
+    'label' => 'pivot',
     'icon' => 'bi-folder2-open',
     'order' => 90,
     'items' => 
     array (
       0 => 
       array (
-        'label' => 'Conti Note',
-        'route' => 'conti_note',
+        'label' => 'Film Actor',
+        'route' => 'film_actor',
         'icon' => 'bi-table',
         'order' => 10,
-        'table' => 'conti_note',
+        'favorite' => false,
+        'table' => 'film_actor',
       ),
       1 => 
       array (
-        'label' => 'Modifica Conti',
-        'route' => 'modifica_conti',
+        'label' => 'Film List',
+        'route' => 'film_list',
         'icon' => 'bi-table',
         'order' => 20,
-        'table' => 'modifica_conti',
+        'favorite' => false,
+        'table' => 'film_list',
       ),
       2 => 
       array (
-        'label' => 'Obmp Review',
-        'route' => 'obmp_review',
+        'label' => 'Sales By Store',
+        'route' => 'sales_by_store',
         'icon' => 'bi-table',
         'order' => 30,
-        'table' => 'obmp_review',
-      ),
-      3 => 
-      array (
-        'label' => 'Pulizia',
-        'route' => 'pulizia',
-        'icon' => 'bi-table',
-        'order' => 40,
-        'table' => 'pulizia',
-      ),
-      4 => 
-      array (
-        'label' => 'Refer Clienti',
-        'route' => 'refer_clienti',
-        'icon' => 'bi-table',
-        'order' => 50,
-        'table' => 'refer_clienti',
-      ),
-      5 => 
-      array (
-        'label' => 'Sidae',
-        'route' => 'sidae',
-        'icon' => 'bi-table',
-        'order' => 60,
-        'table' => 'sidae',
-      ),
-      6 => 
-      array (
-        'label' => 'Tax Pagamento',
-        'route' => 'tax_pagamento',
-        'icon' => 'bi-table',
-        'order' => 70,
-        'table' => 'tax_pagamento',
+        'favorite' => false,
+        'table' => 'sales_by_store',
       ),
     ),
-  ),
-  9 => 
-  array (
-    'label' => 'Adebiti',
-    'icon' => 'bi-folder2-open',
-    'order' => 100,
-    'items' => 
+    'subgroups' => 
     array (
-      0 => 
-      array (
-        'label' => 'Conti Trasferisci',
-        'route' => 'conti_trasferisci',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'conti_trasferisci',
-      ),
-    ),
-  ),
-  10 => 
-  array (
-    'label' => 'Costi Area',
-    'icon' => 'bi-folder2-open',
-    'order' => 110,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Costi Area',
-        'route' => 'costi_area',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'costi_area',
-      ),
-      1 => 
-      array (
-        'label' => 'Costi Var',
-        'route' => 'costi_var',
-        'icon' => 'bi-table',
-        'order' => 20,
-        'table' => 'costi_var',
-      ),
-      2 => 
-      array (
-        'label' => 'Wreh Products',
-        'route' => 'wreh_products',
-        'icon' => 'bi-table',
-        'order' => 30,
-        'table' => 'wreh_products',
-      ),
-    ),
-  ),
-  11 => 
-  array (
-    'label' => 'Hotels',
-    'icon' => 'bi-folder2-open',
-    'order' => 120,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Doc File',
-        'route' => 'doc_file',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'doc_file',
-      ),
-      1 => 
-      array (
-        'label' => 'Hotels',
-        'route' => 'hotels',
-        'icon' => 'bi-table',
-        'order' => 20,
-        'table' => 'hotels',
-      ),
-    ),
-  ),
-  12 => 
-  array (
-    'label' => 'Obmp Cm Rooms',
-    'icon' => 'bi-folder2-open',
-    'order' => 130,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Images',
-        'route' => 'images',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'images',
-      ),
-      1 => 
-      array (
-        'label' => 'Obmp Cm Lingue',
-        'route' => 'obmp_cm_lingue',
-        'icon' => 'bi-table',
-        'order' => 20,
-        'table' => 'obmp_cm_lingue',
-      ),
-    ),
-  ),
-  13 => 
-  array (
-    'label' => 'Listino Nome Obmp',
-    'icon' => 'bi-folder2-open',
-    'order' => 140,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Listino Nome Obmp',
-        'route' => 'listino_nome_obmp',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'listino_nome_obmp',
-      ),
-      1 => 
-      array (
-        'label' => 'Listino Obmp',
-        'route' => 'listino_obmp',
-        'icon' => 'bi-table',
-        'order' => 20,
-        'table' => 'listino_obmp',
-      ),
-      2 => 
-      array (
-        'label' => 'Listino Periodi Obmp',
-        'route' => 'listino_periodi_obmp',
-        'icon' => 'bi-table',
-        'order' => 30,
-        'table' => 'listino_periodi_obmp',
-      ),
-    ),
-  ),
-  14 => 
-  array (
-    'label' => 'Utenti',
-    'icon' => 'bi-folder2-open',
-    'order' => 150,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Note Utente',
-        'route' => 'note_utente',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'note_utente',
-      ),
-    ),
-  ),
-  15 => 
-  array (
-    'label' => 'Obmp Board',
-    'icon' => 'bi-folder2-open',
-    'order' => 160,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Obmp Board',
-        'route' => 'obmp_board',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'obmp_board',
-      ),
-      1 => 
-      array (
-        'label' => 'Obmp Rates',
-        'route' => 'obmp_rates',
-        'icon' => 'bi-table',
-        'order' => 20,
-        'table' => 'obmp_rates',
-      ),
-    ),
-  ),
-  16 => 
-  array (
-    'label' => 'Obmp Cancellations',
-    'icon' => 'bi-folder2-open',
-    'order' => 170,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Obmp Cancellations',
-        'route' => 'obmp_cancellations',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'obmp_cancellations',
-      ),
-    ),
-  ),
-  17 => 
-  array (
-    'label' => 'Obmp Clienti',
-    'icon' => 'bi-folder2-open',
-    'order' => 180,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Obmp Clienti',
-        'route' => 'obmp_clienti',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'obmp_clienti',
-      ),
-    ),
-  ),
-  18 => 
-  array (
-    'label' => 'Obmp Cm',
-    'icon' => 'bi-folder2-open',
-    'order' => 190,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Obmp Cm Rooms',
-        'route' => 'obmp_cm_rooms',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'obmp_cm_rooms',
-      ),
-    ),
-  ),
-  19 => 
-  array (
-    'label' => 'Obmp Payments',
-    'icon' => 'bi-folder2-open',
-    'order' => 200,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Obmp Payments',
-        'route' => 'obmp_payments',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'obmp_payments',
-      ),
-    ),
-  ),
-  20 => 
-  array (
-    'label' => 'Obmp Quote',
-    'icon' => 'bi-folder2-open',
-    'order' => 210,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Obmp Quote',
-        'route' => 'obmp_quote',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'obmp_quote',
-      ),
-      1 => 
-      array (
-        'label' => 'Obmp Quote Sub',
-        'route' => 'obmp_quote_sub',
-        'icon' => 'bi-table',
-        'order' => 20,
-        'table' => 'obmp_quote_sub',
-      ),
-    ),
-  ),
-  21 => 
-  array (
-    'label' => 'Obmp Ref Site',
-    'icon' => 'bi-folder2-open',
-    'order' => 220,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Obmp Ref Site',
-        'route' => 'obmp_ref_site',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'obmp_ref_site',
-      ),
-    ),
-  ),
-  22 => 
-  array (
-    'label' => 'Obmp Restrictions',
-    'icon' => 'bi-folder2-open',
-    'order' => 230,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Obmp Restrictions',
-        'route' => 'obmp_restrictions',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'obmp_restrictions',
-      ),
-    ),
-  ),
-  23 => 
-  array (
-    'label' => 'Sospesi',
-    'icon' => 'bi-folder2-open',
-    'order' => 240,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Pagamenti Sospesi',
-        'route' => 'pagamenti_sospesi',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'pagamenti_sospesi',
-      ),
-    ),
-  ),
-  24 => 
-  array (
-    'label' => 'Pratiche',
-    'icon' => 'bi-folder2-open',
-    'order' => 250,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Pratiche Rif',
-        'route' => 'pratiche_rif',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'pratiche_rif',
-      ),
-    ),
-  ),
-  25 => 
-  array (
-    'label' => 'Clienti',
-    'icon' => 'bi-folder2-open',
-    'order' => 260,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Punti Spesi',
-        'route' => 'punti_spesi',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'punti_spesi',
-      ),
-    ),
-  ),
-  26 => 
-  array (
-    'label' => 'Question',
-    'icon' => 'bi-folder2-open',
-    'order' => 270,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Question',
-        'route' => 'question',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'question',
-      ),
-      1 => 
-      array (
-        'label' => 'Question Rew',
-        'route' => 'question_rew',
-        'icon' => 'bi-table',
-        'order' => 20,
-        'table' => 'question_rew',
-      ),
-    ),
-  ),
-  27 => 
-  array (
-    'label' => 'Costi Var',
-    'icon' => 'bi-folder2-open',
-    'order' => 280,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Ref Costi Tipologia',
-        'route' => 'ref_costi_tipologia',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'ref_costi_tipologia',
-      ),
-    ),
-  ),
-  28 => 
-  array (
-    'label' => 'Staff',
-    'icon' => 'bi-folder2-open',
-    'order' => 290,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Shifts',
-        'route' => 'shifts',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'shifts',
-      ),
-      1 => 
-      array (
-        'label' => 'Staff',
-        'route' => 'staff',
-        'icon' => 'bi-table',
-        'order' => 20,
-        'table' => 'staff',
-      ),
-      2 => 
-      array (
-        'label' => 'Utenti',
-        'route' => 'utenti',
-        'icon' => 'bi-table',
-        'order' => 30,
-        'table' => 'utenti',
-      ),
-    ),
-  ),
-  29 => 
-  array (
-    'label' => 'Wreh Orders',
-    'icon' => 'bi-folder2-open',
-    'order' => 300,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Wreh Order Details',
-        'route' => 'wreh_order_details',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'wreh_order_details',
-      ),
-      1 => 
-      array (
-        'label' => 'Wreh Orders',
-        'route' => 'wreh_orders',
-        'icon' => 'bi-table',
-        'order' => 20,
-        'table' => 'wreh_orders',
-      ),
-    ),
-  ),
-  30 => 
-  array (
-    'label' => 'Wreh Suppliers',
-    'icon' => 'bi-folder2-open',
-    'order' => 310,
-    'items' => 
-    array (
-      0 => 
-      array (
-        'label' => 'Wreh Suppliers',
-        'route' => 'wreh_suppliers',
-        'icon' => 'bi-table',
-        'order' => 10,
-        'table' => 'wreh_suppliers',
-      ),
     ),
   ),
 );

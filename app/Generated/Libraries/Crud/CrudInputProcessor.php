@@ -22,7 +22,7 @@ final class CrudInputProcessor
         array $passwordFields = [],
         bool $hashPasswords = false
     ): array {
-        unset($data['_submission_token']);
+        unset($data['_submission_token'], $data['_context'], $data['_related'], $data['_related_new']);
 
         $csrfName = csrf_token();
         if ($csrfName !== '') {

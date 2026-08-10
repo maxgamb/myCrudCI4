@@ -21,6 +21,10 @@ final class ModelGenerator
         $useEntity = !empty($config['features']['entity']);
         $apiEnabled = !empty($config['features']['api']);
         $softDeleteEnabled = !empty($config['features']['softDeletes']);
+        $createAllowed = !empty($config['features']['createAllowed']);
+        $primaryKeys = array_values((array) ($config['primaryKeys'] ?? [$primaryKey]));
+        $compositePrimaryKey = count($primaryKeys) > 1;
+        $primaryAutoIncrement = !empty($config['fields'][$primaryKey]['autoIncrement']);
         $deletedField = (string) ($config['softDelete']['field'] ?? 'deleted_at');
         $timestampsEnabled = !empty($config['features']['timestamps'])
             && isset($config['fields']['created_at'], $config['fields']['updated_at']);
@@ -39,10 +43,12 @@ final class ModelGenerator
         $exportFields = [];
         $filterDefinitions = [];
         $sortable = [];
+        $fieldTypes = [];
 
         foreach ($config['fields'] as $field) {
             $name = (string) $field['name'];
             $type = strtolower((string) ($field['type'] ?? ''));
+            $fieldTypes[$name] = $type;
             $inputType = strtolower((string) ($field['inputType'] ?? 'text'));
             $ui = (array) ($field['ui'] ?? []);
             $isSensitive = !empty($ui['sensitive'])
@@ -57,6 +63,9 @@ final class ModelGenerator
             if (
                 (empty($field['primary']) || empty($field['autoIncrement']))
                 && !in_array($name, $managedFields, true)
+                && empty($field['databaseManaged'])
+                && $createAllowed
+                && !FieldPolicy::isSpatial($type)
                 && (!$isSensitive || FieldPolicy::isPassword($name, $inputType))
             ) {
                 $allowed[] = $name;
@@ -66,7 +75,7 @@ final class ModelGenerator
                 $detailFields[] = $name;
             }
 
-            if (!empty($ui['visibleIndex']) && !$isSensitive && !$isLarge && !$isBinary) {
+            if (!empty($ui['visibleIndex']) && !$isSensitive && !$isBinary) {
                 $listFields[] = $name;
             }
 
@@ -117,24 +126,33 @@ final class ModelGenerator
 
         $detailSelects = [];
         foreach (array_values(array_unique($detailFields)) as $field) {
-            $detailSelects[] = "'{$table}.{$field} AS {$field}'";
+            $detailSelects[] = var_export($this->selectExpression($table, $field, $fieldTypes[$field] ?? ''), true);
         }
         $listSelects = [];
         $csvSelects = [];
 
         foreach (array_values(array_unique($listFields)) as $field) {
-            $listSelects[] = "'{$table}.{$field} AS {$field}'";
+            $listSelects[] = var_export($this->selectExpression($table, $field, $fieldTypes[$field] ?? ''), true);
         }
         foreach (array_values(array_unique($exportFields)) as $field) {
-            $csvSelects[] = "'{$table}.{$field} AS {$field}'";
+            $csvSelects[] = var_export($this->selectExpression($table, $field, $fieldTypes[$field] ?? ''), true);
+        }
+        // Le chiavi di cursore devono essere presenti nelle righe di export
+        // anche se lo sviluppatore le ha escluse dalle colonne esportate.
+        foreach ($primaryKeys as $cursorField) {
+            if ($cursorField !== '') {
+                $csvSelects[] = var_export($this->selectExpression($table, $cursorField, $fieldTypes[$cursorField] ?? ''), true);
+            }
         }
 
         $detailJoinLines = [];
         $listJoinLines = [];
         $csvJoinLines = [];
+        $parentJoinMethods = [];
         $optionMethods = [];
         $optionMapLines = [];
         $relationSearchDefinitions = [];
+        $relatedCreateDefinitions = [];
 
         foreach ($config['relations']['belongsTo'] ?? [] as $field => $relation) {
             $parentTable = (string) $relation['parentTable'];
@@ -144,7 +162,7 @@ final class ModelGenerator
             $displayTemplate = trim((string) ($fieldConfig['relationDisplayTemplate'] ?? $relation['displayTemplate'] ?? ''));
             $availableDisplayFields = array_values((array) ($relation['availableDisplayFields'] ?? []));
             $displayFields = $this->relationDisplayFields($displayField, $displayTemplate, $availableDisplayFields);
-            $alias = (string) ($relation['alias'] ?? ($parentTable . '__' . $field . '__label'));
+            $alias = (string) ($relation['alias'] ?? ($field . '__label'));
             $joinAlias = preg_replace('/[^a-zA-Z0-9_]/', '_', $parentTable . '__' . $field) ?: $parentTable;
             $displaySql = $this->relationDisplaySql($joinAlias, $displayField, $displayTemplate, $displayFields);
             $displaySelect = var_export($displaySql . ' AS ' . $alias, true);
@@ -156,14 +174,33 @@ final class ModelGenerator
             if (in_array((string) $field, $exportFields, true)) {
                 $csvSelects[] = $displaySelect;
             }
-            $joinLine = "        \$builder->join('{$parentTable} AS {$joinAlias}', '{$joinAlias}.{$parentKey} = {$table}.{$field}', 'left');";
-            $detailJoinLines[] = $joinLine;
+            $joinMethod = 'join' . Naming::tableClass($parentTable) . Naming::studly((string) $field);
+            $joinCall = "        \$this->{$joinMethod}(\$builder);";
+            $detailJoinLines[] = $joinCall;
             if (in_array((string) $field, $listFields, true)) {
-                $listJoinLines[] = $joinLine;
+                $listJoinLines[] = $joinCall;
             }
             if (in_array((string) $field, $exportFields, true)) {
-                $csvJoinLines[] = $joinLine;
+                $csvJoinLines[] = $joinCall;
             }
+
+            // Ogni FK ha un solo metodo di JOIN nel Model. L'alias SQL tecnico
+            // evita collisioni (anche con due FK verso la stessa tabella), mentre
+            // il risultato espone il nome più leggibile <foreign_key>__label.
+            $parentJoinMethods[$joinMethod] = <<<PHP
+    /** FK {$table}.{$field} -> {$parentTable}.{$parentKey}; risultato: {$alias}. */
+    private function {$joinMethod}(BaseBuilder \$builder): BaseBuilder
+    {
+        \$builder->join(
+            '{$parentTable} AS {$joinAlias}',
+            '{$joinAlias}.{$parentKey} = {$table}.{$field}',
+            'left'
+        );
+
+        return \$builder;
+    }
+
+PHP;
 
             $relationMode = strtolower((string) ($config['fields'][$field]['relationMode'] ?? $relation['optionMode'] ?? 'select'));
             $relationMode = in_array($relationMode, ['select', 'ajax'], true) ? $relationMode : 'select';
@@ -176,6 +213,34 @@ final class ModelGenerator
                 'displayFields' => $displayFields,
                 'mode' => $relationMode,
             ];
+
+            $relatedCreate = (array) ($fieldConfig['relationCreate'] ?? []);
+            $relatedCreateSchema = (array) ($relation['relatedCreate'] ?? []);
+            if (!empty($relatedCreate['enabled']) && !empty($relatedCreateSchema['available'])) {
+                $relatedFields = (array) ($relatedCreateSchema['fields'] ?? []);
+                $relatedCreateDefinitions[(string) $field] = [
+                    'table' => $parentTable,
+                    'key' => $parentKey,
+                    'keyAutoIncrement' => !empty($relatedCreateSchema['keyAutoIncrement']),
+                    'fields' => array_values(array_keys($relatedFields)),
+                    'nullableFields' => array_values(array_keys(array_filter(
+                        $relatedFields,
+                        static fn (array $relatedField): bool => !empty($relatedField['nullable'])
+                    ))),
+                    'defaultedFields' => array_values(array_keys(array_filter(
+                        $relatedFields,
+                        static fn (array $relatedField): bool => !empty($relatedField['hasDefault'])
+                    ))),
+                    'dateTimeFields' => array_values(array_keys(array_filter(
+                        $relatedFields,
+                        static fn (array $relatedField): bool => in_array(
+                            strtolower((string) ($relatedField['type'] ?? '')),
+                            ['datetime', 'timestamp'],
+                            true
+                        )
+                    ))),
+                ];
+            }
 
             if ($relationMode === 'select') {
                 $method = 'get' . Naming::tableClass($parentTable) . Naming::studly((string) $field) . 'Options';
@@ -218,6 +283,16 @@ PHP;
             $methodSuffix = Naming::studly($childTable) . 'By' . Naming::studly($foreignKey);
             $getMethod = 'get' . $methodSuffix;
             $limit = max(1, min(200, (int) ($relation['limit'] ?? 20)));
+            $childColumnTypes = (array) ($relation['columnTypes'] ?? []);
+            $childSelects = [];
+            foreach ((array) ($relation['columns'] ?? []) as $childColumn) {
+                $childColumn = (string) $childColumn;
+                if ($childColumn === '') {
+                    continue;
+                }
+                $childSelects[] = $this->selectExpression($childTable, $childColumn, (string) ($childColumnTypes[$childColumn] ?? ''));
+            }
+            $childSelectCode = var_export(array_values(array_unique($childSelects)), true);
 
             $childMethods[] = <<<PHP
     /** Carica al massimo una riga in più per determinare se esistono altri risultati. */
@@ -225,6 +300,7 @@ PHP;
     {
         \$limit = max(1, min(200, \$limit));
         \$rows = \$this->db->table('{$childTable}')
+            ->select({$childSelectCode})
             ->where('{$foreignKey}', \$parentId)
             ->orderBy('{$childPk}', 'DESC')
             ->limit(\$limit + 1)
@@ -280,6 +356,7 @@ PHP : '';
         $detailJoinsCode = implode("\n", $detailJoinLines);
         $listJoinsCode = implode("\n", $listJoinLines);
         $csvJoinsCode = implode("\n", $csvJoinLines);
+        $parentJoinMethodsCode = implode('', array_values($parentJoinMethods));
         $optionsMethodsCode = implode('', $optionMethods);
         $optionMapCode = implode("\n", $optionMapLines);
         $childrenMethodsCode = implode('', $childMethods);
@@ -289,8 +366,48 @@ PHP : '';
         $sortableCode = var_export(array_values(array_unique($sortable)), true);
         $exportFieldsCode = var_export(array_values(array_unique($exportFields)), true);
         $relationSearchCode = var_export($relationSearchDefinitions, true);
+        $relatedCreateCode = var_export($relatedCreateDefinitions, true);
+        $primaryKeysCode = var_export($primaryKeys, true);
         $entityUse = $useEntity ? 'use App\\Entities\\' . $entity . ';' : '';
         $returnTypeCode = $useEntity ? $entity . '::class' : "'object'";
+
+        if ($compositePrimaryKey) {
+            $orderLines = [];
+            foreach ($primaryKeys as $keyField) {
+                $orderLines[] = "            ->orderBy('{$table}.{$keyField}', 'ASC')";
+            }
+            $orderCode = implode("\n", $orderLines);
+            $cursorWhere = <<<'PHP'
+        if ($after !== null && $after !== '') {
+            $cursor = json_decode((string) $after, true);
+            if (is_array($cursor)) {
+                $keys = self::PRIMARY_KEYS;
+                $builder->groupStart();
+                foreach ($keys as $position => $key) {
+                    $builder->orGroupStart();
+                    for ($i = 0; $i < $position; $i++) {
+                        if (array_key_exists($keys[$i], $cursor)) {
+                            $builder->where($this->table . '.' . $keys[$i], $cursor[$keys[$i]]);
+                        }
+                    }
+                    if (array_key_exists($key, $cursor)) {
+                        $builder->where($this->table . '.' . $key . ' >', $cursor[$key]);
+                    }
+                    $builder->groupEnd();
+                }
+                $builder->groupEnd();
+            }
+        }
+PHP;
+            $exportOrderCode = $orderCode;
+        } else {
+            $cursorWhere = <<<PHP
+        if (\$after !== null && \$after !== '') {
+            \$builder->where('{$table}.{$primaryKey} >', \$after);
+        }
+PHP;
+            $exportOrderCode = "            ->orderBy('{$table}.{$primaryKey}', 'ASC')";
+        }
 
         $apiMethodsCode = $apiEnabled ? <<<PHP
     /** Elenco REST paginato con whitelist di filtri e ordinamento. */
@@ -340,6 +457,117 @@ PHP : '';
 
 PHP : '';
 
+        $createReturnCode = $primaryAutoIncrement
+            ? "        return is_int(\$id) ? \$id : (string) \$id;"
+            : "        if (array_key_exists('{$primaryKey}', \$data) && (is_int(\$data['{$primaryKey}']) || is_string(\$data['{$primaryKey}']))) {\n            return \$data['{$primaryKey}'];\n        }\n        return is_int(\$id) ? \$id : (string) \$id;";
+
+        $createRecordMethodsCode = $createAllowed ? <<<PHP
+    /**
+     * Inserisce il record corrente e, se richiesto dal form, crea prima i
+     * record padre nella stessa transazione usando la PK generata come FK.
+     */
+    public function createRecord(array \$data, array \$related = []): int|string
+    {
+        \$transactional = \$related !== [];
+        if (\$transactional) {
+            \$this->db->transBegin();
+        }
+
+        try {
+            foreach (\$related as \$field => \$payload) {
+                if (!is_array(\$payload) || !isset(self::RELATED_CREATES[\$field])) {
+                    continue;
+                }
+                \$data[\$field] = \$this->createRelatedRecord((string) \$field, \$payload);
+            }
+
+            \$id = \$this->insert(\$data, true);
+            if (\$id === false) {
+                throw new RuntimeException(implode(' ', \$this->errors()) ?: 'Inserimento non riuscito.');
+            }
+
+            if (\$transactional) {
+                if (!\$this->db->transStatus()) {
+                    throw new RuntimeException('Transazione di inserimento non riuscita.');
+                }
+                \$this->db->transCommit();
+            }
+        } catch (Throwable \$e) {
+            if (\$transactional) {
+                \$this->db->transRollback();
+            }
+            throw \$e;
+        }
+
+        \$this->clearListCountCache();
+{$createReturnCode}
+    }
+
+    /** Crea un singolo record padre autorizzato dalla configurazione generata. */
+    private function createRelatedRecord(string \$field, array \$data): int|string
+    {
+        \$definition = self::RELATED_CREATES[\$field] ?? null;
+        if (!is_array(\$definition)) {
+            throw new RuntimeException('Creazione record collegato non autorizzata per ' . \$field . '.');
+        }
+
+        \$allowed = array_fill_keys((array) (\$definition['fields'] ?? []), true);
+        \$payload = array_intersect_key(\$data, \$allowed);
+
+        // I form HTML inviano stringa vuota anche per campi opzionali. Per i
+        // nullable usiamo NULL; per colonne con DEFAULT omettiamo il valore e
+        // lasciamo che sia il database ad applicare la propria policy.
+        \$nullable = array_fill_keys((array) (\$definition['nullableFields'] ?? []), true);
+        \$defaulted = array_fill_keys((array) (\$definition['defaultedFields'] ?? []), true);
+        foreach (\$payload as \$payloadField => \$payloadValue) {
+            if (!is_string(\$payloadValue) || trim(\$payloadValue) !== '') {
+                continue;
+            }
+            if (isset(\$defaulted[\$payloadField])) {
+                unset(\$payload[\$payloadField]);
+                continue;
+            }
+            if (isset(\$nullable[\$payloadField])) {
+                \$payload[\$payloadField] = null;
+            }
+        }
+
+        // datetime-local usa il separatore T; normalizziamo al formato SQL
+        // prima dell'insert generico del record collegato.
+        foreach ((array) (\$definition['dateTimeFields'] ?? []) as \$dateTimeField) {
+            if (isset(\$payload[\$dateTimeField]) && is_string(\$payload[\$dateTimeField])) {
+                \$payload[\$dateTimeField] = str_replace('T', ' ', \$payload[\$dateTimeField]);
+            }
+        }
+
+        \$table = (string) (\$definition['table'] ?? '');
+        \$key = (string) (\$definition['key'] ?? '');
+        if (\$table === '' || \$key === '') {
+            throw new RuntimeException('Configurazione record collegato incompleta.');
+        }
+
+        if (!\$this->db->table(\$table)->insert(\$payload)) {
+            throw new RuntimeException('Inserimento record collegato non riuscito: ' . \$table . '.');
+        }
+
+        if (!empty(\$definition['keyAutoIncrement'])) {
+            \$id = \$this->db->insertID();
+            if (\$id === 0 || \$id === '0' || \$id === '') {
+                throw new RuntimeException('Chiave generata non disponibile per ' . \$table . '.');
+            }
+            return is_int(\$id) ? \$id : (string) \$id;
+        }
+
+        \$id = \$payload[\$key] ?? null;
+        if (!is_int(\$id) && !is_string(\$id)) {
+            throw new RuntimeException('La chiave del record collegato deve essere valorizzata: ' . \$key . '.');
+        }
+
+        return \$id;
+    }
+
+PHP : '';
+
         $content = <<<PHP
 <?php
 
@@ -350,6 +578,8 @@ namespace App\Models;
 {$entityUse}
 use CodeIgniter\Database\BaseBuilder;
 use CodeIgniter\Model;
+use RuntimeException;
+use Throwable;
 
 /** Model per {$table}; tutte le query del CRUD sono centralizzate qui. */
 final class {$class} extends Model
@@ -367,7 +597,9 @@ final class {$class} extends Model
     private const LIST_FILTERS = {$filtersCode};
     private const SORTABLE_FIELDS = {$sortableCode};
     private const EXPORT_FIELDS = {$exportFieldsCode};
+    private const PRIMARY_KEYS = {$primaryKeysCode};
     private const RELATION_SEARCHES = {$relationSearchCode};
+    private const RELATED_CREATES = {$relatedCreateCode};
     private const COUNT_CACHE_SECONDS = {$countCacheSeconds};
 
     /** Query completa per dettaglio e API. */
@@ -464,12 +696,10 @@ final class {$class} extends Model
 {$csvJoinsCode}
 {$softDataFilter}        \$this->applyListFilters(\$builder, \$filters, true);
 
-        if (\$after !== null && \$after !== '') {
-            \$builder->where('{$table}.{$primaryKey} >', \$after);
-        }
+{$cursorWhere}
 
         return \$builder
-            ->orderBy('{$table}.{$primaryKey}', 'ASC')
+{$exportOrderCode}
             ->limit(max(1, min(5000, \$limit)))
             ->get()
             ->getResultArray();
@@ -618,7 +848,7 @@ final class {$class} extends Model
         }
     }
 
-{$apiMethodsCode}{$optionsMethodsCode}    public function relationOptions(): array
+{$createRecordMethodsCode}{$parentJoinMethodsCode}{$apiMethodsCode}{$optionsMethodsCode}    public function relationOptions(): array
     {
         return [
 {$optionMapCode}
@@ -811,5 +1041,15 @@ PHP;
 
         return 'TRIM(CONCAT(' . implode(', ', $sqlParts) . '))';
     }
+
+    private function selectExpression(string $table, string $field, string $type): string
+    {
+        if (FieldPolicy::isSpatial($type)) {
+            return "ST_AsText({$table}.{$field}) AS {$field}";
+        }
+
+        return "{$table}.{$field} AS {$field}";
+    }
+
 
 }

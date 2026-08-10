@@ -3,6 +3,7 @@ namespace App\Controllers\MyCrud;
 
 use App\Controllers\BaseController;
 use App\Libraries\MyCrud\Core\MenuBuilderService;
+use App\Libraries\MyCrud\Config\MenuConfigRepository;
 use App\Libraries\MyCrud\Core\Naming;
 use App\Libraries\MyCrud\Schema\DbSchema;
 use App\Libraries\MyCrud\Generators\MenuGenerator;
@@ -67,13 +68,28 @@ class ToolsController extends BaseController
     public function menu(): string
     {
         $data = (new MenuBuilderService())->builderData();
+        $repository = new MenuConfigRepository();
+        $savedMenu = $repository->load();
 
         return view('mycrud/menu_builder', [
             'title' => 'Generatore Menu',
             'items' => $data['items'],
             'related' => $data['related'],
             'relationCount' => $data['relationCount'],
+            'savedMenu' => $savedMenu,
+            'menuConfigPath' => $repository->path(),
         ]);
+    }
+
+    /** Salva la configurazione del Menu Builder senza generare file runtime. */
+    public function saveMenu()
+    {
+        $menu = (new MenuBuilderService())->fromRequest($this->request->getPost());
+        $path = (new MenuConfigRepository())->save($menu);
+
+        return redirect()
+            ->to(site_url('mycrud/tools/menu'))
+            ->with('message', 'Configurazione menu salvata in ' . $path);
     }
 
     /** Genera configurazione e renderer Bootstrap esclusivamente nello staging. */

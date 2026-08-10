@@ -142,10 +142,23 @@ final class AiProjectContextGenerator
                 'runtimeNamespace' => 'App\\Libraries\\Crud',
                 'runtimePath' => 'app/Libraries/Crud/',
                 'crudConfigPath' => 'app/MyCrudConfig/',
+                'menuConfigPath' => 'app/MyCrudConfig/Project/Menu.php',
                 'routesStrategy' => 'modular',
                 'routesPath' => 'app/Routes/',
                 'applicationLayout' => 'app/Views/layouts/default_app.php',
                 'frontend' => ['Bootstrap 5', 'Bootstrap Icons', 'vanilla JavaScript'],
+                'viewStructure' => [
+                    'breadcrumb' => 'Every generated main CRUD view starts with a Bootstrap breadcrumb.',
+                    'pageHeading' => 'Every generated main CRUD view has exactly one page-level h1 containing the table name.',
+                    'pageContext' => 'A small text under h1 identifies Elenco, Nuovo record, Modifica record, Dettaglio record or Cestino.',
+                    'cardHeading' => 'Inner form/detail card headings use h2 to preserve a single h1 per page.',
+                ],
+                'relationalCreate' => [
+                    'mode' => 'select_existing_or_create_parent_inline',
+                    'transaction' => 'parent_and_current_record_same_transaction',
+                    'foreignKeyAuthority' => 'server_generated_parent_primary_key',
+                    'databaseManagedFields' => 'never_written_by_inline_parent_payload',
+                ],
             ],
             'architectureRules' => [
                 'basic' => 'Controller -> Model -> Database',
@@ -172,6 +185,10 @@ final class AiProjectContextGenerator
         $architecture = strtolower((string) ($config['architecture'] ?? 'basic'));
         $class = Naming::tableClass($table);
         $primaryKey = (string) ($config['primaryKey'] ?? 'id');
+        $primaryKeys = array_values(array_map('strval', (array) ($config['primaryKeys'] ?? [$primaryKey])));
+        $tableType = strtoupper((string) ($config['tableType'] ?? 'BASE TABLE'));
+        $isView = !empty($config['isView']);
+        $features = (array) ($config['features'] ?? []);
 
         $fields = [];
         $belongsTo = [];
@@ -187,6 +204,9 @@ final class AiProjectContextGenerator
                 'nullable' => (bool) ($field['nullable'] ?? false),
                 'primary' => (bool) ($field['primary'] ?? false),
                 'autoIncrement' => (bool) ($field['autoIncrement'] ?? false),
+                'databaseManaged' => (bool) ($field['databaseManaged'] ?? false),
+                'default' => $field['default'] ?? null,
+                'extra' => (string) ($field['extra'] ?? ''),
                 'inputType' => (string) ($field['inputType'] ?? 'text'),
                 'searchable' => (bool) ($ui['searchable'] ?? false),
                 'sortable' => (bool) ($ui['sortable'] ?? false),
@@ -213,6 +233,17 @@ final class AiProjectContextGenerator
                     'displayField' => (string) ($field['relationDisplayField'] ?? ''),
                     'displayTemplate' => (string) ($field['relationDisplayTemplate'] ?? ''),
                     'navigation' => (array) ($field['relationNavigation'] ?? []),
+                    'relatedCreate' => [
+                        'available' => !empty($field['relationCreate']['available']),
+                        'enabled' => !empty($field['relationCreate']['enabled']),
+                        'behavior' => 'select existing parent or create a new parent in a Bootstrap Offcanvas using a dedicated parent-field partial',
+                        'transactional' => true,
+                        'foreignKeyAssignedServerSide' => true,
+                        'ui' => 'bootstrap-input-group + bootstrap-offcanvas',
+                        'relationActions' => 'standard FK select uses one Bootstrap input-group; parent open = bi-box-arrow-up-right, relational create = bi-plus-circle + Nuovo',
+                        'partial' => '_related_create_<foreign-key>.php',
+                        'loadsFullParentCreateView' => false,
+                    ],
                 ];
                 $item['foreignKey'] = $relation;
                 $belongsTo[] = $relation;
@@ -232,6 +263,7 @@ final class AiProjectContextGenerator
                 'title' => (string) ($relation['title'] ?? ''),
                 'childTable' => (string) ($relation['childTable'] ?? ''),
                 'foreignKey' => (string) ($relation['foreignKey'] ?? ''),
+                'childCreateAllowed' => !empty($relation['childCreateAllowed']),
                 'columns' => array_values((array) ($relation['columns'] ?? [])),
             ];
         }
@@ -241,6 +273,12 @@ final class AiProjectContextGenerator
             'dbStatus' => 'present',
             'architecture' => $architecture,
             'primaryKey' => $primaryKey,
+            'primaryKeys' => $primaryKeys,
+            'tableType' => $tableType,
+            'isView' => $isView,
+            'readOnly' => !empty($features['readOnly']),
+            'createAllowed' => !empty($features['createAllowed']),
+            'readOnlyReason' => (string) ($features['readOnlyReason'] ?? ''),
             'config' => [
                 'saved' => (bool) ($resolved['saved'] ?? false),
                 'path' => $resolved['configPath'] ? $this->relativePath((string) $resolved['configPath']) : null,
@@ -248,7 +286,7 @@ final class AiProjectContextGenerator
                 'schemaDrift' => (bool) ($resolved['schemaDrift'] ?? false),
             ],
             'components' => $this->components($table, $class, $architecture),
-            'features' => (array) ($config['features'] ?? []),
+            'features' => $features,
             'fields' => $fields,
             'relations' => [
                 'belongsTo' => $belongsTo,
@@ -269,6 +307,12 @@ final class AiProjectContextGenerator
             'dbStatus' => 'missing',
             'architecture' => $architecture,
             'primaryKey' => null,
+            'primaryKeys' => [],
+            'tableType' => 'UNKNOWN',
+            'isView' => false,
+            'readOnly' => true,
+            'createAllowed' => false,
+            'readOnlyReason' => 'database_table_missing',
             'config' => [
                 'saved' => true,
                 'path' => $this->relativePath($this->repository->pathFor($table)),
@@ -320,6 +364,9 @@ final class AiProjectContextGenerator
             'Do not singularize class names derived from table names.',
             'Keep database access in ' . $class . 'Model.',
             'Keep HTTP coordination in ' . $class . 'Controller.',
+            'Preserve the generated view hierarchy: Bootstrap breadcrumb, one page-level h1 with the table name, then a small page-context label.',
+            'Keep inner form/detail card titles at h2 so generated pages contain only one h1.',
+            'For Relational Create, use a Bootstrap input-group for the standard FK select/actions and a Bootstrap Offcanvas with a dedicated parent-field partial that overlays the current view without changing its layout; never embed the full parent create page and never trust a parent foreign key supplied by the browser: use the primary key generated server-side inside the transaction.',
         ];
 
         if (in_array($architecture, ['standard', 'full'], true)) {
@@ -348,11 +395,24 @@ final class AiProjectContextGenerator
             'Do not modify the database automatically.',
             'Do not infer business meaning from field names when it is not explicitly configured.',
             'Treat app/Generated/ as staging and app/ as the operational application.',
+            'Preserve generated CRUD page structure: Bootstrap breadcrumb + one table-name h1 + small page context; inner card headings are h2.',
+            'Relational Create uses a Bootstrap input-group for the standard FK select/actions plus a Bootstrap Offcanvas and a dedicated parent-field partial that overlays the current view without changing its layout, never the full parent create view; the generated parent PK is the only authority for the current record FK.',
             'Prefer existing project conventions over generic framework rewrites.',
         ];
     }
 
     /** @param array<string,mixed> $snapshot */
+    private function accessMode(array $crud): string
+    {
+        if (empty($crud['readOnly'])) {
+            return 'read/write';
+        }
+        if (!empty($crud['createAllowed'])) {
+            return 'create-only (record actions protected)';
+        }
+        return 'read-only';
+    }
+
     private function projectMarkdown(array $snapshot): string
     {
         $crud = (array) ($snapshot['crud'] ?? []);
@@ -385,15 +445,32 @@ final class AiProjectContextGenerator
             '- CRUD routes are modular under `app/Routes/<table>.php`.',
             '- Application layout: `app/Views/layouts/default_app.php`.',
             '- Frontend baseline: Bootstrap 5, Bootstrap Icons and vanilla JavaScript.',
+            '- Every generated main CRUD view starts with a Bootstrap breadcrumb and has exactly one page-level `h1` containing the table name.',
+            '- A `<small class="text-muted">` under the page `h1` identifies the context: Elenco, Nuovo record, Modifica record, Dettaglio record or Cestino.',
+            '- Inner form/detail card headings use `h2`; do not introduce a second page-level `h1`.',
+            '- Relational Create can select an existing belongsTo parent from a standard FK input-group or create a new one inside a Bootstrap Offcanvas rendered from a dedicated parent-field partial that overlays the current view; the full parent create page is never embedded. Parent and current record are written in the same transaction and the generated parent PK is imposed server-side as the FK.',
             '- Do not introduce another frontend framework unless explicitly requested.',
             '- `app/MyCrudConfig/` stores developer decisions; the live database remains authoritative for physical schema.',
             '- `app/Generated/` is staging. Do not assume staged files are the operational application.',
+            '',
+            '## Generated CRUD view structure',
+            '',
+            '```text',
+            'Breadcrumb',
+            'Table-name h1',
+            'small page context',
+            'Toolbar',
+            'Page content / card (h2 for internal title)',
+            '```',
+            '',
+            'The structure above is a project convention and must be preserved when an AI modifies generated or operational CRUD views.',
             '',
             '## Important paths',
             '',
             '- Operational application: `app/`',
             '- Generated staging: `app/Generated/`',
             '- Persistent CRUD configs: `app/MyCrudConfig/`',
+            '- Persistent menu config: `app/MyCrudConfig/Project/Menu.php`',
             '- Runtime CRUD libraries: `app/Libraries/Crud/`',
             '- Modular routes: `app/Routes/`',
             '- Detailed AI project map: `docs/ai/project.json`',
@@ -401,19 +478,21 @@ final class AiProjectContextGenerator
             '',
             '## CRUD map',
             '',
-            '| Table | Architecture | DB | Primary key | Main controller |',
-            '| --- | --- | --- | --- | --- |',
+            '| Table | Architecture | DB | Type | Primary key(s) | Mode | Main controller |',
+            '| --- | --- | --- | --- | --- | --- | --- |',
         ];
 
         foreach ($crud as $table => $item) {
             $item = (array) $item;
             $components = (array) ($item['components'] ?? []);
             $lines[] = sprintf(
-                '| `%s` | %s | %s | `%s` | `%s` |',
+                '| `%s` | %s | %s | `%s` | `%s` | %s | `%s` |',
                 $this->md((string) $table),
                 ucfirst((string) ($item['architecture'] ?? 'basic')),
                 ($item['dbStatus'] ?? 'present') === 'present' ? 'present' : 'missing',
-                $this->md((string) ($item['primaryKey'] ?? '')),
+                $this->md((string) ($item['tableType'] ?? 'UNKNOWN')),
+                $this->md(implode(', ', array_map('strval', (array) ($item['primaryKeys'] ?? [])))),
+                $this->accessMode($item),
                 $this->md((string) ($components['controller'] ?? ''))
             );
         }
@@ -451,7 +530,10 @@ final class AiProjectContextGenerator
             '',
             '- Architecture: **' . $architecture . '**',
             '- Database status: **' . (string) ($crud['dbStatus'] ?? 'unknown') . '**',
-            '- Primary key: `' . $this->md((string) ($crud['primaryKey'] ?? '')) . '`',
+            '- Primary key(s): `' . $this->md(implode(', ', array_map('strval', (array) ($crud['primaryKeys'] ?? [])))) . '`',
+            '- DB object type: **' . $this->md((string) ($crud['tableType'] ?? 'UNKNOWN')) . '**',
+            '- Access mode: **' . $this->accessMode($crud) . '**',
+            '- Read-only reason: `' . $this->md((string) ($crud['readOnlyReason'] ?? '')) . '`',
             '',
             '## Components',
             '',
@@ -464,6 +546,16 @@ final class AiProjectContextGenerator
         if (!empty($crud['warning'])) {
             $lines = array_merge($lines, ['', '## Warning', '', (string) $crud['warning']]);
         }
+
+        $lines = array_merge($lines, [
+            '',
+            '## View structure',
+            '',
+            '- Main views use Bootstrap breadcrumb navigation.',
+            '- The page-level `h1` contains the table name: `' . $this->md($table) . '`.',
+            '- A muted small label identifies the current context (Elenco / Nuovo record / Modifica record / Dettaglio record / Cestino).',
+            '- Internal form/detail card titles use `h2`, not another `h1`.',
+        ]);
 
         $fields = (array) ($crud['fields'] ?? []);
         if ($fields !== []) {
@@ -509,6 +601,10 @@ final class AiProjectContextGenerator
                     : (string) ($relation['displayField'] ?? '');
                 if ($display !== '') {
                     $line .= ' (display: `' . $this->md($display) . '`)';
+                }
+                $relatedCreate = (array) ($relation['relatedCreate'] ?? []);
+                if (!empty($relatedCreate['enabled'])) {
+                    $line .= ' — **Relational Create enabled**: select existing from the FK input-group or create parent in a Bootstrap Offcanvas using a dedicated parent-field partial (not the full parent create page); generated parent PK is assigned server-side as FK in the same transaction.';
                 }
                 $lines[] = $line;
             }

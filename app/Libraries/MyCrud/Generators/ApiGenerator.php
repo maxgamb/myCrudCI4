@@ -18,6 +18,8 @@ final class ApiGenerator
         $pk = (string) $config['primaryKey'];
         $resource = (string) ($config['classes']['resource'] ?? (preg_replace('/ApiController$/', 'Resource', $api) ?: $api . 'Resource'));
         $softDeleteField = (string) ($config['softDelete']['field'] ?? 'deleted_at');
+        $readOnly = !empty($config['features']['readOnly']);
+        $recordDetail = !empty($config['features']['recordDetail']);
         $timestampsEnabled = !empty($config['features']['timestamps'])
             && isset($config['fields']['created_at'], $config['fields']['updated_at']);
 
@@ -31,7 +33,8 @@ final class ApiGenerator
             $ui = (array) ($field['ui'] ?? []);
             $attributes = (array) ($field['attributes']['boolean'] ?? []);
             $primaryAuto = !empty($field['primary']) && !empty($field['autoIncrement']);
-            $managedField = (!empty($config['features']['softDeletes']) && $name === $softDeleteField)
+            $managedField = !empty($field['databaseManaged'])
+                || (!empty($config['features']['softDeletes']) && $name === $softDeleteField)
                 || ($timestampsEnabled && in_array($name, ['created_at', 'updated_at'], true));
             $index = (array) ($field['index'] ?? []);
             $indexEligible = !empty($index['primary'])
@@ -48,7 +51,8 @@ final class ApiGenerator
             // gli stessi campi gestiti dal form web, esclusi quelli amministrati
             // dal framework o dichiarati readonly/disabled.
             if (
-                !$primaryAuto
+                !$readOnly
+                && !$primaryAuto
                 && !$managedField
                 && !empty($ui['visibleForm'])
                 && !in_array('disabled', $attributes, true)
@@ -270,39 +274,7 @@ PHP : '';
         $serviceUse = "use App\\Services\\{$service};";
         $rulesUse = "use App\\Validation\\{$rules};";
 
-        $controllerContent = <<<PHP
-<?php
-
-declare(strict_types=1);
-
-namespace App\Controllers\Api\V1;
-
-{$resourceUse}
-use App\Controllers\Api\BaseApiController;
-{$serviceUse}
-{$rulesUse}
-use RuntimeException;
-use Throwable;
-
-/** API REST v1 per la risorsa {$table}. */
-final class {$api} extends BaseApiController
-{
-    public function __construct(private readonly {$service} \$service = new {$service}())
-    {
-    }
-
-    public function index()
-    {
-        try {
-            \$query = (array) \$this->request->getGet();
-            \$query['perPage'] = \$this->safePerPage();
-            \$result = \$this->service->apiList(\$query, {$resource}::filterableFields(), {$resource}::sortableFields());
-            return \$this->success({$resource}::collection(\$result['rows']), \$result['meta'], \$result['links']);
-        } catch (Throwable \$e) {
-            return \$this->internalError(\$e);
-        }
-    }
-
+        $recordApiMethod = $recordDetail ? <<<PHP
     public function show(int|string \$id)
     {
         try {
@@ -314,6 +286,9 @@ final class {$api} extends BaseApiController
         }
     }
 
+PHP : '';
+
+        $writeApiMethods = $readOnly ? '' : <<<PHP
     public function create()
     {
         \$data = {$resource}::writableData(\$this->payload());
@@ -350,7 +325,6 @@ final class {$api} extends BaseApiController
         if (\$data === []) {
             return \$this->error('EMPTY_PAYLOAD', 'Nessun campo scrivibile ricevuto.', 422);
         }
-
         \$rules = {$rules}::updateRules(\$id);
         if (\$partial) {
             \$rules = array_intersect_key(\$rules, \$data);
@@ -358,7 +332,6 @@ final class {$api} extends BaseApiController
         if (\$rules !== [] && !\$this->validateData(\$data, \$rules, {$rules}::messages())) {
             return \$this->error('VALIDATION_ERROR', 'Dati non validi.', 422, \$this->validator->getErrors());
         }
-
         try {
             \$this->service->find(\$id);
             \$this->service->update(\$id, \$data);
@@ -387,7 +360,44 @@ final class {$api} extends BaseApiController
         } catch (Throwable \$e) {
             return \$this->internalError(\$e);
         }
-    }{$softMethods}
+    }
+
+PHP;
+
+        $controllerContent = <<<PHP
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controllers\Api\V1;
+
+{$resourceUse}
+use App\Controllers\Api\BaseApiController;
+{$serviceUse}
+{$rulesUse}
+use RuntimeException;
+use Throwable;
+
+/** API REST v1 per la risorsa {$table}. */
+final class {$api} extends BaseApiController
+{
+    public function __construct(private readonly {$service} \$service = new {$service}())
+    {
+    }
+
+    public function index()
+    {
+        try {
+            \$query = (array) \$this->request->getGet();
+            \$query['perPage'] = \$this->safePerPage();
+            \$result = \$this->service->apiList(\$query, {$resource}::filterableFields(), {$resource}::sortableFields());
+            return \$this->success({$resource}::collection(\$result['rows']), \$result['meta'], \$result['links']);
+        } catch (Throwable \$e) {
+            return \$this->internalError(\$e);
+        }
+    }
+
+{$recordApiMethod}{$writeApiMethods}{$softMethods}
 }
 
 PHP;

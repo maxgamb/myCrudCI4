@@ -9,7 +9,7 @@
                 Quick globale
             </h1>
             <p class="text-muted mb-0">
-                Generazione rapida basata solo su informazioni certe del database.
+                Generazione rapida: schema dal database, personalizzazioni già salvate preservate.
             </p>
         </div>
         <span class="badge text-bg-primary fs-6"><?= count($tables) ?> tabelle disponibili</span>
@@ -66,15 +66,16 @@
 
                         <div class="alert alert-info small mt-3 mb-0">
                             <i class="bi bi-save"></i>
-                            In myCrudGpt 2.8 ogni generazione reale salva anche la configurazione
-                            versionabile in <code>app/MyCrudConfig/</code>.
+                            In myCrudGpt 2.8 ogni generazione reale aggiorna la configurazione
+                            versionabile in <code>app/MyCrudConfig/</code>. Se esiste già, le scelte
+                            salvate nel Builder vengono mantenute e unite allo schema DB corrente.
                         </div>
 
                         <div class="alert alert-light border small mt-3 mb-0">
                             <i class="bi bi-diagram-3"></i>
-                            <strong>Quick = DB-driven.</strong> Le FK vengono riconosciute e usano
-                            inizialmente la chiave referenziata. Descrizioni, navigazione, filtri rapidi
-                            e comportamento applicativo si configurano nel Builder.
+                            <strong>Quick = schema DB + scelte salvate.</strong> Per una FK nuova la Quick
+                            usa la chiave referenziata come display neutro e abilita il link al record padre,
+                            perché la destinazione è certa dallo schema. Le altre opzioni restano al Builder.
                         </div>
                     </div>
                 </div>

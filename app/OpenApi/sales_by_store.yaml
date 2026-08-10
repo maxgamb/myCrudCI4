@@ -1,0 +1,54 @@
+openapi: 3.0.3
+info:
+  title: 'sales_by_store API'
+  version: 1.0.0
+paths:
+  /api/v1/sales_by_store:
+    get:
+      summary: 'Elenco read-only sales_by_store'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['store'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato read-only
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesByStoreListResponse'
+components:
+  schemas:
+    SalesByStoreRead:
+      type: object
+      properties:
+        'store':
+          type: string
+          nullable: true
+          maxLength: 101
+        'manager':
+          type: string
+          nullable: true
+          maxLength: 91
+        'total_sales':
+          type: number
+          format: double
+          nullable: true
+    SalesByStoreListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SalesByStoreRead'
+        meta: { type: object }
+        links: { type: object }

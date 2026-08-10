@@ -2,8 +2,19 @@
 <?= $this->section('content') ?>
 
 <div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-2">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="<?= site_url('/') ?>">Home</a></li>
+            <li class="breadcrumb-item"><a href="<?= site_url('{{TABLE}}') ?>">{{TABLE}}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Cestino</li>
+        </ol>
+    </nav>
+
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="h3 mb-0">Cestino</h1>
+        <div>
+            <h1 class="h3 mb-0">{{TABLE}}</h1>
+            <small class="text-muted">Cestino</small>
+        </div>
         <a href="<?= site_url('{{TABLE}}') ?>" class="btn btn-secondary">Elenco attivo</a>
     </div>
 

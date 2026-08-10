@@ -55,6 +55,13 @@
                         <?php if ($result['status'] === 'error'): ?>
                             <div class="alert alert-danger mb-0"><?= esc($result['message']) ?></div>
                         <?php else: ?>
+                            <div class="small text-body-secondary mb-2">
+                                <i class="bi bi-sliders me-1"></i>
+                                Configurazione: <strong><?= (($result['configSource'] ?? 'database') === 'database+saved-config') ? 'DB + configurazione salvata' : 'solo DB' ?></strong>
+                                <?php if (!empty($result['schemaDrift'])): ?>
+                                    <span class="badge text-bg-warning ms-1">schema drift rilevato</span>
+                                <?php endif ?>
+                            </div>
                             <div class="table-responsive">
                                 <table class="table table-sm align-middle mb-0">
                                     <thead><tr><th>Componente</th><th>Stato</th><th>Percorso</th></tr></thead>

@@ -638,6 +638,15 @@ ksort($childTables);
                                 <span class="badge bg-secondary">PK</span>
     <?php endif; ?>
 
+    <?php if (!empty($field['databaseManaged'])): ?>
+                                <span
+                                    class="badge text-bg-info"
+                                    title="Gestito dal database: <?= esc((string) ($field['default'] ?? '')) ?>; <?= esc((string) ($field['extra'] ?? '')) ?>"
+                                >
+                                    <i class="bi bi-database-lock"></i> DB automatico
+                                </span>
+    <?php endif; ?>
+
     <?php if ($fk): ?>
                                 <span class="badge bg-warning text-dark">
                                     FK → <?= esc($fk['parentTable']) ?>
@@ -676,6 +685,7 @@ ksort($childTables);
                                 <select
                                     name="inputType[<?= esc($fieldName) ?>]"
                                     class="form-select input-type"
+                                    <?= !empty($field['databaseManaged']) ? 'disabled' : '' ?>
                                     >
                                     <?php
                                     $icons = [
@@ -696,6 +706,11 @@ ksort($childTables);
                                         </option>
     <?php endforeach; ?>
                                 </select>
+                                <?php if (!empty($field['databaseManaged'])): ?>
+                                    <div class="form-text text-info-emphasis">
+                                        Gestito dal DB con CURRENT_TIMESTAMP: nessun input viene generato e il valore non viene inviato in INSERT/UPDATE.
+                                    </div>
+                                <?php endif; ?>
                             </div>
 
                             <?php if ($fk): ?>
@@ -771,14 +786,20 @@ ksort($childTables);
                                     ?>
 
                                     <?php foreach ($navigationFlags as $navFlag => $navLabel): ?>
+                                        <?php
+                                        $relatedCreateEnabled = !empty($field['relationCreate']['enabled']);
+                                        $disableCreateParentLink = $navFlag === 'createParentLink' && $relatedCreateEnabled;
+                                        ?>
                                         <div class="form-check form-check-inline">
                                             <input
                                                 type="checkbox"
-                                                class="form-check-input"
+                                                class="form-check-input<?= $navFlag === 'createParentLink' ? ' js-create-parent-link' : '' ?>"
                                                 name="relationNavigation[<?= esc($fieldName) ?>][]"
                                                 value="<?= esc($navFlag) ?>"
                                                 id="<?= esc($fieldName . '_nav_' . $navFlag) ?>"
-                                                <?= !empty($navigation[$navFlag]) ? 'checked' : '' ?>
+                                                data-field="<?= esc($fieldName) ?>"
+                                                <?= (!$disableCreateParentLink && !empty($navigation[$navFlag])) ? 'checked' : '' ?>
+                                                <?= $disableCreateParentLink ? 'disabled' : '' ?>
                                             >
                                             <label
                                                 class="form-check-label"
@@ -792,6 +813,35 @@ ksort($childTables);
                                     <div class="form-text">
                                         La FK ricevuta via URL viene validata sulla tabella padre prima di precompilare hidden, select, select AJAX o input normale.
                                     </div>
+                                </div>
+
+                                <?php $relatedCreate = (array) ($field['relationCreate'] ?? []); ?>
+                                <div class="col-12">
+                                    <label class="form-label d-block">Creazione record collegato</label>
+                                    <?php if (!empty($relatedCreate['available'])): ?>
+                                        <div class="form-check">
+                                            <input
+                                                type="checkbox"
+                                                class="form-check-input js-related-create"
+                                                name="relationCreate[<?= esc($fieldName) ?>]"
+                                                value="1"
+                                                id="<?= esc($fieldName . '_related_create') ?>"
+                                                data-field="<?= esc($fieldName) ?>"
+                                                <?= !empty($relatedCreate['enabled']) ? 'checked' : '' ?>
+                                            >
+                                            <label class="form-check-label" for="<?= esc($fieldName . '_related_create') ?>">
+                                                Consenti “Seleziona oppure crea nuovo” nello stesso form
+                                            </label>
+                                        </div>
+                                        <div class="form-text">
+                                            Il nuovo record padre viene creato nella stessa transazione; la chiave generata viene usata come FK del record corrente.
+                                            Quando questa opzione è attiva, “Link Nuovo padre” viene disattivato per non abbandonare e perdere il form corrente.
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="form-text text-muted">
+                                            Non disponibile: il padre deve essere una BASE TABLE con PK singola e campi obbligatori gestibili dal form.
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             <?php endif; ?>
 
@@ -834,9 +884,10 @@ ksort($childTables);
                                             name="attrBool[<?= esc($fieldName) ?>][]"
                                             value="<?= esc($attribute) ?>"
                                             id="<?= esc($fieldName . '_' . $attribute) ?>"
+                                            <?= !empty($field['databaseManaged']) ? 'disabled' : '' ?>
                                                 <?php
                                                 $checked = in_array($attribute, $field['attributes']['boolean'] ?? [], true);
-                                                if ($attribute === 'required' && (($field['nullable'] ?? true) === false) && empty($field['autoIncrement']) && !in_array('disabled', $field['attributes']['boolean'] ?? [], true)
+                                                if ($attribute === 'required' && empty($field['databaseManaged']) && (($field['nullable'] ?? true) === false) && empty($field['autoIncrement']) && !in_array('disabled', $field['attributes']['boolean'] ?? [], true)
                                                 ) {
                                                     $checked = true;
                                                 }
@@ -876,6 +927,7 @@ ksort($childTables);
                                             name="ui[<?= esc($fieldName) ?>][]"
                                             value="<?= esc($flag) ?>"
                                             id="<?= esc($fieldName . '_ui_' . $flag) ?>"
+                                            <?= ($flag === 'visibleForm' && !empty($field['databaseManaged'])) ? 'disabled' : '' ?>
                                             <?= !empty($field['ui'][$flag]) ? 'checked' : '' ?>
                                         >
                                         <label class="form-check-label" for="<?= esc($fieldName . '_ui_' . $flag) ?>">
@@ -1037,6 +1089,34 @@ ksort($childTables);
         }
 
         // Le architetture Basic, Standard e Full condividono lo stesso Builder dei campi.
+
+        // Relational Create e il link "Nuovo padre" sono UX alternative.
+        // La creazione inline preserva i dati del form corrente, quindi quando è attiva
+        // il link verso il Create separato del padre viene spento e disabilitato.
+        function syncRelatedCreateParentLink(fieldName) {
+            const relatedCreate = document.querySelector('.js-related-create[data-field="' + CSS.escape(fieldName) + '"]');
+            const createParentLink = document.querySelector('.js-create-parent-link[data-field="' + CSS.escape(fieldName) + '"]');
+            if (!relatedCreate || !createParentLink) {
+                return;
+            }
+
+            if (relatedCreate.checked) {
+                createParentLink.checked = false;
+                createParentLink.disabled = true;
+                createParentLink.title = 'Disattivato: il nuovo padre viene creato nello stesso form.';
+            } else {
+                createParentLink.disabled = false;
+                createParentLink.title = '';
+            }
+        }
+
+        document.querySelectorAll('.js-related-create').forEach(function (checkbox) {
+            const fieldName = checkbox.dataset.field || '';
+            checkbox.addEventListener('change', function () {
+                syncRelatedCreateParentLink(fieldName);
+            });
+            syncRelatedCreateParentLink(fieldName);
+        });
 
         document.querySelectorAll('.field-block').forEach(function (block) {
             const disabled = block.querySelector('input[value="disabled"]');

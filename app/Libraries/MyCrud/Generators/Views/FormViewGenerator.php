@@ -2,10 +2,11 @@
 namespace App\Libraries\MyCrud\Generators\Views;
 
 use App\Libraries\MyCrud\Core\FieldPolicy;
+use App\Libraries\MyCrud\Core\Naming;
 
 final class FormViewGenerator extends AbstractViewGenerator
 {
-    /** @return array{form:string,create:string,edit:string} */
+    /** @return array{form:string,create:string,edit:string,relatedPartials:array<string,string>} */
     public function generate(array $config): array
     {
         $table = (string) $config['table'];
@@ -16,14 +17,17 @@ final class FormViewGenerator extends AbstractViewGenerator
                 'fields' => $this->buildFields($config),
             ]),
             'create' => $this->templates->render('views/create.tpl', [
+                'table'     => $table,
                 'view_path' => $table,
                 'route'     => $table,
             ]),
             'edit' => $this->templates->render('views/edit.tpl', [
+                'table'       => $table,
                 'view_path'   => $table,
                 'route'       => $table,
                 'primary_key' => (string) $config['primaryKey'],
             ]),
+            'relatedPartials' => $this->buildRelatedCreatePartials($config),
         ];
     }
 
@@ -42,6 +46,9 @@ final class FormViewGenerator extends AbstractViewGenerator
             }
 
             if (!empty($field['primary']) && !empty($field['autoIncrement'])) {
+                continue;
+            }
+            if (!empty($field['databaseManaged'])) {
                 continue;
             }
 
@@ -76,10 +83,11 @@ final class FormViewGenerator extends AbstractViewGenerator
                 $attributes = trim($attributes . " <?= \$row === null ? 'required' : '' ?>");
             }
             $label = $this->labelExpression($field, $name);
+            $rowValue = $this->objectProperty('row', $name);
             $value = match ($type) {
                 'password', 'file', 'image' => "old('{$name}', '')",
-                'datetime-local' => "old('{$name}', isset(\$row->{$name}) ? str_replace(' ', 'T', substr((string) \$row->{$name}, 0, 16)) : (\$context['{$name}'] ?? ''))",
-                default => "old('{$name}', \$row->{$name} ?? (\$context['{$name}'] ?? ''))",
+                'datetime-local' => "old('{$name}', isset({$rowValue}) ? str_replace(' ', 'T', substr((string) {$rowValue}, 0, 16)) : (\$context['{$name}'] ?? ''))",
+                default => "old('{$name}', {$rowValue} ?? (\$context['{$name}'] ?? ''))",
             };
             $errorId = $name . '-error';
             $relationMode = strtolower((string) ($field['relationMode'] ?? ''));
@@ -89,8 +97,23 @@ final class FormViewGenerator extends AbstractViewGenerator
                 $control = $this->buildControl($type, $name, $value, $attributes, $errorId);
             }
 
+            $relatedCreatePanel = '';
             if (!empty($field['foreignKey'])) {
-                $control .= $this->buildRelationNavigation($field, $name, $value);
+                $relationActions = $this->buildRelationNavigation($field, $name, $value);
+                if ($relationActions !== '') {
+                    if ($relationMode === 'ajax') {
+                        // La select AJAX mantiene la propria struttura (hidden + search + risultati):
+                        // le azioni restano subito sotto per non rompere il widget di ricerca.
+                        $control .= '<div class="d-flex gap-1 mt-2 relation-navigation-actions">' . $relationActions . '</div>';
+                    } else {
+                        // FK standard: select/input e azioni correlate formano un unico input-group.
+                        $control = '<div class="input-group crud-relation-input-group">' . "\n" . $control . "\n" . $relationActions . "\n" . '</div>';
+                    }
+                }
+                if (!empty($field['relationCreate']['enabled'])) {
+                    $field['_ownerTable'] = (string) ($config['table'] ?? '');
+                    $relatedCreatePanel = $this->buildRelatedCreatePanel($field, $name);
+                }
             }
             $wrapper = $type === 'hidden' ? 'd-none' : "col-md-{$width}";
 
@@ -112,6 +135,7 @@ PHP;
                         </div>
                     <?php endif; ?>
                 </div>
+{$relatedCreatePanel}
 
 PHP;
         }
@@ -119,13 +143,209 @@ PHP;
         return $output;
     }
 
+    /**
+     * Shell del Relational Create. Il contenuto del padre vive in un partial
+     * dedicato del CRUD corrente (`_related_create_<fk>.php`). L'interfaccia
+     * usa un Bootstrap Offcanvas sovrapposto: la vista/form principale resta
+     * visivamente invariata e non viene mai caricata la create completa del
+     * padre (niente breadcrumb, toolbar, submit o form annidati).
+     */
+    private function buildRelatedCreatePanel(array $field, string $name): string
+    {
+        $definition = (array) ($field['foreignKey']['relatedCreate'] ?? []);
+        if (empty($definition['available']) || (array) ($definition['fields'] ?? []) === []) {
+            return '';
+        }
+
+        $parentTable = (string) ($definition['table'] ?? $field['foreignKey']['parentTable'] ?? 'record collegato');
+        $panelId = 'related_create_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $name);
+        $partial = '_related_create_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $name);
+        $title = htmlspecialchars(Naming::human($parentTable), ENT_QUOTES);
+        $currentTable = htmlspecialchars((string) ($field['_ownerTable'] ?? ''), ENT_QUOTES);
+
+        return <<<PHP
+                <?php if (\$row === null): ?>
+                    <?php
+                    \$relatedNewState = (array) old('_related_new', []);
+                    \$relatedPayloadState = (array) old('_related', []);
+                    \$relatedCreateActive = !empty(\$relatedNewState['{$name}']);
+                    ?>
+                    <div class="col-12">
+                        <input
+                            type="hidden"
+                            name="_related_new[{$name}]"
+                            id="{$panelId}_state"
+                            value="<?= \$relatedCreateActive ? '1' : '0' ?>"
+                        >
+                        <div
+                            id="{$panelId}"
+                            class="offcanvas offcanvas-end crud-related-create-panel"
+                            tabindex="-1"
+                            aria-labelledby="{$panelId}_label"
+                            data-related-field="{$name}"
+                            data-state-target="{$panelId}_state"
+                        >
+                            <div class="offcanvas-header border-bottom">
+                                <div>
+                                    <h2 class="offcanvas-title h5 mb-0" id="{$panelId}_label">Nuovo {$title}</h2>
+                                    <small class="text-muted">Relazione {$name}</small>
+                                </div>
+                                <button
+                                    type="button"
+                                    class="btn-close crud-related-create-cancel"
+                                    data-related-field="{$name}"
+                                    data-state-target="{$panelId}_state"
+                                    data-bs-dismiss="offcanvas"
+                                    aria-label="Annulla nuovo {$title}"
+                                ></button>
+                            </div>
+                            <div class="offcanvas-body">
+                                <div class="alert alert-light border small" role="note">
+                                    Compila i dati del nuovo {$title}. Il record collegato e questo record verranno salvati insieme al submit del form principale, nella stessa transazione.
+                                </div>
+                                <?= view('{$currentTable}/{$partial}', [
+                                    'relatedField'        => '{$name}',
+                                    'relatedCreateActive' => \$relatedCreateActive,
+                                    'relatedPayloadState' => \$relatedPayloadState,
+                                    'errors'              => \$errors,
+                                ]) ?>
+                            </div>
+                            <div class="offcanvas-footer border-top p-3 d-flex justify-content-end">
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary crud-related-create-cancel"
+                                    data-related-field="{$name}"
+                                    data-state-target="{$panelId}_state"
+                                    data-bs-dismiss="offcanvas"
+                                >
+                                    <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
+                                    Annulla nuovo {$title}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+PHP;
+    }
+
+    /** @return array<string,string> */
+    private function buildRelatedCreatePartials(array $config): array
+    {
+        $partials = [];
+        foreach ($this->orderedFields($config) as $name) {
+            $field = (array) ($config['fields'][$name] ?? []);
+            if (empty($field['foreignKey']) || empty($field['relationCreate']['enabled'])) {
+                continue;
+            }
+            $definition = (array) ($field['foreignKey']['relatedCreate'] ?? []);
+            if (empty($definition['available']) || (array) ($definition['fields'] ?? []) === []) {
+                continue;
+            }
+            $safe = preg_replace('/[^a-zA-Z0-9_]/', '_', (string) $name);
+            $partials['_related_create_' . $safe . '.php'] = $this->buildRelatedCreatePartial((string) $name, $definition);
+        }
+        return $partials;
+    }
+
+    private function buildRelatedCreatePartial(string $name, array $definition): string
+    {
+        $panelId = 'related_create_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $name);
+        $rows = '';
+        foreach ((array) ($definition['fields'] ?? []) as $relatedName => $relatedField) {
+            $relatedName = (string) $relatedName;
+            $relatedField = (array) $relatedField;
+            $type = strtolower((string) ($relatedField['inputType'] ?? 'text'));
+            $label = var_export(Naming::human($relatedName), true);
+            $inputId = $panelId . '_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $relatedName);
+            $errorKey = $name . '__related__' . $relatedName;
+            $required = in_array('required', (array) ($relatedField['attributes']['boolean'] ?? []), true);
+            $maxLength = trim((string) ($relatedField['attributes']['values']['maxlength'] ?? ''));
+            $requiredAttr = $required ? ' required' : '';
+            $maxLengthAttr = $maxLength !== '' ? ' maxlength="' . htmlspecialchars($maxLength, ENT_QUOTES) . '"' : '';
+            $valueExpr = "(string) ((\$relatedPayloadState[" . var_export($name, true) . "][" . var_export($relatedName, true) . "] ?? ''))";
+            $invalid = "<?= isset(\$errors[" . var_export($errorKey, true) . "]) ? 'is-invalid' : '' ?>";
+
+            if ($type === 'textarea') {
+                $control = <<<PHP
+                <textarea
+                    name="_related[{$name}][{$relatedName}]"
+                    id="{$inputId}"
+                    class="form-control {$invalid} crud-related-create-field"
+                    data-related-field="{$name}"
+                    <?= \$relatedCreateActive ? '' : 'disabled' ?>
+                    {$requiredAttr}{$maxLengthAttr}
+                ><?= esc({$valueExpr}) ?></textarea>
+PHP;
+            } elseif ($type === 'checkbox') {
+                $control = <<<PHP
+                <input
+                    type="hidden"
+                    name="_related[{$name}][{$relatedName}]"
+                    value="0"
+                    class="crud-related-create-field"
+                    data-related-field="{$name}"
+                    <?= \$relatedCreateActive ? '' : 'disabled' ?>
+                >
+                <div class="form-check">
+                    <input
+                        type="checkbox"
+                        name="_related[{$name}][{$relatedName}]"
+                        id="{$inputId}"
+                        value="1"
+                        class="form-check-input crud-related-create-field"
+                        data-related-field="{$name}"
+                        <?= \$relatedCreateActive ? '' : 'disabled' ?>
+                        <?= !empty(\$relatedPayloadState['{$name}']['{$relatedName}']) ? 'checked' : '' ?>
+                    >
+                </div>
+PHP;
+            } else {
+                $htmlType = in_array($type, ['text', 'number', 'email', 'password', 'date', 'datetime-local', 'time', 'url', 'tel'], true)
+                    ? $type
+                    : 'text';
+                $control = <<<PHP
+                <input
+                    type="{$htmlType}"
+                    name="_related[{$name}][{$relatedName}]"
+                    id="{$inputId}"
+                    value="<?= esc({$valueExpr}) ?>"
+                    class="form-control {$invalid} crud-related-create-field"
+                    data-related-field="{$name}"
+                    <?= \$relatedCreateActive ? '' : 'disabled' ?>
+                    {$requiredAttr}{$maxLengthAttr}
+                >
+PHP;
+            }
+
+            $rows .= <<<PHP
+            <div class="col-md-6">
+                <label for="{$inputId}" class="form-label"><?= esc({$label}) ?></label>
+{$control}\n                <?php if (!empty(\$errors['{$errorKey}'])): ?>
+                    <div class="invalid-feedback d-block"><?= esc(\$errors['{$errorKey}']) ?></div>
+                <?php endif; ?>
+            </div>
+PHP;
+        }
+
+        return <<<PHP
+<?php
+\$relatedCreateActive = !empty(\$relatedCreateActive);
+\$relatedPayloadState = (array) (\$relatedPayloadState ?? []);
+\$errors = (array) (\$errors ?? []);
+?>
+<div class="row g-3">
+{$rows}</div>
+PHP;
+    }
+
     private function buildAjaxRelationControl(array $config, array $field, string $name, string $value, string $errorId): string
     {
         $table = (string) ($config['table'] ?? '');
         $relation = (array) ($field['foreignKey'] ?? []);
         $alias = (string) ($relation['alias'] ?? '');
+        $rowAlias = $alias !== '' ? $this->objectProperty('row', $alias) : '';
         $labelValue = $alias !== ''
-            ? "old('{$name}__label', \$row->{$alias} ?? (\$contextLabels['{$name}'] ?? ''))"
+            ? "old('{$name}__label', {$rowAlias} ?? (\$contextLabels['{$name}'] ?? ''))"
             : "old('{$name}__label', \$contextLabels['{$name}'] ?? '')";
         $invalid = "<?= isset(\$errors['{$name}']) ? 'is-invalid' : '' ?>";
         $minChars = max(0, min(10, (int) (config('MyCrud')->relationAjaxMinimumChars ?? 2)));
@@ -165,14 +385,16 @@ PHP;
         $relation = (array) ($field['foreignKey'] ?? []);
         $navigation = (array) ($field['relationNavigation'] ?? []);
         $parentTable = (string) ($relation['parentTable'] ?? '');
+        $relatedCreateEnabled = !empty($field['relationCreate']['enabled'])
+            && !empty($relation['relatedCreate']['available']);
 
-        if ($parentTable === '' || (empty($navigation['parentLink']) && empty($navigation['createParentLink']))) {
+        if ($parentTable === '') {
             return '';
         }
 
-        $parentLink = '';
+        $actions = '';
         if (!empty($navigation['parentLink'])) {
-            $parentLink = <<<PHP
+            $actions .= <<<PHP
                         <a
                             href="#"
                             target="_blank"
@@ -183,14 +405,13 @@ PHP;
                             title="Apri record padre"
                             aria-label="Apri record padre"
                         >
-                            <i class="bi bi-box-arrow-up-right"></i>
+                            <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
                         </a>
 PHP;
         }
 
-        $createLink = '';
         if (!empty($navigation['createParentLink'])) {
-            $createLink = <<<PHP
+            $actions .= <<<PHP
                         <a
                             href="<?= site_url('{$parentTable}/create') ?>"
                             target="_blank"
@@ -199,15 +420,37 @@ PHP;
                             title="Nuovo record padre"
                             aria-label="Nuovo record padre"
                         >
-                            <i class="bi bi-plus-lg"></i>
+                            <i class="bi bi-plus-lg" aria-hidden="true"></i>
                         </a>
 PHP;
         }
 
-        return <<<PHP
-                    <div class="d-flex gap-1 mt-2 relation-navigation-actions">
-{$parentLink}{$createLink}                    </div>
+        if ($relatedCreateEnabled) {
+            $panelId = 'related_create_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $name);
+            $title = htmlspecialchars(Naming::human($parentTable), ENT_QUOTES);
+            $actions .= <<<PHP
+                    <?php if (\$row === null): ?>
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary crud-related-create-toggle"
+                            id="{$panelId}_toggle"
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#{$panelId}"
+                            aria-controls="{$panelId}"
+                            data-related-field="{$name}"
+                            data-panel-target="{$panelId}"
+                            data-state-target="{$panelId}_state"
+                            title="Crea nuovo {$title}"
+                            aria-label="Crea nuovo {$title}"
+                        >
+                            <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+                            Nuovo
+                        </button>
+                    <?php endif; ?>
 PHP;
+        }
+
+        return $actions;
     }
 
     private function buildControl(string $type, string $name, string $value, string $attributes, string $errorId): string

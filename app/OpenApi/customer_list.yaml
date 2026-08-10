@@ -1,0 +1,71 @@
+openapi: 3.0.3
+info:
+  title: 'customer_list API'
+  version: 1.0.0
+paths:
+  /api/v1/customer_list:
+    get:
+      summary: 'Elenco read-only customer_list'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['ID'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato read-only
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerListListResponse'
+components:
+  schemas:
+    CustomerListRead:
+      type: object
+      properties:
+        'ID':
+          type: integer
+          format: int32
+        'name':
+          type: string
+          nullable: true
+          maxLength: 91
+        'address':
+          type: string
+          maxLength: 50
+        'zip code':
+          type: string
+          nullable: true
+          maxLength: 10
+        'phone':
+          type: string
+          maxLength: 20
+        'city':
+          type: string
+          maxLength: 50
+        'country':
+          type: string
+          maxLength: 50
+        'notes':
+          type: string
+          maxLength: 6
+        'SID':
+          type: integer
+          format: int32
+    CustomerListListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerListRead'
+        meta: { type: object }
+        links: { type: object }

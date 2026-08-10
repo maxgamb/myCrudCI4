@@ -7,16 +7,17 @@ $errors = $errors ?? [];
 $options = $options ?? [];
 $context = $context ?? [];
 $contextLabels = $contextLabels ?? [];
+$navigationContext = (array) ($navigationContext ?? []);
 $submissionToken = $submissionToken ?? '';
 ?>
 
 <div class="container py-4">
     <div class="card shadow-sm">
         <div class="card-header">
-            <h1 class="h4 mb-0">
+            <h2 class="h4 mb-0">
                 <i class="bi <?= esc($formIcon) ?>"></i>
                 <?= esc($formTitle) ?>
-            </h1>
+            </h2>
         </div>
 
         <div class="card-body">
@@ -35,6 +36,9 @@ $submissionToken = $submissionToken ?? '';
             ]) ?>
 
                 <input type="hidden" name="_submission_token" value="<?= esc($submissionToken) ?>">
+                <?php foreach ($navigationContext as $contextField => $contextValue): ?>
+                    <input type="hidden" name="_context[<?= esc((string) $contextField) ?>]" value="<?= esc((string) $contextValue) ?>">
+                <?php endforeach; ?>
 
 {{FIELDS}}                <div class="col-12 d-flex gap-2">
                     <button type="submit" class="btn btn-success" id="submitButton">
@@ -45,9 +49,6 @@ $submissionToken = $submissionToken ?? '';
                         </span>
                     </button>
 
-                    <a href="<?= site_url('{{TABLE}}') ?>" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left"></i> Annulla
-                    </a>
                 </div>
 
             <?= form_close() ?>
@@ -155,6 +156,47 @@ document.addEventListener('DOMContentLoaded', function () {
         refreshParentLink(link);
         source?.addEventListener('change', function () { refreshParentLink(link); });
         source?.addEventListener('input', function () { refreshParentLink(link); });
+    });
+
+    // Relational Create tramite Bootstrap Offcanvas. Il pannello si
+    // sovrappone alla vista senza alterare il layout del form principale.
+    // La select/relazione originaria resta visivamente e funzionalmente
+    // invariata; quando _related_new[field]=1 il server ignora la FK esistente
+    // e crea il nuovo parent nella stessa transazione del record principale.
+    const setRelatedCreateState = function (panel, active) {
+        const field = String(panel.dataset.relatedField || '');
+        const state = document.getElementById(String(panel.dataset.stateTarget || ''));
+        if (field === '' || !state) return;
+
+        state.value = active ? '1' : '0';
+        panel.querySelectorAll('.crud-related-create-field').forEach(function (input) {
+            input.disabled = !active;
+        });
+    };
+
+    document.querySelectorAll('.crud-related-create-panel.offcanvas').forEach(function (panel) {
+        const field = String(panel.dataset.relatedField || '');
+        const state = document.getElementById(String(panel.dataset.stateTarget || ''));
+        if (field === '' || !state) return;
+
+        setRelatedCreateState(panel, String(state.value || '0') === '1');
+
+        panel.addEventListener('show.bs.offcanvas', function () {
+            setRelatedCreateState(panel, true);
+        });
+
+        // Chiudere l'Offcanvas equivale ad annullare la creazione inline.
+        // I valori digitati restano nel DOM e possono essere recuperati
+        // riaprendo il pannello, ma non vengono inviati finché lo stato è 0.
+        panel.addEventListener('hidden.bs.offcanvas', function () {
+            setRelatedCreateState(panel, false);
+        });
+
+        // Se la validazione server ha restituito errori sul nuovo parent,
+        // riapri automaticamente il pannello per mostrare campi ed errori.
+        if (String(state.value || '0') === '1' && window.bootstrap?.Offcanvas) {
+            window.bootstrap.Offcanvas.getOrCreateInstance(panel).show();
+        }
     });
 
     form.addEventListener('submit', function (event) {

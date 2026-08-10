@@ -1,0 +1,71 @@
+openapi: 3.0.3
+info:
+  title: 'film_list API'
+  version: 1.0.0
+paths:
+  /api/v1/film_list:
+    get:
+      summary: 'Elenco read-only film_list'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['FID'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato read-only
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilmListListResponse'
+components:
+  schemas:
+    FilmListRead:
+      type: object
+      properties:
+        'FID':
+          type: integer
+          format: int32
+        'title':
+          type: string
+          maxLength: 128
+        'description':
+          type: string
+          nullable: true
+          maxLength: 65535
+        'category':
+          type: string
+          nullable: true
+          maxLength: 25
+        'price':
+          type: number
+          format: double
+        'length':
+          type: integer
+          format: int32
+          nullable: true
+        'rating':
+          type: string
+          nullable: true
+          maxLength: 5
+        'actors':
+          type: string
+          nullable: true
+          maxLength: 65535
+    FilmListListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilmListRead'
+        meta: { type: object }
+        links: { type: object }

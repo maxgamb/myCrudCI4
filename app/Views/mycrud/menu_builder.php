@@ -12,11 +12,17 @@
 $items = array_values((array) ($items ?? []));
 $related = (array) ($related ?? []);
 $relationCount = (int) ($relationCount ?? 0);
+$savedMenu = is_array($savedMenu ?? null) ? $savedMenu : null;
+$menuConfigPath = (string) ($menuConfigPath ?? '');
 $nextItemIndex = count($items);
 $relatedJson = json_encode(
     $related,
     JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
 ) ?: '{}';
+$savedMenuJson = json_encode(
+    $savedMenu,
+    JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
+) ?: 'null';
 ?>
 
 <div class="container-fluid py-4 menu-builder-page">
@@ -36,6 +42,22 @@ $relatedJson = json_encode(
             Dashboard
         </a>
     </div>
+
+    <?php if (session('message')): ?>
+        <div class="alert alert-success py-2 mb-3">
+            <i class="bi bi-check-circle me-1"></i><?= esc(session('message')) ?>
+        </div>
+    <?php endif ?>
+
+    <?php if ($savedMenu !== null): ?>
+        <div class="alert alert-light border py-2 mb-3 small">
+            <i class="bi bi-save me-1"></i>
+            Configurazione caricata da <code><?= esc($menuConfigPath) ?></code>
+            <?php if (!empty($savedMenu['_meta']['savedAt'])): ?>
+                · <?= esc((string) $savedMenu['_meta']['savedAt']) ?>
+            <?php endif ?>
+        </div>
+    <?php endif ?>
 
     <div class="alert alert-info py-2 mb-3">
         <div class="d-flex gap-2 align-items-start">
@@ -60,8 +82,8 @@ $relatedJson = json_encode(
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label" for="menuType">Layout predefinito</label>
                         <select class="form-select" id="menuType" name="menuType">
-                            <option value="vertical">Verticale</option>
-                            <option value="horizontal">Orizzontale</option>
+                            <option value="vertical" <?= (($savedMenu['type'] ?? 'vertical') === 'vertical') ? 'selected' : '' ?>>Verticale</option>
+                            <option value="horizontal" <?= (($savedMenu['type'] ?? 'vertical') === 'horizontal') ? 'selected' : '' ?>>Orizzontale</option>
                         </select>
                         <div class="form-text">Entrambi i renderer vengono comunque generati.</div>
                     </div>
@@ -76,7 +98,7 @@ $relatedJson = json_encode(
                                 id="enableSearch"
                                 name="enableSearch"
                                 value="1"
-                                checked
+                                <?= ($savedMenu === null || !array_key_exists('search', $savedMenu) || !empty($savedMenu['search'])) ? 'checked' : '' ?>
                             >
                             <label class="form-check-label" for="enableSearch">Ricerca nel menu finale</label>
                         </div>
@@ -90,7 +112,7 @@ $relatedJson = json_encode(
                                 id="showFavorites"
                                 name="showFavorites"
                                 value="1"
-                                checked
+                                <?= ($savedMenu === null || !array_key_exists('favorites', $savedMenu) || !empty($savedMenu['favorites'])) ? 'checked' : '' ?>
                             >
                             <label class="form-check-label" for="showFavorites">Sezione Preferiti</label>
                         </div>
@@ -225,7 +247,7 @@ $relatedJson = json_encode(
                         </div>
                     </div>
 
-                    <div class="card-body p-2" id="menuStructure">
+                    <div class="card-body p-2 menu-structure-zone" id="menuStructure">
                         <div class="menu-structure-empty text-center text-body-secondary py-5" id="structureEmpty">
                             <i class="bi bi-layout-sidebar fs-2 d-block mb-2"></i>
                             <strong>Nessun gruppo creato</strong>
@@ -282,10 +304,20 @@ $relatedJson = json_encode(
                 La generazione scrive esclusivamente in <code>app/Generated/</code>.
             </div>
 
-            <button type="submit" class="btn btn-primary">
-                <i class="bi bi-magic"></i>
-                Genera Menu
-            </button>
+            <div class="d-flex flex-wrap gap-2">
+                <button
+                    type="submit"
+                    class="btn btn-outline-primary"
+                    formaction="<?= site_url('mycrud/tools/menu/save') ?>"
+                >
+                    <i class="bi bi-save"></i>
+                    Salva configurazione
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-magic"></i>
+                    Genera Menu
+                </button>
+            </div>
         </div>
     </form>
 </div>
@@ -324,7 +356,8 @@ $relatedJson = json_encode(
 <style>
 .menu-builder-page .min-w-0 { min-width: 0; }
 .menu-sticky-panel { position: sticky; top: .75rem; }
-.menu-source-zone { max-height: calc(100vh - 330px); overflow-y: auto; min-height: 260px; }
+.menu-source-zone,
+.menu-structure-zone { max-height: calc(100vh - 330px); overflow-y: auto; min-height: 260px; }
 .menu-builder-item { transition: border-color .15s ease, box-shadow .15s ease, opacity .15s ease; }
 .menu-builder-item:hover { border-color: var(--bs-primary-border-subtle) !important; }
 .menu-builder-item.dragging { opacity: .45; }
@@ -344,7 +377,8 @@ $relatedJson = json_encode(
 .relation-table-button { text-align: left; }
 @media (max-width: 1199.98px) {
     .menu-sticky-panel { position: static; }
-    .menu-source-zone { max-height: 520px; }
+    .menu-source-zone,
+    .menu-structure-zone { max-height: 520px; }
 }
 </style>
 
@@ -366,6 +400,7 @@ $relatedJson = json_encode(
     const preview = document.getElementById('menuPreview');
     const subgroupTemplate = document.getElementById('subgroupTemplate');
     const relatedData = <?= $relatedJson ?>;
+    const savedMenu = <?= $savedMenuJson ?>;
 
     let nextItemIndex = <?= (int) $nextItemIndex ?>;
     let nextZoneId = 1;
@@ -1040,6 +1075,84 @@ $relatedJson = json_encode(
         preview.innerHTML = html;
     }
 
+    function applySavedItem(item, saved) {
+        if (!item || !saved) return;
+        const label = item.querySelector('[data-item-label]');
+        const route = item.querySelector('[data-item-route]');
+        const icon = item.querySelector('[data-item-icon]');
+        const favorite = item.querySelector('[data-item-favorite]');
+
+        if (label) label.value = String(saved.label ?? label.value ?? '');
+        if (route) route.value = String(saved.route ?? route.value ?? '');
+        if (icon) icon.value = String(saved.icon ?? icon.value ?? 'bi-link-45deg');
+        if (favorite) {
+            favorite.checked = saved.favorite === true;
+            const star = favorite.closest('label')?.querySelector('i');
+            star?.classList.toggle('bi-star-fill', favorite.checked);
+            star?.classList.toggle('bi-star', !favorite.checked);
+        }
+    }
+
+    function savedItemNode(saved) {
+        const table = String(saved?.table ?? '');
+        let item = null;
+
+        if (table !== '') {
+            item = document.querySelector(`[data-menu-item][data-table="${CSS.escape(table)}"]`);
+        } else {
+            item = createManualItem();
+        }
+
+        if (!item) return null;
+        applySavedItem(item, saved);
+        return item;
+    }
+
+    function appendSavedItem(zone, saved) {
+        const item = savedItemNode(saved);
+        if (!item || !zone) return;
+        const hint = zone.querySelector(':scope > .menu-empty-hint');
+        zone.insertBefore(item, hint || null);
+    }
+
+    function hydrateSavedMenu() {
+        if (!savedMenu || !Array.isArray(savedMenu.groups)) return;
+
+        const menuType = document.getElementById('menuType');
+        if (menuType && ['vertical', 'horizontal'].includes(savedMenu.type)) {
+            menuType.value = savedMenu.type;
+        }
+
+        const search = document.getElementById('enableSearch');
+        if (search && Object.prototype.hasOwnProperty.call(savedMenu, 'search')) {
+            search.checked = savedMenu.search === true;
+        }
+
+        const favorites = document.getElementById('showFavorites');
+        if (favorites && Object.prototype.hasOwnProperty.call(savedMenu, 'favorites')) {
+            favorites.checked = savedMenu.favorites === true;
+        }
+
+        savedMenu.groups.forEach((savedGroup) => {
+            const group = addGroup(
+                String(savedGroup?.label ?? 'Principale'),
+                String(savedGroup?.icon ?? 'bi-folder2-open')
+            );
+            const direct = group.querySelector(':scope > .card-body > [data-dropzone]');
+
+            (Array.isArray(savedGroup?.items) ? savedGroup.items : [])
+                .forEach((savedItem) => appendSavedItem(direct, savedItem));
+
+            (Array.isArray(savedGroup?.subgroups) ? savedGroup.subgroups : [])
+                .forEach((savedSubgroup) => {
+                    const subgroup = addSubgroup(group, String(savedSubgroup?.label ?? 'Sottogruppo'));
+                    const zone = subgroup.querySelector('[data-dropzone]');
+                    (Array.isArray(savedSubgroup?.items) ? savedSubgroup.items : [])
+                        .forEach((savedItem) => appendSavedItem(zone, savedItem));
+                });
+        });
+    }
+
     // ---------------------------------------------------------
     // Eventi pagina
     // ---------------------------------------------------------
@@ -1126,6 +1239,7 @@ $relatedJson = json_encode(
         }
     });
 
+    hydrateSavedMenu();
     syncStructure();
     applySourceSearch();
 })();

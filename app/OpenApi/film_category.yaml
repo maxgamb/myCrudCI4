@@ -1,0 +1,67 @@
+openapi: 3.0.3
+info:
+  title: 'film_category API'
+  version: 1.0.0
+paths:
+  /api/v1/film_category:
+    get:
+      summary: 'Elenco read-only film_category'
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: perPage
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: 'filter[film_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: 'filter[category_id]'
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: sort
+          in: query
+          schema: { type: string, enum: ['film_id', 'category_id'] }
+        - name: direction
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        '200':
+          description: Elenco paginato read-only
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilmCategoryListResponse'
+components:
+  schemas:
+    FilmCategoryRead:
+      type: object
+      properties:
+        'film_id':
+          type: integer
+          format: int32
+        'category_id':
+          type: integer
+          format: int32
+        'last_update':
+          type: string
+          format: date-time
+        'category_id__label':
+          type: string
+          nullable: true
+        'film_id__label':
+          type: string
+          nullable: true
+    FilmCategoryListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilmCategoryRead'
+        meta: { type: object }
+        links: { type: object }

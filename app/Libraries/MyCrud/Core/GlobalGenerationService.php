@@ -39,6 +39,8 @@ final class GlobalGenerationService
 
         $builder = $this->configBuilder ?? new ConfigBuilder();
         $generator = $this->generator ?? new CrudGeneratorService();
+        $repository = new CrudConfigRepository();
+        $configuration = new CrudConfigurationService($builder, $repository);
 
         /** @var MyCrud $settings */
         $settings = $this->settings ?? config('MyCrud');
@@ -64,16 +66,21 @@ final class GlobalGenerationService
 
         foreach ($tables as $table) {
             try {
-                $config = $builder->buildFromTable($table);
+                // QUICK 2.8 consolidata:
+                // - lo schema corrente viene sempre riletto dal database;
+                // - se esiste una configurazione persistente, le decisioni dello
+                //   sviluppatore vengono mantenute tramite lo stesso merge usato
+                //   dal Builder e dalla rigenerazione;
+                // - una FK reale riceve di default il link al record padre e può
+                //   essere accettata come contesto del Create;
+                // - le scelte di navigazione salvate esplicitamente dal Builder restano intatte.
+                $savedConfig = $repository->load($table);
+                $resolved = $configuration->resolve($table, true);
+                $config = $resolved['config'];
+                $config = $this->applyQuickForeignKeyDefaults($config, $savedConfig ?? []);
 
-                // QUICK: per le FK usiamo un default completamente deterministico.
-                // Il database ci dice con certezza quale colonna del padre viene
-                // referenziata, ma non quale campo sia semanticamente descrittivo.
-                // Quindi la Quick mostra inizialmente il valore della chiave
-                // referenziata; eventuali label/template leggibili restano una
-                // scelta esplicita dello sviluppatore nel Builder.
-                $config = $this->applyQuickForeignKeyDefaults($config);
-
+                // La scelta dell'architettura nella schermata Quick è esplicita e
+                // quindi prevale sull'eventuale valore salvato in precedenza.
                 $config['architecture'] = $architecture;
                 $config['features'] = $this->featuresForArchitecture($architecture, $config);
 
@@ -81,7 +88,7 @@ final class GlobalGenerationService
                 if (!$dryRun) {
                     // 2.8: ogni CRUD realmente generato dalla Quick globale
                     // diventa riproducibile tramite una config versionabile.
-                    $configPath = (new CrudConfigRepository())->save($table, $config);
+                    $configPath = $repository->save($table, $config);
                 }
 
                 $result = $dryRun
@@ -101,6 +108,8 @@ final class GlobalGenerationService
                     'summary' => $tableSummary,
                     'files'   => $files,
                     'configPath' => $configPath,
+                    'configSource' => $resolved['saved'] ? 'database+saved-config' : 'database',
+                    'schemaDrift' => (bool) ($resolved['schemaDrift'] ?? false),
                 ];
             } catch (Throwable $e) {
                 $report['summary']['tablesFailed']++;
@@ -130,13 +139,16 @@ final class GlobalGenerationService
      * La Quick non prova a dedurre un campo descrittivo da nomi come `name`,
      * `descrizione` o dal primo varchar: usa sempre la colonna realmente
      * referenziata dalla foreign key. Il Builder potrà poi sostituirla con un
-     * displayField, un displayTemplate e le opzioni di navigazione esplicitamente scelte.
+     * displayField o un displayTemplate. La Quick abilita il link certo al record padre
+     * e l'uso della FK come contesto del Create; le altre opzioni restano al Builder.
      *
      * @param array<string, mixed> $config
      * @return array<string, mixed>
      */
-    private function applyQuickForeignKeyDefaults(array $config): array
+    private function applyQuickForeignKeyDefaults(array $config, array $savedConfig = []): array
     {
+        $savedFields = (array) ($savedConfig['fields'] ?? []);
+
         foreach ((array) ($config['relations']['belongsTo'] ?? []) as $fieldName => $relation) {
             if (!is_array($relation)) {
                 continue;
@@ -147,39 +159,61 @@ final class GlobalGenerationService
                 continue;
             }
 
-            // Relazione globale usata da Model/View generator.
-            $config['relations']['belongsTo'][$fieldName]['displayField'] = $parentKey;
-            $config['relations']['belongsTo'][$fieldName]['displayTemplate'] = '';
+            $savedField = isset($savedFields[$fieldName]) && is_array($savedFields[$fieldName])
+                ? $savedFields[$fieldName]
+                : [];
+
+            // La descrizione applicativa resta developer-driven. Se il Builder
+            // aveva già scelto un displayField/template, il merge lo ha già
+            // ripristinato e la Quick non lo modifica. In assenza di una scelta
+            // persistente, usiamo la chiave padre come display neutrale.
+            $savedDisplayField = trim((string) ($savedField['relationDisplayField'] ?? ''));
+            $savedDisplayTemplate = trim((string) ($savedField['relationDisplayTemplate'] ?? ''));
+            $hasSavedDisplayChoice = $savedDisplayTemplate !== ''
+                || ($savedDisplayField !== '' && $savedDisplayField !== $parentKey);
+
+            if (!$hasSavedDisplayChoice) {
+                $config['relations']['belongsTo'][$fieldName]['displayField'] = $parentKey;
+                $config['relations']['belongsTo'][$fieldName]['displayTemplate'] = '';
+
+                if (isset($config['fields'][$fieldName]) && is_array($config['fields'][$fieldName])) {
+                    $config['fields'][$fieldName]['relationDisplayField'] = $parentKey;
+                    $config['fields'][$fieldName]['relationDisplayTemplate'] = '';
+                }
+            }
 
             if (!isset($config['fields'][$fieldName]) || !is_array($config['fields'][$fieldName])) {
                 continue;
             }
 
-            // Configurazione persistente del singolo campo.
-            $config['fields'][$fieldName]['relationDisplayField'] = $parentKey;
-            $config['fields'][$fieldName]['relationDisplayTemplate'] = '';
-
-            // Quick non decide la navigazione applicativa. Queste opzioni
-            // restano esplicitamente disattivate finché lo sviluppatore non
-            // le abilita dal Builder.
-            $config['fields'][$fieldName]['relationNavigation'] = [
-                'quickFilter' => false,
-                'parentLink' => false,
-                'acceptContext' => false,
-                'createParentLink' => false,
-            ];
+            // Una FK reale certifica la destinazione del record padre e rende
+            // sicuro anche il contesto del Create: il Controller verificherà
+            // comunque l'esistenza del record padre prima di precompilare il form.
+            // Le altre opzioni restano developer-driven. Se il Builder ha già
+            // salvato esplicitamente la navigazione, la Quick la preserva integralmente.
+            $navigationCustomized = !empty($savedField['relationNavigationCustomized']);
+            if (!$navigationCustomized) {
+                $config['fields'][$fieldName]['relationNavigation'] = [
+                    'quickFilter' => false,
+                    'parentLink' => true,
+                    'acceptContext' => true,
+                    'createParentLink' => false,
+                ];
+                $config['fields'][$fieldName]['relationNavigationCustomized'] = false;
+            }
 
             if (!empty($config['fields'][$fieldName]['foreignKey'])
                 && is_array($config['fields'][$fieldName]['foreignKey'])) {
-                $config['fields'][$fieldName]['foreignKey']['displayField'] = $parentKey;
-                $config['fields'][$fieldName]['foreignKey']['displayTemplate'] = '';
+                $displayField = (string) ($config['fields'][$fieldName]['relationDisplayField'] ?? $parentKey);
+                $displayTemplate = (string) ($config['fields'][$fieldName]['relationDisplayTemplate'] ?? '');
+                $config['fields'][$fieldName]['foreignKey']['displayField'] = $displayField;
+                $config['fields'][$fieldName]['foreignKey']['displayTemplate'] = $displayTemplate;
             }
         }
 
         return $config;
     }
 
-    /** Costruisce il piano dei file senza scrivere sul filesystem. */
     private function plan(array $config, bool $force): array
     {
         /** @var MyCrud $settings */
