@@ -184,6 +184,8 @@ PHP;
                             aria-labelledby="{$panelId}_label"
                             data-related-field="{$name}"
                             data-state-target="{$panelId}_state"
+                            data-toggle-target="{$panelId}_toggle"
+                            data-bs-backdrop="static"
                         >
                             <div class="offcanvas-header border-bottom">
                                 <div>
@@ -207,10 +209,11 @@ PHP;
                                     'relatedField'        => '{$name}',
                                     'relatedCreateActive' => \$relatedCreateActive,
                                     'relatedPayloadState' => \$relatedPayloadState,
+                                    'relatedCreateOptions' => (array) (\$relatedCreateOptions ?? []),
                                     'errors'              => \$errors,
                                 ]) ?>
                             </div>
-                            <div class="offcanvas-footer border-top p-3 d-flex justify-content-end">
+                            <div class="offcanvas-footer border-top p-3 d-flex justify-content-between gap-2">
                                 <button
                                     type="button"
                                     class="btn btn-outline-secondary crud-related-create-cancel"
@@ -219,7 +222,17 @@ PHP;
                                     data-bs-dismiss="offcanvas"
                                 >
                                     <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
-                                    Annulla nuovo {$title}
+                                    Annulla
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-primary crud-related-create-apply"
+                                    data-related-field="{$name}"
+                                    data-state-target="{$panelId}_state"
+                                    data-bs-dismiss="offcanvas"
+                                >
+                                    <i class="bi bi-check2-circle me-1" aria-hidden="true"></i>
+                                    Applica nuovo {$title}
                                 </button>
                             </div>
                         </div>
@@ -259,13 +272,43 @@ PHP;
             $inputId = $panelId . '_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $relatedName);
             $errorKey = $name . '__related__' . $relatedName;
             $required = in_array('required', (array) ($relatedField['attributes']['boolean'] ?? []), true);
-            $maxLength = trim((string) ($relatedField['attributes']['values']['maxlength'] ?? ''));
+            $values = (array) ($relatedField['attributes']['values'] ?? []);
             $requiredAttr = $required ? ' required' : '';
-            $maxLengthAttr = $maxLength !== '' ? ' maxlength="' . htmlspecialchars($maxLength, ENT_QUOTES) . '"' : '';
+            $valueAttrs = '';
+            foreach (['maxlength', 'minlength', 'min', 'max', 'step', 'pattern', 'placeholder'] as $attributeName) {
+                $attributeValue = trim((string) ($values[$attributeName] ?? ''));
+                if ($attributeValue !== '') {
+                    $valueAttrs .= ' ' . $attributeName . '="' . htmlspecialchars($attributeValue, ENT_QUOTES) . '"';
+                }
+            }
             $valueExpr = "(string) ((\$relatedPayloadState[" . var_export($name, true) . "][" . var_export($relatedName, true) . "] ?? ''))";
             $invalid = "<?= isset(\$errors[" . var_export($errorKey, true) . "]) ? 'is-invalid' : '' ?>";
+            $nestedForeignKey = (array) ($relatedField['foreignKey'] ?? []);
 
-            if ($type === 'textarea') {
+            if ($nestedForeignKey !== []) {
+                $optionExpr = "(array) (\$relatedCreateOptions[" . var_export($name, true) . "][" . var_export($relatedName, true) . "] ?? [])";
+                $control = <<<PHP
+                <select
+                    name="_related[{$name}][{$relatedName}]"
+                    id="{$inputId}"
+                    class="form-select {$invalid} crud-related-create-field"
+                    data-related-field="{$name}"
+                    <?= \$relatedCreateActive ? '' : 'disabled' ?>
+                    {$requiredAttr}{$valueAttrs}
+                >
+                    <option value="">Seleziona...</option>
+                    <?php foreach ({$optionExpr} as \$relatedOption): ?>
+                        <?php
+                        \$relatedOptionId = (string) (\$relatedOption['id'] ?? '');
+                        \$relatedOptionText = (string) (\$relatedOption['text'] ?? \$relatedOptionId);
+                        ?>
+                        <option value="<?= esc(\$relatedOptionId) ?>" <?= {$valueExpr} === \$relatedOptionId ? 'selected' : '' ?>>
+                            <?= esc(\$relatedOptionText) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+PHP;
+            } elseif ($type === 'textarea') {
                 $control = <<<PHP
                 <textarea
                     name="_related[{$name}][{$relatedName}]"
@@ -273,7 +316,7 @@ PHP;
                     class="form-control {$invalid} crud-related-create-field"
                     data-related-field="{$name}"
                     <?= \$relatedCreateActive ? '' : 'disabled' ?>
-                    {$requiredAttr}{$maxLengthAttr}
+                    {$requiredAttr}{$valueAttrs}
                 ><?= esc({$valueExpr}) ?></textarea>
 PHP;
             } elseif ($type === 'checkbox') {
@@ -312,7 +355,7 @@ PHP;
                     class="form-control {$invalid} crud-related-create-field"
                     data-related-field="{$name}"
                     <?= \$relatedCreateActive ? '' : 'disabled' ?>
-                    {$requiredAttr}{$maxLengthAttr}
+                    {$requiredAttr}{$valueAttrs}
                 >
 PHP;
             }
@@ -331,6 +374,7 @@ PHP;
 <?php
 \$relatedCreateActive = !empty(\$relatedCreateActive);
 \$relatedPayloadState = (array) (\$relatedPayloadState ?? []);
+\$relatedCreateOptions = (array) (\$relatedCreateOptions ?? []);
 \$errors = (array) (\$errors ?? []);
 ?>
 <div class="row g-3">

@@ -22,6 +22,10 @@ final class ModelGenerator
         $apiEnabled = !empty($config['features']['api']);
         $softDeleteEnabled = !empty($config['features']['softDeletes']);
         $createAllowed = !empty($config['features']['createAllowed']);
+        $isView = !empty($config['isView']);
+        $modelDoc = $isView
+            ? 'Model read-only per SQL VIEW ' . $table . '; estendere manualmente solo se necessario.'
+            : 'Model per ' . $table . '; tutte le query del CRUD sono centralizzate qui.';
         $primaryKeys = array_values((array) ($config['primaryKeys'] ?? [$primaryKey]));
         $compositePrimaryKey = count($primaryKeys) > 1;
         $primaryAutoIncrement = !empty($config['fields'][$primaryKey]['autoIncrement']);
@@ -83,7 +87,7 @@ final class ModelGenerator
                 $exportFields[] = $name;
             }
 
-            if (!empty($ui['searchable']) && $indexEligible && !$isSensitive && !$isLarge && !$isBinary) {
+            if (!empty($ui['searchable']) && ($indexEligible || $isView) && !$isSensitive && !$isLarge && !$isBinary) {
                 // Lato generatore: definiamo una whitelist di operatori coerente
                 // col tipo DB. La UI potrà mostrare solo questi criteri e il
                 // Model li ricontrollerà prima di comporre qualsiasi query.
@@ -106,7 +110,7 @@ final class ModelGenerator
                 ];
             }
 
-            if (!empty($ui['sortable']) && $indexEligible && !$isSensitive && !$isLarge && !$isBinary) {
+            if (!empty($ui['sortable']) && ($indexEligible || $isView) && !$isSensitive && !$isLarge && !$isBinary) {
                 $sortable[] = $name;
             }
         }
@@ -153,6 +157,7 @@ final class ModelGenerator
         $optionMapLines = [];
         $relationSearchDefinitions = [];
         $relatedCreateDefinitions = [];
+        $relatedCreateRelationDefinitions = [];
 
         foreach ($config['relations']['belongsTo'] ?? [] as $field => $relation) {
             $parentTable = (string) $relation['parentTable'];
@@ -240,6 +245,19 @@ PHP;
                         )
                     ))),
                 ];
+
+                foreach ($relatedFields as $relatedFieldName => $relatedFieldDefinition) {
+                    $nestedFk = (array) ($relatedFieldDefinition['foreignKey'] ?? []);
+                    if (empty($nestedFk['parentTable']) || empty($nestedFk['parentKey'])) {
+                        continue;
+                    }
+                    $relatedCreateRelationDefinitions[(string) $field][(string) $relatedFieldName] = [
+                        'table' => (string) $nestedFk['parentTable'],
+                        'key' => (string) $nestedFk['parentKey'],
+                        'displayField' => (string) ($nestedFk['displayField'] ?? $nestedFk['parentKey']),
+                        'mode' => (string) ($nestedFk['optionMode'] ?? 'select'),
+                    ];
+                }
             }
 
             if ($relationMode === 'select') {
@@ -295,7 +313,11 @@ PHP;
             $childSelectCode = var_export(array_values(array_unique($childSelects)), true);
 
             $childMethods[] = <<<PHP
-    /** Carica al massimo una riga in più per determinare se esistono altri risultati. */
+    /**
+     * HasMany scaffolding: query dedicata alla relazione figlia.
+     * Carica al massimo una riga in più per determinare se esistono altri risultati.
+     * Punto di estensione: aggiungere qui eventuali JOIN/ordinamenti applicativi.
+     */
     public function {$getMethod}(int|string \$parentId, int \$limit = {$limit}): array
     {
         \$limit = max(1, min(200, \$limit));
@@ -367,6 +389,7 @@ PHP : '';
         $exportFieldsCode = var_export(array_values(array_unique($exportFields)), true);
         $relationSearchCode = var_export($relationSearchDefinitions, true);
         $relatedCreateCode = var_export($relatedCreateDefinitions, true);
+        $relatedCreateRelationsCode = var_export($relatedCreateRelationDefinitions, true);
         $primaryKeysCode = var_export($primaryKeys, true);
         $entityUse = $useEntity ? 'use App\\Entities\\' . $entity . ';' : '';
         $returnTypeCode = $useEntity ? $entity . '::class' : "'object'";
@@ -581,7 +604,7 @@ use CodeIgniter\Model;
 use RuntimeException;
 use Throwable;
 
-/** Model per {$table}; tutte le query del CRUD sono centralizzate qui. */
+/** {$modelDoc} */
 final class {$class} extends Model
 {
     protected \$table = '{$table}';
@@ -600,6 +623,7 @@ final class {$class} extends Model
     private const PRIMARY_KEYS = {$primaryKeysCode};
     private const RELATION_SEARCHES = {$relationSearchCode};
     private const RELATED_CREATES = {$relatedCreateCode};
+    private const RELATED_CREATE_RELATIONS = {$relatedCreateRelationsCode};
     private const COUNT_CACHE_SECONDS = {$countCacheSeconds};
 
     /** Query completa per dettaglio e API. */
@@ -848,7 +872,38 @@ final class {$class} extends Model
         }
     }
 
-{$createRecordMethodsCode}{$parentJoinMethodsCode}{$apiMethodsCode}{$optionsMethodsCode}    public function relationOptions(): array
+{$createRecordMethodsCode}{$parentJoinMethodsCode}{$apiMethodsCode}{$optionsMethodsCode}    /**
+     * Opzioni delle FK appartenenti ai parent creati inline.
+     * La whitelist deriva esclusivamente dalle FK reali dello schema.
+     */
+    public function relatedCreateRelationOptions(): array
+    {
+        \$result = [];
+        foreach (self::RELATED_CREATE_RELATIONS as \$relationField => \$fields) {
+            foreach ((array) \$fields as \$field => \$definition) {
+                if ((\$definition['mode'] ?? 'select') !== 'select') {
+                    continue;
+                }
+                \$table = (string) \$definition['table'];
+                \$key = (string) \$definition['key'];
+                \$display = (string) \$definition['displayField'];
+                \$rows = \$this->db->table(\$table)
+                    ->select([\$key, \$display])
+                    ->orderBy(\$display, 'ASC')
+                    ->get()
+                    ->getResultArray();
+                foreach (\$rows as \$row) {
+                    \$result[(string) \$relationField][(string) \$field][] = [
+                        'id' => (string) (\$row[\$key] ?? ''),
+                        'text' => (string) (\$row[\$display] ?? \$row[\$key] ?? ''),
+                    ];
+                }
+            }
+        }
+        return \$result;
+    }
+
+    public function relationOptions(): array
     {
         return [
 {$optionMapCode}

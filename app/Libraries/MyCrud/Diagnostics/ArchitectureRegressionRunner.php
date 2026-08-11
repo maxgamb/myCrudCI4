@@ -221,6 +221,7 @@ final class ArchitectureRegressionRunner
                 && str_contains($rulesContent, 'relatedCreateRules')
                 && str_contains($formContent, '_related_new[')
                 && str_contains($formContent, 'data-bs-toggle="offcanvas"')
+                && str_contains($formContent, 'crud-related-create-apply')
                 && str_contains($formContent, 'crud-relation-input-group')
                 && str_contains($formContent, 'bi-plus-circle')
                 && $relatedPartialOk;
@@ -298,13 +299,26 @@ final class ArchitectureRegressionRunner
                 : 'Alias relazione o centralizzazione del JOIN nel Model non coerenti.'
         );
 
-        // Dev30: ogni hasMany creabile offre "Nuovo" con la FK esatta
-        // del rapporto, riutilizzando il normale FK Context del Create figlio.
+        // Dev33: ogni hasMany è un partial dedicato. Se il pulsante Nuovo
+        // è abilitato, il partial conserva la FK esatta e riusa il normale
+        // FK Context del Create figlio.
         $hasManyNewOk = true;
         if (!empty($config['features']['recordDetail']) && is_file($detailViewPath)) {
             $detailContent = (string) file_get_contents($detailViewPath);
-            foreach ((array) ($config['relationsConfig']['hasMany'] ?? []) as $relation) {
-                if (empty($relation['enabled']) || empty($relation['childCreateAllowed'])) {
+            foreach ((array) ($config['relationsConfig']['hasMany'] ?? []) as $relationKey => $relation) {
+                if (empty($relation['enabled'])) {
+                    continue;
+                }
+                $safeKey = preg_replace('/[^A-Za-z0-9_]/', '_', (string) $relationKey) ?: 'relation';
+                $partialRelative = 'Views/' . $table . '/_children_' . $safeKey . '.php';
+                $partialPath = $root . $partialRelative;
+                if (!is_file($partialPath)
+                    || !str_contains($detailContent, $table . '/_children_' . $safeKey)) {
+                    $hasManyNewOk = false;
+                    break;
+                }
+
+                if (empty($relation['showCreateButton']) || empty($relation['childCreateAllowed'])) {
                     continue;
                 }
                 $foreignKey = (string) ($relation['foreignKey'] ?? '');
@@ -312,19 +326,26 @@ final class ArchitectureRegressionRunner
                 if ($foreignKey === '' || $childTable === '' || preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/D', $foreignKey) !== 1) {
                     continue;
                 }
-                if (!str_contains($detailContent, "site_url('{$childTable}/create')")
-                    || !str_contains($detailContent, var_export($foreignKey, true) . ' =>')) {
+                $partialContent = (string) file_get_contents($partialPath);
+                if (!str_contains($partialContent, "site_url('{$childTable}/create')")
+                    || !str_contains($partialContent, var_export($foreignKey, true) . ' =>')
+                    || !str_contains($partialContent, "'_parent_field' => " . var_export($foreignKey, true))) {
                     $hasManyNewOk = false;
                     break;
                 }
             }
         }
+        $hasManyContextOk = $hasManyNewOk
+            && str_contains($controllerContent, 'PARENT_CONTEXT_FIELDS')
+            && str_contains($controllerContent, 'parentContextFromQuery')
+            && str_contains($controllerContent, 'parentContextFromPost')
+            && str_contains($controllerContent, '$parentContext[\'url\'] ??');
         $results[] = new DiagnosticResult(
-            strtoupper($architecture) . ' Nuovo nelle relazioni figlie',
-            $hasManyNewOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
-            $hasManyNewOk
-                ? 'Le relazioni figlie creabili mantengono la FK nel pulsante Nuovo.'
-                : 'Un pulsante Nuovo hasMany non conserva correttamente la FK.'
+            strtoupper($architecture) . ' HasMany contestuale parent-child-parent',
+            $hasManyContextOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+            $hasManyContextOk
+                ? 'Nuovo figlio mantiene la FK e genera un ritorno al padre basato su whitelist schema.'
+                : 'Lo scaffold hasMany non conserva correttamente contesto o ritorno al padre.'
         );
 
         $exportSafetyOk = str_contains($exporterContent, 'EXPORT_UNFILTERED_LIMIT:CSV')

@@ -236,6 +236,66 @@ final class PaymentModel extends Model
     ),
   ),
 );
+    private const RELATED_CREATE_RELATIONS = array (
+  'customer_id' => 
+  array (
+    'store_id' => 
+    array (
+      'table' => 'store',
+      'key' => 'store_id',
+      'displayField' => 'store_id',
+      'mode' => 'select',
+    ),
+    'address_id' => 
+    array (
+      'table' => 'address',
+      'key' => 'address_id',
+      'displayField' => 'address',
+      'mode' => 'select',
+    ),
+  ),
+  'rental_id' => 
+  array (
+    'inventory_id' => 
+    array (
+      'table' => 'inventory',
+      'key' => 'inventory_id',
+      'displayField' => 'inventory_id',
+      'mode' => 'select',
+    ),
+    'customer_id' => 
+    array (
+      'table' => 'customer',
+      'key' => 'customer_id',
+      'displayField' => 'first_name',
+      'mode' => 'select',
+    ),
+    'staff_id' => 
+    array (
+      'table' => 'staff',
+      'key' => 'staff_id',
+      'displayField' => 'first_name',
+      'mode' => 'select',
+    ),
+  ),
+  'staff_id' => 
+  array (
+    'address_id' => 
+    array (
+      'table' => 'address',
+      'key' => 'address_id',
+      'displayField' => 'address',
+      'mode' => 'select',
+    ),
+    'store_id' => 
+    array (
+      'table' => 'store',
+      'key' => 'store_id',
+      'displayField' => 'store_id',
+      'mode' => 'select',
+    ),
+  ),
+);
     private const COUNT_CACHE_SECONDS = 60;
 
     /** Query completa per dettaglio e API. */
@@ -734,6 +794,37 @@ final class PaymentModel extends Model
             ->get()
             ->getResultArray();
     }
+    /**
+     * Opzioni delle FK appartenenti ai parent creati inline.
+     * La whitelist deriva esclusivamente dalle FK reali dello schema.
+     */
+    public function relatedCreateRelationOptions(): array
+    {
+        $result = [];
+        foreach (self::RELATED_CREATE_RELATIONS as $relationField => $fields) {
+            foreach ((array) $fields as $field => $definition) {
+                if (($definition['mode'] ?? 'select') !== 'select') {
+                    continue;
+                }
+                $table = (string) $definition['table'];
+                $key = (string) $definition['key'];
+                $display = (string) $definition['displayField'];
+                $rows = $this->db->table($table)
+                    ->select([$key, $display])
+                    ->orderBy($display, 'ASC')
+                    ->get()
+                    ->getResultArray();
+                foreach ($rows as $row) {
+                    $result[(string) $relationField][(string) $field][] = [
+                        'id' => (string) ($row[$key] ?? ''),
+                        'text' => (string) ($row[$display] ?? $row[$key] ?? ''),
+                    ];
+                }
+            }
+        }
+        return $result;
+    }
+
     public function relationOptions(): array
     {
         return [

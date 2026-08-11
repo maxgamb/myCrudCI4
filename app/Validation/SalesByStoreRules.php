@@ -9,18 +9,12 @@ final class SalesByStoreRules
     public static function createRules(): array
     {
         return array (
-  'store' => 'permit_empty|max_length[101]',
-  'manager' => 'permit_empty|max_length[91]',
-  'total_sales' => 'permit_empty|decimal',
 );
     }
 
     public static function updateRules(int|string $id): array
     {
         $rules = array (
-  'store' => 'permit_empty|max_length[101]',
-  'manager' => 'permit_empty|max_length[91]',
-  'total_sales' => 'permit_empty|decimal',
 );
         foreach ($rules as $field => $rule) {
             $rules[$field] = str_replace('{id}', (string) $id, $rule);

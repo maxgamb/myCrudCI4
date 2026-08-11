@@ -1,6 +1,7 @@
 <?php
 $relatedCreateActive = !empty($relatedCreateActive);
 $relatedPayloadState = (array) ($relatedPayloadState ?? []);
+$relatedCreateOptions = (array) ($relatedCreateOptions ?? []);
 $errors = (array) ($errors ?? []);
 ?>
 <div class="row g-3">
@@ -15,7 +16,8 @@ $errors = (array) ($errors ?? []);
                     data-related-field="country_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
                      required maxlength="50"
-                >                <?php if (!empty($errors['country_id__related__country'])): ?>
+                >
+                <?php if (!empty($errors['country_id__related__country'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['country_id__related__country']) ?></div>
                 <?php endif; ?>
             </div></div>

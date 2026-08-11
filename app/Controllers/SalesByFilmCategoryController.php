@@ -20,6 +20,7 @@ use Throwable;
  *
  * Lato sito: coordina request, validazione, view e redirect. Le query restano
  * nel Model; Standard/Full demandano inoltre la logica applicativa al Service.
+ * SQL VIEW: risorsa generata in sola lettura; eventuali scritture sono estensioni manuali.
  */
 final class SalesByFilmCategoryController extends BaseController
 {
@@ -43,6 +44,13 @@ final class SalesByFilmCategoryController extends BaseController
 
     /** FK autorizzate alla creazione atomica del record padre nello stesso form. */
     private const RELATED_CREATE_FIELDS = array (
+);
+
+    /**
+     * Contesti parent ammessi per il Create avviato da una relazione hasMany.
+     * La tabella di ritorno deriva esclusivamente dallo schema generato, mai dal POST.
+     */
+    private const PARENT_CONTEXT_FIELDS = array (
 );
 
     private SalesByFilmCategoryService $gateway;
@@ -274,6 +282,49 @@ final class SalesByFilmCategoryController extends BaseController
         }
 
         return $context;
+    }
+
+    /** @return array{field:string,table:string,id:string,label:string,url:string}|array{} */
+    private function parentContextFromQuery(array $navigationContext): array
+    {
+        return $this->parentContext((string) ($this->request->getGet('_parent_field') ?? ''), $navigationContext);
+    }
+
+    /** @return array{field:string,table:string,id:string,label:string,url:string}|array{} */
+    private function parentContextFromPost(array $navigationContext): array
+    {
+        return $this->parentContext((string) ($this->request->getPost('_parent_field') ?? ''), $navigationContext);
+    }
+
+    /**
+     * Risolve un ritorno contestuale sicuro verso il padre hasMany.
+     * Il client sceglie solo la FK; tabella e route sono whitelist generate dallo schema.
+     *
+     * @return array{field:string,table:string,id:string,label:string,url:string}|array{}
+     */
+    private function parentContext(string $field, array $navigationContext): array
+    {
+        if ($field === '' || !isset(self::PARENT_CONTEXT_FIELDS[$field])) {
+            return [];
+        }
+        $id = $navigationContext[$field] ?? null;
+        if (!is_scalar($id) || trim((string) $id) === '') {
+            return [];
+        }
+        $definition = self::PARENT_CONTEXT_FIELDS[$field];
+        $table = (string) ($definition['table'] ?? '');
+        if ($table === '') {
+            return [];
+        }
+        $id = (string) $id;
+
+        return [
+            'field' => $field,
+            'table' => $table,
+            'id' => $id,
+            'label' => (string) ($definition['label'] ?? $table),
+            'url' => site_url($table . '/view/' . rawurlencode($id)),
+        ];
     }
 
     private function contextUrl(string $path, array $context): string

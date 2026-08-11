@@ -15,11 +15,13 @@ class BuilderController extends BaseController
 {
     public function index()
     {
-        $tables = TableFilter::validTables(db_connect());
+        $db = db_connect();
+        $tables = TableFilter::validTables($db);
 
         return view('mycrud/table_list', [
-            'title'  => 'myCrudGpt',
-            'tables' => $tables,
+            'title'       => 'myCrudGpt',
+            'tables'      => $tables,
+            'objectTypes' => TableFilter::objectTypes($db),
         ]);
     }
 

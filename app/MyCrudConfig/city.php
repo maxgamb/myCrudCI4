@@ -213,6 +213,8 @@ return array (
         'icon' => 'bi-diagram-3',
         'limit' => 20,
         'showCount' => true,
+        'showCreateButton' => true,
+        'showViewAllButton' => true,
         'showViewButton' => true,
       ),
     ),
@@ -223,9 +225,9 @@ return array (
   ),
   '_meta' => 
   array (
-    'generatorVersion' => '2.8.0-dev31',
-    'savedAt' => '2026-08-10T15:05:47+00:00',
+    'generatorVersion' => '2.8.0-dev33',
+    'savedAt' => '2026-08-10T17:56:16+00:00',
     'schemaFingerprint' => 'd04cdda1dd48cd804f48fcf99cae0c3ae9bf00395d491c10ddbb13a5e7a5933d',
-    'configHash' => '73912eb27e550924d37a751a11aca76a19f6cc2a3777f18d8c63229173732bc4',
+    'configHash' => '910942cf3ea502a3a2d1a75355ab619cf5ea0a613005364182c3b5710d8f1db6',
   ),
 );

@@ -212,6 +212,8 @@ return array (
         'icon' => 'bi-diagram-3',
         'limit' => 20,
         'showCount' => true,
+        'showCreateButton' => true,
+        'showViewAllButton' => true,
         'showViewButton' => true,
       ),
       'inventory__store_id' => 
@@ -221,6 +223,8 @@ return array (
         'icon' => 'bi-diagram-3',
         'limit' => 20,
         'showCount' => true,
+        'showCreateButton' => true,
+        'showViewAllButton' => true,
         'showViewButton' => true,
       ),
       'staff__store_id' => 
@@ -230,6 +234,8 @@ return array (
         'icon' => 'bi-diagram-3',
         'limit' => 20,
         'showCount' => true,
+        'showCreateButton' => true,
+        'showViewAllButton' => true,
         'showViewButton' => true,
       ),
     ),
@@ -240,9 +246,9 @@ return array (
   ),
   '_meta' => 
   array (
-    'generatorVersion' => '2.8.0-dev31',
-    'savedAt' => '2026-08-10T15:05:48+00:00',
+    'generatorVersion' => '2.8.0-dev33',
+    'savedAt' => '2026-08-10T17:56:16+00:00',
     'schemaFingerprint' => 'eee593469dd6f440e4979c4711c748cc3dda92c44e30aa67e55ed8c974863a12',
-    'configHash' => 'b0637b7e45059a99848228fba58a7c31aec245862593f1fadef175d5a8e8dbae',
+    'configHash' => '915086fac5c99f59b782b14acf3e50d7d455b9a56e11a81cf56a68ede7dc0637',
   ),
 );

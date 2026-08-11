@@ -15,6 +15,7 @@ final class OpenApiGenerator
         $pk = (string) $config['primaryKey'];
         $softDeleteField = (string) ($config['softDelete']['field'] ?? 'deleted_at');
         $readOnly = !empty($config['features']['readOnly']);
+        $isView = !empty($config['isView']);
         $recordDetail = !empty($config['features']['recordDetail']);
         $timestampsEnabled = !empty($config['features']['timestamps'])
             && isset($config['fields']['created_at'], $config['fields']['updated_at']);
@@ -69,11 +70,11 @@ final class OpenApiGenerator
                 }
             }
 
-            if (!empty($ui['searchable']) && $indexEligible) {
+            if (!empty($ui['searchable']) && ($indexEligible || $isView)) {
                 $filterFields[$name] = $field;
             }
 
-            if (!empty($ui['sortable']) && $indexEligible) {
+            if (!empty($ui['sortable']) && ($indexEligible || $isView)) {
                 $sortableFields[] = $name;
             }
         }

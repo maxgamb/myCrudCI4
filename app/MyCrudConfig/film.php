@@ -615,6 +615,8 @@ return array (
         'icon' => 'bi-diagram-3',
         'limit' => 20,
         'showCount' => true,
+        'showCreateButton' => true,
+        'showViewAllButton' => true,
         'showViewButton' => false,
       ),
       'film_category__film_id' => 
@@ -624,6 +626,8 @@ return array (
         'icon' => 'bi-diagram-3',
         'limit' => 20,
         'showCount' => true,
+        'showCreateButton' => true,
+        'showViewAllButton' => true,
         'showViewButton' => false,
       ),
       'inventory__film_id' => 
@@ -633,6 +637,8 @@ return array (
         'icon' => 'bi-diagram-3',
         'limit' => 20,
         'showCount' => true,
+        'showCreateButton' => true,
+        'showViewAllButton' => true,
         'showViewButton' => true,
       ),
     ),
@@ -643,9 +649,9 @@ return array (
   ),
   '_meta' => 
   array (
-    'generatorVersion' => '2.8.0-dev31',
-    'savedAt' => '2026-08-10T15:05:47+00:00',
+    'generatorVersion' => '2.8.0-dev33',
+    'savedAt' => '2026-08-10T17:56:16+00:00',
     'schemaFingerprint' => 'c210a515a873f476cc709489da078f919cc17805d5eb164e90833d4894c17f64',
-    'configHash' => '5507b03a423d0a364dc1a5763add2dd07cced14260f4277332f3b5a90e525918',
+    'configHash' => '9c987f91262469a6e9dfd54ab6dc9a3446ca72d78e39db1e8c3cf6170a764880',
   ),
 );

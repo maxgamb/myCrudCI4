@@ -51,6 +51,23 @@ final class FilmCategoryController extends BaseController
   ),
 );
 
+    /**
+     * Contesti parent ammessi per il Create avviato da una relazione hasMany.
+     * La tabella di ritorno deriva esclusivamente dallo schema generato, mai dal POST.
+     */
+    private const PARENT_CONTEXT_FIELDS = array (
+  'film_id' => 
+  array (
+    'table' => 'film',
+    'label' => 'Film',
+  ),
+  'category_id' => 
+  array (
+    'table' => 'category',
+    'label' => 'Category',
+  ),
+);
+
     private FilmCategoryService $gateway;
     private CrudExporter $exporter;
     private CrudInputProcessor $inputProcessor;
@@ -128,6 +145,7 @@ final class FilmCategoryController extends BaseController
     public function create()
     {
         $navigationContext = $this->navigationContextFromQuery();
+        $parentContext = $this->parentContextFromQuery($navigationContext);
         $context = [];
         $contextLabels = [];
         foreach (array (
@@ -151,9 +169,11 @@ final class FilmCategoryController extends BaseController
             'row' => null,
             'errors' => session('errors') ?? [],
             'options' => $this->gateway->relationOptions(),
+            'relatedCreateOptions' => $this->gateway->relatedCreateRelationOptions(),
             'context' => $context,
             'contextLabels' => $contextLabels,
             'navigationContext' => $navigationContext,
+            'parentContext' => $parentContext,
             'submissionToken' => $this->submissionGuard->create('store'),
         ]);
     }
@@ -161,6 +181,7 @@ final class FilmCategoryController extends BaseController
     public function store()
     {
         $navigationContext = $this->navigationContextFromPost();
+        $parentContext = $this->parentContextFromPost($navigationContext);
         if (!$this->submissionGuard->consume('store', $this->request->getPost('_submission_token'))) {
             return redirect()->back()->withInput()->with('error', 'Il form è già stato inviato oppure è scaduto.');
         }
@@ -187,7 +208,8 @@ final class FilmCategoryController extends BaseController
         } catch (Throwable $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
-        return redirect()->to($this->contextUrl('film_category', $navigationContext))->with('message', 'Record creato correttamente.');
+        $redirectUrl = $parentContext['url'] ?? $this->contextUrl('film_category', $navigationContext);
+        return redirect()->to($redirectUrl)->with('message', 'Record creato correttamente.');
     }
     /**
      * Unifica CSV e Word: cambia solo il writer selezionato dalla libreria runtime.
@@ -352,6 +374,49 @@ final class FilmCategoryController extends BaseController
         }
 
         return $context;
+    }
+
+    /** @return array{field:string,table:string,id:string,label:string,url:string}|array{} */
+    private function parentContextFromQuery(array $navigationContext): array
+    {
+        return $this->parentContext((string) ($this->request->getGet('_parent_field') ?? ''), $navigationContext);
+    }
+
+    /** @return array{field:string,table:string,id:string,label:string,url:string}|array{} */
+    private function parentContextFromPost(array $navigationContext): array
+    {
+        return $this->parentContext((string) ($this->request->getPost('_parent_field') ?? ''), $navigationContext);
+    }
+
+    /**
+     * Risolve un ritorno contestuale sicuro verso il padre hasMany.
+     * Il client sceglie solo la FK; tabella e route sono whitelist generate dallo schema.
+     *
+     * @return array{field:string,table:string,id:string,label:string,url:string}|array{}
+     */
+    private function parentContext(string $field, array $navigationContext): array
+    {
+        if ($field === '' || !isset(self::PARENT_CONTEXT_FIELDS[$field])) {
+            return [];
+        }
+        $id = $navigationContext[$field] ?? null;
+        if (!is_scalar($id) || trim((string) $id) === '') {
+            return [];
+        }
+        $definition = self::PARENT_CONTEXT_FIELDS[$field];
+        $table = (string) ($definition['table'] ?? '');
+        if ($table === '') {
+            return [];
+        }
+        $id = (string) $id;
+
+        return [
+            'field' => $field,
+            'table' => $table,
+            'id' => $id,
+            'label' => (string) ($definition['label'] ?? $table),
+            'url' => site_url($table . '/view/' . rawurlencode($id)),
+        ];
     }
 
     private function contextUrl(string $path, array $context): string

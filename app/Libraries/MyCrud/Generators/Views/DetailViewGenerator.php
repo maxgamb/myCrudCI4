@@ -84,9 +84,51 @@ PHP;
             'table'           => $table,
             'route'           => $table,
             'rows'            => $rows,
-            'panels'          => $this->buildHasManyPanels($config),
+            'panels'          => $this->buildHasManyPartialIncludes($config),
             'toolbar_actions' => $toolbarActions,
         ]);
+    }
+
+    /**
+     * Genera un partial per ogni relazione figlia. Il partial è volutamente
+     * posseduto dal CRUD padre: è un punto di estensione leggibile che lo
+     * sviluppatore può personalizzare senza trasformare la View principale
+     * in un blocco monolitico.
+     *
+     * @return array<string, string> filename => content
+     */
+    public function generateHasManyPartials(array $config): array
+    {
+        $partials = [];
+        foreach ((array) ($config['relationsConfig']['hasMany'] ?? []) as $key => $relation) {
+            if (empty($relation['enabled'])) {
+                continue;
+            }
+
+            $safeKey = preg_replace('/[^A-Za-z0-9_]/', '_', (string) $key) ?: 'relation';
+            $single = $config;
+            $single['relationsConfig']['hasMany'] = [(string) $key => $relation];
+            $partials['_children_' . $safeKey . '.php'] = $this->buildHasManyPanels($single);
+        }
+
+        return $partials;
+    }
+
+    /** Genera nella View principale soltanto gli include dei partial figli. */
+    private function buildHasManyPartialIncludes(array $config): string
+    {
+        $table = (string) ($config['table'] ?? '');
+        $output = '';
+        foreach ((array) ($config['relationsConfig']['hasMany'] ?? []) as $key => $relation) {
+            if (empty($relation['enabled'])) {
+                continue;
+            }
+            $safeKey = preg_replace('/[^A-Za-z0-9_]/', '_', (string) $key) ?: 'relation';
+            $viewPath = $table . '/_children_' . $safeKey;
+            $output .= "<?= view(" . var_export($viewPath, true) . ", ['row' => \$row, 'children' => \$children]) ?>\n";
+        }
+
+        return $output;
     }
 
     private function buildHasManyPanels(array $config): string
@@ -147,17 +189,23 @@ PHP;
             $foreignKey = (string) $relation['foreignKey'];
             if (preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $foreignKey) === 1) {
                 $contextQueryExpression = "http_build_query([" . var_export($foreignKey, true) . " => {$parentValue} ?? ''])";
+                $createContextQueryExpression = "http_build_query([" . var_export($foreignKey, true) . " => {$parentValue} ?? '', '_parent_field' => " . var_export($foreignKey, true) . "])";
             } else {
                 $foreignKeyExport = var_export($foreignKey, true);
                 $contextQueryExpression = "http_build_query(['filters' => [['field' => {$foreignKeyExport}, 'operator' => 'eq', 'value' => {$parentValue} ?? '', 'logic' => 'and']]])";
+                $createContextQueryExpression = $contextQueryExpression;
             }
             $viewAllUrl = "<?= site_url('{$childTable}') . '?' . {$contextQueryExpression} ?>";
+            $viewAllButton = !empty($relation['showViewAllButton'])
+                ? "<a href=\"{$viewAllUrl}\" class=\"btn btn-sm btn-outline-primary\" title=\"Vedi tutti i record collegati\"><i class=\"bi bi-list-ul me-1\" aria-hidden=\"true\"></i> Vedi tutti</a>"
+                : '';
             $newButton = '';
             if (
-                !empty($relation['childCreateAllowed'])
+                !empty($relation['showCreateButton'])
+                && !empty($relation['childCreateAllowed'])
                 && preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/D', $foreignKey) === 1
             ) {
-                $newButton = "<a href=\"<?= site_url('{$childTable}/create') . '?' . {$contextQueryExpression} ?>\" class=\"btn btn-sm btn-primary\" title=\"Nuovo record collegato\"><i class=\"bi bi-plus-circle me-1\" aria-hidden=\"true\"></i> Nuovo</a>";
+                $newButton = "<a href=\"<?= site_url('{$childTable}/create') . '?' . {$createContextQueryExpression} ?>\" class=\"btn btn-sm btn-primary\" title=\"Nuovo record collegato\"><i class=\"bi bi-plus-circle me-1\" aria-hidden=\"true\"></i> Nuovo</a>";
             }
 
             $actionHeader = !empty($relation['showViewButton']) ? '<th class="d-print-none">Azioni</th>' : '';
@@ -177,12 +225,12 @@ PHP;
                 'icon'          => htmlspecialchars((string) ($relation['icon'] ?? 'bi-diagram-3'), ENT_QUOTES),
                 'count_badge'   => $countBadge,
                 'new_button'    => $newButton,
+                'view_all_button' => $viewAllButton,
                 'headers'       => $headers,
                 'cells'         => $cells,
                 'action_header' => $actionHeader,
                 'action_cell'   => $actionCell,
                 'limit'         => (string) max(1, (int) ($relation['limit'] ?? 20)),
-                'view_all_url'  => $viewAllUrl,
             ]);
         }
 

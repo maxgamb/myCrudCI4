@@ -37,7 +37,9 @@ final class ControllerGenerator
         $createAllowed = !empty($config['features']['createAllowed']);
         $writable = !empty($config['features']['writable']);
         $recordDetail = !empty($config['features']['recordDetail']);
+        $isView = !empty($config['isView']);
         $deletedField = (string) ($config['softDelete']['field'] ?? 'deleted_at');
+        $viewDoc = $isView ? "\n * SQL VIEW: risorsa generata in sola lettura; eventuali scritture sono estensioni manuali." : '';
 
         $myCrudConfig = config('MyCrud');
         $csvChunkSize = max(100, min(5000, (int) ($myCrudConfig->csvChunkSize ?? 2000)));
@@ -128,7 +130,7 @@ final class ControllerGenerator
             if (
                 !$sensitive
                 && !empty($ui['searchable'])
-                && $indexEligible
+                && ($indexEligible || $isView)
                 && preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/D', $name) === 1
             ) {
                 $simpleFilterFields[] = $name;
@@ -249,6 +251,7 @@ PHP;
 PHP : '';
 
         $relationContextFields = [];
+        $parentContextFields = [];
         foreach ((array) ($config['fields'] ?? []) as $fieldName => $fieldConfig) {
             if (empty($fieldConfig['foreignKey'])) {
                 continue;
@@ -256,8 +259,21 @@ PHP : '';
             if (!empty($fieldConfig['relationNavigation']['acceptContext'])) {
                 $relationContextFields[] = (string) $fieldName;
             }
+
+            $parentTable = trim((string) ($fieldConfig['foreignKey']['parentTable'] ?? ''));
+            if (
+                $parentTable !== ''
+                && preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/D', (string) $fieldName) === 1
+                && preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/D', $parentTable) === 1
+            ) {
+                $parentContextFields[(string) $fieldName] = [
+                    'table' => $parentTable,
+                    'label' => ucfirst(str_replace('_', ' ', $parentTable)),
+                ];
+            }
         }
         $relationContextFieldsCode = var_export(array_values(array_unique($relationContextFields)), true);
+        $parentContextFieldsCode = var_export($parentContextFields, true);
 
         $viewMethod = $recordDetail ? <<<PHP
     public function view(int|string \$id)
@@ -279,6 +295,7 @@ PHP : '';
     public function create()
     {
         \$navigationContext = \$this->navigationContextFromQuery();
+        \$parentContext = \$this->parentContextFromQuery(\$navigationContext);
         \$context = [];
         \$contextLabels = [];
         foreach ({$relationContextFieldsCode} as \$field) {
@@ -299,9 +316,11 @@ PHP : '';
             'row' => null,
             'errors' => session('errors') ?? [],
             'options' => \$this->gateway->relationOptions(),
+            'relatedCreateOptions' => \$this->gateway->relatedCreateRelationOptions(),
             'context' => \$context,
             'contextLabels' => \$contextLabels,
             'navigationContext' => \$navigationContext,
+            'parentContext' => \$parentContext,
             'submissionToken' => \$this->submissionGuard->create('store'),
         ]);
     }
@@ -309,6 +328,7 @@ PHP : '';
     public function store()
     {
         \$navigationContext = \$this->navigationContextFromPost();
+        \$parentContext = \$this->parentContextFromPost(\$navigationContext);
         if (!\$this->submissionGuard->consume('store', \$this->request->getPost('_submission_token'))) {
             return redirect()->back()->withInput()->with('error', 'Il form è già stato inviato oppure è scaduto.');
         }
@@ -335,7 +355,8 @@ PHP : '';
         } catch (Throwable \$e) {
             return redirect()->back()->withInput()->with('error', \$e->getMessage());
         }
-        return redirect()->to(\$this->contextUrl('{$table}', \$navigationContext))->with('message', 'Record creato correttamente.');
+        \$redirectUrl = \$parentContext['url'] ?? \$this->contextUrl('{$table}', \$navigationContext);
+        return redirect()->to(\$redirectUrl)->with('message', 'Record creato correttamente.');
     }
 
 PHP : '';
@@ -413,7 +434,7 @@ use Throwable;
  * Controller CRUD {$architecture} per {$table}.
  *
  * Lato sito: coordina request, validazione, view e redirect. Le query restano
- * nel Model; Standard/Full demandano inoltre la logica applicativa al Service.
+ * nel Model; Standard/Full demandano inoltre la logica applicativa al Service.{$viewDoc}
  */
 final class {$controller} extends BaseController
 {
@@ -436,6 +457,12 @@ final class {$controller} extends BaseController
 
     /** FK autorizzate alla creazione atomica del record padre nello stesso form. */
     private const RELATED_CREATE_FIELDS = {$relatedCreateFieldsCode};
+
+    /**
+     * Contesti parent ammessi per il Create avviato da una relazione hasMany.
+     * La tabella di ritorno deriva esclusivamente dallo schema generato, mai dal POST.
+     */
+    private const PARENT_CONTEXT_FIELDS = {$parentContextFieldsCode};
 
     private {$gatewayType} \$gateway;
     private CrudExporter \$exporter;
@@ -653,6 +680,49 @@ final class {$controller} extends BaseController
         }
 
         return \$context;
+    }
+
+    /** @return array{field:string,table:string,id:string,label:string,url:string}|array{} */
+    private function parentContextFromQuery(array \$navigationContext): array
+    {
+        return \$this->parentContext((string) (\$this->request->getGet('_parent_field') ?? ''), \$navigationContext);
+    }
+
+    /** @return array{field:string,table:string,id:string,label:string,url:string}|array{} */
+    private function parentContextFromPost(array \$navigationContext): array
+    {
+        return \$this->parentContext((string) (\$this->request->getPost('_parent_field') ?? ''), \$navigationContext);
+    }
+
+    /**
+     * Risolve un ritorno contestuale sicuro verso il padre hasMany.
+     * Il client sceglie solo la FK; tabella e route sono whitelist generate dallo schema.
+     *
+     * @return array{field:string,table:string,id:string,label:string,url:string}|array{}
+     */
+    private function parentContext(string \$field, array \$navigationContext): array
+    {
+        if (\$field === '' || !isset(self::PARENT_CONTEXT_FIELDS[\$field])) {
+            return [];
+        }
+        \$id = \$navigationContext[\$field] ?? null;
+        if (!is_scalar(\$id) || trim((string) \$id) === '') {
+            return [];
+        }
+        \$definition = self::PARENT_CONTEXT_FIELDS[\$field];
+        \$table = (string) (\$definition['table'] ?? '');
+        if (\$table === '') {
+            return [];
+        }
+        \$id = (string) \$id;
+
+        return [
+            'field' => \$field,
+            'table' => \$table,
+            'id' => \$id,
+            'label' => (string) (\$definition['label'] ?? \$table),
+            'url' => site_url(\$table . '/view/' . rawurlencode(\$id)),
+        ];
     }
 
     private function contextUrl(string \$path, array \$context): string

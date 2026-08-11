@@ -264,6 +264,12 @@ final class AiProjectContextGenerator
                 'childTable' => (string) ($relation['childTable'] ?? ''),
                 'foreignKey' => (string) ($relation['foreignKey'] ?? ''),
                 'childCreateAllowed' => !empty($relation['childCreateAllowed']),
+                'showCreateButton' => !empty($relation['showCreateButton']),
+                'showViewAllButton' => !empty($relation['showViewAllButton']),
+                'showViewButton' => !empty($relation['showViewButton']),
+                'contextualCreate' => !empty($relation['showCreateButton']) && !empty($relation['childCreateAllowed']),
+                'returnToParentAfterCreate' => !empty($relation['showCreateButton']) && !empty($relation['childCreateAllowed']),
+                'partial' => '_children_' . (preg_replace('/[^A-Za-z0-9_]/', '_', (string) $key) ?: 'relation') . '.php',
                 'columns' => array_values((array) ($relation['columns'] ?? [])),
             ];
         }
@@ -393,10 +399,12 @@ final class AiProjectContextGenerator
             'Do not move generated runtime dependencies under App\\Libraries\\MyCrud.',
             'Do not introduce React, Vue, HTMX or other frontend frameworks unless explicitly requested.',
             'Do not modify the database automatically.',
+            'Treat SQL VIEW objects as read-only developer scaffolding: keep list/filter/sort/export and GET-only API capabilities, hide write-only Builder controls, generate no create/edit/delete/soft-delete or relational writes, and do not infer underlying indexes, foreign keys or VIEW updatability.',
             'Do not infer business meaning from field names when it is not explicitly configured.',
             'Treat app/Generated/ as staging and app/ as the operational application.',
             'Preserve generated CRUD page structure: Bootstrap breadcrumb + one table-name h1 + small page context; inner card headings are h2.',
             'Relational Create uses a Bootstrap input-group for the standard FK select/actions plus a Bootstrap Offcanvas and a dedicated parent-field partial that overlays the current view without changing its layout, never the full parent create view; the generated parent PK is the only authority for the current record FK.',
+            'HasMany scaffolding uses dedicated child partials and contextual parent → child → parent navigation: New child passes the real FK plus a schema-whitelisted _parent_field, and a successful child Create returns to the parent detail; it does not generate recursive inline editing.',
             'Prefer existing project conventions over generic framework rewrites.',
         ];
     }

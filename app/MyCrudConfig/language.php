@@ -168,6 +168,8 @@ return array (
         'icon' => 'bi-diagram-3',
         'limit' => 20,
         'showCount' => true,
+        'showCreateButton' => true,
+        'showViewAllButton' => true,
         'showViewButton' => true,
       ),
       'film__original_language_id' => 
@@ -177,6 +179,8 @@ return array (
         'icon' => 'bi-diagram-3',
         'limit' => 20,
         'showCount' => true,
+        'showCreateButton' => true,
+        'showViewAllButton' => true,
         'showViewButton' => true,
       ),
     ),
@@ -187,9 +191,9 @@ return array (
   ),
   '_meta' => 
   array (
-    'generatorVersion' => '2.8.0-dev31',
-    'savedAt' => '2026-08-10T15:05:47+00:00',
+    'generatorVersion' => '2.8.0-dev33',
+    'savedAt' => '2026-08-10T17:56:16+00:00',
     'schemaFingerprint' => 'a79f6a33789de3a6252f2b5eb73be9a16868c4a311b3975534d702cd35a0e1fb',
-    'configHash' => '011dd769d81bd4af5f0b3c7b09eb7aed1789d78ef9278611787399a4868bb091',
+    'configHash' => '59764a7b9aaee1a2ea60d3b4e89b5af6cd0930e929282a977461c716767adbe2',
   ),
 );

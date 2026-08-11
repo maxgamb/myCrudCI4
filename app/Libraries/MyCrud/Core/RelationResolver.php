@@ -316,6 +316,34 @@ final class RelationResolver
                 continue;
             }
 
+            $relatedForeignKey = $foreignKeys[$name] ?? null;
+            if (is_array($relatedForeignKey) && !empty($relatedForeignKey['parentTable'])) {
+                try {
+                    $relatedParentInfo = $this->schema->getTableInfo((string) $relatedForeignKey['parentTable']);
+                } catch (\Throwable) {
+                    $relatedParentInfo = [];
+                }
+                $relatedParentKey = (string) ($relatedForeignKey['parentKey'] ?? 'id');
+                $relatedDisplayField = $this->detectDisplayField($relatedParentInfo, $relatedParentKey);
+                $relatedForeignKey['displayField'] = $relatedDisplayField;
+                $relatedForeignKey['rowEstimate'] = max(0, (int) ($relatedParentInfo['rowEstimate'] ?? 0));
+                $relatedForeignKey['optionMode'] = $relatedForeignKey['rowEstimate'] >= max(1, (int) ($this->config->relationAjaxThreshold ?? 5000))
+                    ? 'ajax'
+                    : 'select';
+            }
+
+            $attributeValues = [];
+            if (!empty($column['maxLength'])) {
+                $attributeValues['maxlength'] = (string) $column['maxLength'];
+            }
+            $scale = (int) ($column['numericScale'] ?? 0);
+            if (preg_match('/decimal|numeric|float|double|real/', $type) === 1) {
+                $attributeValues['step'] = $scale > 0 ? '0.' . str_repeat('0', max(0, $scale - 1)) . '1' : '1';
+            }
+            if (str_contains($columnType, 'unsigned')) {
+                $attributeValues['min'] = '0';
+            }
+
             $fields[$name] = [
                 'name' => $name,
                 'type' => $type,
@@ -330,13 +358,11 @@ final class RelationResolver
                 'autoIncrement' => false,
                 'databaseManaged' => false,
                 'unique' => in_array((string) ($column['columnKey'] ?? ''), ['PRI', 'UNI'], true),
-                'inputType' => $inputType,
-                'foreignKey' => $foreignKeys[$name] ?? null,
+                'inputType' => is_array($relatedForeignKey) ? 'select' : $inputType,
+                'foreignKey' => $relatedForeignKey,
                 'attributes' => [
                     'boolean' => $required ? ['required'] : [],
-                    'values' => !empty($column['maxLength'])
-                        ? ['maxlength' => (string) $column['maxLength']]
-                        : [],
+                    'values' => $attributeValues,
                 ],
             ];
         }

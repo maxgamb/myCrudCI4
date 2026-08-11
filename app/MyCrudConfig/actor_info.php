@@ -55,7 +55,7 @@ return array (
         'searchable' => false,
         'sortable' => false,
         'visibleIndex' => true,
-        'visibleForm' => true,
+        'visibleForm' => false,
         'visibleView' => true,
         'sensitive' => false,
         'exportable' => true,
@@ -100,7 +100,7 @@ return array (
         'searchable' => false,
         'sortable' => false,
         'visibleIndex' => true,
-        'visibleForm' => true,
+        'visibleForm' => false,
         'visibleView' => true,
         'sensitive' => false,
         'exportable' => true,
@@ -145,7 +145,7 @@ return array (
         'searchable' => false,
         'sortable' => false,
         'visibleIndex' => true,
-        'visibleForm' => true,
+        'visibleForm' => false,
         'visibleView' => true,
         'sensitive' => false,
         'exportable' => true,
@@ -189,7 +189,7 @@ return array (
         'searchable' => false,
         'sortable' => false,
         'visibleIndex' => true,
-        'visibleForm' => true,
+        'visibleForm' => false,
         'visibleView' => true,
         'sensitive' => false,
         'exportable' => true,
@@ -200,7 +200,7 @@ return array (
   ),
   'features' => 
   array (
-    'relations' => true,
+    'relations' => false,
     'softDeletes' => false,
     'timestamps' => true,
   ),
@@ -216,9 +216,9 @@ return array (
   ),
   '_meta' => 
   array (
-    'generatorVersion' => '2.8.0-dev31',
-    'savedAt' => '2026-08-10T15:05:47+00:00',
+    'generatorVersion' => '2.8.0-dev33',
+    'savedAt' => '2026-08-10T17:56:16+00:00',
     'schemaFingerprint' => '78d4cac0b5b351dbbe3bd1196f0a2e5d5a130f579c762ebf2226bf9f8bd91ea5',
-    'configHash' => '4db8562175a9cbfe54cf2840ee4d78c5087e228bba57534984cc6d5ae1588402',
+    'configHash' => 'b41a3323b4ad166da04df03d58827b72bb741d92714d60b52600d451bb787baf',
   ),
 );

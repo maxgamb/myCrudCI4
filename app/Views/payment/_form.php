@@ -8,6 +8,7 @@ $options = $options ?? [];
 $context = $context ?? [];
 $contextLabels = $contextLabels ?? [];
 $navigationContext = (array) ($navigationContext ?? []);
+$parentContext = (array) ($parentContext ?? []);
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -39,12 +40,16 @@ $submissionToken = $submissionToken ?? '';
                 <?php foreach ($navigationContext as $contextField => $contextValue): ?>
                     <input type="hidden" name="_context[<?= esc((string) $contextField) ?>]" value="<?= esc((string) $contextValue) ?>">
                 <?php endforeach; ?>
+                <?php if (!empty($parentContext['field'])): ?>
+                    <input type="hidden" name="_parent_field" value="<?= esc((string) $parentContext['field']) ?>">
+                <?php endif; ?>
 
                 <div class="col-md-6">
                     <label for="customer_id" class="form-label">
                         <?= esc(lang('Payment.customer_id')) ?>
                     </label>
-<div class="input-group crud-relation-input-group">                    <select
+<div class="input-group crud-relation-input-group">
+                    <select
                         name="customer_id"
                         id="customer_id"
                         class="form-select <?= isset($errors['customer_id']) ? 'is-invalid' : '' ?>"
@@ -61,7 +66,8 @@ $submissionToken = $submissionToken ?? '';
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>                        <a
+                    </select>
+                        <a
                             href="#"
                             target="_blank"
                             rel="noopener"
@@ -89,7 +95,8 @@ $submissionToken = $submissionToken ?? '';
                             <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
                             Nuovo
                         </button>
-                    <?php endif; ?></div>
+                    <?php endif; ?>
+</div>
                     <?php if (!empty($errors['customer_id'])): ?>
                         <div id="customer_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['customer_id']) ?>
@@ -116,6 +123,8 @@ $submissionToken = $submissionToken ?? '';
                             aria-labelledby="related_create_customer_id_label"
                             data-related-field="customer_id"
                             data-state-target="related_create_customer_id_state"
+                            data-toggle-target="related_create_customer_id_toggle"
+                            data-bs-backdrop="static"
                         >
                             <div class="offcanvas-header border-bottom">
                                 <div>
@@ -139,10 +148,11 @@ $submissionToken = $submissionToken ?? '';
                                     'relatedField'        => 'customer_id',
                                     'relatedCreateActive' => $relatedCreateActive,
                                     'relatedPayloadState' => $relatedPayloadState,
+                                    'relatedCreateOptions' => (array) ($relatedCreateOptions ?? []),
                                     'errors'              => $errors,
                                 ]) ?>
                             </div>
-                            <div class="offcanvas-footer border-top p-3 d-flex justify-content-end">
+                            <div class="offcanvas-footer border-top p-3 d-flex justify-content-between gap-2">
                                 <button
                                     type="button"
                                     class="btn btn-outline-secondary crud-related-create-cancel"
@@ -151,7 +161,17 @@ $submissionToken = $submissionToken ?? '';
                                     data-bs-dismiss="offcanvas"
                                 >
                                     <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
-                                    Annulla nuovo Customer
+                                    Annulla
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-primary crud-related-create-apply"
+                                    data-related-field="customer_id"
+                                    data-state-target="related_create_customer_id_state"
+                                    data-bs-dismiss="offcanvas"
+                                >
+                                    <i class="bi bi-check2-circle me-1" aria-hidden="true"></i>
+                                    Applica nuovo Customer
                                 </button>
                             </div>
                         </div>
@@ -161,7 +181,8 @@ $submissionToken = $submissionToken ?? '';
                     <label for="staff_id" class="form-label">
                         <?= esc(lang('Payment.staff_id')) ?>
                     </label>
-<div class="input-group crud-relation-input-group">                    <select
+<div class="input-group crud-relation-input-group">
+                    <select
                         name="staff_id"
                         id="staff_id"
                         class="form-select <?= isset($errors['staff_id']) ? 'is-invalid' : '' ?>"
@@ -178,7 +199,8 @@ $submissionToken = $submissionToken ?? '';
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>                        <a
+                    </select>
+                        <a
                             href="#"
                             target="_blank"
                             rel="noopener"
@@ -206,7 +228,8 @@ $submissionToken = $submissionToken ?? '';
                             <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
                             Nuovo
                         </button>
-                    <?php endif; ?></div>
+                    <?php endif; ?>
+</div>
                     <?php if (!empty($errors['staff_id'])): ?>
                         <div id="staff_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['staff_id']) ?>
@@ -233,6 +256,8 @@ $submissionToken = $submissionToken ?? '';
                             aria-labelledby="related_create_staff_id_label"
                             data-related-field="staff_id"
                             data-state-target="related_create_staff_id_state"
+                            data-toggle-target="related_create_staff_id_toggle"
+                            data-bs-backdrop="static"
                         >
                             <div class="offcanvas-header border-bottom">
                                 <div>
@@ -256,10 +281,11 @@ $submissionToken = $submissionToken ?? '';
                                     'relatedField'        => 'staff_id',
                                     'relatedCreateActive' => $relatedCreateActive,
                                     'relatedPayloadState' => $relatedPayloadState,
+                                    'relatedCreateOptions' => (array) ($relatedCreateOptions ?? []),
                                     'errors'              => $errors,
                                 ]) ?>
                             </div>
-                            <div class="offcanvas-footer border-top p-3 d-flex justify-content-end">
+                            <div class="offcanvas-footer border-top p-3 d-flex justify-content-between gap-2">
                                 <button
                                     type="button"
                                     class="btn btn-outline-secondary crud-related-create-cancel"
@@ -268,7 +294,17 @@ $submissionToken = $submissionToken ?? '';
                                     data-bs-dismiss="offcanvas"
                                 >
                                     <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
-                                    Annulla nuovo Staff
+                                    Annulla
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-primary crud-related-create-apply"
+                                    data-related-field="staff_id"
+                                    data-state-target="related_create_staff_id_state"
+                                    data-bs-dismiss="offcanvas"
+                                >
+                                    <i class="bi bi-check2-circle me-1" aria-hidden="true"></i>
+                                    Applica nuovo Staff
                                 </button>
                             </div>
                         </div>
@@ -278,7 +314,8 @@ $submissionToken = $submissionToken ?? '';
                     <label for="rental_id" class="form-label">
                         <?= esc(lang('Payment.rental_id')) ?>
                     </label>
-<div class="input-group crud-relation-input-group">                    <select
+<div class="input-group crud-relation-input-group">
+                    <select
                         name="rental_id"
                         id="rental_id"
                         class="form-select <?= isset($errors['rental_id']) ? 'is-invalid' : '' ?>"
@@ -294,7 +331,8 @@ $submissionToken = $submissionToken ?? '';
                                 <?= esc($optionLabel) ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>                        <a
+                    </select>
+                        <a
                             href="#"
                             target="_blank"
                             rel="noopener"
@@ -322,7 +360,8 @@ $submissionToken = $submissionToken ?? '';
                             <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
                             Nuovo
                         </button>
-                    <?php endif; ?></div>
+                    <?php endif; ?>
+</div>
                     <?php if (!empty($errors['rental_id'])): ?>
                         <div id="rental_id-error" class="invalid-feedback d-block">
                             <?= esc($errors['rental_id']) ?>
@@ -349,6 +388,8 @@ $submissionToken = $submissionToken ?? '';
                             aria-labelledby="related_create_rental_id_label"
                             data-related-field="rental_id"
                             data-state-target="related_create_rental_id_state"
+                            data-toggle-target="related_create_rental_id_toggle"
+                            data-bs-backdrop="static"
                         >
                             <div class="offcanvas-header border-bottom">
                                 <div>
@@ -372,10 +413,11 @@ $submissionToken = $submissionToken ?? '';
                                     'relatedField'        => 'rental_id',
                                     'relatedCreateActive' => $relatedCreateActive,
                                     'relatedPayloadState' => $relatedPayloadState,
+                                    'relatedCreateOptions' => (array) ($relatedCreateOptions ?? []),
                                     'errors'              => $errors,
                                 ]) ?>
                             </div>
-                            <div class="offcanvas-footer border-top p-3 d-flex justify-content-end">
+                            <div class="offcanvas-footer border-top p-3 d-flex justify-content-between gap-2">
                                 <button
                                     type="button"
                                     class="btn btn-outline-secondary crud-related-create-cancel"
@@ -384,7 +426,17 @@ $submissionToken = $submissionToken ?? '';
                                     data-bs-dismiss="offcanvas"
                                 >
                                     <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
-                                    Annulla nuovo Rental
+                                    Annulla
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-primary crud-related-create-apply"
+                                    data-related-field="rental_id"
+                                    data-state-target="related_create_rental_id_state"
+                                    data-bs-dismiss="offcanvas"
+                                >
+                                    <i class="bi bi-check2-circle me-1" aria-hidden="true"></i>
+                                    Applica nuovo Rental
                                 </button>
                             </div>
                         </div>
@@ -432,7 +484,7 @@ $submissionToken = $submissionToken ?? '';
                     <?php endif; ?>
                 </div>
 
-                <div class="col-12 d-flex gap-2">
+                <div class="col-12 d-flex flex-wrap gap-2">
                     <button type="submit" class="btn btn-success" id="submitButton">
                         <span class="submit-normal"><i class="bi bi-check-circle"></i> Salva</span>
                         <span class="submit-loading d-none">
@@ -440,6 +492,12 @@ $submissionToken = $submissionToken ?? '';
                             Salvataggio...
                         </span>
                     </button>
+                    <?php if (!empty($parentContext['url'])): ?>
+                        <a href="<?= esc((string) $parentContext['url']) ?>" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i>
+                            Annulla e torna a <?= esc((string) ($parentContext['label'] ?? 'record padre')) ?>
+                        </a>
+                    <?php endif; ?>
 
                 </div>
 
@@ -564,6 +622,29 @@ document.addEventListener('DOMContentLoaded', function () {
         panel.querySelectorAll('.crud-related-create-field').forEach(function (input) {
             input.disabled = !active;
         });
+
+        // Se viene creato un nuovo parent, la FK originaria può essere vuota:
+        // il valore sarà imposto server-side con la PK appena generata. Sospendi
+        // quindi solo il vincolo HTML5 required della FK, senza alterarne la UI.
+        const source = document.getElementById(field);
+        if (source) {
+            if (!Object.prototype.hasOwnProperty.call(source.dataset, 'relatedOriginalRequired')) {
+                source.dataset.relatedOriginalRequired = source.required ? '1' : '0';
+            }
+            if (active) {
+                source.removeAttribute('required');
+                source.setAttribute('aria-required', 'false');
+            } else if (source.dataset.relatedOriginalRequired === '1') {
+                source.setAttribute('required', 'required');
+                source.setAttribute('aria-required', 'true');
+            }
+        }
+
+        const toggle = document.getElementById(String(panel.dataset.toggleTarget || ''));
+        if (toggle) {
+            toggle.classList.toggle('active', active);
+            toggle.setAttribute('aria-pressed', active ? 'true' : 'false');
+        }
     };
 
     document.querySelectorAll('.crud-related-create-panel.offcanvas').forEach(function (panel) {
@@ -574,14 +655,32 @@ document.addEventListener('DOMContentLoaded', function () {
         setRelatedCreateState(panel, String(state.value || '0') === '1');
 
         panel.addEventListener('show.bs.offcanvas', function () {
+            panel.dataset.relatedApplied = '0';
             setRelatedCreateState(panel, true);
         });
 
-        // Chiudere l'Offcanvas equivale ad annullare la creazione inline.
-        // I valori digitati restano nel DOM e possono essere recuperati
-        // riaprendo il pannello, ma non vengono inviati finché lo stato è 0.
+        panel.querySelectorAll('.crud-related-create-apply').forEach(function (button) {
+            button.addEventListener('click', function () {
+                panel.dataset.relatedApplied = '1';
+                setRelatedCreateState(panel, true);
+            });
+        });
+
+        panel.querySelectorAll('.crud-related-create-cancel').forEach(function (button) {
+            button.addEventListener('click', function () {
+                panel.dataset.relatedApplied = '0';
+                setRelatedCreateState(panel, false);
+            });
+        });
+
+        // Solo "Applica" mantiene attiva la creazione inline dopo la chiusura.
+        // X, Annulla ed eventuale chiusura da tastiera annullano l'operazione.
         panel.addEventListener('hidden.bs.offcanvas', function () {
-            setRelatedCreateState(panel, false);
+            if (String(panel.dataset.relatedApplied || '0') !== '1') {
+                setRelatedCreateState(panel, false);
+            } else {
+                setRelatedCreateState(panel, true);
+            }
         });
 
         // Se la validazione server ha restituito errori sul nuovo parent,

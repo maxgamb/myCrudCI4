@@ -67,6 +67,12 @@ final class FilmListService
         return $this->model->relationOptions();
     }
 
+    /** Opzioni delle FK interne ai parent creati inline. */
+    public function relatedCreateRelationOptions(): array
+    {
+        return $this->model->relatedCreateRelationOptions();
+    }
+
     /** @return list<array{id:string,text:string}> */
     public function searchRelationOptions(string $field, string $query, int $limit = 20): array
     {

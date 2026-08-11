@@ -1,6 +1,7 @@
 <?php
 $relatedCreateActive = !empty($relatedCreateActive);
 $relatedPayloadState = (array) ($relatedPayloadState ?? []);
+$relatedCreateOptions = (array) ($relatedCreateOptions ?? []);
 $errors = (array) ($errors ?? []);
 ?>
 <div class="row g-3">
@@ -15,7 +16,8 @@ $errors = (array) ($errors ?? []);
                     data-related-field="film_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
                      required maxlength="128"
-                >                <?php if (!empty($errors['film_id__related__title'])): ?>
+                >
+                <?php if (!empty($errors['film_id__related__title'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['film_id__related__title']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
@@ -27,7 +29,8 @@ $errors = (array) ($errors ?? []);
                     data-related-field="film_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
                      maxlength="65535"
-                ><?= esc((string) (($relatedPayloadState['film_id']['description'] ?? ''))) ?></textarea>                <?php if (!empty($errors['film_id__related__description'])): ?>
+                ><?= esc((string) (($relatedPayloadState['film_id']['description'] ?? ''))) ?></textarea>
+                <?php if (!empty($errors['film_id__related__description'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['film_id__related__description']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
@@ -41,35 +44,56 @@ $errors = (array) ($errors ?? []);
                     data-related-field="film_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
                     
-                >                <?php if (!empty($errors['film_id__related__release_year'])): ?>
+                >
+                <?php if (!empty($errors['film_id__related__release_year'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['film_id__related__release_year']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
                 <label for="related_create_film_id_language_id" class="form-label"><?= esc('Language Id') ?></label>
-                <input
-                    type="number"
+                <select
                     name="_related[film_id][language_id]"
                     id="related_create_film_id_language_id"
-                    value="<?= esc((string) (($relatedPayloadState['film_id']['language_id'] ?? ''))) ?>"
-                    class="form-control <?= isset($errors['film_id__related__language_id']) ? 'is-invalid' : '' ?> crud-related-create-field"
+                    class="form-select <?= isset($errors['film_id__related__language_id']) ? 'is-invalid' : '' ?> crud-related-create-field"
                     data-related-field="film_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
-                     required
-                >                <?php if (!empty($errors['film_id__related__language_id'])): ?>
+                     required min="0"
+                >
+                    <option value="">Seleziona...</option>
+                    <?php foreach ((array) ($relatedCreateOptions['film_id']['language_id'] ?? []) as $relatedOption): ?>
+                        <?php
+                        $relatedOptionId = (string) ($relatedOption['id'] ?? '');
+                        $relatedOptionText = (string) ($relatedOption['text'] ?? $relatedOptionId);
+                        ?>
+                        <option value="<?= esc($relatedOptionId) ?>" <?= (string) (($relatedPayloadState['film_id']['language_id'] ?? '')) === $relatedOptionId ? 'selected' : '' ?>>
+                            <?= esc($relatedOptionText) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <?php if (!empty($errors['film_id__related__language_id'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['film_id__related__language_id']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
                 <label for="related_create_film_id_original_language_id" class="form-label"><?= esc('Original Language Id') ?></label>
-                <input
-                    type="number"
+                <select
                     name="_related[film_id][original_language_id]"
                     id="related_create_film_id_original_language_id"
-                    value="<?= esc((string) (($relatedPayloadState['film_id']['original_language_id'] ?? ''))) ?>"
-                    class="form-control <?= isset($errors['film_id__related__original_language_id']) ? 'is-invalid' : '' ?> crud-related-create-field"
+                    class="form-select <?= isset($errors['film_id__related__original_language_id']) ? 'is-invalid' : '' ?> crud-related-create-field"
                     data-related-field="film_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
-                    
-                >                <?php if (!empty($errors['film_id__related__original_language_id'])): ?>
+                     min="0"
+                >
+                    <option value="">Seleziona...</option>
+                    <?php foreach ((array) ($relatedCreateOptions['film_id']['original_language_id'] ?? []) as $relatedOption): ?>
+                        <?php
+                        $relatedOptionId = (string) ($relatedOption['id'] ?? '');
+                        $relatedOptionText = (string) ($relatedOption['text'] ?? $relatedOptionId);
+                        ?>
+                        <option value="<?= esc($relatedOptionId) ?>" <?= (string) (($relatedPayloadState['film_id']['original_language_id'] ?? '')) === $relatedOptionId ? 'selected' : '' ?>>
+                            <?= esc($relatedOptionText) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <?php if (!empty($errors['film_id__related__original_language_id'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['film_id__related__original_language_id']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
@@ -82,8 +106,9 @@ $errors = (array) ($errors ?? []);
                     class="form-control <?= isset($errors['film_id__related__rental_duration']) ? 'is-invalid' : '' ?> crud-related-create-field"
                     data-related-field="film_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
-                    
-                >                <?php if (!empty($errors['film_id__related__rental_duration'])): ?>
+                     min="0"
+                >
+                <?php if (!empty($errors['film_id__related__rental_duration'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['film_id__related__rental_duration']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
@@ -96,8 +121,9 @@ $errors = (array) ($errors ?? []);
                     class="form-control <?= isset($errors['film_id__related__rental_rate']) ? 'is-invalid' : '' ?> crud-related-create-field"
                     data-related-field="film_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
-                    
-                >                <?php if (!empty($errors['film_id__related__rental_rate'])): ?>
+                     step="0.01"
+                >
+                <?php if (!empty($errors['film_id__related__rental_rate'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['film_id__related__rental_rate']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
@@ -110,8 +136,9 @@ $errors = (array) ($errors ?? []);
                     class="form-control <?= isset($errors['film_id__related__length']) ? 'is-invalid' : '' ?> crud-related-create-field"
                     data-related-field="film_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
-                    
-                >                <?php if (!empty($errors['film_id__related__length'])): ?>
+                     min="0"
+                >
+                <?php if (!empty($errors['film_id__related__length'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['film_id__related__length']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
@@ -124,8 +151,9 @@ $errors = (array) ($errors ?? []);
                     class="form-control <?= isset($errors['film_id__related__replacement_cost']) ? 'is-invalid' : '' ?> crud-related-create-field"
                     data-related-field="film_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
-                    
-                >                <?php if (!empty($errors['film_id__related__replacement_cost'])): ?>
+                     step="0.01"
+                >
+                <?php if (!empty($errors['film_id__related__replacement_cost'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['film_id__related__replacement_cost']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
@@ -139,7 +167,8 @@ $errors = (array) ($errors ?? []);
                     data-related-field="film_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
                      maxlength="5"
-                >                <?php if (!empty($errors['film_id__related__rating'])): ?>
+                >
+                <?php if (!empty($errors['film_id__related__rating'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['film_id__related__rating']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
@@ -153,7 +182,8 @@ $errors = (array) ($errors ?? []);
                     data-related-field="film_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
                      maxlength="54"
-                >                <?php if (!empty($errors['film_id__related__special_features'])): ?>
+                >
+                <?php if (!empty($errors['film_id__related__special_features'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['film_id__related__special_features']) ?></div>
                 <?php endif; ?>
             </div></div>

@@ -15,15 +15,20 @@
 
     <div class="card shadow-sm">
         <div class="card-header">
-            <strong>Tabelle disponibili</strong>
+            <strong>Oggetti database disponibili</strong>
         </div>
 
         <div class="list-group list-group-flush">
             <?php foreach ($tables as $table): ?>
+                <?php $objectType = strtoupper((string) (($objectTypes[$table] ?? 'BASE TABLE'))); ?>
                 <div class="list-group-item d-flex flex-wrap justify-content-between align-items-center gap-2">
                     <span>
-                        <i class="bi bi-table"></i>
+                        <i class="bi <?= $objectType === 'VIEW' ? 'bi-eye' : 'bi-table' ?>"></i>
                         <strong><?= esc($table) ?></strong>
+                        <?php if ($objectType === 'VIEW'): ?>
+                            <span class="badge text-bg-info ms-2">VIEW SQL</span>
+                            <span class="badge text-bg-secondary">Read only</span>
+                        <?php endif; ?>
                     </span>
 
                     <div class="btn-group">

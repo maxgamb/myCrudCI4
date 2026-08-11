@@ -72,6 +72,23 @@ ksort($childTables);
         </aside>
 
         <main class="col-12 col-lg-10">
+<?php if (!empty($config['isView'])): ?>
+<div class="card shadow-sm mb-4 relation-navigation">
+    <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <div class="small text-uppercase text-muted fw-semibold mb-1">Oggetto corrente</div>
+            <div class="fs-5 fw-bold">
+                <i class="bi bi-eye"></i>
+                <?= esc($table) ?>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <span class="badge text-bg-info">VIEW SQL</span>
+            <span class="badge text-bg-secondary">Read only</span>
+        </div>
+    </div>
+</div>
+<?php else: ?>
 <div class="card shadow-sm mb-4 relation-navigation">
     <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
         <strong>
@@ -222,6 +239,7 @@ ksort($childTables);
         </div>
     </div>
 </div>
+<?php endif; ?>
 <!--CORPO-->
 
 
@@ -230,7 +248,11 @@ ksort($childTables);
         <div>
             <h1 class="h3 mb-1">
                 <i class="bi bi-sliders"></i>
-                Configura tabella: <?= esc($table) ?>
+                Configura <?= !empty($config['isView']) ? 'vista' : 'tabella' ?>: <?= esc($table) ?>
+                <?php if (!empty($config['isView'])): ?>
+                    <span class="badge text-bg-info align-middle ms-2">VIEW SQL</span>
+                    <span class="badge text-bg-secondary align-middle">Read only</span>
+                <?php endif; ?>
             </h1>
             <small class="text-muted">
                 Trascina i campi per modificarne l'ordine.
@@ -258,6 +280,18 @@ ksort($childTables);
         <div class="alert alert-danger"><?= esc(session('error')) ?></div>
 <?php endif; ?>
 
+    <?php if (!empty($config['isView'])): ?>
+        <div class="alert alert-info d-flex gap-2 align-items-start" role="alert">
+            <i class="bi bi-eye mt-1"></i>
+            <div>
+                <strong>SQL VIEW rilevata.</strong>
+                myCrudGpt genera un'impalcatura di sola lettura: elenco, filtri, paginazione, export
+                e, con architettura Full, API GET. Create, Edit, Delete, Soft Delete e relazioni di
+                scrittura non vengono generate. La VIEW sottostante non viene modificata.
+            </div>
+        </div>
+    <?php endif; ?>
+
     <form method="post" id="builderForm">
 <?= csrf_field() ?>
         <input type="hidden" name="table" value="<?= esc($table) ?>">
@@ -274,17 +308,17 @@ ksort($childTables);
                         'basic' => [
                             'title' => 'Basic',
                             'icon' => 'bi-box',
-                            'description' => 'CRUD, validazione, Bootstrap AJAX, Pager CI4, filtri indicizzati, CSV e Word HTML.',
+                            'description' => !empty($config['isView']) ? 'Consultazione read-only: Model, Controller, Views, Pager CI4, filtri ed export.' : 'CRUD, validazione, Bootstrap AJAX, Pager CI4, filtri indicizzati, CSV e Word HTML.',
                         ],
                         'standard' => [
                             'title' => 'Standard',
                             'icon' => 'bi-layers',
-                            'description' => 'Tutto Basic, con Entity e Service.',
+                            'description' => !empty($config['isView']) ? 'Tutto Basic, con Entity e Service come impalcatura estendibile.' : 'Tutto Basic, con Entity e Service.',
                         ],
                         'full' => [
                             'title' => 'Full',
                             'icon' => 'bi-rocket-takeoff',
-                            'description' => 'Tutto Standard, con API REST v1, Resource, validazione API e OpenAPI.',
+                            'description' => !empty($config['isView']) ? 'Tutto Standard, con API GET, Resource e OpenAPI read-only.' : 'Tutto Standard, con API REST v1, Resource, validazione API e OpenAPI.',
                         ],
                     ] as $value => $architecture): ?>
                         <div class="col-12 col-lg-4">
@@ -315,6 +349,12 @@ ksort($childTables);
 
                 <hr>
 
+                <?php if (!empty($config['isView'])): ?>
+                    <div class="alert alert-light border mb-0">
+                        <i class="bi bi-lock"></i>
+                        Relazioni FK, timestamp gestiti dal CRUD e soft delete non si applicano alla VIEW.
+                    </div>
+                <?php else: ?>
                 <div class="row g-3">
                     <?php
                     $featureLabels = [
@@ -334,7 +374,7 @@ ksort($childTables);
                                     value="1"
                                     id="feature_<?= esc($feature) ?>"
                                     <?= !empty($config['features'][$feature]) ? 'checked' : '' ?>
-                                    <?= $feature === 'softDeletes' && empty($config['softDelete']['available']) ? 'disabled' : '' ?>
+                                    <?= (($feature === 'softDeletes' && empty($config['softDelete']['available'])) || (!empty($config['isView']) && in_array($feature, ['relations', 'softDeletes'], true))) ? 'disabled' : '' ?>
                                 >
                                 <label class="form-check-label" for="feature_<?= esc($feature) ?>">
                                     <?= esc($label) ?>
@@ -344,10 +384,17 @@ ksort($childTables);
                     <?php endforeach; ?>
                 </div>
 
+                <?php endif; ?>
+
                 <div class="alert alert-info mt-3">
                     <i class="bi bi-info-circle"></i>
-                    Il motore elenco è comune: Bootstrap AJAX, Pager CI4, filtri server-side indicizzati,
-                    CSV e Word HTML. Le differenze riguardano i livelli Entity, Service e API.
+                    <?php if (!empty($config['isView'])): ?>
+                        La VIEW usa lo stesso motore elenco: Bootstrap AJAX, Pager CI4, filtri server-side configurabili,
+                        CSV e Word HTML. Full aggiunge API GET, Resource e OpenAPI read-only.
+                    <?php else: ?>
+                        Il motore elenco è comune: Bootstrap AJAX, Pager CI4, filtri server-side indicizzati,
+                        CSV e Word HTML. Le differenze riguardano i livelli Entity, Service e API.
+                    <?php endif; ?>
                 </div>
 
                 <div class="row g-3">
@@ -373,7 +420,7 @@ ksort($childTables);
                 <div class="card-header">
                     <strong>
                         <i class="bi bi-diagram-3"></i>
-                        Related Panels (hasMany readonly)
+                        Relazioni figlie (hasMany scaffolding)
                     </strong>
                 </div>
 
@@ -514,6 +561,51 @@ ksort($childTables);
                                                         for="relation_count_<?= esc(md5($relationKey)) ?>"
                                                         >
                                                         Mostra conteggio
+                                                    </label>
+                                                </div>
+
+                                                <div class="form-check">
+
+                                                    <input
+                                                        class="form-check-input"
+                                                        type="checkbox"
+                                                        name="relationsConfig[hasMany][<?= esc($relationKey) ?>][showCreateButton]"
+                                                        value="1"
+                                                        id="relation_create_<?= esc(md5($relationKey)) ?>"
+        <?=
+        !empty($relation['showCreateButton']) ? 'checked' : ''
+        ?>
+        <?=
+        empty($relation['childCreateAllowed']) ? 'disabled' : ''
+        ?>
+                                                        >
+
+                                                    <label
+                                                        class="form-check-label"
+                                                        for="relation_create_<?= esc(md5($relationKey)) ?>"
+                                                        >
+                                                        Pulsante Nuovo figlio
+                                                    </label>
+                                                </div>
+
+                                                <div class="form-check">
+
+                                                    <input
+                                                        class="form-check-input"
+                                                        type="checkbox"
+                                                        name="relationsConfig[hasMany][<?= esc($relationKey) ?>][showViewAllButton]"
+                                                        value="1"
+                                                        id="relation_all_<?= esc(md5($relationKey)) ?>"
+        <?=
+        !empty($relation['showViewAllButton']) ? 'checked' : ''
+        ?>
+                                                        >
+
+                                                    <label
+                                                        class="form-check-label"
+                                                        for="relation_all_<?= esc(md5($relationKey)) ?>"
+                                                        >
+                                                        Pulsante Vedi tutti
                                                     </label>
                                                 </div>
 
@@ -873,6 +965,7 @@ ksort($childTables);
                                 </select>
                             </div>
 
+                            <?php if (empty($config['isView'])): ?>
                             <div class="col-lg-4">
                                 <label class="form-label d-block">Attributi booleani</label>
 
@@ -904,6 +997,8 @@ ksort($childTables);
     <?php endforeach; ?>
                             </div>
 
+                            <?php endif; ?>
+
                             <div class="col-12">
                                 <label class="form-label d-block">Comportamento CRUD e API</label>
                                 <input type="hidden" name="ui[<?= esc($fieldName) ?>][]" value="">
@@ -912,12 +1007,16 @@ ksort($childTables);
                                     'searchable' => '🔍 Ricercabile',
                                     'sortable' => '↕️ Ordinabile',
                                     'visibleIndex' => '📋 Visibile elenco',
-                                    'visibleForm' => '🧾 Visibile form',
                                     'visibleView' => '👁️ Visibile dettaglio',
                                     'sensitive' => '🔐 Sensibile',
                                     'exportable' => '📄 Esportabile CSV/Word',
                                     'apiVisible' => '🔌 Visibile API',
                                 ];
+                                if (empty($config['isView'])) {
+                                    $uiFlags = array_slice($uiFlags, 0, 3, true)
+                                        + ['visibleForm' => '🧾 Visibile form']
+                                        + array_slice($uiFlags, 3, null, true);
+                                }
                                 ?>
                                 <?php foreach ($uiFlags as $flag => $flagLabel): ?>
                                     <div class="form-check form-check-inline">
@@ -927,7 +1026,7 @@ ksort($childTables);
                                             name="ui[<?= esc($fieldName) ?>][]"
                                             value="<?= esc($flag) ?>"
                                             id="<?= esc($fieldName . '_ui_' . $flag) ?>"
-                                            <?= ($flag === 'visibleForm' && !empty($field['databaseManaged'])) ? 'disabled' : '' ?>
+                                            <?= ($flag === 'visibleForm' && (!empty($field['databaseManaged']) || !empty($config['isView']))) ? 'disabled' : '' ?>
                                             <?= !empty($field['ui'][$flag]) ? 'checked' : '' ?>
                                         >
                                         <label class="form-check-label" for="<?= esc($fieldName . '_ui_' . $flag) ?>">
@@ -936,11 +1035,16 @@ ksort($childTables);
                                     </div>
                                 <?php endforeach; ?>
                                 <div class="form-text">
-                                    “Ricercabile” rende il campo disponibile nel filtro dinamico Campo/Criterio/Valore quando l'indice lo consente.
+                                    <?php if (!empty($config['isView'])): ?>
+                                        Per una VIEW ricerca e ordinamento sono scelte esplicite dello sviluppatore: myCrudGpt non inventa indici sottostanti.
+                                    <?php else: ?>
+                                        “Ricercabile” rende il campo disponibile nel filtro dinamico Campo/Criterio/Valore quando l'indice lo consente.
+                                    <?php endif; ?>
                                     Le opzioni di visibilità ed export vengono rispettate dal codice generato lato sito.
                                 </div>
                             </div>
 
+                            <?php if (empty($config['isView'])): ?>
                             <div class="col-lg-8">
                                 <label class="form-label">Attributi con valore</label>
                                 <div class="row g-2">
@@ -959,6 +1063,7 @@ ksort($childTables);
     <?php endforeach; ?>
                                 </div>
                             </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

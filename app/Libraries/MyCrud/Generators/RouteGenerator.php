@@ -17,6 +17,9 @@ final class RouteGenerator
         $createAllowed = !empty($config['features']['createAllowed']);
         $writable = !empty($config['features']['writable']);
         $recordDetail = !empty($config['features']['recordDetail']);
+        $isView = !empty($config['isView']);
+        $viewRouteDoc = $isView ? "\n * SQL VIEW: route di sola lettura; nessuna route di scrittura viene generata." : '';
+        $relationOptionsRoute = $isView ? '' : "    \$routes->get('relation-options/(:segment)', '{$controller}::relationOptions/\$1');\n";
 
         $softRoutes = $writable && !empty($config['features']['softDeletes'])
             ? "    \$routes->get('trash', '{$controller}::trash');\n    \$routes->post('restore/(:segment)', '{$controller}::restore/\$1');\n    \$routes->post('force-delete/(:segment)', '{$controller}::forceDelete/\$1');\n"
@@ -53,7 +56,7 @@ use CodeIgniter\Router\RouteCollection;
 /*
  * Route modulari del CRUD {$table}.
  * myCrudGpt genera volutamente un file per tabella: app/Config/Routes.php
- * può caricare app/Routes/*.php senza concentrare tutte le route in un unico file.
+ * può caricare app/Routes/*.php senza concentrare tutte le route in un unico file.{$viewRouteDoc}
  */
 
 /** @var RouteCollection \$routes */
@@ -61,8 +64,7 @@ use CodeIgniter\Router\RouteCollection;
     \$routes->get('/', '{$controller}::index');
     \$routes->get('export-csv', '{$controller}::exportCsv');
     \$routes->get('export-word', '{$controller}::exportWord');
-    \$routes->get('relation-options/(:segment)', '{$controller}::relationOptions/\$1');
-{$softRoutes}{$webRecordRoute}{$webCreateRoutes}{$webWriteRoutes}});{$apiRoutes}
+{$relationOptionsRoute}{$softRoutes}{$webRecordRoute}{$webCreateRoutes}{$webWriteRoutes}});{$apiRoutes}
 PHP;
 
         return $this->writeGenerated("Generated/Routes/{$table}.php", $content, $force);

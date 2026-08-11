@@ -44,6 +44,13 @@ final class ViewGenerator
                 $this->detail->generate($config),
                 $force
             );
+            foreach ($this->detail->generateHasManyPartials($config) as $partialName => $partialContent) {
+                $files[$partialName] = $this->writeGenerated(
+                    "Generated/Views/{$table}/{$partialName}",
+                    $partialContent,
+                    $force
+                );
+            }
         }
 
         $createAllowed = !empty($config['features']['createAllowed']);

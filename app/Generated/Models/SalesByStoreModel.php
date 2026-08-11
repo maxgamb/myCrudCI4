@@ -10,7 +10,7 @@ use CodeIgniter\Model;
 use RuntimeException;
 use Throwable;
 
-/** Model per sales_by_store; tutte le query del CRUD sono centralizzate qui. */
+/** Model read-only per SQL VIEW sales_by_store; estendere manualmente solo se necessario. */
 final class SalesByStoreModel extends Model
 {
     protected $table = 'sales_by_store';
@@ -53,6 +53,8 @@ final class SalesByStoreModel extends Model
     private const RELATION_SEARCHES = array (
 );
     private const RELATED_CREATES = array (
+);
+    private const RELATED_CREATE_RELATIONS = array (
 );
     private const COUNT_CACHE_SECONDS = 60;
 
@@ -354,6 +356,37 @@ final class SalesByStoreModel extends Model
         $query['page'] = $page;
         return current_url() . '?' . http_build_query($query);
     }
+    /**
+     * Opzioni delle FK appartenenti ai parent creati inline.
+     * La whitelist deriva esclusivamente dalle FK reali dello schema.
+     */
+    public function relatedCreateRelationOptions(): array
+    {
+        $result = [];
+        foreach (self::RELATED_CREATE_RELATIONS as $relationField => $fields) {
+            foreach ((array) $fields as $field => $definition) {
+                if (($definition['mode'] ?? 'select') !== 'select') {
+                    continue;
+                }
+                $table = (string) $definition['table'];
+                $key = (string) $definition['key'];
+                $display = (string) $definition['displayField'];
+                $rows = $this->db->table($table)
+                    ->select([$key, $display])
+                    ->orderBy($display, 'ASC')
+                    ->get()
+                    ->getResultArray();
+                foreach ($rows as $row) {
+                    $result[(string) $relationField][(string) $field][] = [
+                        'id' => (string) ($row[$key] ?? ''),
+                        'text' => (string) ($row[$display] ?? $row[$key] ?? ''),
+                    ];
+                }
+            }
+        }
+        return $result;
+    }
+
     public function relationOptions(): array
     {
         return [

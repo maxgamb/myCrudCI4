@@ -10,8 +10,19 @@ final class TableFilter
     {
         $config ??= config('MyCrud');
 
+        // information_schema include esplicitamente sia BASE TABLE sia VIEW.
+        // Non dipendiamo dal comportamento specifico di listTables() rispetto
+        // alle viste, così dev32 può mostrarle e configurarle in modo affidabile.
+        $rows = $db->query(
+            "SELECT TABLE_NAME AS tableName
+             FROM information_schema.TABLES
+             WHERE TABLE_SCHEMA = DATABASE()
+               AND TABLE_TYPE IN ('BASE TABLE', 'VIEW')
+             ORDER BY TABLE_NAME"
+        )->getResultArray();
+
         $tables = array_values(array_filter(
-            $db->listTables(),
+            array_map(static fn (array $row): string => (string) ($row['tableName'] ?? ''), $rows),
             static function (string $table) use ($config): bool {
                 if (
                     $table === ''
@@ -36,4 +47,42 @@ final class TableFilter
 
         return $tables;
     }
+    /**
+     * Restituisce il tipo SQL degli oggetti configurabili senza cambiare la
+     * firma storica di validTables(). Serve solo alla UI per distinguere
+     * BASE TABLE e VIEW.
+     *
+     * @return array<string, string> nome => BASE TABLE|VIEW
+     */
+    public static function objectTypes(BaseConnection $db, ?MyCrud $config = null): array
+    {
+        $tables = self::validTables($db, $config);
+        if ($tables === []) {
+            return [];
+        }
+
+        $rows = $db->query(
+            'SELECT TABLE_NAME AS tableName, TABLE_TYPE AS tableType
+             FROM information_schema.TABLES
+             WHERE TABLE_SCHEMA = DATABASE()'
+        )->getResultArray();
+
+        $allowed = array_fill_keys($tables, true);
+        $types = [];
+        foreach ($rows as $row) {
+            $name = (string) ($row['tableName'] ?? '');
+            if ($name === '' || !isset($allowed[$name])) {
+                continue;
+            }
+            $types[$name] = strtoupper((string) ($row['tableType'] ?? 'BASE TABLE'));
+        }
+
+        foreach ($tables as $table) {
+            $types[$table] ??= 'BASE TABLE';
+        }
+
+        ksort($types, SORT_NATURAL | SORT_FLAG_CASE);
+        return $types;
+    }
+
 }

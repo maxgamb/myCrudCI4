@@ -1,6 +1,7 @@
 <?php
 $relatedCreateActive = !empty($relatedCreateActive);
 $relatedPayloadState = (array) ($relatedPayloadState ?? []);
+$relatedCreateOptions = (array) ($relatedCreateOptions ?? []);
 $errors = (array) ($errors ?? []);
 ?>
 <div class="row g-3">
@@ -15,7 +16,8 @@ $errors = (array) ($errors ?? []);
                     data-related-field="manager_staff_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
                      required maxlength="45"
-                >                <?php if (!empty($errors['manager_staff_id__related__first_name'])): ?>
+                >
+                <?php if (!empty($errors['manager_staff_id__related__first_name'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['manager_staff_id__related__first_name']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
@@ -29,21 +31,32 @@ $errors = (array) ($errors ?? []);
                     data-related-field="manager_staff_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
                      required maxlength="45"
-                >                <?php if (!empty($errors['manager_staff_id__related__last_name'])): ?>
+                >
+                <?php if (!empty($errors['manager_staff_id__related__last_name'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['manager_staff_id__related__last_name']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
                 <label for="related_create_manager_staff_id_address_id" class="form-label"><?= esc('Address Id') ?></label>
-                <input
-                    type="number"
+                <select
                     name="_related[manager_staff_id][address_id]"
                     id="related_create_manager_staff_id_address_id"
-                    value="<?= esc((string) (($relatedPayloadState['manager_staff_id']['address_id'] ?? ''))) ?>"
-                    class="form-control <?= isset($errors['manager_staff_id__related__address_id']) ? 'is-invalid' : '' ?> crud-related-create-field"
+                    class="form-select <?= isset($errors['manager_staff_id__related__address_id']) ? 'is-invalid' : '' ?> crud-related-create-field"
                     data-related-field="manager_staff_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
-                     required
-                >                <?php if (!empty($errors['manager_staff_id__related__address_id'])): ?>
+                     required min="0"
+                >
+                    <option value="">Seleziona...</option>
+                    <?php foreach ((array) ($relatedCreateOptions['manager_staff_id']['address_id'] ?? []) as $relatedOption): ?>
+                        <?php
+                        $relatedOptionId = (string) ($relatedOption['id'] ?? '');
+                        $relatedOptionText = (string) ($relatedOption['text'] ?? $relatedOptionId);
+                        ?>
+                        <option value="<?= esc($relatedOptionId) ?>" <?= (string) (($relatedPayloadState['manager_staff_id']['address_id'] ?? '')) === $relatedOptionId ? 'selected' : '' ?>>
+                            <?= esc($relatedOptionText) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <?php if (!empty($errors['manager_staff_id__related__address_id'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['manager_staff_id__related__address_id']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
@@ -57,21 +70,32 @@ $errors = (array) ($errors ?? []);
                     data-related-field="manager_staff_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
                      maxlength="50"
-                >                <?php if (!empty($errors['manager_staff_id__related__email'])): ?>
+                >
+                <?php if (!empty($errors['manager_staff_id__related__email'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['manager_staff_id__related__email']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
                 <label for="related_create_manager_staff_id_store_id" class="form-label"><?= esc('Store Id') ?></label>
-                <input
-                    type="number"
+                <select
                     name="_related[manager_staff_id][store_id]"
                     id="related_create_manager_staff_id_store_id"
-                    value="<?= esc((string) (($relatedPayloadState['manager_staff_id']['store_id'] ?? ''))) ?>"
-                    class="form-control <?= isset($errors['manager_staff_id__related__store_id']) ? 'is-invalid' : '' ?> crud-related-create-field"
+                    class="form-select <?= isset($errors['manager_staff_id__related__store_id']) ? 'is-invalid' : '' ?> crud-related-create-field"
                     data-related-field="manager_staff_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
-                     required
-                >                <?php if (!empty($errors['manager_staff_id__related__store_id'])): ?>
+                     required min="0"
+                >
+                    <option value="">Seleziona...</option>
+                    <?php foreach ((array) ($relatedCreateOptions['manager_staff_id']['store_id'] ?? []) as $relatedOption): ?>
+                        <?php
+                        $relatedOptionId = (string) ($relatedOption['id'] ?? '');
+                        $relatedOptionText = (string) ($relatedOption['text'] ?? $relatedOptionId);
+                        ?>
+                        <option value="<?= esc($relatedOptionId) ?>" <?= (string) (($relatedPayloadState['manager_staff_id']['store_id'] ?? '')) === $relatedOptionId ? 'selected' : '' ?>>
+                            <?= esc($relatedOptionText) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <?php if (!empty($errors['manager_staff_id__related__store_id'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['manager_staff_id__related__store_id']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
@@ -95,7 +119,8 @@ $errors = (array) ($errors ?? []);
                         <?= $relatedCreateActive ? '' : 'disabled' ?>
                         <?= !empty($relatedPayloadState['manager_staff_id']['active']) ? 'checked' : '' ?>
                     >
-                </div>                <?php if (!empty($errors['manager_staff_id__related__active'])): ?>
+                </div>
+                <?php if (!empty($errors['manager_staff_id__related__active'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['manager_staff_id__related__active']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
@@ -109,7 +134,8 @@ $errors = (array) ($errors ?? []);
                     data-related-field="manager_staff_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
                      required maxlength="16"
-                >                <?php if (!empty($errors['manager_staff_id__related__username'])): ?>
+                >
+                <?php if (!empty($errors['manager_staff_id__related__username'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['manager_staff_id__related__username']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
@@ -123,7 +149,8 @@ $errors = (array) ($errors ?? []);
                     data-related-field="manager_staff_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
                      maxlength="40"
-                >                <?php if (!empty($errors['manager_staff_id__related__password'])): ?>
+                >
+                <?php if (!empty($errors['manager_staff_id__related__password'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['manager_staff_id__related__password']) ?></div>
                 <?php endif; ?>
             </div></div>

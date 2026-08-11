@@ -127,6 +127,11 @@
                     </div>
                     <p>La FK del record corrente non viene accettata dal payload del nuovo padre: è il codice generato a imporla. I campi PK auto increment, FK tecnica e campi <code>databaseManaged</code> restano esclusi dalla scrittura inline. Per anagrafiche stabili (ad esempio una tabella lingue) questa opzione può rimanere disattivata; è più utile per entità create durante il normale flusso operativo, come un nuovo cliente durante una prenotazione.</p>
 
+                    <h3 class="h6 mt-4">SQL VIEW</h3>
+                    <div class="alert alert-info mb-4">
+                        myCrudGpt tratta una SQL VIEW come una <strong>sorgente dati di sola lettura</strong>. Il Builder mantiene le opzioni utili alla consultazione (label, larghezza, ricerca, ordinamento, elenco, dettaglio, export e API) e nasconde quelle legate alla scrittura. Non tenta di stabilire se la VIEW sia aggiornabile e non ricostruisce relazioni FK dalla query sottostante. L'obiettivo è generare un'impalcatura semplice che lo sviluppatore possa estendere manualmente quando necessario.
+                    </div>
+
                     <h3 class="h6">Attributi booleani</h3>
                     <div class="table-responsive mb-4">
                         <table class="table table-sm align-middle">
@@ -180,7 +185,7 @@
                     <h2 class="h5"><i class="bi bi-database-check me-1"></i> Casi DB speciali</h2>
                     <p class="text-body-secondary">myCrudGpt distingue i casi in cui una generazione CRUD completa non sarebbe sicura.</p>
                     <ul class="mb-0">
-                        <li><strong>VIEW MySQL:</strong> generate in sola lettura (lista, filtri, pager, export e API GET). Nessun create/edit/delete.</li>
+                        <li><strong>VIEW MySQL:</strong> riconosciute automaticamente e generate come impalcatura read-only. Sono disponibili elenco, paginazione, export e, in Full, API GET. Create/Edit/Delete/Soft Delete e relazioni di scrittura non vengono generati. Poiché MySQL non espone indici della VIEW come una tabella fisica, lo sviluppatore può abilitare esplicitamente filtro e ordinamento sui campi desiderati dal Builder. myCrudGpt non prova a stabilire se la VIEW sia tecnicamente aggiornabile: eventuali scritture restano una personalizzazione manuale consapevole.</li>
                         <li><strong>Primary key composta:</strong> rilevata integralmente. Il Create web resta disponibile perché non richiede di identificare un record preesistente; View/Edit/Delete restano protetti finché le route non gestiscono l'identità composta. L'export usa tutte le colonne PK come cursore.</li>
                         <li><strong>Tipi spatial:</strong> possono essere mostrati in lista/dettaglio/relazioni in forma testuale tramite <code>ST_AsText()</code>, ma restano esclusi da form, filtri, ordinamento, export e API.</li>
                         <li><strong>hasMany:</strong> la preview mantiene tutti i campi della tabella figlia, senza limite numerico, e usa lo scroll orizzontale quando necessario.</li>

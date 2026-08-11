@@ -40,11 +40,15 @@ class ConfigBuilder
     public function buildFromTable(string $table): array
     {
         $info = $this->schema->getTableInfo($table);
-        $relations = $this->relations->resolve($table);
+        $isView = !empty($info['isView']);
+        // Le SQL VIEW sono sorgenti di lettura: myCrudGpt non tenta di
+        // inventare relazioni o semantiche di scrittura sulla query sottostante.
+        $relations = $isView
+            ? ['belongsTo' => [], 'hasMany' => []]
+            : $this->relations->resolve($table);
         $uniqueFields = $this->uniqueFields($info['indexes']);
         $indexMetadata = $this->indexMetadata($info['indexes']);
         $primaryKeys = array_values((array) ($info['primaryKeys'] ?? []));
-        $isView = !empty($info['isView']);
         $compositePrimaryKey = !empty($info['compositePrimaryKey']);
         // Una VIEW non espone una identità modificabile affidabile. Le PK
         // composte restano protette per View/Edit/Delete finché le route non
@@ -397,7 +401,8 @@ class ConfigBuilder
          * codice generato o tramite future scelte esplicite del Builder.
          */
         $hasManyCustomizationKeys = array_fill_keys([
-            'enabled', 'title', 'icon', 'limit', 'showCount', 'showViewButton',
+            'enabled', 'title', 'icon', 'limit', 'showCount', 'showCreateButton',
+            'showViewAllButton', 'showViewButton',
         ], true);
 
         foreach ($savedHasMany as $relationKey => $savedRelation) {
@@ -519,7 +524,7 @@ class ConfigBuilder
                 || !empty($index['unique'])
                 || !empty($index['leading']);
 
-            if (!$indexEligible) {
+            if (!$indexEligible && empty($config['isView'])) {
                 $field['ui']['searchable'] = false;
                 $field['ui']['sortable'] = false;
             }
@@ -550,6 +555,20 @@ class ConfigBuilder
 
             if (!array_key_exists('apiVisible', $field['ui'])) {
                 $field['ui']['apiVisible'] = true;
+            }
+
+            // dev32: una SQL VIEW è scaffolding di sola lettura. Anche una
+            // configurazione salvata non può riattivare campi di form o
+            // Relational Create sulla VIEW. Lo sviluppatore resta libero di
+            // estendere manualmente i file generati se conosce la VIEW.
+            if (!empty($config['isView'])) {
+                $field['ui']['visibleForm'] = false;
+                $field['relationCreate'] = [
+                    'available' => false,
+                    'enabled' => false,
+                ];
+                $field['relationNavigation'] = [];
+                $field['foreignKey'] = null;
             }
 
             $field['uiVisibilityCustomized'] = !empty($field['uiVisibilityCustomized']);
@@ -611,6 +630,13 @@ class ConfigBuilder
             }
         }
         unset($field);
+
+        if (!empty($config['isView'])) {
+            $config['relations'] = ['belongsTo' => [], 'hasMany' => []];
+            $config['relationsConfig'] = ['hasMany' => []];
+            $config['features']['relations'] = false;
+            $config['features']['softDeletes'] = false;
+        }
 
         $config['relationsConfig'] = (array) ($config['relationsConfig'] ?? []);
         $config['relationsConfig']['hasMany'] = (array) ($config['relationsConfig']['hasMany'] ?? []);
@@ -846,6 +872,10 @@ class ConfigBuilder
                 'displayField' => $relation['displayField'],
                 'limit' => 20,
                 'showCount' => true,
+                // Scaffolding dev33: le azioni restano configurabili e non
+                // vengono imposte al progetto applicativo.
+                'showCreateButton' => !empty($relation['childCreateAllowed']),
+                'showViewAllButton' => true,
                 'showViewButton' => !empty($relation['childRecordDetail']),
             ];
         }
@@ -865,7 +895,11 @@ class ConfigBuilder
             $relation['icon'] = trim((string) ($input['icon'] ?? $relation['icon']));
             $relation['limit'] = max(1, min(200, (int) ($input['limit'] ?? 20)));
             $relation['showCount'] = !empty($input['showCount']);
-            $relation['showViewButton'] = !empty($input['showViewButton']);
+            $relation['showCreateButton'] = !empty($input['showCreateButton'])
+                && !empty($relation['childCreateAllowed']);
+            $relation['showViewAllButton'] = !empty($input['showViewAllButton']);
+            $relation['showViewButton'] = !empty($input['showViewButton'])
+                && !empty($relation['childRecordDetail']);
 
             $allowedColumns = array_values(array_unique((array) ($relation['columns'] ?? [])));
             $selectedColumns = array_values(array_intersect(

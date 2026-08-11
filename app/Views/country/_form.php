@@ -8,6 +8,7 @@ $options = $options ?? [];
 $context = $context ?? [];
 $contextLabels = $contextLabels ?? [];
 $navigationContext = (array) ($navigationContext ?? []);
+$parentContext = (array) ($parentContext ?? []);
 $submissionToken = $submissionToken ?? '';
 ?>
 
@@ -39,6 +40,9 @@ $submissionToken = $submissionToken ?? '';
                 <?php foreach ($navigationContext as $contextField => $contextValue): ?>
                     <input type="hidden" name="_context[<?= esc((string) $contextField) ?>]" value="<?= esc((string) $contextValue) ?>">
                 <?php endforeach; ?>
+                <?php if (!empty($parentContext['field'])): ?>
+                    <input type="hidden" name="_parent_field" value="<?= esc((string) $parentContext['field']) ?>">
+                <?php endif; ?>
 
                 <div class="col-md-6">
                     <label for="country" class="form-label">
@@ -61,7 +65,7 @@ $submissionToken = $submissionToken ?? '';
                     <?php endif; ?>
                 </div>
 
-                <div class="col-12 d-flex gap-2">
+                <div class="col-12 d-flex flex-wrap gap-2">
                     <button type="submit" class="btn btn-success" id="submitButton">
                         <span class="submit-normal"><i class="bi bi-check-circle"></i> Salva</span>
                         <span class="submit-loading d-none">
@@ -69,6 +73,12 @@ $submissionToken = $submissionToken ?? '';
                             Salvataggio...
                         </span>
                     </button>
+                    <?php if (!empty($parentContext['url'])): ?>
+                        <a href="<?= esc((string) $parentContext['url']) ?>" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i>
+                            Annulla e torna a <?= esc((string) ($parentContext['label'] ?? 'record padre')) ?>
+                        </a>
+                    <?php endif; ?>
 
                 </div>
 
@@ -193,6 +203,29 @@ document.addEventListener('DOMContentLoaded', function () {
         panel.querySelectorAll('.crud-related-create-field').forEach(function (input) {
             input.disabled = !active;
         });
+
+        // Se viene creato un nuovo parent, la FK originaria può essere vuota:
+        // il valore sarà imposto server-side con la PK appena generata. Sospendi
+        // quindi solo il vincolo HTML5 required della FK, senza alterarne la UI.
+        const source = document.getElementById(field);
+        if (source) {
+            if (!Object.prototype.hasOwnProperty.call(source.dataset, 'relatedOriginalRequired')) {
+                source.dataset.relatedOriginalRequired = source.required ? '1' : '0';
+            }
+            if (active) {
+                source.removeAttribute('required');
+                source.setAttribute('aria-required', 'false');
+            } else if (source.dataset.relatedOriginalRequired === '1') {
+                source.setAttribute('required', 'required');
+                source.setAttribute('aria-required', 'true');
+            }
+        }
+
+        const toggle = document.getElementById(String(panel.dataset.toggleTarget || ''));
+        if (toggle) {
+            toggle.classList.toggle('active', active);
+            toggle.setAttribute('aria-pressed', active ? 'true' : 'false');
+        }
     };
 
     document.querySelectorAll('.crud-related-create-panel.offcanvas').forEach(function (panel) {
@@ -203,14 +236,32 @@ document.addEventListener('DOMContentLoaded', function () {
         setRelatedCreateState(panel, String(state.value || '0') === '1');
 
         panel.addEventListener('show.bs.offcanvas', function () {
+            panel.dataset.relatedApplied = '0';
             setRelatedCreateState(panel, true);
         });
 
-        // Chiudere l'Offcanvas equivale ad annullare la creazione inline.
-        // I valori digitati restano nel DOM e possono essere recuperati
-        // riaprendo il pannello, ma non vengono inviati finché lo stato è 0.
+        panel.querySelectorAll('.crud-related-create-apply').forEach(function (button) {
+            button.addEventListener('click', function () {
+                panel.dataset.relatedApplied = '1';
+                setRelatedCreateState(panel, true);
+            });
+        });
+
+        panel.querySelectorAll('.crud-related-create-cancel').forEach(function (button) {
+            button.addEventListener('click', function () {
+                panel.dataset.relatedApplied = '0';
+                setRelatedCreateState(panel, false);
+            });
+        });
+
+        // Solo "Applica" mantiene attiva la creazione inline dopo la chiusura.
+        // X, Annulla ed eventuale chiusura da tastiera annullano l'operazione.
         panel.addEventListener('hidden.bs.offcanvas', function () {
-            setRelatedCreateState(panel, false);
+            if (String(panel.dataset.relatedApplied || '0') !== '1') {
+                setRelatedCreateState(panel, false);
+            } else {
+                setRelatedCreateState(panel, true);
+            }
         });
 
         // Se la validazione server ha restituito errori sul nuovo parent,

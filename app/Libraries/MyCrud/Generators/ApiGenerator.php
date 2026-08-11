@@ -19,6 +19,7 @@ final class ApiGenerator
         $resource = (string) ($config['classes']['resource'] ?? (preg_replace('/ApiController$/', 'Resource', $api) ?: $api . 'Resource'));
         $softDeleteField = (string) ($config['softDelete']['field'] ?? 'deleted_at');
         $readOnly = !empty($config['features']['readOnly']);
+        $isView = !empty($config['isView']);
         $recordDetail = !empty($config['features']['recordDetail']);
         $timestampsEnabled = !empty($config['features']['timestamps'])
             && isset($config['fields']['created_at'], $config['fields']['updated_at']);
@@ -61,10 +62,10 @@ final class ApiGenerator
                 $writable[] = $name;
             }
 
-            if (!empty($ui['searchable']) && $indexEligible) {
+            if (!empty($ui['searchable']) && ($indexEligible || $isView)) {
                 $filterable[] = $name;
             }
-            if (!empty($ui['sortable']) && $indexEligible) {
+            if (!empty($ui['sortable']) && ($indexEligible || $isView)) {
                 $sortable[] = $name;
             }
         }

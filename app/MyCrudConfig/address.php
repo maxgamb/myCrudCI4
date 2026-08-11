@@ -440,6 +440,8 @@ return array (
         'icon' => 'bi-diagram-3',
         'limit' => 20,
         'showCount' => true,
+        'showCreateButton' => true,
+        'showViewAllButton' => true,
         'showViewButton' => true,
       ),
       'staff__address_id' => 
@@ -449,6 +451,8 @@ return array (
         'icon' => 'bi-diagram-3',
         'limit' => 20,
         'showCount' => true,
+        'showCreateButton' => true,
+        'showViewAllButton' => true,
         'showViewButton' => true,
       ),
       'store__address_id' => 
@@ -458,6 +462,8 @@ return array (
         'icon' => 'bi-diagram-3',
         'limit' => 20,
         'showCount' => true,
+        'showCreateButton' => true,
+        'showViewAllButton' => true,
         'showViewButton' => true,
       ),
     ),
@@ -468,9 +474,9 @@ return array (
   ),
   '_meta' => 
   array (
-    'generatorVersion' => '2.8.0-dev31',
-    'savedAt' => '2026-08-10T15:05:47+00:00',
+    'generatorVersion' => '2.8.0-dev33',
+    'savedAt' => '2026-08-10T17:56:16+00:00',
     'schemaFingerprint' => '51d7feaa63edcc592f2aa74a778b59c0939bf39fa1bb63a4742d8a8fc07f581c',
-    'configHash' => '0538744a81cc3616dd1ba82165d28ebd21f25dbef7350a4bd72c123fbb918a57',
+    'configHash' => 'dbcdd8a4074860c787a68ca6534feb938308ad86201d5d1c768080f782f245bb',
   ),
 );

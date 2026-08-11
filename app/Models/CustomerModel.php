@@ -163,6 +163,25 @@ final class CustomerModel extends Model
     ),
   ),
 );
+    private const RELATED_CREATE_RELATIONS = array (
+  'store_id' => 
+  array (
+    'manager_staff_id' => 
+    array (
+      'table' => 'staff',
+      'key' => 'staff_id',
+      'displayField' => 'first_name',
+      'mode' => 'select',
+    ),
+    'address_id' => 
+    array (
+      'table' => 'address',
+      'key' => 'address_id',
+      'displayField' => 'address',
+      'mode' => 'select',
+    ),
+  ),
+);
     private const COUNT_CACHE_SECONDS = 60;
 
     /** Query completa per dettaglio e API. */
@@ -638,6 +657,37 @@ final class CustomerModel extends Model
             ->get()
             ->getResultArray();
     }
+    /**
+     * Opzioni delle FK appartenenti ai parent creati inline.
+     * La whitelist deriva esclusivamente dalle FK reali dello schema.
+     */
+    public function relatedCreateRelationOptions(): array
+    {
+        $result = [];
+        foreach (self::RELATED_CREATE_RELATIONS as $relationField => $fields) {
+            foreach ((array) $fields as $field => $definition) {
+                if (($definition['mode'] ?? 'select') !== 'select') {
+                    continue;
+                }
+                $table = (string) $definition['table'];
+                $key = (string) $definition['key'];
+                $display = (string) $definition['displayField'];
+                $rows = $this->db->table($table)
+                    ->select([$key, $display])
+                    ->orderBy($display, 'ASC')
+                    ->get()
+                    ->getResultArray();
+                foreach ($rows as $row) {
+                    $result[(string) $relationField][(string) $field][] = [
+                        'id' => (string) ($row[$key] ?? ''),
+                        'text' => (string) ($row[$display] ?? $row[$key] ?? ''),
+                    ];
+                }
+            }
+        }
+        return $result;
+    }
+
     public function relationOptions(): array
     {
         return [
@@ -755,7 +805,11 @@ final class CustomerModel extends Model
         return trim((string) $label);
     }
 
-    /** Carica al massimo una riga in più per determinare se esistono altri risultati. */
+    /**
+     * HasMany scaffolding: query dedicata alla relazione figlia.
+     * Carica al massimo una riga in più per determinare se esistono altri risultati.
+     * Punto di estensione: aggiungere qui eventuali JOIN/ordinamenti applicativi.
+     */
     public function getPaymentByCustomerId(int|string $parentId, int $limit = 20): array
     {
         $limit = max(1, min(200, $limit));
@@ -785,7 +839,11 @@ final class CustomerModel extends Model
             'hasMore' => $hasMore,
         ];
     }
-    /** Carica al massimo una riga in più per determinare se esistono altri risultati. */
+    /**
+     * HasMany scaffolding: query dedicata alla relazione figlia.
+     * Carica al massimo una riga in più per determinare se esistono altri risultati.
+     * Punto di estensione: aggiungere qui eventuali JOIN/ordinamenti applicativi.
+     */
     public function getRentalByCustomerId(int|string $parentId, int $limit = 20): array
     {
         $limit = max(1, min(200, $limit));

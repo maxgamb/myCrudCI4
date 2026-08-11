@@ -3,6 +3,7 @@
 
 <?php
 $navigationContext = (array) ($navigationContext ?? []);
+$parentContext = (array) ($parentContext ?? []);
 $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navigationContext);
 ?>
 
@@ -21,9 +22,16 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
             <small class="text-muted">Nuovo record</small>
         </div>
         <div class="d-flex flex-wrap justify-content-end gap-2">
-        <a href="<?= site_url('{{ROUTE}}') . $navigationQuery ?>" class="btn btn-outline-secondary" title="Torna alla lista">
-            <i class="bi bi-list-ul me-1" aria-hidden="true"></i> Lista
-        </a>
+        <?php if (!empty($parentContext['url'])): ?>
+            <a href="<?= esc((string) $parentContext['url']) ?>" class="btn btn-outline-secondary" title="Torna al record padre">
+                <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>
+                <?= esc((string) ($parentContext['label'] ?? 'Padre')) ?>
+            </a>
+        <?php else: ?>
+            <a href="<?= site_url('{{ROUTE}}') . $navigationQuery ?>" class="btn btn-outline-secondary" title="Torna alla lista">
+                <i class="bi bi-list-ul me-1" aria-hidden="true"></i> Lista
+            </a>
+        <?php endif; ?>
         </div>
     </div>
 </div>
@@ -38,6 +46,7 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
     'context'           => $context ?? [],
     'contextLabels'     => $contextLabels ?? [],
     'navigationContext' => $navigationContext,
+    'parentContext'     => $parentContext,
     'submissionToken'   => $submissionToken ?? '',
 ]) ?>
 

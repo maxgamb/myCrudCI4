@@ -3,6 +3,7 @@
             <strong><i class="bi {{ICON}}"></i> {{TITLE}}</strong>
             <div class="d-flex align-items-center gap-2 d-print-none">
                 {{NEW_BUTTON}}
+                {{VIEW_ALL_BUTTON}}
                 {{COUNT_BADGE}}
             </div>
         </div>
@@ -26,12 +27,7 @@
                     </table>
                 </div>
                 <?php if (!empty($children['{{RELATION_KEY}}']['hasMore'])): ?>
-                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 d-print-none">
-                        <div class="small text-muted">Visualizzati i primi {{LIMIT}} record.</div>
-                        <a href="{{VIEW_ALL_URL}}" class="btn btn-sm btn-outline-primary">
-                            Vedi tutti <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
+                    <div class="small text-muted d-print-none">Visualizzati i primi {{LIMIT}} record.</div>
                 <?php endif; ?>
             <?php endif; ?>
         </div>

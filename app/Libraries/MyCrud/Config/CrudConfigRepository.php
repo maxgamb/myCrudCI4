@@ -297,8 +297,10 @@ final class CrudConfigRepository
                 'title'          => (string) ($relation['title'] ?? ''),
                 'icon'           => (string) ($relation['icon'] ?? 'bi-diagram-3'),
                 'limit'          => (int) ($relation['limit'] ?? 20),
-                'showCount'      => !empty($relation['showCount']),
-                'showViewButton' => !empty($relation['showViewButton']),
+                'showCount'         => !empty($relation['showCount']),
+                'showCreateButton'  => !empty($relation['showCreateButton']),
+                'showViewAllButton' => !empty($relation['showViewAllButton']),
+                'showViewButton'    => !empty($relation['showViewButton']),
                 // Le colonne hasMany non vengono persistite: derivano sempre
                 // dallo schema corrente e vengono generate integralmente.
             ];

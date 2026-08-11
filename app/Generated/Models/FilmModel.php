@@ -189,6 +189,8 @@ final class FilmModel extends Model
     ),
   ),
 );
+    private const RELATED_CREATE_RELATIONS = array (
+);
     private const COUNT_CACHE_SECONDS = 60;
 
     /** Query completa per dettaglio e API. */
@@ -677,6 +679,37 @@ final class FilmModel extends Model
             ->get()
             ->getResultArray();
     }
+    /**
+     * Opzioni delle FK appartenenti ai parent creati inline.
+     * La whitelist deriva esclusivamente dalle FK reali dello schema.
+     */
+    public function relatedCreateRelationOptions(): array
+    {
+        $result = [];
+        foreach (self::RELATED_CREATE_RELATIONS as $relationField => $fields) {
+            foreach ((array) $fields as $field => $definition) {
+                if (($definition['mode'] ?? 'select') !== 'select') {
+                    continue;
+                }
+                $table = (string) $definition['table'];
+                $key = (string) $definition['key'];
+                $display = (string) $definition['displayField'];
+                $rows = $this->db->table($table)
+                    ->select([$key, $display])
+                    ->orderBy($display, 'ASC')
+                    ->get()
+                    ->getResultArray();
+                foreach ($rows as $row) {
+                    $result[(string) $relationField][(string) $field][] = [
+                        'id' => (string) ($row[$key] ?? ''),
+                        'text' => (string) ($row[$display] ?? $row[$key] ?? ''),
+                    ];
+                }
+            }
+        }
+        return $result;
+    }
+
     public function relationOptions(): array
     {
         return [
@@ -794,7 +827,11 @@ final class FilmModel extends Model
         return trim((string) $label);
     }
 
-    /** Carica al massimo una riga in più per determinare se esistono altri risultati. */
+    /**
+     * HasMany scaffolding: query dedicata alla relazione figlia.
+     * Carica al massimo una riga in più per determinare se esistono altri risultati.
+     * Punto di estensione: aggiungere qui eventuali JOIN/ordinamenti applicativi.
+     */
     public function getFilmActorByFilmId(int|string $parentId, int $limit = 20): array
     {
         $limit = max(1, min(200, $limit));
@@ -820,7 +857,11 @@ final class FilmModel extends Model
             'hasMore' => $hasMore,
         ];
     }
-    /** Carica al massimo una riga in più per determinare se esistono altri risultati. */
+    /**
+     * HasMany scaffolding: query dedicata alla relazione figlia.
+     * Carica al massimo una riga in più per determinare se esistono altri risultati.
+     * Punto di estensione: aggiungere qui eventuali JOIN/ordinamenti applicativi.
+     */
     public function getFilmCategoryByFilmId(int|string $parentId, int $limit = 20): array
     {
         $limit = max(1, min(200, $limit));
@@ -846,7 +887,11 @@ final class FilmModel extends Model
             'hasMore' => $hasMore,
         ];
     }
-    /** Carica al massimo una riga in più per determinare se esistono altri risultati. */
+    /**
+     * HasMany scaffolding: query dedicata alla relazione figlia.
+     * Carica al massimo una riga in più per determinare se esistono altri risultati.
+     * Punto di estensione: aggiungere qui eventuali JOIN/ordinamenti applicativi.
+     */
     public function getInventoryByFilmId(int|string $parentId, int $limit = 20): array
     {
         $limit = max(1, min(200, $limit));

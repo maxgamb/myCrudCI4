@@ -1,6 +1,7 @@
 <?php
 $relatedCreateActive = !empty($relatedCreateActive);
 $relatedPayloadState = (array) ($relatedPayloadState ?? []);
+$relatedCreateOptions = (array) ($relatedCreateOptions ?? []);
 $errors = (array) ($errors ?? []);
 ?>
 <div class="row g-3">
@@ -15,7 +16,8 @@ $errors = (array) ($errors ?? []);
                     data-related-field="actor_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
                      required maxlength="45"
-                >                <?php if (!empty($errors['actor_id__related__first_name'])): ?>
+                >
+                <?php if (!empty($errors['actor_id__related__first_name'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['actor_id__related__first_name']) ?></div>
                 <?php endif; ?>
             </div>            <div class="col-md-6">
@@ -29,7 +31,8 @@ $errors = (array) ($errors ?? []);
                     data-related-field="actor_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
                      required maxlength="45"
-                >                <?php if (!empty($errors['actor_id__related__last_name'])): ?>
+                >
+                <?php if (!empty($errors['actor_id__related__last_name'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['actor_id__related__last_name']) ?></div>
                 <?php endif; ?>
             </div></div>

@@ -102,52 +102,7 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
             </div>
         </div>
 
-<div class="card shadow-sm mt-4">
-        <div class="card-header d-flex justify-content-between align-items-center gap-2">
-            <strong><i class="bi bi-diagram-3"></i> City</strong>
-            <div class="d-flex align-items-center gap-2 d-print-none">
-                <a href="<?= site_url('city/create') . '?' . http_build_query(['country_id' => $row->{'country_id'} ?? '']) ?>" class="btn btn-sm btn-primary" title="Nuovo record collegato"><i class="bi bi-plus-circle me-1" aria-hidden="true"></i> Nuovo</a>
-                <span class="badge bg-secondary"><?= (int) ($children['city__country_id']['count'] ?? 0) ?><?= !empty($children['city__country_id']['hasMore']) ? '+' : '' ?></span>
-            </div>
-        </div>
-        <div class="card-body">
-            <?php $relatedRows = $children['city__country_id']['rows'] ?? []; ?>
-            <?php if (empty($relatedRows)): ?>
-                <div class="alert alert-light border mb-0">Nessun record collegato.</div>
-            <?php else: ?>
-                <div class="table-responsive">
-                    <table class="table table-sm table-striped table-hover align-middle">
-                        <thead><tr>
-                                <th><?= esc('City Id') ?></th>
-                                <th><?= esc('City') ?></th>
-                                <th><?= esc('Country Id') ?></th>
-                                <th><?= esc('Last Update') ?></th>
-                            <th class="d-print-none">Azioni</th>
-                        </tr></thead>
-                        <tbody>
-                            <?php foreach ($relatedRows as $child): ?>
-                                <tr>
-                                <td><?= esc($child->{'city_id'} ?? '') ?></td>
-                                <td><?= esc($child->{'city'} ?? '') ?></td>
-                                <td><?= esc($child->{'country_id'} ?? '') ?></td>
-                                <td><?= esc($child->{'last_update'} ?? '') ?></td>
-                                    <td class="d-print-none"><a href="<?= site_url('city/view/' . rawurlencode((string) ($child->{'city_id'} ?? ''))) . '?' . http_build_query(['country_id' => $row->{'country_id'} ?? '']) ?>" class="btn btn-sm btn-outline-info" title="Visualizza record"><i class="bi bi-eye" aria-hidden="true"></i></a></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-                <?php if (!empty($children['city__country_id']['hasMore'])): ?>
-                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 d-print-none">
-                        <div class="small text-muted">Visualizzati i primi 20 record.</div>
-                        <a href="<?= site_url('city') . '?' . http_build_query(['country_id' => $row->{'country_id'} ?? '']) ?>" class="btn btn-sm btn-outline-primary">
-                            Vedi tutti <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-                <?php endif; ?>
-            <?php endif; ?>
-        </div>
-    </div>
+<?= view('country/_children_city__country_id', ['row' => $row, 'children' => $children]) ?>
     </div>
 </div>
 

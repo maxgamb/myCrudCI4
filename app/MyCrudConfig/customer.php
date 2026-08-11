@@ -439,6 +439,8 @@ return array (
         'icon' => 'bi-diagram-3',
         'limit' => 20,
         'showCount' => true,
+        'showCreateButton' => true,
+        'showViewAllButton' => true,
         'showViewButton' => true,
       ),
       'rental__customer_id' => 
@@ -448,6 +450,8 @@ return array (
         'icon' => 'bi-diagram-3',
         'limit' => 20,
         'showCount' => true,
+        'showCreateButton' => true,
+        'showViewAllButton' => true,
         'showViewButton' => true,
       ),
     ),
@@ -458,9 +462,9 @@ return array (
   ),
   '_meta' => 
   array (
-    'generatorVersion' => '2.8.0-dev31',
-    'savedAt' => '2026-08-10T15:05:47+00:00',
+    'generatorVersion' => '2.8.0-dev33',
+    'savedAt' => '2026-08-10T17:56:16+00:00',
     'schemaFingerprint' => 'e4f8cacf5357cb632e82c2f93abe3193aff088b7c8706a8f2279d20ff4099085',
-    'configHash' => 'cc90eb70d7987884ddf4dc9f6becae7fe1162523bc2f92f40e7eead134ff5d03',
+    'configHash' => '3e6318df2718780a5ca95bc24f715aa449a4e8be8e6ad938d0e8f179091a1def',
   ),
 );
