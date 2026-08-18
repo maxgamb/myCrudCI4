@@ -5,8 +5,8 @@
 ## Project identity
 
 - Framework: CodeIgniter 4
-- Generator: myCrudCI4 2.9.1-RC1
-- Configured CRUDs: 23
+- Generator: myCrudCI4 2.9.1
+- Configured CRUDs: 0
 - Database tables visible to myCrudCI4: 23
 
 ## Core architecture rules
@@ -86,29 +86,6 @@ protected function beforeCreate(array $data): array
 
 | Table | Architecture | DB | Type | Primary key(s) | Mode | Main controller |
 | --- | --- | --- | --- | --- | --- | --- |
-| `actor` | Full | present | `BASE TABLE` | `actor_id` | read/write | `app/Controllers/ActorController.php` |
-| `actor_info` | Full | present | `VIEW` | `` | read-only | `app/Controllers/ActorInfoController.php` |
-| `address` | Full | present | `BASE TABLE` | `address_id` | read/write | `app/Controllers/AddressController.php` |
-| `category` | Full | present | `BASE TABLE` | `category_id` | read/write | `app/Controllers/CategoryController.php` |
-| `city` | Full | present | `BASE TABLE` | `city_id` | read/write | `app/Controllers/CityController.php` |
-| `country` | Full | present | `BASE TABLE` | `country_id` | read/write | `app/Controllers/CountryController.php` |
-| `customer` | Full | present | `BASE TABLE` | `customer_id` | read/write | `app/Controllers/CustomerController.php` |
-| `customer_list` | Full | present | `VIEW` | `` | read-only | `app/Controllers/CustomerListController.php` |
-| `film` | Full | present | `BASE TABLE` | `film_id` | read/write | `app/Controllers/FilmController.php` |
-| `film_actor` | Full | present | `BASE TABLE` | `actor_id, film_id` | create-only (record actions protected) | `app/Controllers/FilmActorController.php` |
-| `film_category` | Full | present | `BASE TABLE` | `film_id, category_id` | create-only (record actions protected) | `app/Controllers/FilmCategoryController.php` |
-| `film_list` | Full | present | `VIEW` | `` | read-only | `app/Controllers/FilmListController.php` |
-| `film_text` | Full | present | `BASE TABLE` | `film_id` | read/write | `app/Controllers/FilmTextController.php` |
-| `inventory` | Full | present | `BASE TABLE` | `inventory_id` | read/write | `app/Controllers/InventoryController.php` |
-| `language` | Full | present | `BASE TABLE` | `language_id` | read/write | `app/Controllers/LanguageController.php` |
-| `nicer_but_slower_film_list` | Full | present | `VIEW` | `` | read-only | `app/Controllers/NicerButSlowerFilmListController.php` |
-| `payment` | Full | present | `BASE TABLE` | `payment_id` | read/write | `app/Controllers/PaymentController.php` |
-| `rental` | Full | present | `BASE TABLE` | `rental_id` | read/write | `app/Controllers/RentalController.php` |
-| `sales_by_film_category` | Full | present | `VIEW` | `` | read-only | `app/Controllers/SalesByFilmCategoryController.php` |
-| `sales_by_store` | Full | present | `VIEW` | `` | read-only | `app/Controllers/SalesByStoreController.php` |
-| `staff` | Full | present | `BASE TABLE` | `staff_id` | read/write | `app/Controllers/StaffController.php` |
-| `staff_list` | Full | present | `VIEW` | `` | read-only | `app/Controllers/StaffListController.php` |
-| `store` | Full | present | `BASE TABLE` | `store_id` | read/write | `app/Controllers/StoreController.php` |
 
 ## How an AI agent should work
 

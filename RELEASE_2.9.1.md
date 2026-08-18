@@ -1,10 +1,10 @@
-# myCrudCI4 2.9.1-RC1
+# myCrudCI4 2.9.1
 
-Release candidate for myCrudCI4 2.9.1.
+Stable release of myCrudCI4 2.9.1.
 
 ## Status
 
-Feature set frozen.
+Stable release.
 
 No new functionality is planned between RC1 and 2.9.1 stable.
 Only release-blocking bug fixes, packaging fixes, documentation corrections,
