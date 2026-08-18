@@ -8,7 +8,7 @@ use App\Controllers\BaseController;
 use App\Libraries\MyCrud\MyCrudVersion;
 
 /**
- * Documentazione interna del generatore.
+ * Documentation interna del generatore.
  *
  * La pagina è volutamente statica: descrive il comportamento della versione
  * installata senza introdurre dipendenze runtime o query aggiuntive al DB.
@@ -20,7 +20,7 @@ final class DocsController extends BaseController
         helper('url');
 
         return view('mycrud/docs', [
-            'title'   => 'Documentazione myCrudGpt',
+            'title'   => 'Documentation myCrudCI4',
             'version' => MyCrudVersion::VERSION,
         ]);
     }

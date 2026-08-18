@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\API\Resources;
 
-/** Serializza la risorsa address secondo la configurazione del Builder. */
+/**
+ * Output-only serializer for `address`.
+ *
+ * It performs no queries, request parsing, validation, or persistence.
+ */
 final class AddressResource
 {
     private const READABLE = array (
@@ -17,22 +21,6 @@ final class AddressResource
   6 => 'phone',
   7 => 'last_update',
   8 => 'city_id__label',
-);
-    private const WRITABLE = array (
-  0 => 'address',
-  1 => 'address2',
-  2 => 'district',
-  3 => 'city_id',
-  4 => 'postal_code',
-  5 => 'phone',
-);
-    private const FILTERABLE = array (
-  0 => 'address_id',
-  1 => 'city_id',
-);
-    private const SORTABLE = array (
-  0 => 'address_id',
-  1 => 'city_id',
 );
 
     public static function make(object|array $record): array
@@ -53,20 +41,5 @@ final class AddressResource
     public static function collection(array $records): array
     {
         return array_map(static fn (object|array $record): array => self::make($record), $records);
-    }
-
-    public static function writableData(array $data): array
-    {
-        return array_intersect_key($data, array_flip(self::WRITABLE));
-    }
-
-    public static function filterableFields(): array
-    {
-        return self::FILTERABLE;
-    }
-
-    public static function sortableFields(): array
-    {
-        return self::SORTABLE;
     }
 }

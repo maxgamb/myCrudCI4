@@ -13,9 +13,11 @@ use RecursiveIteratorIterator;
 use Throwable;
 
 /**
- * Test automatico di regressione del generatore.
- * Genera Basic, Standard e Full in cartelle temporanee isolate e controlla
- * componenti attesi, componenti vietati, placeholder e sintassi PHP.
+ * Automatic generator regression suite.
+ *
+ * Generates Basic, Standard, and Full architectures in isolated temporary
+ * directories and checks expected components, forbidden components,
+ * placeholders, and generated PHP syntax.
  */
 final class ArchitectureRegressionRunner
 {
@@ -25,6 +27,7 @@ final class ArchitectureRegressionRunner
         /** @var MyCrud $myCrud */
         $myCrud = config('MyCrud');
         $originalPath = $myCrud->generatedPath;
+        $originalExtensionPath = $myCrud->serviceExtensionPath;
         $base = rtrim(WRITEPATH, DIRECTORY_SEPARATOR)
             . DIRECTORY_SEPARATOR . 'mycrud-regression-' . bin2hex(random_bytes(4));
 
@@ -32,6 +35,7 @@ final class ArchitectureRegressionRunner
             foreach (['basic', 'standard', 'full'] as $architecture) {
                 $root = $base . DIRECTORY_SEPARATOR . $architecture;
                 $myCrud->generatedPath = $root;
+                $myCrud->serviceExtensionPath = $root . DIRECTORY_SEPARATOR . 'CustomServiceExtensions';
 
                 $config = (new ConfigBuilder())->buildFromTable($table);
                 $config['architecture'] = $architecture;
@@ -50,6 +54,7 @@ final class ArchitectureRegressionRunner
             ));
         } finally {
             $myCrud->generatedPath = $originalPath;
+            $myCrud->serviceExtensionPath = $originalExtensionPath;
             $this->removeDirectory($base);
         }
 
@@ -64,12 +69,16 @@ final class ArchitectureRegressionRunner
         $expected = [
             'Models/' . ($class['model'] ?? '') . '.php',
             'Controllers/' . ($class['controller'] ?? '') . '.php',
-            'Validation/' . ($class['rules'] ?? '') . '.php',
             'Views/' . $table . '/index.php',
             'Routes/' . $table . '.php',
             'Libraries/Crud/CrudExporter.php',
             'Libraries/Crud/CrudListRequest.php',
+            'Libraries/Crud/CrudNavigationTrail.php',
         ];
+
+        if (!empty($config['features']['createAllowed']) || !empty($config['features']['writable'])) {
+            $expected[] = 'Validation/' . ($class['rules'] ?? '') . '.php';
+        }
 
         if (in_array($architecture, ['standard', 'full'], true)) {
             $expected[] = 'Entities/' . ($class['entity'] ?? '') . '.php';
@@ -79,25 +88,28 @@ final class ArchitectureRegressionRunner
             $expected[] = 'Controllers/Api/BaseApiController.php';
             $expected[] = 'Controllers/Api/V1/' . ($class['api'] ?? '') . '.php';
             $expected[] = 'API/Resources/' . ($class['resource'] ?? '') . '.php';
+            if (!empty($config['features']['writable'])) {
+                $expected[] = 'Validation/' . ($class['apiRules'] ?? '') . '.php';
+            }
         }
 
         $results = [];
 
-        // Il nome delle classi deve derivare dalla tabella esattamente come
+        // Class names must derive from the table exactly as
         // definita nel DB, senza singularizzazioni linguistiche automatiche.
         $expectedPrefix = Naming::tableClass($table);
         $actualController = (string) ($class['controller'] ?? '');
         $results[] = new DiagnosticResult(
-            strtoupper($architecture) . ' naming tabella',
+            strtoupper($architecture) . ' table naming',
             $actualController === $expectedPrefix . 'Controller'
                 ? DiagnosticResult::PASS
                 : DiagnosticResult::FAIL,
             $actualController === $expectedPrefix . 'Controller'
-                ? 'Nome classe fedele alla tabella.'
+                ? 'Class name matches the table.'
                 : 'Atteso ' . $expectedPrefix . 'Controller, generato ' . $actualController . '.'
         );
 
-        // I nomi fisici dei campi non devono essere camelizzati o rinominati.
+        // Physical field names must not be camelized or renamed.
         $fieldNames = array_keys((array) ($config['fields'] ?? []));
         $preserved = true;
         foreach ($fieldNames as $fieldName) {
@@ -107,16 +119,16 @@ final class ArchitectureRegressionRunner
             }
         }
         $results[] = new DiagnosticResult(
-            strtoupper($architecture) . ' naming campi DB',
+            strtoupper($architecture) . ' DB field naming',
             $preserved ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
-            $preserved ? 'Nomi campi DB preservati.' : 'Uno o più campi sono stati rinominati.'
+            $preserved ? 'DB field names preserved.' : 'One or more fields were renamed.'
         );
         foreach ($expected as $relative) {
             $exists = is_file($root . str_replace('/', DIRECTORY_SEPARATOR, $relative));
             $results[] = new DiagnosticResult(
-                strtoupper($architecture) . ' componente ' . $relative,
+                strtoupper($architecture) . ' component ' . $relative,
                 $exists ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
-                $exists ? 'Presente.' : 'Mancante.'
+                $exists ? 'Present.' : 'Missing.'
             );
         }
 
@@ -128,9 +140,9 @@ final class ArchitectureRegressionRunner
         foreach ($forbidden as $relative) {
             $exists = is_dir($root . str_replace('/', DIRECTORY_SEPARATOR, $relative));
             $results[] = new DiagnosticResult(
-                strtoupper($architecture) . ' assenza ' . $relative,
+                strtoupper($architecture) . ' absence ' . $relative,
                 !$exists ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
-                !$exists ? 'Componente correttamente assente.' : 'Componente non previsto presente.'
+                !$exists ? 'Component correctly absent.' : 'Unexpected component present.'
             );
         }
 
@@ -143,6 +155,341 @@ final class ArchitectureRegressionRunner
         $controllerContent = is_file($controllerPath) ? (string) file_get_contents($controllerPath) : '';
         $exporterContent = is_file($exporterPath) ? (string) file_get_contents($exporterPath) : '';
         $modelContent = is_file($modelPath) ? (string) file_get_contents($modelPath) : '';
+        // BaseCrudModel is shared application infrastructure, not emitted inside
+        // each isolated Generated/ regression tree. Prefer an isolated copy when
+        // present, otherwise inspect the real application BaseCrudModel inherited
+        // by generated Models.
+        $baseModelPath = $root . 'Models' . DIRECTORY_SEPARATOR . 'BaseCrudModel.php';
+        if (!is_file($baseModelPath)) {
+            $baseModelPath = APPPATH . 'Models' . DIRECTORY_SEPARATOR . 'BaseCrudModel.php';
+        }
+        $baseModelContent = is_file($baseModelPath) ? (string) file_get_contents($baseModelPath) : '';
+        $servicePath = $root . 'Services' . DIRECTORY_SEPARATOR . ($class['service'] ?? '') . '.php';
+        $serviceContent = is_file($servicePath) ? (string) file_get_contents($servicePath) : '';
+        $validationPath = $root . 'Validation' . DIRECTORY_SEPARATOR . ($class['rules'] ?? '') . '.php';
+        $validationContent = is_file($validationPath) ? (string) file_get_contents($validationPath) : '';
+
+
+        // dev24 fix15: one consolidated architecture guard protects the
+        // boundaries established by the generated static architecture. The
+        // generator already knows relation targets at generation-time, so
+        // generated code must not re-introduce runtime class/table resolvers.
+        $architectureGuardChecks = [
+            'generated Model extends BaseCrudModel' => str_contains($modelContent, 'extends BaseCrudModel'),
+            'Model has no dynamic Model resolver' => !str_contains($modelContent, 'new $modelClass')
+                && !str_contains($modelContent, 'resolveModel('),
+            'Model does not duplicate BaseCrudModel relation runtime' => !str_contains($modelContent, 'public function relationOptionRows(')
+                && !str_contains($modelContent, 'public function relationRowsByIds(')
+                && !str_contains($modelContent, 'public function childrenByForeignKey(')
+                && !str_contains($modelContent, 'public function clearListCountCache('),
+        ];
+
+        if (in_array($architecture, ['standard', 'full'], true)) {
+            $architectureGuardChecks['Service has no SQL/DB access'] = !str_contains($serviceContent, 'Database::connect(')
+                && !str_contains($serviceContent, '\\Config\\Database::connect(')
+                && !str_contains($serviceContent, '$this->db')
+                && !str_contains($serviceContent, '->table(');
+            $architectureGuardChecks['Service has no dynamic relation resolver'] = !str_contains($serviceContent, 'new $serviceClass')
+                && !str_contains($serviceContent, 'new $modelClass')
+                && !str_contains($serviceContent, 'resolveService(')
+                && !str_contains($serviceContent, 'resolveModel(')
+                && !str_contains($serviceContent, 'createRelatedViaServices')
+                && !str_contains($serviceContent, 'createManyToManyRelatedViaServices');
+        }
+
+        if ($architecture === 'full') {
+            $apiPath = $root . 'Controllers' . DIRECTORY_SEPARATOR . 'Api' . DIRECTORY_SEPARATOR . 'V1'
+                . DIRECTORY_SEPARATOR . ($class['api'] ?? '') . '.php';
+            $resourcePath = $root . 'API' . DIRECTORY_SEPARATOR . 'Resources'
+                . DIRECTORY_SEPARATOR . ($class['resource'] ?? '') . '.php';
+            $apiContent = is_file($apiPath) ? (string) file_get_contents($apiPath) : '';
+            $resourceContent = is_file($resourcePath) ? (string) file_get_contents($resourcePath) : '';
+
+            $architectureGuardChecks['API controller has no SQL/dynamic relation resolver'] = !str_contains($apiContent, 'Database::connect(')
+                && !str_contains($apiContent, '\\Config\\Database::connect(')
+                && !str_contains($apiContent, '$this->db')
+                && !str_contains($apiContent, '->table(')
+                && !str_contains($apiContent, 'new $modelClass')
+                && !str_contains($apiContent, 'new $serviceClass');
+            $architectureGuardChecks['API Resource is output-only'] = !str_contains($resourceContent, 'writableData(')
+                && !str_contains($resourceContent, 'FILTERABLE')
+                && !str_contains($resourceContent, 'SORTABLE')
+                && !str_contains($resourceContent, 'Database::')
+                && !str_contains($resourceContent, 'Model')
+                && !str_contains($resourceContent, 'Service');
+
+            $mcpResourcePath = $root . 'Mcp' . DIRECTORY_SEPARATOR . 'Resources'
+                . DIRECTORY_SEPARATOR . Naming::tableClass($table) . 'McpResource.php';
+            if (is_file($mcpResourcePath)) {
+                $mcpResourceContent = (string) file_get_contents($mcpResourcePath);
+                $architectureGuardChecks['MCP Resource is output-only'] = !str_contains($mcpResourceContent, 'FILTERABLE')
+                    && !str_contains($mcpResourceContent, 'SORTABLE')
+                    && !str_contains($mcpResourceContent, 'Database::')
+                    && !str_contains($mcpResourceContent, 'Model')
+                    && !str_contains($mcpResourceContent, 'Service');
+            }
+        }
+
+        $failedArchitectureGuards = [];
+        foreach ($architectureGuardChecks as $guard => $ok) {
+            if (!$ok) {
+                $failedArchitectureGuards[] = $guard;
+            }
+        }
+        $architectureGuardOk = $failedArchitectureGuards === [];
+        $results[] = new DiagnosticResult(
+            strtoupper($architecture) . ' architecture boundary guard',
+            $architectureGuardOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+            $architectureGuardOk
+                ? 'Static relation wiring and Model/Service/API/Resource boundaries are preserved.'
+                : 'Architecture boundary regression: ' . implode(', ', $failedArchitectureGuards) . '.'
+        );
+
+        $nullableForeignKeys = [];
+        foreach ((array) ($config['fields'] ?? []) as $field) {
+            if (!empty($field['foreignKey']) && !empty($field['nullable'])) {
+                $nullableForeignKeys[] = (string) ($field['name'] ?? '');
+            }
+        }
+
+        if ($nullableForeignKeys !== []) {
+            $nullableFkContractOk = str_contains($controllerContent, '$this->inputProcessor->process(');
+            foreach ($nullableForeignKeys as $nullableForeignKey) {
+                $nullableFkContractOk = $nullableFkContractOk
+                    && str_contains($controllerContent, var_export($nullableForeignKey, true));
+            }
+            if (in_array($architecture, ['standard', 'full'], true)) {
+                $nullableFkContractOk = $nullableFkContractOk
+                    && str_contains($serviceContent, 'NULLABLE_FOREIGN_KEY_FIELDS')
+                    && str_contains($serviceContent, '$data[$field] = null;');
+            }
+
+            $results[] = new DiagnosticResult(
+                strtoupper($architecture) . ' nullable foreign-key normalization',
+                $nullableFkContractOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+                $nullableFkContractOk
+                    ? 'Empty optional foreign-key values are normalized to NULL before persistence.'
+                    : 'Nullable foreign-key normalization is missing from the generated write path.'
+            );
+        }
+
+        $enabledM2MRelatedCreates = array_filter(
+            (array) ($config['relationsConfig']['manyToMany'] ?? []),
+            static fn (array $relation): bool =>
+                !empty($relation['enabled'])
+                && !empty($relation['createRelatedEnabled'])
+                && !empty($relation['createRelatedAvailable'])
+        );
+
+        if ($enabledM2MRelatedCreates !== []) {
+            $m2mFormPath = $root . 'Views' . DIRECTORY_SEPARATOR . $table . DIRECTORY_SEPARATOR . '_form.php';
+            $m2mFormContent = is_file($m2mFormPath) ? (string) file_get_contents($m2mFormPath) : '';
+
+            $m2mRelatedCreateOk = str_contains($controllerContent, 'manyToManyRelatedCreateDataFromPost')
+                && str_contains($controllerContent, 'validateManyToManyRelatedCreates')
+                && str_contains($validationContent, 'manyToManyRelatedCreateRules')
+                && str_contains($m2mFormContent, 'Create new ')
+                && str_contains($m2mFormContent, 'crud-many-related-create-panel')
+                && str_contains($m2mFormContent, 'data-bs-toggle="offcanvas"')
+                && str_contains($m2mFormContent, 'crud-many-related-create-apply')
+                && !str_contains($m2mFormContent, 'data-many-related-toggle');
+
+            if (in_array($architecture, ['standard', 'full'], true)) {
+                $m2mStaticServicesOk = true;
+                foreach ($enabledM2MRelatedCreates as $relation) {
+                    $relatedTable = trim((string) ($relation['relatedTable'] ?? ''));
+                    if ($relatedTable === '') {
+                        continue;
+                    }
+                    $serviceClass = Naming::tableClass($relatedTable) . 'Service';
+                    $m2mStaticServicesOk = $m2mStaticServicesOk
+                        && str_contains($serviceContent, 'new ' . $serviceClass);
+                }
+                $m2mRelatedCreateOk = $m2mRelatedCreateOk
+                    && !str_contains($serviceContent, 'createManyToManyRelatedViaServices')
+                    && str_contains($serviceContent, 'private function create')
+                    && !str_contains($serviceContent, 'MANY_TO_MANY_RELATED_CREATE_SERVICES')
+                    && !str_contains($serviceContent, 'new $serviceClass')
+                    && $m2mStaticServicesOk
+                    && str_contains($serviceContent, '$manyToManyNew')
+                    && !str_contains($modelContent, 'private function createManyToManyRelatedRecords');
+            } else {
+                $m2mRelatedCreateOk = $m2mRelatedCreateOk
+                    && str_contains($modelContent, 'createManyToManyRelatedRecords');
+            }
+
+            $results[] = new DiagnosticResult(
+                strtoupper($architecture) . ' many-to-many related create',
+                $m2mRelatedCreateOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+                $m2mRelatedCreateOk
+                    ? 'Inline target creation, validation, transaction payload, and pivot synchronization are generated.'
+                    : 'The generated many-to-many related-create contract is incomplete.'
+            );
+        }
+
+        // dev22: relational read ownership must remain delegated to the Model
+        // that owns the queried table. This keeps generated Models small and
+        // prevents parent/child query duplication from returning in later changes.
+        $relationalOwnershipOk = true;
+        $hasRelationalRead = false;
+        foreach ((array) ($config['fields'] ?? []) as $field) {
+            $foreignKey = (array) ($field['foreignKey'] ?? []);
+            $parentTable = trim((string) ($foreignKey['parentTable'] ?? ''));
+            if ($parentTable === '') {
+                continue;
+            }
+            $relationMode = strtolower((string) ($field['relationMode'] ?? $foreignKey['optionMode'] ?? 'select'));
+            if ($relationMode !== 'select') {
+                continue;
+            }
+            $hasRelationalRead = true;
+            $parentModel = Naming::tableClass($parentTable) . 'Model';
+            $relationalOwnershipOk = $relationalOwnershipOk
+                && str_contains($modelContent, 'new ' . $parentModel)
+                && str_contains($modelContent, 'relationOptionRows(');
+        }
+        foreach ((array) ($config['relationsConfig']['hasMany'] ?? []) as $relation) {
+            if (empty($relation['enabled'])) {
+                continue;
+            }
+            $childTable = trim((string) ($relation['childTable'] ?? ''));
+            if ($childTable === '') {
+                continue;
+            }
+            $hasRelationalRead = true;
+            $childModel = Naming::tableClass($childTable) . 'Model';
+            $relationalOwnershipOk = $relationalOwnershipOk
+                && str_contains($modelContent, 'new ' . $childModel)
+                && str_contains($modelContent, 'childrenByForeignKey(');
+        }
+        if ($hasRelationalRead) {
+            $relationalOwnershipOk = $relationalOwnershipOk
+                && !str_contains($modelContent, 'db->table((string) $definition[\'table\'])')
+                && !str_contains($modelContent, 'db->table((string) $definition[\'relatedTable\'])');
+            $results[] = new DiagnosticResult(
+                strtoupper($architecture) . ' relational query ownership',
+                $relationalOwnershipOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+                $relationalOwnershipOk
+                    ? 'Parent and child reads are delegated to the Models that own those tables.'
+                    : 'One or more relational reads are no longer delegated to the owning Model.'
+            );
+        }
+
+        // Dev38 fix2: PHP può passare il lint anche quando una classe non importata
+        // viene risolta nel namespace corrente e fallisce solo a runtime.
+        $usesPageNotFound = str_contains($controllerContent, 'PageNotFoundException::');
+        $importsPageNotFound = str_contains(
+            $controllerContent,
+            'use CodeIgniter\\Exceptions\\PageNotFoundException;'
+        );
+        $pageNotFoundImportOk = !$usesPageNotFound || $importsPageNotFound;
+        $results[] = new DiagnosticResult(
+            strtoupper($architecture) . ' import PageNotFoundException',
+            $pageNotFoundImportOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+            $pageNotFoundImportOk
+                ? 'Import coerente con gli utilizzi del Controller.'
+                : 'Il Controller usa PageNotFoundException senza import esplicito.'
+        );
+
+        if (!empty($config['features']['readOnly']) && empty($config['features']['createAllowed'])) {
+            $servicePath = $root . 'Services' . DIRECTORY_SEPARATOR . ($class['service'] ?? '') . '.php';
+            $serviceContent = is_file($servicePath) ? (string) file_get_contents($servicePath) : '';
+            $validationPath = $root . 'Validation' . DIRECTORY_SEPARATOR . ($class['rules'] ?? '') . '.php';
+            $readOnlyClean = !str_contains($controllerContent, 'CrudInputProcessor')
+                && !str_contains($controllerContent, 'SubmissionGuard')
+                && !str_contains($controllerContent, 'formData(')
+                && !str_contains($controllerContent, 'relatedCreateDataFromPost(')
+                && !str_contains($serviceContent, 'public function create(')
+                && !str_contains($serviceContent, 'public function update(')
+                && !str_contains($serviceContent, 'public function delete(')
+                && !str_contains($serviceContent, 'ServiceExtension')
+                && !is_file($validationPath);
+            $results[] = new DiagnosticResult(
+                strtoupper($architecture) . ' clean read-only capability',
+                $readOnlyClean ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+                $readOnlyClean
+                    ? 'VIEW/read-only output has no dead write helpers, validation, or methods.'
+                    : 'Read-only code contains unreachable write components.'
+            );
+
+            if ($architecture === 'full' && !empty($config['features']['api'])) {
+                $apiPath = $root . 'Controllers' . DIRECTORY_SEPARATOR . 'Api' . DIRECTORY_SEPARATOR . 'V1' . DIRECTORY_SEPARATOR
+                    . ($class['api'] ?? '') . '.php';
+                $apiRulesPath = $root . 'Validation' . DIRECTORY_SEPARATOR . ($class['apiRules'] ?? '') . '.php';
+                $openApiPath = $root . 'OpenApi' . DIRECTORY_SEPARATOR . $table . '.yaml';
+                $apiContent = is_file($apiPath) ? (string) file_get_contents($apiPath) : '';
+                $openApiContent = is_file($openApiPath) ? (string) file_get_contents($openApiPath) : '';
+                $apiReadOnlyClean = !str_contains($apiContent, 'public function create(')
+                    && !str_contains($apiContent, 'public function update(')
+                    && !str_contains($apiContent, 'public function patch(')
+                    && !str_contains($apiContent, 'public function delete(')
+                    && !is_file($apiRulesPath)
+                    && !preg_match('/^\s{4}(post|put|patch|delete):/m', $openApiContent);
+                $results[] = new DiagnosticResult(
+                    'FULL API read-only capability pulita',
+                    $apiReadOnlyClean ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+                    $apiReadOnlyClean
+                        ? 'GET-only API, without validation or OpenAPI write operations.'
+                        : 'API read-only contiene componenti di write non coerenti.'
+                );
+            }
+        }
+
+        if (in_array($architecture, ['standard', 'full'], true) && !empty($config['features']['writable'])) {
+            $servicePath = $root . 'Services' . DIRECTORY_SEPARATOR . ($class['service'] ?? '') . '.php';
+            /** @var MyCrud $settings */
+            $settings = config('MyCrud');
+            $extensionPath = rtrim($settings->serviceExtensionPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
+                . ($class['service'] ?? '') . 'Extension.php';
+            $serviceContent = is_file($servicePath) ? (string) file_get_contents($servicePath) : '';
+            $extensionContent = is_file($extensionPath) ? (string) file_get_contents($extensionPath) : '';
+            $extensionOk = str_contains($serviceContent, 'use App\\Services\\Extensions\\')
+                && str_contains($serviceContent, 'beforeCreate(')
+                && str_contains($serviceContent, 'afterDelete(')
+                && str_contains($extensionContent, 'CUSTOM SERVICE EXTENSION')
+                && str_contains($extensionContent, 'CUSTOMIZATION EXAMPLE')
+                && str_contains($extensionContent, 'exampleApplyBusinessRule')
+                && str_contains($extensionContent, 'protected function beforeCreate')
+                && str_contains($extensionContent, 'protected function afterDelete');
+            // prepareData() is feature-aware: tables that do not need a Create/Update
+            // distinction intentionally omit the unused boolean argument. Both generated
+            // signatures preserve the Extension Point ordering contract.
+            $prepareCreatePos = strpos($serviceContent, '$data = $this->prepareData($data, false);');
+            if ($prepareCreatePos === false) {
+                $prepareCreatePos = strpos($serviceContent, '$data = $this->prepareData($data);');
+            }
+            $beforeCreatePos = strpos($serviceContent, '$data = $this->beforeCreate($data);');
+            $prepareUpdatePos = strpos($serviceContent, '$data = $this->prepareData($data, true);');
+            if ($prepareUpdatePos === false) {
+                // Use the prepareData() call that belongs to update(), not the earlier
+                // create()/createRelated() call.
+                $updateMethodPos = strpos($serviceContent, 'public function update(');
+                $prepareUpdatePos = $updateMethodPos === false
+                    ? false
+                    : strpos($serviceContent, '$data = $this->prepareData($data);', $updateMethodPos);
+            }
+            $beforeUpdatePos = strpos($serviceContent, '$data = $this->beforeUpdate($id, $data);');
+            $hookOrderOk = $prepareCreatePos !== false
+                && $beforeCreatePos !== false
+                && $prepareCreatePos < $beforeCreatePos
+                && $prepareUpdatePos !== false
+                && $beforeUpdatePos !== false
+                && $prepareUpdatePos < $beforeUpdatePos;
+            $results[] = new DiagnosticResult(
+                strtoupper($architecture) . ' Service Extension dev36',
+                $extensionOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+                $extensionOk
+                    ? 'Trait custom Service presente e collegato agli hook CRUD.'
+                    : 'Service Extension o hook dev36 mancanti.'
+            );
+            $results[] = new DiagnosticResult(
+                strtoupper($architecture) . ' ordine hook Service dev38',
+                $hookOrderOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+                $hookOrderOk
+                    ? 'prepareData precede beforeCreate/beforeUpdate come contratto degli Extension Point.'
+                    : 'Ordine prepareData/beforeCreate-beforeUpdate non coerente.'
+            );
+        }
 
         $toolbarOk = str_contains($indexContent, 'bi-filetype-csv')
             && str_contains($indexContent, 'bi-file-earmark-word');
@@ -188,12 +535,23 @@ final class ArchitectureRegressionRunner
                 : 'Policy Create/azioni record non coerente con la PK.'
         );
 
-        // Se il Builder abilita "seleziona oppure crea nuovo", i quattro
+        // If the Builder enables "select or create new", the four
         // livelli coinvolti devono essere presenti: form, validation, controller
         // e transazione nel Model.
         $enabledRelatedCreates = [];
         foreach ((array) ($config['fields'] ?? []) as $fieldName => $field) {
-            if (!empty($field['relationCreate']['enabled'])) {
+            $relationCreate = (array) ($field['relationCreate'] ?? []);
+            $foreignKey = (array) ($field['foreignKey'] ?? []);
+            $relatedCreateSchema = (array) ($foreignKey['relatedCreate'] ?? []);
+
+            // Keep the diagnostic applicability identical to ServiceGenerator:
+            // an enabled Builder choice is actionable only when schema analysis
+            // confirms that the related parent can actually be created.
+            if (
+                !empty($relationCreate['enabled'])
+                && !empty($relatedCreateSchema['available'])
+                && trim((string) ($foreignKey['parentTable'] ?? '')) !== ''
+            ) {
                 $enabledRelatedCreates[] = (string) $fieldName;
             }
         }
@@ -213,9 +571,84 @@ final class ArchitectureRegressionRunner
                     && $partialContent !== ''
                     && str_contains($partialContent, '_related[' . $relatedField . ']');
             }
-            $relatedCreateOk = str_contains($modelContent, 'private const RELATED_CREATES')
-                && str_contains($modelContent, 'public function createRecord(array $data, array $related = [])')
-                && str_contains($modelContent, 'transBegin()')
+            $relatedWriteChecks = [];
+            if ($architecture === 'basic') {
+                $relatedWriteChecks = [
+                    'model metadata' => str_contains($modelContent, 'private const RELATED_CREATES'),
+                    'model related writer' => str_contains($modelContent, 'private function createRelatedRecord'),
+                    'model transaction' => str_contains($modelContent, 'transBegin()'),
+                ];
+            } else {
+                // STANDARD/FULL own related-create orchestration in the Service.
+                // Keep this contract structural: require explicit named Services and
+                // FK assignment, but do not couple it to helper method names/spacing.
+                $relatedWriteChecks = [
+                    'service create signature' => str_contains($serviceContent, 'public function create(')
+                        && str_contains($serviceContent, 'array $related = []'),
+                    'service createRelated' => str_contains($serviceContent, 'public function createRelated(array $data): int|string')
+                        && str_contains($serviceContent, '$this->model->insertRelatedPayload($data)'),
+                    'service validation' => str_contains($serviceContent, 'validateCreatePayload')
+                        && str_contains($serviceContent, (string) ($class['rules'] ?? '') . '::createRules()'),
+                    'transaction begin' => str_contains($serviceContent, 'beginWriteTransaction()'),
+                    'transaction status' => str_contains($serviceContent, 'writeTransactionStatus()'),
+                    'transaction commit' => str_contains($serviceContent, 'commitWriteTransaction()'),
+                    'transaction rollback' => str_contains($serviceContent, 'rollbackWriteTransaction()'),
+                    'model transaction API' => (str_contains($modelContent, 'public function beginWriteTransaction') || str_contains($baseModelContent, 'public function beginWriteTransaction'))
+                        && (str_contains($modelContent, 'public function writeTransactionStatus') || str_contains($baseModelContent, 'public function writeTransactionStatus'))
+                        && (str_contains($modelContent, 'public function commitWriteTransaction') || str_contains($baseModelContent, 'public function commitWriteTransaction'))
+                        && (str_contains($modelContent, 'public function rollbackWriteTransaction') || str_contains($baseModelContent, 'public function rollbackWriteTransaction')),
+                    'no dynamic service resolver' => !str_contains($serviceContent, 'createRelatedViaServices')
+                        && !str_contains($serviceContent, 'RELATED_CREATE_SERVICES')
+                        && !str_contains($serviceContent, 'new $serviceClass')
+                        && !str_contains($serviceContent, 'new $modelClass')
+                        && !str_contains($serviceContent, 'resolveService(')
+                        && !str_contains($serviceContent, 'resolveModel(')
+                        && !str_contains($serviceContent, '\\Config\\Database::connect()'),
+                    'no legacy model writer' => !str_contains($modelContent, 'private function createRelatedRecord'),
+                ];
+
+                foreach ($enabledRelatedCreates as $relatedField) {
+                    $field = (array) ($config['fields'][$relatedField] ?? []);
+                    $foreignKey = (array) ($field['foreignKey'] ?? []);
+                    $parentTable = trim((string) ($foreignKey['parentTable'] ?? ''));
+                    if ($parentTable === '') {
+                        continue;
+                    }
+
+                    $parentStem = Naming::tableClass($parentTable);
+                    $serviceClass = $parentStem . 'Service';
+                    $fieldLiteral = var_export((string) $relatedField, true);
+
+                    // Explicit static dependency known at generation-time.
+                    $explicitServicePattern = '/new\\s+'
+                        . preg_quote($serviceClass, '/')
+                        . '\\s*\\(\\s*\\)\\s*\\)??\\s*->\\s*createRelated\\s*\\(/s';
+                    $relatedInputPattern = '/\\$related\\s*\\[\\s*'
+                        . preg_quote($fieldLiteral, '/')
+                        . '\\s*\\]/s';
+                    $fkAssignmentPattern = '/\\$data\\s*\\[\\s*'
+                        . preg_quote($fieldLiteral, '/')
+                        . '\\s*\\]\\s*=/s';
+
+                    $relatedWriteChecks['static service ' . $relatedField] = preg_match($explicitServicePattern, $serviceContent) === 1;
+                    $relatedWriteChecks['related payload ' . $relatedField] = preg_match($relatedInputPattern, $serviceContent) === 1;
+                    $relatedWriteChecks['FK assignment ' . $relatedField] = preg_match($fkAssignmentPattern, $serviceContent) === 1;
+                }
+            }
+
+            $relatedWriteOk = !in_array(false, $relatedWriteChecks, true);
+            $modelRelatedSignatureOk = $architecture === 'basic'
+                ? (str_contains($modelContent, 'public function createRecord(') && str_contains($modelContent, 'array $related = []'))
+                : (str_contains($modelContent, 'public function createRecord(') && !str_contains($modelContent, 'array $related = []'));
+            // BASIC still owns inline related-create metadata in the Model. In
+            // STANDARD/FULL the Service has explicit static Service-to-Service calls,
+            // so emitting RELATED_CREATES in the Model would be dead runtime metadata.
+            $relatedMetadataOk = $architecture === 'basic'
+                ? str_contains($modelContent, 'private const RELATED_CREATES')
+                : !str_contains($modelContent, 'private const RELATED_CREATES');
+            $relatedCreateOk = $relatedMetadataOk
+                && $modelRelatedSignatureOk
+                && $relatedWriteOk
                 && str_contains($controllerContent, 'relatedCreateDataFromPost')
                 && str_contains($controllerContent, 'validateRelatedCreates')
                 && str_contains($rulesContent, 'relatedCreateRules')
@@ -226,27 +659,36 @@ final class ArchitectureRegressionRunner
                 && str_contains($formContent, 'bi-plus-circle')
                 && $relatedPartialOk;
         }
+        $failedRelatedChecks = [];
+        if (!$relatedCreateOk && isset($relatedWriteChecks) && is_array($relatedWriteChecks)) {
+            foreach ($relatedWriteChecks as $check => $ok) {
+                if (!$ok) {
+                    $failedRelatedChecks[] = (string) $check;
+                }
+            }
+        }
         $results[] = new DiagnosticResult(
             strtoupper($architecture) . ' create record collegato',
             $relatedCreateOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
             $relatedCreateOk
                 ? ($enabledRelatedCreates === []
-                    ? 'Nessuna creazione inline di parent abilitata nel Builder.'
-                    : 'Creazione parent inline validata e transazionale.')
-                : 'Supporto create parent inline incompleto.'
+                    ? 'No inline parent creation enabled in Builder.'
+                    : 'Inline parent creation is validated and transactional.')
+                : ('Supporto create parent inline incompleto.'
+                    . ($failedRelatedChecks === [] ? '' : ' Failed: ' . implode(', ', $failedRelatedChecks) . '.'))
         );
 
         $contextOk = str_contains($controllerContent, 'NAVIGATION_CONTEXT_FIELDS')
             && str_contains($controllerContent, 'navigationContextFromQuery')
             && str_contains($controllerContent, 'contextUrl');
         $results[] = new DiagnosticResult(
-            strtoupper($architecture) . ' contesto FK navigazione',
+            strtoupper($architecture) . ' foreign-key navigation context',
             $contextOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
-            $contextOk ? 'Contesto FK propagato da Controller e redirect.' : 'Supporto contesto FK incompleto.'
+            $contextOk ? 'Foreign-key context propagated by Controller and redirect.' : 'Foreign-key context support is incomplete.'
         );
 
         // Regressione dev28: una FK reale è accettata di default come
-        // contesto del Create. Il valore viene validato dal Controller tramite
+        // Create context. The value is validated by the Controller through
         // relationOptionById() prima di essere passato al form.
         $foreignKeyFields = array_filter(
             (array) ($config['fields'] ?? []),
@@ -269,9 +711,9 @@ final class ArchitectureRegressionRunner
             $fkCreateContextOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
             $fkCreateContextOk
                 ? ($foreignKeyFields === []
-                    ? 'Nessuna FK da verificare.'
-                    : 'Le FK reali accettano il contesto URL e vengono verificate sulla tabella padre.')
-                : 'Una FK reale non viene accettata/precompilata correttamente nel Create.'
+                    ? 'None FK da verificare.'
+                    : 'Real foreign keys accept URL context and are verified against the parent table.')
+                : 'A real foreign key is not accepted/pre-filled correctly in Create.'
         );
 
 
@@ -292,16 +734,23 @@ final class ArchitectureRegressionRunner
             }
         }
         $results[] = new DiagnosticResult(
-            strtoupper($architecture) . ' alias e JOIN relazioni Model',
+            strtoupper($architecture) . ' Model relation aliases and JOINs',
             $relationAliasOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
             $relationAliasOk
-                ? 'Label FK come campo__label e JOIN padre dichiarato una sola volta nel Model.'
-                : 'Alias relazione o centralizzazione del JOIN nel Model non coerenti.'
+                ? 'Foreign-key labels use field__label and the parent JOIN is declared only once in the Model.'
+                : 'Relation alias or Model JOIN centralization is inconsistent.'
         );
 
-        // Dev33: ogni hasMany è un partial dedicato. Se il pulsante Nuovo
-        // è abilitato, il partial conserva la FK esatta e riusa il normale
-        // FK Context del Create figlio.
+        // Each enabled hasMany relation has a dedicated partial. If the New button
+        // is enabled, the parent partial must pass the exact FK, a schema-derived
+        // _parent_field marker, and the navigation-only _trail to the child Create.
+        //
+        // Important: the current generated Controller is the PARENT controller.
+        // The return-to-parent helper lives in the CHILD controller and therefore
+        // cannot be required here unless this same resource is itself a child of
+        // another table. Older diagnostics mixed these two directions and produced
+        // false failures for root tables such as country and for pure M:N tables.
+        $hasApplicableHasMany = false;
         $hasManyNewOk = true;
         if (!empty($config['features']['recordDetail']) && is_file($detailViewPath)) {
             $detailContent = (string) file_get_contents($detailViewPath);
@@ -309,6 +758,7 @@ final class ArchitectureRegressionRunner
                 if (empty($relation['enabled'])) {
                     continue;
                 }
+                $hasApplicableHasMany = true;
                 $safeKey = preg_replace('/[^A-Za-z0-9_]/', '_', (string) $relationKey) ?: 'relation';
                 $partialRelative = 'Views/' . $table . '/_children_' . $safeKey . '.php';
                 $partialPath = $root . $partialRelative;
@@ -329,43 +779,80 @@ final class ArchitectureRegressionRunner
                 $partialContent = (string) file_get_contents($partialPath);
                 if (!str_contains($partialContent, "site_url('{$childTable}/create')")
                     || !str_contains($partialContent, var_export($foreignKey, true) . ' =>')
-                    || !str_contains($partialContent, "'_parent_field' => " . var_export($foreignKey, true))) {
+                    || !str_contains($partialContent, "'_parent_field' => " . var_export($foreignKey, true))
+                    || !str_contains($partialContent, "'_trail' =>")) {
                     $hasManyNewOk = false;
                     break;
                 }
             }
         }
-        $hasManyContextOk = $hasManyNewOk
-            && str_contains($controllerContent, 'PARENT_CONTEXT_FIELDS')
-            && str_contains($controllerContent, 'parentContextFromQuery')
-            && str_contains($controllerContent, 'parentContextFromPost')
-            && str_contains($controllerContent, '$parentContext[\'url\'] ??');
+        if (!$hasApplicableHasMany) {
+            $results[] = new DiagnosticResult(
+                strtoupper($architecture) . ' HasMany contestuale parent-child-parent',
+                DiagnosticResult::SKIP,
+                'Not applicable: this resource has no enabled hasMany relation.'
+            );
+        } else {
+            $results[] = new DiagnosticResult(
+                strtoupper($architecture) . ' HasMany contestuale parent-child-parent',
+                $hasManyNewOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+                $hasManyNewOk
+                    ? 'Parent partial preserves the child foreign key, _parent_field and cascaded trail.'
+                    : 'The hasMany parent scaffold does not correctly preserve child context.'
+            );
+        }
+
+        // Dev35: the trail is navigation-only and never replaces the normal
+        // schema-whitelisted foreign-key context. Parent-return helpers are required
+        // only when this generated resource can itself be opened as a child through
+        // one of its own real foreign keys.
+        $navigationTrailPath = $root . 'Libraries/Crud/CrudNavigationTrail.php';
+        $navigationTrailContent = is_file($navigationTrailPath) ? (string) file_get_contents($navigationTrailPath) : '';
+        $hasOwnParentContext = str_contains($controllerContent, 'PARENT_CONTEXT_FIELDS');
+        $ownParentTrailOk = !$hasOwnParentContext
+            || (
+                str_contains($controllerContent, 'parentContextFromQuery')
+                && str_contains($controllerContent, 'parentContextFromPost')
+                && str_contains($controllerContent, 'CrudNavigationTrail::ancestorsForParent')
+                && str_contains($controllerContent, '$parentContext[\'url\'] ??')
+            );
+        $cascadeNavigationOk = $navigationTrailContent !== ''
+            && str_contains($navigationTrailContent, 'final class CrudNavigationTrail')
+            && str_contains($navigationTrailContent, 'IMPORTANTE: il trail non autorizza mai scritture')
+            && str_contains($controllerContent, 'cascadeTrailFromQuery')
+            && str_contains($controllerContent, 'cascadeTrailFromPost')
+            && $ownParentTrailOk
+            && str_contains($indexContent, "const cascadeTrailParam = '_trail'")
+            && (!isset($formContent) || $formContent === ''
+                || str_contains($formContent, 'data-trail=')
+                || str_contains($formContent, 'name="_trail"'))
+            && (!isset($detailContent) || $detailContent === '' || str_contains($detailContent, 'CrudNavigationTrail'));
         $results[] = new DiagnosticResult(
-            strtoupper($architecture) . ' HasMany contestuale parent-child-parent',
-            $hasManyContextOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
-            $hasManyContextOk
-                ? 'Nuovo figlio mantiene la FK e genera un ritorno al padre basato su whitelist schema.'
-                : 'Lo scaffold hasMany non conserva correttamente contesto o ritorno al padre.'
+            strtoupper($architecture) . ' navigazione a cascata dev35',
+            $cascadeNavigationOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+            $cascadeNavigationOk
+                ? 'The multi-level trail is propagated as UI context and parent-return helpers are checked only when applicable.'
+                : 'Cascaded navigation is not fully generated or separated from foreign-key context.'
         );
 
         $exportSafetyOk = str_contains($exporterContent, 'EXPORT_UNFILTERED_LIMIT:CSV')
             && str_contains($exporterContent, 'EXPORT_UNFILTERED_LIMIT:WORD')
             && str_contains($exporterContent, 'iterateRows');
         $results[] = new DiagnosticResult(
-            strtoupper($architecture) . ' sicurezza export',
+            strtoupper($architecture) . ' export safety',
             $exportSafetyOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
-            $exportSafetyOk ? 'Export a chunk con limiti anche senza filtri.' : 'Protezione export incompleta.'
+            $exportSafetyOk ? 'Chunked export with limits even without filters.' : 'Export protection is incomplete.'
         );
 
         $shortExportOk = str_contains($indexContent, 'simpleFilterFields')
             && str_contains($indexContent, 'sourceUrl.searchParams.get(field)')
             && str_contains($indexContent, 'params.set(field, value)');
         $results[] = new DiagnosticResult(
-            strtoupper($architecture) . ' export filtri corti',
+            strtoupper($architecture) . ' short-filter export',
             $shortExportOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
             $shortExportOk
-                ? 'CSV/Word preservano i filtri rapidi ?campo=valore dopo AJAX.'
-                : 'Gli export possono perdere i filtri rapidi della URL corrente.'
+                ? 'CSV/Word preserve quick ?field=value filters after AJAX.'
+                : 'Exports may lose quick filters from the current URL.'
         );
 
         // Regressione dev25: CHAR(n) è una lunghezza massima DB e non deve
@@ -427,7 +914,7 @@ final class ArchitectureRegressionRunner
             strtoupper($architecture) . ' timestamp automatico DB',
             $databaseManagedOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
             $databaseManagedOk
-                ? 'CURRENT_TIMESTAMP + ON UPDATE è riconosciuto come databaseManaged e non genera validation rules.'
+                ? 'CURRENT_TIMESTAMP + ON UPDATE is recognized as databaseManaged and generates no validation rules.'
                 : 'Regressione: un timestamp automatico DB viene trattato come input applicativo.'
         );
 

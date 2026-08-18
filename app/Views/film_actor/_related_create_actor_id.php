@@ -5,7 +5,7 @@ $relatedCreateOptions = (array) ($relatedCreateOptions ?? []);
 $errors = (array) ($errors ?? []);
 ?>
 <div class="row g-3">
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <label for="related_create_actor_id_first_name" class="form-label"><?= esc('First Name') ?></label>
                 <input
                     type="text"
@@ -20,7 +20,7 @@ $errors = (array) ($errors ?? []);
                 <?php if (!empty($errors['actor_id__related__first_name'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['actor_id__related__first_name']) ?></div>
                 <?php endif; ?>
-            </div>            <div class="col-md-6">
+            </div>            <div class="col-12 col-md-6">
                 <label for="related_create_actor_id_last_name" class="form-label"><?= esc('Last Name') ?></label>
                 <input
                     type="text"

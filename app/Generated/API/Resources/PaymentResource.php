@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\API\Resources;
 
-/** Serializza la risorsa payment secondo la configurazione del Builder. */
+/**
+ * Output-only serializer for `payment`.
+ *
+ * It performs no queries, request parsing, validation, or persistence.
+ */
 final class PaymentResource
 {
     private const READABLE = array (
@@ -18,25 +22,6 @@ final class PaymentResource
   7 => 'customer_id__label',
   8 => 'rental_id__label',
   9 => 'staff_id__label',
-);
-    private const WRITABLE = array (
-  0 => 'customer_id',
-  1 => 'staff_id',
-  2 => 'rental_id',
-  3 => 'amount',
-  4 => 'payment_date',
-);
-    private const FILTERABLE = array (
-  0 => 'payment_id',
-  1 => 'customer_id',
-  2 => 'staff_id',
-  3 => 'rental_id',
-);
-    private const SORTABLE = array (
-  0 => 'payment_id',
-  1 => 'customer_id',
-  2 => 'staff_id',
-  3 => 'rental_id',
 );
 
     public static function make(object|array $record): array
@@ -57,20 +42,5 @@ final class PaymentResource
     public static function collection(array $records): array
     {
         return array_map(static fn (object|array $record): array => self::make($record), $records);
-    }
-
-    public static function writableData(array $data): array
-    {
-        return array_intersect_key($data, array_flip(self::WRITABLE));
-    }
-
-    public static function filterableFields(): array
-    {
-        return self::FILTERABLE;
-    }
-
-    public static function sortableFields(): array
-    {
-        return self::SORTABLE;
     }
 }

@@ -7,7 +7,7 @@ namespace App\Libraries\MyCrud\Diagnostics;
 use App\Libraries\MyCrud\Core\CrudConfigurationService;
 use Throwable;
 
-/** Diagnostica della configurazione persistente 2.8 di una tabella. */
+/** Diagnostics for a table's persistent configuration. */
 final class PersistentConfigAnalyzer
 {
     /** @return list<DiagnosticResult> */
@@ -18,14 +18,14 @@ final class PersistentConfigAnalyzer
 
             if (!$resolved['saved']) {
                 return [new DiagnosticResult(
-                    'Configurazione persistente',
+                    'Persistent configuration',
                     DiagnosticResult::WARN,
                     'Non presente. Verrà creata alla prima generazione 2.8.'
                 )];
             }
 
             $results = [new DiagnosticResult(
-                'Configurazione persistente',
+                'Persistent configuration',
                 DiagnosticResult::PASS,
                 'Presente' . ($resolved['savedVersion'] ? ' (generatore ' . $resolved['savedVersion'] . ')' : '') . '.',
                 ['path' => $resolved['configPath']]
@@ -35,14 +35,14 @@ final class PersistentConfigAnalyzer
                 'Schema drift',
                 !empty($resolved['schemaDrift']) ? DiagnosticResult::WARN : DiagnosticResult::PASS,
                 !empty($resolved['schemaDrift'])
-                    ? 'Lo schema DB è cambiato rispetto allo snapshot salvato.'
+                    ? 'Lo DB schema è cambiato rispetto allo snapshot salvato.'
                     : 'Schema coerente con lo snapshot persistente.'
             );
 
             return $results;
         } catch (Throwable $e) {
             return [new DiagnosticResult(
-                'Configurazione persistente',
+                'Persistent configuration',
                 DiagnosticResult::FAIL,
                 $e->getMessage()
             )];

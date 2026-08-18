@@ -1,4 +1,4 @@
-<?php /* Frammento sostituito via AJAX: doppio Pager e tabella Bootstrap compatta. */ ?>
+<?php /* AJAX-replaced fragment: dual Pager and compact Bootstrap table. */ ?>
 <?php
 $navigationContext = (array) ($navigationContext ?? []);
 $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navigationContext);
@@ -63,7 +63,7 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                     <?php if (empty($rows)): ?>
                         <tr>
                             <td colspan="4" class="text-center text-muted py-4">
-                                Nessun record trovato.
+                                No record found.
                             </td>
                         </tr>
                     <?php else: ?>
@@ -80,7 +80,7 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                                             href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
                                             class="js-list-link text-decoration-none"
                                             data-quick-filter="1"
-                                            title="Filtra per questo valore"
+                                            title="Filter by this value"
                                         ><?= esc($row->{'film_id'} ?? '') ?></a>
                                     <?php endif; ?>
                                 </td>                                <td>
@@ -94,20 +94,20 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                                             href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
                                             class="js-list-link text-decoration-none"
                                             data-quick-filter="1"
-                                            title="Filtra per questo valore"
+                                            title="Filter by this value"
                                         ><?= esc($row->{'title'} ?? '') ?></a>
                                     <?php endif; ?>
                                 </td>                                <td><?= esc($row->{'description'} ?? '') ?></td>
                                 <td class="text-end text-nowrap">
                                     <?php $id = $row->{'film_id'} ?? ''; ?>
-                                    <div class="btn-group btn-group-sm" role="group" aria-label="Azioni record">
+                                    <div class="btn-group btn-group-sm" role="group" aria-label="Record actions">
                                         <a href="<?= site_url('film_text/view/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="btn btn-outline-info" title="Visualizza">
                                             <i class="bi bi-eye" aria-hidden="true"></i>
                                         </a>
-                                        <a href="<?= site_url('film_text/edit/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="btn btn-outline-warning" title="Modifica">
+                                        <a href="<?= site_url('film_text/edit/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="btn btn-outline-warning" title="Edit">
                                             <i class="bi bi-pencil-square" aria-hidden="true"></i>
                                         </a>
-                                        <form method="post" action="<?= site_url('film_text/delete/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="d-inline" onsubmit="return confirm('Eliminare questo record?')">
+                                        <form method="post" action="<?= site_url('film_text/delete/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="d-inline" onsubmit="return confirm('Delete this record?')">
                                             <?= csrf_field() ?>
                                             <?php foreach ((array) ($navigationContext ?? []) as $contextField => $contextValue): ?>
                                                 <input type="hidden" name="_context[<?= esc((string) $contextField) ?>]" value="<?= esc((string) $contextValue) ?>">

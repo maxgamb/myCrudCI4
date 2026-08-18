@@ -6,7 +6,7 @@ namespace App\Libraries\MyCrud\Generators;
 
 use App\Libraries\MyCrud\Core\Naming;
 
-/** Genera un file lingua separato per ciascun CRUD. */
+/** Generates a separate language file for each CRUD. */
 final class LanguageGenerator
 {
     use GeneratorTrait;
@@ -27,10 +27,10 @@ final class LanguageGenerator
             $labels[(string) $name] = $label;
         }
 
-        $labels['filtersSummary'] = trim((string) ($config['list']['filtersSummary'] ?? 'Filtri di ricerca')) ?: 'Filtri di ricerca';
+        $labels['filtersSummary'] = trim((string) ($config['list']['filtersSummary'] ?? 'Search filters')) ?: 'Search filters';
         $labels['actions'] = 'Azioni';
         $labels['recordsFound'] = 'Record trovati';
-        $labels['noRecords'] = 'Nessun record trovato.';
+        $labels['noRecords'] = 'No record trovato.';
 
         $content = "<?php\n\ndeclare(strict_types=1);\n\nreturn " . var_export($labels, true) . ";\n";
 

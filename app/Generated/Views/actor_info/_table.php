@@ -1,4 +1,4 @@
-<?php /* Frammento sostituito via AJAX: doppio Pager e tabella Bootstrap compatta. */ ?>
+<?php /* AJAX-replaced fragment: dual Pager and compact Bootstrap table. */ ?>
 <?php
 $navigationContext = (array) ($navigationContext ?? []);
 $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navigationContext);
@@ -25,7 +25,7 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                     <?php if (empty($rows)): ?>
                         <tr>
                             <td colspan="4" class="text-center text-muted py-4">
-                                Nessun record trovato.
+                                No record found.
                             </td>
                         </tr>
                     <?php else: ?>

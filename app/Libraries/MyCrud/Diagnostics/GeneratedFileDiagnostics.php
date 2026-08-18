@@ -45,7 +45,7 @@ final class GeneratedFileDiagnostics
                 $results[] = new DiagnosticResult(
                     'Generated file: ' . $path,
                     DiagnosticResult::FAIL,
-                    'Impossibile leggere il file generato.'
+                    'Impossibile leggere il file generated.'
                 );
                 continue;
             }
@@ -56,7 +56,7 @@ final class GeneratedFileDiagnostics
                 $unresolved ? DiagnosticResult::FAIL : DiagnosticResult::PASS,
                 $unresolved
                     ? 'Sono presenti placeholder non risolti.'
-                    : 'Nessun placeholder residuo.',
+                    : 'No residual placeholder.',
                 $unresolved ? ['placeholders' => array_values(array_unique($matches[0]))] : []
             );
 
@@ -68,7 +68,7 @@ final class GeneratedFileDiagnostics
             $phpFiles > 0 ? DiagnosticResult::PASS : DiagnosticResult::WARN,
             $phpFiles > 0
                 ? 'Analizzati ' . $phpFiles . ' file PHP.'
-                : 'Nessun file PHP presente nel percorso di generazione.'
+                : 'No file PHP presente nel percorso di generazione.'
         );
 
         return $results;

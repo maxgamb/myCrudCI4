@@ -1,0 +1,28 @@
+Builder Intent First Ux (Tests\MyCrud\BuilderIntentFirstUx)
+ [x] Builder keeps core workflow visible and technical options advanced
+ [x] Field guide is collapsed by default
+
+Builder Parent Tables Sticky Ux
+ [x] Parent database tables sticky is applied to aside container
+
+Dashboard Baseline Guard (Tests\MyCrud\DashboardBaselineGuard)
+ [x] Generator keeps configuration array and runtime dto boundaries separate
+ [x] Generated recent widget uses concrete model and no runtime resolver
+ [x] Generated controller and view stay object first
+
+Dashboard Config Boundary (Tests\MyCrud\DashboardConfigBoundary)
+ [x] Generator treats builder widgets as arrays before runtime dto creation
+ [x] Generated service treats configured widgets as arrays until dto creation
+
+Generated Ui Configurability (Tests\MyCrud\GeneratedUiConfigurability)
+ [x] Builder field widths come from project config
+ [x] Relation panel widths come from project config
+ [x] Many to many primary actions share one input group and builder width
+ [x] Many to many form width is persisted across regeneration
+ [x] Related create offcanvas width comes from project config
+ [x] Generated view templates expose stable html markers
+ [x] Generated php formatting is whitespace compact
+
+Publish Managed Artifacts (Tests\MyCrud\PublishManagedArtifacts)
+ [x] Publish keeps generated tests and mcp artifacts synchronized
+

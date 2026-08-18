@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\API\Resources;
 
-/** Serializza la risorsa film_category secondo la configurazione del Builder. */
+/**
+ * Output-only serializer for `film_category`.
+ *
+ * It performs no queries, request parsing, validation, or persistence.
+ */
 final class FilmCategoryResource
 {
     private const READABLE = array (
@@ -13,16 +17,6 @@ final class FilmCategoryResource
   2 => 'last_update',
   3 => 'category_id__label',
   4 => 'film_id__label',
-);
-    private const WRITABLE = array (
-);
-    private const FILTERABLE = array (
-  0 => 'film_id',
-  1 => 'category_id',
-);
-    private const SORTABLE = array (
-  0 => 'film_id',
-  1 => 'category_id',
 );
 
     public static function make(object|array $record): array
@@ -43,20 +37,5 @@ final class FilmCategoryResource
     public static function collection(array $records): array
     {
         return array_map(static fn (object|array $record): array => self::make($record), $records);
-    }
-
-    public static function writableData(array $data): array
-    {
-        return array_intersect_key($data, array_flip(self::WRITABLE));
-    }
-
-    public static function filterableFields(): array
-    {
-        return self::FILTERABLE;
-    }
-
-    public static function sortableFields(): array
-    {
-        return self::SORTABLE;
     }
 }

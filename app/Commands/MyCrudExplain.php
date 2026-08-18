@@ -7,21 +7,21 @@ use App\Libraries\MyCrud\Diagnostics\ExplainAnalyzer;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 
-/** Shortcut CLI per il piano di esecuzione delle query lista. */
+/** CLI shortcut for the list-query execution plan. */
 final class MyCrudExplain extends BaseCommand
 {
-    protected $group = 'myCrudGpt';
+    protected $group = 'myCrudCI4';
     protected $name = 'mycrud:explain';
-    protected $description = 'Esegue EXPLAIN su query rappresentative della lista CRUD.';
+    protected $description = 'Runs EXPLAIN on representative CRUD list queries.';
     protected $usage = 'mycrud:explain <table> [--per-page 50]';
-    protected $arguments = ['table' => 'Tabella da analizzare.'];
+    protected $arguments = ['table' => 'Table da analizzare.'];
     protected $options = ['--per-page' => 'Numero righe della query rappresentativa.'];
 
     public function run(array $params)
     {
         $table = trim((string) ($params[0] ?? ''));
         if ($table === '') {
-            CLI::error('Uso: php spark mycrud:explain nome_tabella');
+            CLI::error('Uso: php spark mycrud:explain nome_table');
             return EXIT_ERROR;
         }
 
@@ -29,7 +29,7 @@ final class MyCrudExplain extends BaseCommand
         $results = (new ExplainAnalyzer())->analyze($table, $perPage);
         $failed = false;
 
-        CLI::write('myCrudGpt EXPLAIN: ' . $table, 'yellow');
+        CLI::write('myCrudCI4 EXPLAIN: ' . $table, 'yellow');
         CLI::newLine();
         foreach ($results as $result) {
             $failed = $failed || $result->status === DiagnosticResult::FAIL;

@@ -10,11 +10,11 @@ use CodeIgniter\CLI\CLI;
 /** Benchmark non distruttivo per dataset grandi. */
 final class MyCrudBenchmark extends BaseCommand
 {
-    protected $group = 'myCrudGpt';
+    protected $group = 'myCrudCI4';
     protected $name = 'mycrud:benchmark';
-    protected $description = 'Misura COUNT, prima pagina, pagina profonda e filtro indicizzato.';
+    protected $description = 'Measures COUNT, first page, deep page, and indexed filter.';
     protected $usage = 'mycrud:benchmark <table> [--iterations 5] [--per-page 50]';
-    protected $arguments = ['table' => 'Tabella da misurare.'];
+    protected $arguments = ['table' => 'Table da misurare.'];
     protected $options = [
         '--iterations' => 'Numero di iterazioni per la media.',
         '--per-page' => 'Righe lette per pagina.',
@@ -24,7 +24,7 @@ final class MyCrudBenchmark extends BaseCommand
     {
         $table = trim((string) ($params[0] ?? ''));
         if ($table === '') {
-            CLI::error('Uso: php spark mycrud:benchmark nome_tabella');
+            CLI::error('Uso: php spark mycrud:benchmark nome_table');
             return EXIT_ERROR;
         }
         $config = config('MyCrud');
@@ -32,7 +32,7 @@ final class MyCrudBenchmark extends BaseCommand
         $perPage = (int) (CLI::getOption('per-page') ?: ($config->benchmarkPerPage ?? 50));
         $results = (new CrudBenchmarkRunner())->run($table, $iterations, $perPage);
 
-        CLI::write('myCrudGpt benchmark: ' . $table, 'yellow');
+        CLI::write('myCrudCI4 benchmark: ' . $table, 'yellow');
         CLI::newLine();
         $failed = false;
         foreach ($results as $result) {

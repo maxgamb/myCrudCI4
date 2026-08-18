@@ -1,7 +1,7 @@
 <?php
 /**
  * Menu orizzontale Bootstrap dell'applicazione.
- * Gruppi = dropdown, sottogruppi = intestazioni interne, preferiti e ricerca
+ * Groups = dropdowns, subgroups = internal headings, favorites, and search
  * sono opzionali. La route corrente viene evidenziata.
  */
 $menuGroups = (array) ($menuGroups ?? config('Menu')->groups ?? []);
@@ -149,7 +149,7 @@ $favoriteItems = array_values(array_filter($allItems, static fn (array $item): b
                                 </a>
                             <?php endforeach ?>
                         </div>
-                        <div class="small text-body-secondary px-2 py-2 d-none" data-horizontal-menu-empty>Nessuna voce trovata.</div>
+                        <div class="small text-body-secondary px-2 py-2 d-none" data-horizontal-menu-empty>None voce trovata.</div>
                     </div>
                 </div>
             <?php endif ?>

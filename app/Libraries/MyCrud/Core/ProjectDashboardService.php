@@ -11,11 +11,11 @@ use Config\Database;
 use Throwable;
 
 /**
- * Costruisce una vista sintetica dell'intero progetto myCrudGpt.
+ * Costruisce una vista sintetica dell'intero progetto myCrudCI4.
  *
  * La Dashboard deve essere leggera: evita di ricostruire ConfigBuilder per
- * ogni tabella e usa query aggregate su information_schema per conteggi,
- * stime righe e relazioni. Le operazioni più costose (diff/doctor/generate)
+ * each table and uses aggregate information_schema queries for counts,
+ * row estimates, and relations. More expensive operations (diff/doctor/generate)
  * vengono eseguite solo quando lo sviluppatore le richiede esplicitamente.
  */
 final class ProjectDashboardService

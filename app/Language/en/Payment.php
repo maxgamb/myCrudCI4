@@ -13,5 +13,5 @@ return array (
   'filtersSummary' => 'Filtri di ricerca',
   'actions' => 'Azioni',
   'recordsFound' => 'Record trovati',
-  'noRecords' => 'Nessun record trovato.',
+  'noRecords' => 'No record trovato.',
 );

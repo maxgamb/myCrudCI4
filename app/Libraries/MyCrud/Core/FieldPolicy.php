@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Libraries\MyCrud\Core;
 
 /**
- * Regole comuni per campi password, sensibili, tecnici e binari.
+ * Shared rules for password, sensitive, technical, and binary fields.
  *
- * La classificazione di un campo come password o sensibile non viene più
+ * Classification of a field as password or sensitive is no longer
  * imposta automaticamente in base al nome. La decisione finale deve essere
  * configurata dallo sviluppatore nel Builder.
  *
@@ -17,7 +17,7 @@ namespace App\Libraries\MyCrud\Core;
 final class FieldPolicy
 {
     /**
-     * Un campo è trattato come password solo quando il tipo input è stato
+     * A field is treated as a password only when the input type has been
      * configurato esplicitamente come "password".
      */
     public static function isPassword(string $name, string $inputType = ''): bool
@@ -28,8 +28,8 @@ final class FieldPolicy
     }
 
     /**
-     * La sensibilità non viene dedotta automaticamente dal nome del campo.
-     * Deve essere stabilita dalla configurazione del Builder.
+     * Sensitivity is not inferred automatically from the field name.
+     * It must be defined by Builder configuration.
      */
     public static function isSensitive(string $name, string $inputType = ''): bool
     {
@@ -39,8 +39,8 @@ final class FieldPolicy
     }
 
     /**
-     * Suggerisce che il campo potrebbe rappresentare una password.
-     * Non modifica automaticamente la configurazione del campo.
+     * Suggests that the field may represent a password.
+     * Does not automatically modify field configuration.
      */
     public static function suggestsPassword(string $name, string $inputType = ''): bool
     {
@@ -55,7 +55,7 @@ final class FieldPolicy
     }
 
     /**
-     * Suggerisce che il campo potrebbe contenere un valore riservato.
+     * Suggests that the field may contain a confidential value.
      * Il risultato deve essere usato soltanto come avviso nel Builder.
      */
     public static function suggestsSensitive(string $name, string $inputType = ''): bool
@@ -74,7 +74,7 @@ final class FieldPolicy
      * Riconosce i TIMESTAMP/DATETIME interamente gestiti dal database:
      * DEFAULT CURRENT_TIMESTAMP + ON UPDATE CURRENT_TIMESTAMP.
      *
-     * Questi campi sono leggibili, ma non devono essere inviati dai form/API
+     * These fields are readable but must not be sent by forms/APIs
      * né inclusi nelle regole di validazione o negli allowedFields del Model.
      */
     public static function isDatabaseManagedTimestamp(array $field): bool

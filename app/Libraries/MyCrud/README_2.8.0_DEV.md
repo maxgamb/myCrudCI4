@@ -138,3 +138,8 @@ La home `/mycrud` diventa una Dashboard di progetto. La Dashboard legge in modo 
 
 Le operazioni di generazione della Dashboard continuano a scrivere solo in `app/Generated/`.
 Il diff resta non distruttivo e Doctor viene eseguito solo su richiesta, così l'apertura della Dashboard non avvia analisi pesanti su tutte le tabelle.
+
+
+## dev38 — Code Quality & PHPDoc
+
+Pulizia non funzionale del codice generato: PHPDoc uniforme, responsabilità dei layer esplicite e Service Extension documentati.

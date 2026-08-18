@@ -7,7 +7,7 @@ namespace App\Libraries\MyCrud\Core;
 use App\Libraries\MyCrud\Schema\DbSchema;
 
 /**
- * Prepara e valida la configurazione del Menu Builder.
+ * Prepares and validates Menu Builder configuration.
  *
  * Dalla 2.8.0-dev7 il generatore NON prova più a decidere automaticamente
  * come organizzare il menu. Foreign key e nomi DB descrivono lo schema
@@ -15,7 +15,7 @@ use App\Libraries\MyCrud\Schema\DbSchema;
  *
  * Lo schema viene quindi usato soltanto per:
  * - elencare i CRUD/tabelle disponibili;
- * - mostrare le relazioni SQL come suggerimenti informativi;
+ * - show SQL relations as informational suggestions;
  * - proporre label e icone iniziali non vincolanti.
  *
  * Gruppi, sottogruppi, ordine e assegnazioni sono decisioni esplicite dello
@@ -31,7 +31,7 @@ final class MenuBuilderService
     }
 
     /**
-     * Dataset completo usato dal nuovo Builder guidato.
+     * Complete dataset used by the guided Builder.
      *
      * @return array{
      *     items:list<array<string,mixed>>,
@@ -115,7 +115,7 @@ final class MenuBuilderService
                 'route' => $table,
                 'icon' => $this->suggestedIcon($table),
 
-                // Nessuna aggregazione automatica: tutte le voci nascono
+                // None aggregazione automatica: tutte le voci nascono
                 // volutamente nell'area "Non assegnate" del Builder.
                 'group' => '',
                 'groupIcon' => 'bi-folder2-open',
@@ -146,7 +146,7 @@ final class MenuBuilderService
 
     /**
      * Compatibilità con il codice 2.8 precedente.
-     * Il nome resta disponibile, ma gli item non vengono più pre-aggregati.
+     * The name remains available, but items are no longer pre-aggregated.
      *
      * @return list<array<string,mixed>>
      */
@@ -156,7 +156,7 @@ final class MenuBuilderService
     }
 
     /**
-     * Trasforma il POST del tool in una configurazione runtime sicura.
+     * Transforms tool POST data into safe runtime configuration.
      * Tabelle e route vengono validate qui prima della generazione del PHP.
      */
     public function fromRequest(array $post): array
@@ -175,7 +175,7 @@ final class MenuBuilderService
 
             $table = trim((string) ($row['table'] ?? ''));
 
-            // Una voce con tabella vuota è una route manuale. Una voce legata
+            // An item with an empty table is a manual route. A table-bound item
             // al DB, invece, deve appartenere allo schema corrente.
             if ($table !== '' && !in_array($table, $allowedTables, true)) {
                 continue;
@@ -194,7 +194,7 @@ final class MenuBuilderService
             $groupLabel = $this->plainText((string) ($row['group'] ?? ''));
             if ($groupLabel === '') {
                 // Una voce abilitata deve appartenere a un gruppo. Il fallback
-                // serve soltanto per POST incompleti/manomessi, non è usato per
+                // is used only for incomplete/tampered POST data and is not used for
                 // aggregare automaticamente il Builder.
                 $groupLabel = 'Principale';
             }

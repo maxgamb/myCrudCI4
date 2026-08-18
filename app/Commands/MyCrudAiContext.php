@@ -9,16 +9,16 @@ use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use Throwable;
 
-/** Genera i file di contesto che descrivono il progetto agli agenti IA. */
+/** Generates context files that describe the project to AI agents. */
 final class MyCrudAiContext extends BaseCommand
 {
-    protected $group = 'myCrudGpt';
+    protected $group = 'myCrudCI4';
     protected $name = 'mycrud:ai-context';
-    protected $description = 'Genera AI_PROJECT_CONTEXT.md e la mappa IA del progetto/CRUD.';
+    protected $description = 'Generates AI_PROJECT_CONTEXT.md and the project/CRUD AI map.';
     protected $usage = 'mycrud:ai-context [table]';
 
     protected $arguments = [
-        'table' => 'CRUD opzionale. Senza tabella rigenera il contesto completo del progetto.',
+        'table' => 'Optional CRUD. Without a table, regenerates the complete project context.',
     ];
 
     public function run(array $params)
@@ -37,8 +37,8 @@ final class MyCrudAiContext extends BaseCommand
 
         CLI::write(
             $table === ''
-                ? 'Contesto IA progetto generato.'
-                : 'Contesto IA CRUD generato: ' . $table,
+                ? 'Project AI context generated.'
+                : 'CRUD AI context generated: ' . $table,
             'green'
         );
 
@@ -50,7 +50,10 @@ final class MyCrudAiContext extends BaseCommand
             CLI::newLine();
             CLI::write('Istruzione consigliata per l’agente IA:', 'yellow');
             CLI::write('Leggi AI_PROJECT_CONTEXT.md prima di modificare il progetto.');
-            CLI::write('Se lavori su un CRUD, leggi anche docs/ai/crud/<tabella>.md.');
+            CLI::write('Se modifichi myCrudCI4 stesso, leggi CONTRIBUTING.md e docs/development/ARCHITECTURE_RULES.md.');
+            CLI::write('Se lavori su un CRUD, leggi anche docs/ai/crud/<table>.md.');
+            CLI::write('Per personalizzazioni Standard/Full usa app/Services/Extensions/<Entity>ServiceExtension.php; non modificare app/Generated/.');
+            CLI::write('Mantieni query nei Model e relazioni/scritture cross-resource come chiamate esplicite a Model/Service concreti.');
         }
 
         return EXIT_SUCCESS;

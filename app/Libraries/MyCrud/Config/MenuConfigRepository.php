@@ -7,11 +7,11 @@ namespace App\Libraries\MyCrud\Config;
 use RuntimeException;
 
 /**
- * Repository della configurazione persistente del Menu Builder.
+ * Repository della persistent configuration del Menu Builder.
  *
- * La configurazione del menu è una scelta di progetto e non appartiene a una
- * singola tabella. Per questo viene salvata in una sottocartella dedicata e
- * non viene confusa con app/MyCrudConfig/<tabella>.php.
+ * Menu configuration is a project-level choice and does not belong to a
+ * single table. Therefore it is saved in a dedicated subdirectory and
+ * is not mixed with app/MyCrudConfig/<table>.php.
  */
 final class MenuConfigRepository
 {
@@ -34,7 +34,7 @@ final class MenuConfigRepository
         })($this->path);
 
         if (!is_array($loaded)) {
-            throw new RuntimeException('Configurazione menu non valida: ' . $this->path);
+            throw new RuntimeException('Invalid menu configuration: ' . $this->path);
         }
 
         return $loaded;
@@ -45,7 +45,7 @@ final class MenuConfigRepository
     {
         $directory = dirname($this->path);
         if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) {
-            throw new RuntimeException('Impossibile creare la directory della configurazione menu.');
+            throw new RuntimeException('Unable to create the menu configuration directory.');
         }
 
         $menu['_meta'] = [
@@ -56,19 +56,19 @@ final class MenuConfigRepository
         $content = "<?php\n\n"
             . "declare(strict_types=1);\n\n"
             . "/**\n"
-            . " * Configurazione persistente del Menu Builder myCrudGpt.\n"
+            . " * Persistent configuration del Menu Builder myCrudCI4.\n"
             . " * Il file descrive la navigazione scelta dallo sviluppatore.\n"
             . " */\n"
             . 'return ' . var_export($menu, true) . ";\n";
 
         $tmp = $this->path . '.tmp-' . bin2hex(random_bytes(4));
         if (file_put_contents($tmp, $content, LOCK_EX) === false) {
-            throw new RuntimeException('Impossibile salvare la configurazione menu temporanea.');
+            throw new RuntimeException('Unable to save temporary menu configuration.');
         }
 
         if (!rename($tmp, $this->path)) {
             @unlink($tmp);
-            throw new RuntimeException('Impossibile pubblicare la configurazione menu.');
+            throw new RuntimeException('Unable to publish menu configuration.');
         }
 
         return $this->path;

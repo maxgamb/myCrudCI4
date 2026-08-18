@@ -1,0 +1,216 @@
+{
+    "format": "myCrudCI4-mcp-foundation",
+    "formatVersion": 1,
+    "targetProtocol": "2026-07-28",
+    "sdk": {
+        "package": "mcp/sdk",
+        "requiredForRuntime": true,
+        "status": "optional"
+    },
+    "server": {
+        "name": "myCrudCI4",
+        "transport": "stdio",
+        "mode": "read_only"
+    },
+    "security": {
+        "boundary": "local_process",
+        "inheritsApiSecurity": false,
+        "remoteTransportAllowed": false,
+        "oauthRequiredForRemote": true,
+        "fieldPolicy": "mcpVisible"
+    },
+    "resource": {
+        "table": "rental",
+        "primaryKey": "rental_id",
+        "serviceClass": "App\\Services\\RentalService",
+        "readOnlySchema": false
+    },
+    "fields": {
+        "readable": {
+            "rental_id": {
+                "type": "int",
+                "columnType": "int",
+                "nullable": false,
+                "primary": true,
+                "foreignKey": false,
+                "inputType": "number",
+                "maxLength": null
+            },
+            "rental_date": {
+                "type": "datetime",
+                "columnType": "datetime",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "datetime-local",
+                "maxLength": null
+            },
+            "inventory_id": {
+                "type": "mediumint",
+                "columnType": "mediumint unsigned",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": true,
+                "inputType": "select",
+                "maxLength": null
+            },
+            "customer_id": {
+                "type": "smallint",
+                "columnType": "smallint unsigned",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": true,
+                "inputType": "select",
+                "maxLength": null
+            },
+            "return_date": {
+                "type": "datetime",
+                "columnType": "datetime",
+                "nullable": true,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "datetime-local",
+                "maxLength": null
+            },
+            "staff_id": {
+                "type": "tinyint",
+                "columnType": "tinyint unsigned",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": true,
+                "inputType": "select",
+                "maxLength": null
+            },
+            "last_update": {
+                "type": "timestamp",
+                "columnType": "timestamp",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "datetime-local",
+                "maxLength": null
+            }
+        },
+        "futureWritable": {
+            "rental_date": {
+                "type": "datetime",
+                "columnType": "datetime",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "datetime-local",
+                "maxLength": null
+            },
+            "inventory_id": {
+                "type": "mediumint",
+                "columnType": "mediumint unsigned",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": true,
+                "inputType": "select",
+                "maxLength": null
+            },
+            "customer_id": {
+                "type": "smallint",
+                "columnType": "smallint unsigned",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": true,
+                "inputType": "select",
+                "maxLength": null
+            },
+            "return_date": {
+                "type": "datetime",
+                "columnType": "datetime",
+                "nullable": true,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "datetime-local",
+                "maxLength": null
+            },
+            "staff_id": {
+                "type": "tinyint",
+                "columnType": "tinyint unsigned",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": true,
+                "inputType": "select",
+                "maxLength": null
+            }
+        }
+    },
+    "relations": {
+        "belongsTo": {
+            "customer_id": {
+                "parentTable": "customer",
+                "parentKey": "customer_id",
+                "displayField": "last_name",
+                "alias": "customer_id__label"
+            },
+            "inventory_id": {
+                "parentTable": "inventory",
+                "parentKey": "inventory_id",
+                "displayField": "inventory_id",
+                "alias": "inventory_id__label"
+            },
+            "staff_id": {
+                "parentTable": "staff",
+                "parentKey": "staff_id",
+                "displayField": "last_name",
+                "alias": "staff_id__label"
+            }
+        },
+        "hasMany": [
+            {
+                "childTable": "payment",
+                "foreignKey": "rental_id"
+            }
+        ]
+    },
+    "api": {
+        "capabilities": {
+            "list": true,
+            "read": true,
+            "create": true,
+            "update": true,
+            "delete": true,
+            "trash": false,
+            "restore": false,
+            "forceDelete": false
+        },
+        "security": {
+            "auth": "none",
+            "permissions": {
+                "list": "",
+                "read": "",
+                "create": "",
+                "update": "",
+                "delete": "",
+                "trash": "",
+                "restore": "",
+                "forceDelete": "",
+                "upload": ""
+            }
+        }
+    },
+    "mcp": {
+        "enabled": true,
+        "capabilities": {
+            "list": true,
+            "read": true,
+            "relations": true
+        },
+        "toolsGenerated": true,
+        "tools": [
+            "list_rental",
+            "get_rental",
+            "get_rental_customer_id",
+            "get_rental_inventory_id",
+            "get_rental_staff_id",
+            "list_rental_payment_by_rental_id"
+        ],
+        "resourcesGenerated": false,
+        "promptsGenerated": false,
+        "nextStep": "2.9.0_stable_consolidation"
+    }
+}

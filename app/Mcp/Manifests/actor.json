@@ -1,0 +1,139 @@
+{
+    "format": "myCrudCI4-mcp-foundation",
+    "formatVersion": 1,
+    "targetProtocol": "2026-07-28",
+    "sdk": {
+        "package": "mcp/sdk",
+        "requiredForRuntime": true,
+        "status": "optional"
+    },
+    "server": {
+        "name": "myCrudCI4",
+        "transport": "stdio",
+        "mode": "read_only"
+    },
+    "security": {
+        "boundary": "local_process",
+        "inheritsApiSecurity": false,
+        "remoteTransportAllowed": false,
+        "oauthRequiredForRemote": true,
+        "fieldPolicy": "mcpVisible"
+    },
+    "resource": {
+        "table": "actor",
+        "primaryKey": "actor_id",
+        "serviceClass": "App\\Services\\ActorService",
+        "readOnlySchema": false
+    },
+    "fields": {
+        "readable": {
+            "actor_id": {
+                "type": "smallint",
+                "columnType": "smallint unsigned",
+                "nullable": false,
+                "primary": true,
+                "foreignKey": false,
+                "inputType": "number",
+                "maxLength": null
+            },
+            "first_name": {
+                "type": "varchar",
+                "columnType": "varchar(45)",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "text",
+                "maxLength": 45
+            },
+            "last_name": {
+                "type": "varchar",
+                "columnType": "varchar(45)",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "text",
+                "maxLength": 45
+            },
+            "last_update": {
+                "type": "timestamp",
+                "columnType": "timestamp",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "datetime-local",
+                "maxLength": null
+            }
+        },
+        "futureWritable": {
+            "first_name": {
+                "type": "varchar",
+                "columnType": "varchar(45)",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "text",
+                "maxLength": 45
+            },
+            "last_name": {
+                "type": "varchar",
+                "columnType": "varchar(45)",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "text",
+                "maxLength": 45
+            }
+        }
+    },
+    "relations": {
+        "belongsTo": [],
+        "hasMany": [
+            {
+                "childTable": "film_actor",
+                "foreignKey": "actor_id"
+            }
+        ]
+    },
+    "api": {
+        "capabilities": {
+            "list": true,
+            "read": true,
+            "create": true,
+            "update": true,
+            "delete": true,
+            "trash": false,
+            "restore": false,
+            "forceDelete": false
+        },
+        "security": {
+            "auth": "none",
+            "permissions": {
+                "list": "",
+                "read": "",
+                "create": "",
+                "update": "",
+                "delete": "",
+                "trash": "",
+                "restore": "",
+                "forceDelete": "",
+                "upload": ""
+            }
+        }
+    },
+    "mcp": {
+        "enabled": true,
+        "capabilities": {
+            "list": true,
+            "read": true,
+            "relations": false
+        },
+        "toolsGenerated": true,
+        "tools": [
+            "list_actor",
+            "get_actor"
+        ],
+        "resourcesGenerated": false,
+        "promptsGenerated": false,
+        "nextStep": "2.9.0_stable_consolidation"
+    }
+}

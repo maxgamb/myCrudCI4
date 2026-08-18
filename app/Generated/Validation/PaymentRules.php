@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Validation;
 
+/** Regole server-side generate secondo le capability effettive del CRUD. */
 final class PaymentRules
 {
+    /** @return array<string,string> */
     public static function createRules(): array
     {
         return array (
@@ -16,7 +18,7 @@ final class PaymentRules
   'payment_date' => 'required|valid_date',
 );
     }
-
+    /** @return array<string,string> */
     public static function updateRules(int|string $id): array
     {
         $rules = array (
@@ -31,12 +33,11 @@ final class PaymentRules
         }
         return $rules;
     }
-
-    /** Regole dei record padre creati nello stesso submit. */
+    /** @return array<string,array<string,string>> */
     public static function relatedCreateRules(): array
     {
         return array (
-  'customer_id' => 
+  'customer_id' =>
   array (
     'store_id' => 'required|integer|is_not_unique[store.store_id]',
     'first_name' => 'required|max_length[45]',
@@ -46,7 +47,7 @@ final class PaymentRules
     'active' => 'permit_empty|integer',
     'create_date' => 'required|valid_date',
   ),
-  'rental_id' => 
+  'rental_id' =>
   array (
     'rental_date' => 'required|valid_date',
     'inventory_id' => 'required|integer|is_not_unique[inventory.inventory_id]',
@@ -54,7 +55,7 @@ final class PaymentRules
     'return_date' => 'permit_empty|valid_date',
     'staff_id' => 'required|integer|is_not_unique[staff.staff_id]',
   ),
-  'staff_id' => 
+  'staff_id' =>
   array (
     'first_name' => 'required|max_length[45]',
     'last_name' => 'required|max_length[45]',
@@ -68,6 +69,13 @@ final class PaymentRules
 );
     }
 
+    /** @return array<string,array<string,string>> */
+    public static function manyToManyRelatedCreateRules(): array
+    {
+        return array (
+);
+    }
+    /** @return array<string,string> */
     public static function messages(): array
     {
         return [];

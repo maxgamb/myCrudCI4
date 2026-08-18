@@ -60,9 +60,9 @@ class ToolsController extends BaseController
 
 
     /**
-     * Mostra il Menu Builder guidato.
+     * Displays the guided Menu Builder.
      *
-     * Lo schema DB fornisce soltanto voci disponibili e relazioni informative:
+     * Lo DB schema fornisce soltanto voci disponibili e relations informative:
      * l'aggregazione finale viene decisa esplicitamente dallo sviluppatore.
      */
     public function menu(): string
@@ -72,7 +72,7 @@ class ToolsController extends BaseController
         $savedMenu = $repository->load();
 
         return view('mycrud/menu_builder', [
-            'title' => 'Generatore Menu',
+            'title' => 'Menu Generator',
             'items' => $data['items'],
             'related' => $data['related'],
             'relationCount' => $data['relationCount'],
@@ -81,7 +81,7 @@ class ToolsController extends BaseController
         ]);
     }
 
-    /** Salva la configurazione del Menu Builder senza generare file runtime. */
+    /** Saves Menu Builder configuration without generating runtime files. */
     public function saveMenu()
     {
         $menu = (new MenuBuilderService())->fromRequest($this->request->getPost());
@@ -89,10 +89,10 @@ class ToolsController extends BaseController
 
         return redirect()
             ->to(site_url('mycrud/tools/menu'))
-            ->with('message', 'Configurazione menu salvata in ' . $path);
+            ->with('message', 'Menu configuration saved to ' . $path);
     }
 
-    /** Genera configurazione e renderer Bootstrap esclusivamente nello staging. */
+    /** Generates configuration and Bootstrap renderer exclusively in staging. */
     public function generateMenu(): string
     {
         $builder = new MenuBuilderService();
@@ -101,7 +101,7 @@ class ToolsController extends BaseController
         $files = (new MenuGenerator())->generate($menu, $force);
 
         return view('mycrud/menu_result', [
-            'title' => 'Menu generato',
+            'title' => 'Menu generated',
             'type' => $menu['type'],
             'files' => $files,
         ]);

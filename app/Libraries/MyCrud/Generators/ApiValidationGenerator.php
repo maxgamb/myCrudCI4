@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Libraries\MyCrud\Generators;
 
-/** Genera una classe di validazione dedicata all'API, delegando alle regole CRUD. */
+/** Generates a dedicated API validation class by delegating to CRUD rules. */
 final class ApiValidationGenerator
 {
     use GeneratorTrait;

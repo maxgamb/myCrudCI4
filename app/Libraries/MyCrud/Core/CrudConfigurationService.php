@@ -8,9 +8,9 @@ use App\Libraries\MyCrud\Config\CrudConfigRepository;
 use RuntimeException;
 
 /**
- * Risolve la configurazione effettiva di un CRUD nella linea 2.8.
+ * Resolves the effective CRUD configuration.
  *
- * Lo schema DB è sempre la fonte per struttura, indici e relazioni; il file
+ * The DB schema is always authoritative for structure, indexes, and relations; the file
  * persistente applica sopra lo schema solo le scelte dello sviluppatore.
  */
 final class CrudConfigurationService
@@ -58,13 +58,13 @@ final class CrudConfigurationService
     }
 
     /**
-     * Salva lo snapshot persistente della configurazione effettiva.
+     * Saves the persistent snapshot of the effective configuration.
      */
     public function persist(array $config): string
     {
         $table = trim((string) ($config['table'] ?? ''));
         if ($table === '') {
-            throw new RuntimeException('Configurazione senza nome tabella.');
+            throw new RuntimeException('Configuration has no table name.');
         }
 
         return ($this->repository ?? new CrudConfigRepository())->save($table, $config);

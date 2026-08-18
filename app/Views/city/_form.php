@@ -12,6 +12,7 @@ $parentContext = (array) ($parentContext ?? []);
 $submissionToken = $submissionToken ?? '';
 ?>
 
+<!-- mycrud:start form -->
 <div class="container py-4">
     <div class="card shadow-sm">
         <div class="card-header">
@@ -40,10 +41,14 @@ $submissionToken = $submissionToken ?? '';
                 <?php foreach ($navigationContext as $contextField => $contextValue): ?>
                     <input type="hidden" name="_context[<?= esc((string) $contextField) ?>]" value="<?= esc((string) $contextValue) ?>">
                 <?php endforeach; ?>
+                <?php if (!empty($cascadeTrail)): ?>
+                    <input type="hidden" name="_trail" value="<?= esc(\App\Libraries\Crud\CrudNavigationTrail::encode((array) $cascadeTrail)) ?>">
+                <?php endif; ?>
                 <?php if (!empty($parentContext['field'])): ?>
                     <input type="hidden" name="_parent_field" value="<?= esc((string) $parentContext['field']) ?>">
                 <?php endif; ?>
 
+<!-- mycrud:start fields -->
                 <div class="col-md-6">
                     <label for="city" class="form-label">
                         <?= esc(lang('City.city')) ?>
@@ -95,8 +100,9 @@ $submissionToken = $submissionToken ?? '';
                             class="btn btn-outline-secondary js-relation-parent-link disabled"
                             data-value-source="country_id"
                             data-base-url="<?= site_url('country/view') ?>"
-                            title="Apri record padre"
-                            aria-label="Apri record padre"
+                            data-trail="<?= esc(\App\Libraries\Crud\CrudNavigationTrail::encode((array) ($cascadeTrail ?? []))) ?>"
+                            title="Open parent record"
+                            aria-label="Open parent record"
                         >
                             <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
                         </a>                    <?php if ($row === null): ?>
@@ -110,11 +116,11 @@ $submissionToken = $submissionToken ?? '';
                             data-related-field="country_id"
                             data-panel-target="related_create_country_id"
                             data-state-target="related_create_country_id_state"
-                            title="Crea nuovo Country"
-                            aria-label="Crea nuovo Country"
+                            title="Create new Country"
+                            aria-label="Create new Country"
                         >
                             <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
-                            Nuovo
+                            New
                         </button>
                     <?php endif; ?>
 </div>
@@ -140,6 +146,7 @@ $submissionToken = $submissionToken ?? '';
                         <div
                             id="related_create_country_id"
                             class="offcanvas offcanvas-end crud-related-create-panel"
+                            style="--bs-offcanvas-width: min(640px, 100vw);"
                             tabindex="-1"
                             aria-labelledby="related_create_country_id_label"
                             data-related-field="country_id"
@@ -149,8 +156,8 @@ $submissionToken = $submissionToken ?? '';
                         >
                             <div class="offcanvas-header border-bottom">
                                 <div>
-                                    <h2 class="offcanvas-title h5 mb-0" id="related_create_country_id_label">Nuovo Country</h2>
-                                    <small class="text-muted">Relazione country_id</small>
+                                    <h2 class="offcanvas-title h5 mb-0" id="related_create_country_id_label">New Country</h2>
+                                    <small class="text-muted">Relation country_id</small>
                                 </div>
                                 <button
                                     type="button"
@@ -158,12 +165,12 @@ $submissionToken = $submissionToken ?? '';
                                     data-related-field="country_id"
                                     data-state-target="related_create_country_id_state"
                                     data-bs-dismiss="offcanvas"
-                                    aria-label="Annulla nuovo Country"
+                                    aria-label="Cancel new Country"
                                 ></button>
                             </div>
                             <div class="offcanvas-body">
                                 <div class="alert alert-light border small" role="note">
-                                    Compila i dati del nuovo Country. Il record collegato e questo record verranno salvati insieme al submit del form principale, nella stessa transazione.
+                                    Enter the new Country data. The related record and this record will be saved together when the main form is submitted, within the same transaction.
                                 </div>
                                 <?= view('city/_related_create_country_id', [
                                     'relatedField'        => 'country_id',
@@ -182,7 +189,7 @@ $submissionToken = $submissionToken ?? '';
                                     data-bs-dismiss="offcanvas"
                                 >
                                     <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
-                                    Annulla
+                                    Cancel
                                 </button>
                                 <button
                                     type="button"
@@ -192,12 +199,14 @@ $submissionToken = $submissionToken ?? '';
                                     data-bs-dismiss="offcanvas"
                                 >
                                     <i class="bi bi-check2-circle me-1" aria-hidden="true"></i>
-                                    Applica nuovo Country
+                                    Apply new Country
                                 </button>
                             </div>
                         </div>
                     </div>
                 <?php endif; ?>
+                <!-- mycrud:end fields -->
+                <!-- mycrud:start form-actions -->
                 <div class="col-12 d-flex flex-wrap gap-2">
                     <button type="submit" class="btn btn-success" id="submitButton">
                         <span class="submit-normal"><i class="bi bi-check-circle"></i> Salva</span>
@@ -209,16 +218,18 @@ $submissionToken = $submissionToken ?? '';
                     <?php if (!empty($parentContext['url'])): ?>
                         <a href="<?= esc((string) $parentContext['url']) ?>" class="btn btn-outline-secondary">
                             <i class="bi bi-arrow-left"></i>
-                            Annulla e torna a <?= esc((string) ($parentContext['label'] ?? 'record padre')) ?>
+                            Cancel and return to <?= esc((string) ($parentContext['label'] ?? 'parent record')) ?>
                         </a>
                     <?php endif; ?>
 
                 </div>
+                <!-- mycrud:end form-actions -->
 
             <?= form_close() ?>
         </div>
     </div>
 </div>
+<!-- mycrud:end form -->
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -229,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let submitted = false;
 
-    // Select AJAX per relazioni grandi: il browser carica soltanto i risultati
+    // AJAX select for large relations: the browser loads only results
     // cercati dall'utente, evitando migliaia di <option> nel form.
     document.querySelectorAll('.crud-relation-search').forEach(function (input) {
         const valueTarget = document.getElementById(input.dataset.valueTarget || '');
@@ -263,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             signal: controller.signal
                         }
                     );
-                    if (!response.ok) throw new Error('Errore ricerca relazione');
+                    if (!response.ok) throw new Error('Relation search error');
 
                     const payload = await response.json();
                     const rows = Array.isArray(payload.results) ? payload.results : [];
@@ -297,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // Mantiene il link al parent record sincronizzato con il valore FK,
     // qualunque sia il controllo usato (hidden, select, input o select AJAX).
     const refreshParentLink = function (link) {
         const source = document.getElementById(link.dataset.valueSource || '');
@@ -310,7 +321,12 @@ document.addEventListener('DOMContentLoaded', function () {
             link.setAttribute('aria-disabled', 'true');
             return;
         }
-        link.href = baseUrl + '/' + encodeURIComponent(value);
+        let href = baseUrl + '/' + encodeURIComponent(value);
+        const trail = String(link.dataset.trail || '').trim();
+        if (trail !== '') {
+            href += '?_trail=' + encodeURIComponent(trail);
+        }
+        link.href = href;
         link.classList.remove('disabled');
         link.removeAttribute('aria-disabled');
     };
@@ -324,9 +340,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Relational Create tramite Bootstrap Offcanvas. Il pannello si
     // sovrappone alla vista senza alterare il layout del form principale.
-    // La select/relazione originaria resta visivamente e funzionalmente
+    // The original select/relation remains visually and functionally
     // invariata; quando _related_new[field]=1 il server ignora la FK esistente
-    // e crea il nuovo parent nella stessa transazione del record principale.
+    // and creates the new parent in the same transaction as the main record.
     const setRelatedCreateState = function (panel, active) {
         const field = String(panel.dataset.relatedField || '');
         const state = document.getElementById(String(panel.dataset.stateTarget || ''));
@@ -337,8 +353,8 @@ document.addEventListener('DOMContentLoaded', function () {
             input.disabled = !active;
         });
 
-        // Se viene creato un nuovo parent, la FK originaria può essere vuota:
-        // il valore sarà imposto server-side con la PK appena generata. Sospendi
+        // If a new parent is created, the original foreign key may be empty:
+        // the value will be set server-side with the newly generated primary key. Suspend
         // quindi solo il vincolo HTML5 required della FK, senza alterarne la UI.
         const source = document.getElementById(field);
         if (source) {
@@ -387,7 +403,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
 
-        // Solo "Applica" mantiene attiva la creazione inline dopo la chiusura.
+        // Only "Apply" keeps inline creation active after closing.
         // X, Annulla ed eventuale chiusura da tastiera annullano l'operazione.
         panel.addEventListener('hidden.bs.offcanvas', function () {
             if (String(panel.dataset.relatedApplied || '0') !== '1') {
@@ -397,8 +413,87 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Se la validazione server ha restituito errori sul nuovo parent,
-        // riapri automaticamente il pannello per mostrare campi ed errori.
+        // If server validation returned errors for the new parent,
+        // automatically reopen the panel to show fields and errors.
+        if (String(state.value || '0') === '1' && window.bootstrap?.Offcanvas) {
+            window.bootstrap.Offcanvas.getOrCreateInstance(panel).show();
+        }
+    });
+
+    // Many-to-many Related Create uses the same offcanvas interaction pattern
+    // as belongsTo Related Create. The main form stays compact; the nested
+    // target form is enabled only after the user explicitly applies it.
+    const setManyRelatedCreateState = function (panel, active) {
+        const state = document.getElementById(String(panel.dataset.stateTarget || ''));
+        if (!state) return;
+
+        state.value = active ? '1' : '0';
+        panel.querySelectorAll('[data-many-related-field]').forEach(function (input) {
+            input.disabled = !active;
+        });
+
+        const toggle = document.getElementById(String(panel.dataset.toggleTarget || ''));
+        if (toggle) {
+            toggle.classList.toggle('active', active);
+            toggle.setAttribute('aria-pressed', active ? 'true' : 'false');
+        }
+
+        const ready = document.getElementById(String(panel.dataset.readyTarget || ''));
+        if (ready) ready.classList.toggle('d-none', !active);
+
+        const remove = document.getElementById(String(panel.dataset.removeTarget || ''));
+        if (remove) remove.classList.toggle('d-none', !active);
+    };
+
+    document.querySelectorAll('.crud-many-related-create-panel.offcanvas').forEach(function (panel) {
+        const state = document.getElementById(String(panel.dataset.stateTarget || ''));
+        if (!state) return;
+
+        setManyRelatedCreateState(panel, String(state.value || '0') === '1');
+
+        panel.addEventListener('show.bs.offcanvas', function () {
+            panel.dataset.manyRelatedApplied = '0';
+            setManyRelatedCreateState(panel, true);
+        });
+
+        panel.querySelectorAll('.crud-many-related-create-apply').forEach(function (button) {
+            button.addEventListener('click', function () {
+                panel.dataset.manyRelatedApplied = '1';
+                setManyRelatedCreateState(panel, true);
+            });
+        });
+
+        panel.querySelectorAll('.crud-many-related-create-cancel').forEach(function (button) {
+            button.addEventListener('click', function () {
+                panel.dataset.manyRelatedApplied = '0';
+                setManyRelatedCreateState(panel, false);
+            });
+        });
+
+        const remove = document.getElementById(String(panel.dataset.removeTarget || ''));
+        if (remove) {
+            remove.addEventListener('click', function () {
+                panel.dataset.manyRelatedApplied = '0';
+                setManyRelatedCreateState(panel, false);
+                panel.querySelectorAll('[data-many-related-field]').forEach(function (input) {
+                    if (input.type === 'checkbox' || input.type === 'radio') {
+                        input.checked = false;
+                    } else {
+                        input.value = '';
+                    }
+                });
+            });
+        }
+
+        panel.addEventListener('hidden.bs.offcanvas', function () {
+            setManyRelatedCreateState(
+                panel,
+                String(panel.dataset.manyRelatedApplied || '0') === '1'
+            );
+        });
+
+        // Reopen after server-side validation errors so the user sees the
+        // invalid nested fields instead of a collapsed/hidden form.
         if (String(state.value || '0') === '1' && window.bootstrap?.Offcanvas) {
             window.bootstrap.Offcanvas.getOrCreateInstance(panel).show();
         }

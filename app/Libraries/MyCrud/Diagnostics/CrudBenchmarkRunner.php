@@ -10,7 +10,7 @@ use CodeIgniter\Database\BaseConnection;
 use Config\Database;
 use Throwable;
 
-/** Benchmark sintetico e non distruttivo della lista CRUD reale. */
+/** Synthetic, non-destructive benchmark of the real CRUD list. */
 final class CrudBenchmarkRunner
 {
     public function __construct(
@@ -84,7 +84,7 @@ final class CrudBenchmarkRunner
                             ->get()
                             ->getResultArray();
                     });
-                    $results[] = $this->metric('Benchmark filtro ' . $leading, $filterMs, ['sample' => $sampleValue]);
+                    $results[] = $this->metric('Filter benchmark ' . $leading, $filterMs, ['sample' => $sampleValue]);
                 }
             }
         } catch (Throwable $exception) {

@@ -35,7 +35,7 @@
                                     </form>
                                     <form method="post" action="<?= site_url('{{TABLE}}/force-delete/' . ($row->{{PRIMARY_KEY}} ?? '')) ?>" onsubmit="return confirm('Eliminare definitivamente?')">
                                         <?= csrf_field() ?>
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Elimina definitivamente</button>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete permanently</button>
                                     </form>
                                 </div>
                             </td>

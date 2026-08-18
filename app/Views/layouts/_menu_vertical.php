@@ -5,9 +5,9 @@
  * - gruppi e sottogruppi collassabili;
  * - gruppo della route corrente aperto automaticamente;
  * - voce corrente evidenziata;
- * - ricerca istantanea lato browser;
+ * - instant browser-side search;
  * - preferiti opzionali;
- * - nessuna query al database durante la ricerca.
+ * - no database query during search.
  */
 $menuGroups = (array) ($menuGroups ?? config('Menu')->groups ?? []);
 $menuSearch = (bool) ($menuSearch ?? config('Menu')->search ?? true);
@@ -232,7 +232,7 @@ $favoriteItems = array_values(array_filter(
     </div>
 
     <div class="px-3 py-3 small text-body-secondary d-none" data-menu-empty>
-        <i class="bi bi-search me-1"></i> Nessuna voce trovata.
+        <i class="bi bi-search me-1"></i> None voce trovata.
     </div>
 </div>
 

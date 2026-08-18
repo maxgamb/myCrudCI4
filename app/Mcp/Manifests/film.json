@@ -1,0 +1,336 @@
+{
+    "format": "myCrudCI4-mcp-foundation",
+    "formatVersion": 1,
+    "targetProtocol": "2026-07-28",
+    "sdk": {
+        "package": "mcp/sdk",
+        "requiredForRuntime": true,
+        "status": "optional"
+    },
+    "server": {
+        "name": "myCrudCI4",
+        "transport": "stdio",
+        "mode": "read_only"
+    },
+    "security": {
+        "boundary": "local_process",
+        "inheritsApiSecurity": false,
+        "remoteTransportAllowed": false,
+        "oauthRequiredForRemote": true,
+        "fieldPolicy": "mcpVisible"
+    },
+    "resource": {
+        "table": "film",
+        "primaryKey": "film_id",
+        "serviceClass": "App\\Services\\FilmService",
+        "readOnlySchema": false
+    },
+    "fields": {
+        "readable": {
+            "film_id": {
+                "type": "smallint",
+                "columnType": "smallint unsigned",
+                "nullable": false,
+                "primary": true,
+                "foreignKey": false,
+                "inputType": "hidden",
+                "maxLength": null
+            },
+            "title": {
+                "type": "varchar",
+                "columnType": "varchar(128)",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "text",
+                "maxLength": 128
+            },
+            "description": {
+                "type": "text",
+                "columnType": "text",
+                "nullable": true,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "textarea",
+                "maxLength": 65535
+            },
+            "release_year": {
+                "type": "year",
+                "columnType": "year",
+                "nullable": true,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "text",
+                "maxLength": null
+            },
+            "language_id": {
+                "type": "tinyint",
+                "columnType": "tinyint unsigned",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": true,
+                "inputType": "select",
+                "maxLength": null
+            },
+            "original_language_id": {
+                "type": "tinyint",
+                "columnType": "tinyint unsigned",
+                "nullable": true,
+                "primary": false,
+                "foreignKey": true,
+                "inputType": "select",
+                "maxLength": null
+            },
+            "rental_duration": {
+                "type": "tinyint",
+                "columnType": "tinyint unsigned",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "number",
+                "maxLength": null
+            },
+            "rental_rate": {
+                "type": "decimal",
+                "columnType": "decimal(4,2)",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "number",
+                "maxLength": null
+            },
+            "length": {
+                "type": "smallint",
+                "columnType": "smallint unsigned",
+                "nullable": true,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "text",
+                "maxLength": null
+            },
+            "replacement_cost": {
+                "type": "decimal",
+                "columnType": "decimal(5,2)",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "number",
+                "maxLength": null
+            },
+            "rating": {
+                "type": "enum",
+                "columnType": "enum('g','pg','pg-13','r','nc-17')",
+                "nullable": true,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "text",
+                "maxLength": 5
+            },
+            "special_features": {
+                "type": "set",
+                "columnType": "set('trailers','commentaries','deleted scenes','behind the scenes')",
+                "nullable": true,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "text",
+                "maxLength": 54
+            },
+            "last_update": {
+                "type": "timestamp",
+                "columnType": "timestamp",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "datetime-local",
+                "maxLength": null
+            },
+            "uploads": {
+                "type": "varchar",
+                "columnType": "varchar(200)",
+                "nullable": true,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "file",
+                "maxLength": 200
+            }
+        },
+        "futureWritable": {
+            "title": {
+                "type": "varchar",
+                "columnType": "varchar(128)",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "text",
+                "maxLength": 128
+            },
+            "description": {
+                "type": "text",
+                "columnType": "text",
+                "nullable": true,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "textarea",
+                "maxLength": 65535
+            },
+            "release_year": {
+                "type": "year",
+                "columnType": "year",
+                "nullable": true,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "text",
+                "maxLength": null
+            },
+            "language_id": {
+                "type": "tinyint",
+                "columnType": "tinyint unsigned",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": true,
+                "inputType": "select",
+                "maxLength": null
+            },
+            "original_language_id": {
+                "type": "tinyint",
+                "columnType": "tinyint unsigned",
+                "nullable": true,
+                "primary": false,
+                "foreignKey": true,
+                "inputType": "select",
+                "maxLength": null
+            },
+            "rental_duration": {
+                "type": "tinyint",
+                "columnType": "tinyint unsigned",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "number",
+                "maxLength": null
+            },
+            "rental_rate": {
+                "type": "decimal",
+                "columnType": "decimal(4,2)",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "number",
+                "maxLength": null
+            },
+            "length": {
+                "type": "smallint",
+                "columnType": "smallint unsigned",
+                "nullable": true,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "text",
+                "maxLength": null
+            },
+            "replacement_cost": {
+                "type": "decimal",
+                "columnType": "decimal(5,2)",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "number",
+                "maxLength": null
+            },
+            "rating": {
+                "type": "enum",
+                "columnType": "enum('g','pg','pg-13','r','nc-17')",
+                "nullable": true,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "text",
+                "maxLength": 5
+            },
+            "special_features": {
+                "type": "set",
+                "columnType": "set('trailers','commentaries','deleted scenes','behind the scenes')",
+                "nullable": true,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "text",
+                "maxLength": 54
+            }
+        }
+    },
+    "relations": {
+        "belongsTo": {
+            "language_id": {
+                "parentTable": "language",
+                "parentKey": "language_id",
+                "displayField": "name",
+                "alias": "language_id__label"
+            },
+            "original_language_id": {
+                "parentTable": "language",
+                "parentKey": "language_id",
+                "displayField": "name",
+                "alias": "original_language_id__label"
+            }
+        },
+        "hasMany": [
+            {
+                "childTable": "film_actor",
+                "foreignKey": "film_id"
+            },
+            {
+                "childTable": "film_category",
+                "foreignKey": "film_id"
+            },
+            {
+                "childTable": "inventory",
+                "foreignKey": "film_id"
+            }
+        ]
+    },
+    "api": {
+        "capabilities": {
+            "list": true,
+            "read": true,
+            "create": true,
+            "update": true,
+            "delete": true,
+            "trash": false,
+            "restore": false,
+            "forceDelete": false
+        },
+        "security": {
+            "auth": "none",
+            "permissions": {
+                "list": "",
+                "read": "",
+                "create": "",
+                "update": "",
+                "delete": "",
+                "trash": "",
+                "restore": "",
+                "forceDelete": "",
+                "upload": ""
+            }
+        }
+    },
+    "mcp": {
+        "enabled": true,
+        "capabilities": {
+            "list": true,
+            "read": true,
+            "relations": true
+        },
+        "toolsGenerated": true,
+        "tools": [
+            "list_film",
+            "get_film",
+            "get_film_language_id",
+            "get_film_original_language_id",
+            "list_film_film_actor_by_film_id",
+            "list_film_film_category_by_film_id",
+            "list_film_inventory_by_film_id"
+        ],
+        "resourcesGenerated": false,
+        "promptsGenerated": false,
+        "nextStep": "2.9.0_stable_consolidation"
+    }
+}

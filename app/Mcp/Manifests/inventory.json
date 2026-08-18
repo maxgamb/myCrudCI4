@@ -1,0 +1,155 @@
+{
+    "format": "myCrudCI4-mcp-foundation",
+    "formatVersion": 1,
+    "targetProtocol": "2026-07-28",
+    "sdk": {
+        "package": "mcp/sdk",
+        "requiredForRuntime": true,
+        "status": "optional"
+    },
+    "server": {
+        "name": "myCrudCI4",
+        "transport": "stdio",
+        "mode": "read_only"
+    },
+    "security": {
+        "boundary": "local_process",
+        "inheritsApiSecurity": false,
+        "remoteTransportAllowed": false,
+        "oauthRequiredForRemote": true,
+        "fieldPolicy": "mcpVisible"
+    },
+    "resource": {
+        "table": "inventory",
+        "primaryKey": "inventory_id",
+        "serviceClass": "App\\Services\\InventoryService",
+        "readOnlySchema": false
+    },
+    "fields": {
+        "readable": {
+            "inventory_id": {
+                "type": "mediumint",
+                "columnType": "mediumint unsigned",
+                "nullable": false,
+                "primary": true,
+                "foreignKey": false,
+                "inputType": "number",
+                "maxLength": null
+            },
+            "film_id": {
+                "type": "smallint",
+                "columnType": "smallint unsigned",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": true,
+                "inputType": "select",
+                "maxLength": null
+            },
+            "store_id": {
+                "type": "tinyint",
+                "columnType": "tinyint unsigned",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": true,
+                "inputType": "select",
+                "maxLength": null
+            },
+            "last_update": {
+                "type": "timestamp",
+                "columnType": "timestamp",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": false,
+                "inputType": "datetime-local",
+                "maxLength": null
+            }
+        },
+        "futureWritable": {
+            "film_id": {
+                "type": "smallint",
+                "columnType": "smallint unsigned",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": true,
+                "inputType": "select",
+                "maxLength": null
+            },
+            "store_id": {
+                "type": "tinyint",
+                "columnType": "tinyint unsigned",
+                "nullable": false,
+                "primary": false,
+                "foreignKey": true,
+                "inputType": "select",
+                "maxLength": null
+            }
+        }
+    },
+    "relations": {
+        "belongsTo": {
+            "film_id": {
+                "parentTable": "film",
+                "parentKey": "film_id",
+                "displayField": "film_id",
+                "alias": "film_id__label"
+            },
+            "store_id": {
+                "parentTable": "store",
+                "parentKey": "store_id",
+                "displayField": "store_id",
+                "alias": "store_id__label"
+            }
+        },
+        "hasMany": [
+            {
+                "childTable": "rental",
+                "foreignKey": "inventory_id"
+            }
+        ]
+    },
+    "api": {
+        "capabilities": {
+            "list": true,
+            "read": true,
+            "create": true,
+            "update": true,
+            "delete": true,
+            "trash": false,
+            "restore": false,
+            "forceDelete": false
+        },
+        "security": {
+            "auth": "none",
+            "permissions": {
+                "list": "",
+                "read": "",
+                "create": "",
+                "update": "",
+                "delete": "",
+                "trash": "",
+                "restore": "",
+                "forceDelete": "",
+                "upload": ""
+            }
+        }
+    },
+    "mcp": {
+        "enabled": true,
+        "capabilities": {
+            "list": true,
+            "read": true,
+            "relations": true
+        },
+        "toolsGenerated": true,
+        "tools": [
+            "list_inventory",
+            "get_inventory",
+            "get_inventory_film_id",
+            "get_inventory_store_id",
+            "list_inventory_rental_by_inventory_id"
+        ],
+        "resourcesGenerated": false,
+        "promptsGenerated": false,
+        "nextStep": "2.9.0_stable_consolidation"
+    }
+}

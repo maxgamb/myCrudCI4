@@ -29,7 +29,7 @@ final class CrudArchitectureGenerator
         ];
 
         // Runtime del sito: librerie condivise dai CRUD generati.
-        // Sono indipendenti da myCrudGpt e restano utilizzabili anche se il
+        // Sono indipendenti da myCrudCI4 e restano utilizzabili anche se il
         // generatore viene rimosso dall'applicazione a progetto concluso.
         $result['files']['runtime'] = (new RuntimeSupportGenerator())->generate($force);
 
@@ -39,22 +39,52 @@ final class CrudArchitectureGenerator
 
         $result['files']['model']      = (new ModelGenerator())->generate($config, $force);
 
-        if (!empty($config['features']['service'])) {
+        if (!empty($config['features']['service']) && empty($config['isView'])) {
+            // SQL VIEWs are read-only: generating an empty Service adds no responsibility.
             $result['files']['service'] = (new ServiceGenerator())->generate($config, $force);
+            if (!empty($config['features']['writable'])) {
+                $result['files']['service_extension'] = (new ServiceExtensionGenerator())->generate($config);
+            }
         }
 
-        $result['files']['validation'] = (new ValidationGenerator())->generate($config, $force);
+        if (!empty($config['features']['createAllowed']) || !empty($config['features']['writable'])) {
+            $result['files']['validation'] = (new ValidationGenerator())->generate($config, $force);
+        }
         $result['files']['language'] = (new LanguageGenerator())->generate($config, $force);
         $result['files']['controller'] = (new ControllerGenerator())->generate($config, $force);
 
+        $shieldRequested = (string) ($config['crudSecurity']['auth'] ?? 'none') === 'shield_session'
+            || (string) ($config['apiSecurity']['auth'] ?? 'none') === 'shield_tokens';
+        if ($shieldRequested && !class_exists(\CodeIgniter\Shield\Filters\TokenAuth::class)) {
+            throw new \RuntimeException(
+                'Shield Security richiede CodeIgniter Shield, ma il package non è installato.'
+            );
+        }
+
         if (!empty($config['features']['api'])) {
-            $result['files']['api_validation'] = (new ApiValidationGenerator())->generate($config, $force);
+            $apiCapabilities = (array) ($config['apiCapabilities'] ?? []);
+            if (!empty($apiCapabilities['create']) || !empty($apiCapabilities['update'])) {
+                $result['files']['api_validation'] = (new ApiValidationGenerator())->generate($config, $force);
+            }
             $result['files']['api'] = (new ApiGenerator())->generate($config, $force);
             $result['files']['openapi'] = (new OpenApiGenerator())->generate($config, $force);
         }
 
         $result['files']['views']  = (new ViewGenerator())->generate($config, $force);
         $result['files']['routes'] = (new RouteGenerator())->generate($config, $force);
+
+        if ($architecture === 'full' && !empty($config['mcp']['enabled'])) {
+            $result['files']['mcp'] = (new McpFoundationGenerator())->generate($config, $force);
+            $result['files']['mcp_resource'] = (new McpResourceGenerator())->generate($config, $force);
+            $result['files']['mcp_tools'] = (new McpCrudToolGenerator())->generate($config, $force);
+            $result['files']['mcp_relation_tools'] = (new McpRelationToolGenerator())->generate($config, $force);
+        }
+
+        /** @var \Config\MyCrud $settings */
+        $settings = config('MyCrud');
+        if (!empty($settings->testScaffolding)) {
+            $result['files']['tests'] = (new TestScaffoldGenerator())->generate($config, $force);
+        }
 
         return $result;
     }

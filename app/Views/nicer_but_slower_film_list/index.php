@@ -1,16 +1,31 @@
 <?= $this->extend('layouts/default_app') ?>
 <?= $this->section('content') ?>
 
-<?php /* Vista elenco del sito: filtri dinamici, AJAX progressivo, export e Pager CI4. */ ?>
+<?php /* Site list view: dynamic filters, progressive AJAX, export, and CI4 Pager. */ ?>
 <?php
 $navigationContext = (array) ($navigationContext ?? []);
-$navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navigationContext);
+$cascadeTrail = (array) ($cascadeTrail ?? []);
+$navigationParams = $navigationContext;
+$encodedTrail = \App\Libraries\Crud\CrudNavigationTrail::encode($cascadeTrail);
+if ($encodedTrail !== '') $navigationParams['_trail'] = $encodedTrail;
+$navigationQuery = $navigationParams === [] ? '' : '?' . http_build_query($navigationParams);
 ?>
 
+<!-- mycrud:start list-page -->
 <div class="container-fluid px-0">
     <nav aria-label="breadcrumb" class="mb-2">
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="<?= site_url('/') ?>">Home</a></li>
+            <?php $trailPrefix = []; ?>
+            <?php foreach ($cascadeTrail as $segment): ?>
+                <?php
+                $segmentQuery = \App\Libraries\Crud\CrudNavigationTrail::encode($trailPrefix);
+                $segmentUrl = site_url((string) $segment['table'] . '/view/' . rawurlencode((string) $segment['id']));
+                if ($segmentQuery !== '') $segmentUrl .= '?_trail=' . rawurlencode($segmentQuery);
+                ?>
+                <li class="breadcrumb-item"><a href="<?= esc($segmentUrl) ?>"><?= esc((string) $segment['label']) ?></a></li>
+                <?php $trailPrefix[] = $segment; ?>
+            <?php endforeach; ?>
             <li class="breadcrumb-item active" aria-current="page">nicer_but_slower_film_list</li>
         </ol>
     </nav>
@@ -39,6 +54,7 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
     ) !== [];
     ?>
 
+    <!-- mycrud:start filters -->
     <details class="mb-3" <?= $hasActiveFilters ? 'open' : '' ?>>
         <summary class="fw-semibold"><?= esc(lang('NicerButSlowerFilmList.filtersSummary')) ?></summary>
         <div class="card card-body mt-2">
@@ -51,7 +67,9 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
             ]) ?>
         </div>
     </details>
+    <!-- mycrud:end filters -->
 
+    <!-- mycrud:start table -->
     <div id="crudTableContainer" aria-live="polite" aria-busy="false">
         <?= view('nicer_but_slower_film_list/_table', [
             'rows' => $rows ?? [],
@@ -64,9 +82,12 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
             'direction' => $direction ?? 'desc',
             'query' => $query ?? [],
             'navigationContext' => $navigationContext,
+            'cascadeTrail' => $cascadeTrail,
         ]) ?>
     </div>
+    <!-- mycrud:end table -->
 </div>
+<!-- mycrud:end list-page -->
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -77,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const createRecordButton = document.getElementById('createRecordButton');
     const navigationContextFields = [];
     const simpleFilterFields = [];
+    const cascadeTrailParam = '_trail';
     let activeRequest = null;
 
     if (!form || !container || !exportCsvButton || !exportWordButton) {
@@ -89,11 +111,15 @@ document.addEventListener('DOMContentLoaded', () => {
         navigationContextFields.forEach(field => {
             const value = sourceUrl.searchParams.get(field);
             if (value !== null && value !== '' && !params.has(field)) {
-                // Il parametro FK resta esplicito anche se il filtro avanzato
-                // contiene lo stesso campo: serve come contesto di navigazione.
+                // The foreign-key parameter remains explicit even if the advanced filter
+                // contains the same field: it serves as navigation context.
                 params.set(field, value);
             }
         });
+        const trail = sourceUrl.searchParams.get(cascadeTrailParam);
+        if (trail !== null && trail !== '' && !params.has(cascadeTrailParam)) {
+            params.set(cascadeTrailParam, trail);
+        }
         return params;
     };
 
@@ -102,10 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
         params.delete('page');
         params.delete('perPage');
 
-        // Un filtro rapido AJAX vive nella query string (es. ?title=ZHIVAGO+CORE)
-        // ma non modifica il form filtri già renderizzato. Per CSV/Word copiamo
-        // quindi dalla URL corrente solo i campi ammessi dalla stessa whitelist
-        // server-side usata da CrudListRequest per la forma corta ?campo=valore.
+        // A quick AJAX filter lives in the query string (for example, ?title=ZHIVAGO+CORE)
+        // but does not modify the already-rendered filter form. For CSV/Word we copy
+        // from the current URL only fields allowed by the same whitelist
+        // used server-side by CrudListRequest for the short ?field=value form.
         simpleFilterFields.forEach(field => {
             const value = sourceUrl.searchParams.get(field);
             if (value !== null && value !== '') {
@@ -160,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
-                throw new Error('Errore HTTP ' + response.status);
+                throw new Error('HTTP error ' + response.status);
             }
 
             container.innerHTML = await response.text();
@@ -215,8 +241,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const url = new URL(link.href, window.location.origin);
 
         // I link generati dal server contengono già lo stato corrente della
-        // lista. In particolare i filtri rapidi usano la forma corta
-        // `?campo=valore`: non riconvertirli qui in `filters[...]`.
+        // list. In particular, quick filters use the short form
+        // `?field=value`: do not convert them back to `filters[...]` here.
         if (link.matches('.pagination a')) {
             const current = new URLSearchParams(window.location.search);
             const target = new URLSearchParams(url.search);

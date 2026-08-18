@@ -7,10 +7,10 @@ namespace App\Libraries\MyCrud\Generators\Views;
 use App\Libraries\MyCrud\Core\FieldPolicy;
 
 /**
- * Genera l'elenco del sito: tabella, ordinamento e filtro dinamico.
+ * Generates the site list: table, sorting, and dynamic filtering.
  *
- * Lato generatore vengono prodotte solo whitelist/configurazioni; la query
- * effettiva resta nel Model generato.
+ * On the generator side, only whitelists/configuration are produced; the query
+ * effettiva resta nel Model generated.
  */
 final class IndexViewGenerator extends AbstractViewGenerator
 {
@@ -43,9 +43,7 @@ final class IndexViewGenerator extends AbstractViewGenerator
                 || !empty($index['unique'])
                 || !empty($index['leading']);
 
-            $binary = in_array($inputType, ['file', 'image'], true)
-                || str_contains($type, 'blob')
-                || str_contains($type, 'binary');
+            $binary = str_contains($type, 'blob') || str_contains($type, 'binary');
 
             if (
                 !$sensitive
@@ -84,7 +82,7 @@ PHP;
                 }
 
                 $relation = $config['relations']['belongsTo'][$name] ?? null;
-                $cells .= $this->indexCell($field, $name, is_array($relation) ? $relation : null, $indexEligible);
+                $cells .= $this->indexCell($field, $name, is_array($relation) ? $relation : null, $indexEligible, $table, $primaryKey);
                 $visibleCount++;
             }
 
@@ -97,8 +95,8 @@ PHP;
         }
 
         $createButton = $createAllowed ? <<<PHP
-            <a id="createRecordButton" data-base-url="<?= site_url('{$table}/create') ?>" href="<?= site_url('{$table}/create') . (\$navigationQuery ?? '') ?>" class="btn btn-primary" title="Nuovo record">
-                <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> Nuovo
+            <a id="createRecordButton" data-base-url="<?= site_url('{$table}/create') ?>" href="<?= site_url('{$table}/create') . (\$navigationQuery ?? '') ?>" class="btn btn-primary" title="New record">
+                <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> New
             </a>
 PHP : '';
         $trashButton = !empty($config['features']['softDeletes'])
@@ -135,7 +133,7 @@ PHP : '';
         ];
     }
 
-    private function indexCell(array $field, string $name, ?array $relation, bool $indexEligible): string
+    private function indexCell(array $field, string $name, ?array $relation, bool $indexEligible, string $table = '', string $primaryKey = 'id'): string
     {
         $rowValue = $this->objectProperty('row', $name);
 
@@ -148,7 +146,7 @@ PHP : '';
             $quickFilter = !empty($navigation['quickFilter']) && $indexEligible && !empty($field['ui']['searchable']);
 
             $labelMarkup = $parentLink
-                ? "<?php if ((string) ({$rowValue} ?? '') !== ''): ?><a href=\"<?= site_url('{$parentTable}/view/' . rawurlencode((string) {$rowValue})) ?>\" class=\"text-decoration-none\"><?= esc({$rowLabel} ?? {$rowValue} ?? '') ?></a><?php else: ?><?= esc({$rowLabel} ?? '') ?><?php endif; ?>"
+                ? "<?php if ((string) ({$rowValue} ?? '') !== ''): ?><?php \$parentTrailEncoded = \App\Libraries\Crud\CrudNavigationTrail::encode((array) (\$cascadeTrail ?? [])); \$parentHref = site_url('{$parentTable}/view/' . rawurlencode((string) {$rowValue})); if (\$parentTrailEncoded !== '') \$parentHref .= '?_trail=' . rawurlencode(\$parentTrailEncoded); ?><a href=\"<?= esc(\$parentHref) ?>\" class=\"text-decoration-none\"><?= esc({$rowLabel} ?? {$rowValue} ?? '') ?></a><?php else: ?><?= esc({$rowLabel} ?? '') ?><?php endif; ?>"
                 : "<?= esc({$rowLabel} ?? {$rowValue} ?? '') ?>";
 
             $filterMarkup = '';
@@ -164,8 +162,8 @@ PHP : '';
                                             href="<?= current_url() . '?' . http_build_query(\$quickQuery) ?>"
                                             class="js-list-link ms-1 text-decoration-none"
                                             data-quick-filter="1"
-                                            title="Filtra per questo valore"
-                                            aria-label="Filtra per questo valore"
+                                            title="Filter by this value"
+                                            aria-label="Filter by this value"
                                         ><i class="bi bi-funnel"></i></a>
                                     <?php endif; ?>
 PHP;
@@ -175,6 +173,15 @@ PHP;
                                 <td>
                                     {$labelMarkup}
 {$filterMarkup}                                </td>
+PHP;
+        }
+
+        $inputType = strtolower((string) ($field['inputType'] ?? 'text'));
+        if (in_array($inputType, ['file', 'image'], true)) {
+            $rowId = $this->objectProperty('row', $primaryKey);
+            $displayMarkup = $this->uploadValueMarkup($table, $rowId, $name, $rowValue, $inputType, false);
+            return <<<PHP
+                                <td>{$displayMarkup}</td>
 PHP;
         }
 
@@ -194,7 +201,7 @@ PHP;
                                             href="<?= current_url() . '?' . http_build_query(\$quickQuery) ?>"
                                             class="js-list-link text-decoration-none"
                                             data-quick-filter="1"
-                                            title="Filtra per questo valore"
+                                            title="Filter by this value"
                                         >{$displayMarkup}</a>
                                     <?php endif; ?>
                                 </td>
@@ -207,10 +214,10 @@ PHP;
     private function recordActionCell(string $table, string $primaryKey, bool $writable): string
     {
         $editDelete = $writable ? <<<PHP
-                                        <a href="<?= site_url('{$table}/edit/' . rawurlencode((string) \$id)) . (\$navigationQuery ?? '') ?>" class="btn btn-outline-warning" title="Modifica">
+                                        <a href="<?= site_url('{$table}/edit/' . rawurlencode((string) \$id)) . (\$navigationQuery ?? '') ?>" class="btn btn-outline-warning" title="Edit">
                                             <i class="bi bi-pencil-square" aria-hidden="true"></i>
                                         </a>
-                                        <form method="post" action="<?= site_url('{$table}/delete/' . rawurlencode((string) \$id)) . (\$navigationQuery ?? '') ?>" class="d-inline" onsubmit="return confirm('Eliminare questo record?')">
+                                        <form method="post" action="<?= site_url('{$table}/delete/' . rawurlencode((string) \$id)) . (\$navigationQuery ?? '') ?>" class="d-inline" onsubmit="return confirm('Delete this record?')">
                                             <?= csrf_field() ?>
                                             <?php foreach ((array) (\$navigationContext ?? []) as \$contextField => \$contextValue): ?>
                                                 <input type="hidden" name="_context[<?= esc((string) \$contextField) ?>]" value="<?= esc((string) \$contextValue) ?>">
@@ -224,7 +231,7 @@ PHP : '';
         return <<<PHP
                                 <td class="text-end text-nowrap">
                                     <?php \$id = {$this->objectProperty('row', $primaryKey)} ?? ''; ?>
-                                    <div class="btn-group btn-group-sm" role="group" aria-label="Azioni record">
+                                    <div class="btn-group btn-group-sm" role="group" aria-label="Record actions">
                                         <a href="<?= site_url('{$table}/view/' . rawurlencode((string) \$id)) . (\$navigationQuery ?? '') ?>" class="btn btn-outline-info" title="Visualizza">
                                             <i class="bi bi-eye" aria-hidden="true"></i>
                                         </a>
@@ -271,7 +278,7 @@ PHP;
         ];
     }
 
-    /** Genera PHP, non JSON, così le label possono continuare a usare lang(). */
+    /** Generates PHP rather than JSON so labels can continue to use lang(). */
     private function filterDefinitionsCode(array $definitions): string
     {
         $lines = [];

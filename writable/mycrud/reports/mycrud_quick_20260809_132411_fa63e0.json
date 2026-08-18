@@ -1,0 +1,2682 @@
+{
+    "version": "2.8.0-dev20",
+    "generatedAt": "2026-08-09T13:24:11+00:00",
+    "architecture": "full",
+    "force": true,
+    "dryRun": false,
+    "tables": {
+        "actor": {
+            "status": "ok",
+            "summary": {
+                "created": 27,
+                "overwritten": 0,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/ActorEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/ActorModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/ActorService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/ActorRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/Actor.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/Actor.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/ActorController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/ActorApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/ActorApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/ActorResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/actor.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/actor/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/actor/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/actor/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/actor/_pager.php"
+                },
+                "views.view.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/actor/view.php"
+                },
+                "views._form.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/actor/_form.php"
+                },
+                "views.create.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/actor/create.php"
+                },
+                "views.edit.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/actor/edit.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/actor.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/actor.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "actor_info": {
+            "status": "ok",
+            "summary": {
+                "created": 16,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/ActorInfoEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/ActorInfoModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/ActorInfoService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/ActorInfoRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/ActorInfo.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/ActorInfo.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/ActorInfoController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/ActorInfoApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/ActorInfoApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/ActorInfoResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/actor_info.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/actor_info/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/actor_info/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/actor_info/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/actor_info/_pager.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/actor_info.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/actor_info.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "address": {
+            "status": "ok",
+            "summary": {
+                "created": 20,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/AddressEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/AddressModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/AddressService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/AddressRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/Address.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/Address.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/AddressController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/AddressApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/AddressApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/AddressResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/address.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/address/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/address/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/address/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/address/_pager.php"
+                },
+                "views.view.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/address/view.php"
+                },
+                "views._form.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/address/_form.php"
+                },
+                "views.create.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/address/create.php"
+                },
+                "views.edit.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/address/edit.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/address.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/address.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "category": {
+            "status": "ok",
+            "summary": {
+                "created": 20,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/CategoryEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/CategoryModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/CategoryService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/CategoryRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/Category.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/Category.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/CategoryController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/CategoryApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/CategoryApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/CategoryResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/category.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/category/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/category/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/category/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/category/_pager.php"
+                },
+                "views.view.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/category/view.php"
+                },
+                "views._form.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/category/_form.php"
+                },
+                "views.create.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/category/create.php"
+                },
+                "views.edit.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/category/edit.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/category.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/category.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "city": {
+            "status": "ok",
+            "summary": {
+                "created": 20,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/CityEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/CityModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/CityService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/CityRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/City.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/City.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/CityController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/CityApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/CityApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/CityResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/city.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/city/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/city/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/city/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/city/_pager.php"
+                },
+                "views.view.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/city/view.php"
+                },
+                "views._form.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/city/_form.php"
+                },
+                "views.create.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/city/create.php"
+                },
+                "views.edit.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/city/edit.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/city.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/city.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "country": {
+            "status": "ok",
+            "summary": {
+                "created": 20,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/CountryEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/CountryModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/CountryService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/CountryRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/Country.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/Country.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/CountryController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/CountryApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/CountryApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/CountryResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/country.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/country/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/country/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/country/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/country/_pager.php"
+                },
+                "views.view.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/country/view.php"
+                },
+                "views._form.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/country/_form.php"
+                },
+                "views.create.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/country/create.php"
+                },
+                "views.edit.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/country/edit.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/country.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/country.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "customer": {
+            "status": "ok",
+            "summary": {
+                "created": 20,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/CustomerEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/CustomerModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/CustomerService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/CustomerRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/Customer.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/Customer.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/CustomerController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/CustomerApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/CustomerApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/CustomerResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/customer.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/customer/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/customer/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/customer/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/customer/_pager.php"
+                },
+                "views.view.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/customer/view.php"
+                },
+                "views._form.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/customer/_form.php"
+                },
+                "views.create.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/customer/create.php"
+                },
+                "views.edit.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/customer/edit.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/customer.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/customer.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "customer_list": {
+            "status": "ok",
+            "summary": {
+                "created": 16,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/CustomerListEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/CustomerListModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/CustomerListService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/CustomerListRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/CustomerList.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/CustomerList.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/CustomerListController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/CustomerListApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/CustomerListApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/CustomerListResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/customer_list.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/customer_list/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/customer_list/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/customer_list/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/customer_list/_pager.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/customer_list.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/customer_list.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "film": {
+            "status": "ok",
+            "summary": {
+                "created": 20,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/FilmEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/FilmModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/FilmService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/FilmRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/Film.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/Film.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/FilmController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/FilmApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/FilmApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/FilmResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/film.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film/_pager.php"
+                },
+                "views.view.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film/view.php"
+                },
+                "views._form.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film/_form.php"
+                },
+                "views.create.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film/create.php"
+                },
+                "views.edit.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film/edit.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/film.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/film.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "film_actor": {
+            "status": "ok",
+            "summary": {
+                "created": 16,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/FilmActorEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/FilmActorModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/FilmActorService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/FilmActorRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/FilmActor.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/FilmActor.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/FilmActorController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/FilmActorApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/FilmActorApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/FilmActorResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/film_actor.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_actor/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_actor/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_actor/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_actor/_pager.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/film_actor.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/film_actor.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "film_category": {
+            "status": "ok",
+            "summary": {
+                "created": 16,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/FilmCategoryEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/FilmCategoryModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/FilmCategoryService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/FilmCategoryRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/FilmCategory.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/FilmCategory.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/FilmCategoryController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/FilmCategoryApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/FilmCategoryApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/FilmCategoryResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/film_category.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_category/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_category/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_category/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_category/_pager.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/film_category.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/film_category.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "film_list": {
+            "status": "ok",
+            "summary": {
+                "created": 16,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/FilmListEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/FilmListModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/FilmListService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/FilmListRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/FilmList.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/FilmList.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/FilmListController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/FilmListApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/FilmListApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/FilmListResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/film_list.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_list/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_list/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_list/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_list/_pager.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/film_list.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/film_list.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "film_text": {
+            "status": "ok",
+            "summary": {
+                "created": 20,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/FilmTextEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/FilmTextModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/FilmTextService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/FilmTextRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/FilmText.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/FilmText.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/FilmTextController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/FilmTextApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/FilmTextApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/FilmTextResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/film_text.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_text/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_text/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_text/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_text/_pager.php"
+                },
+                "views.view.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_text/view.php"
+                },
+                "views._form.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_text/_form.php"
+                },
+                "views.create.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_text/create.php"
+                },
+                "views.edit.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/film_text/edit.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/film_text.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/film_text.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "inventory": {
+            "status": "ok",
+            "summary": {
+                "created": 20,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/InventoryEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/InventoryModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/InventoryService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/InventoryRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/Inventory.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/Inventory.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/InventoryController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/InventoryApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/InventoryApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/InventoryResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/inventory.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/inventory/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/inventory/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/inventory/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/inventory/_pager.php"
+                },
+                "views.view.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/inventory/view.php"
+                },
+                "views._form.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/inventory/_form.php"
+                },
+                "views.create.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/inventory/create.php"
+                },
+                "views.edit.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/inventory/edit.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/inventory.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/inventory.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "language": {
+            "status": "ok",
+            "summary": {
+                "created": 20,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/LanguageEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/LanguageModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/LanguageService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/LanguageRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/Language.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/Language.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/LanguageController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/LanguageApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/LanguageApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/LanguageResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/language.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/language/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/language/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/language/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/language/_pager.php"
+                },
+                "views.view.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/language/view.php"
+                },
+                "views._form.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/language/_form.php"
+                },
+                "views.create.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/language/create.php"
+                },
+                "views.edit.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/language/edit.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/language.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/language.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "nicer_but_slower_film_list": {
+            "status": "ok",
+            "summary": {
+                "created": 16,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/NicerButSlowerFilmListEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/NicerButSlowerFilmListModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/NicerButSlowerFilmListService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/NicerButSlowerFilmListRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/NicerButSlowerFilmList.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/NicerButSlowerFilmList.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/NicerButSlowerFilmListController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/NicerButSlowerFilmListApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/NicerButSlowerFilmListApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/NicerButSlowerFilmListResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/nicer_but_slower_film_list.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/nicer_but_slower_film_list/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/nicer_but_slower_film_list/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/nicer_but_slower_film_list/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/nicer_but_slower_film_list/_pager.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/nicer_but_slower_film_list.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/nicer_but_slower_film_list.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "payment": {
+            "status": "ok",
+            "summary": {
+                "created": 20,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/PaymentEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/PaymentModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/PaymentService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/PaymentRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/Payment.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/Payment.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/PaymentController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/PaymentApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/PaymentApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/PaymentResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/payment.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/payment/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/payment/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/payment/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/payment/_pager.php"
+                },
+                "views.view.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/payment/view.php"
+                },
+                "views._form.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/payment/_form.php"
+                },
+                "views.create.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/payment/create.php"
+                },
+                "views.edit.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/payment/edit.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/payment.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/payment.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "rental": {
+            "status": "ok",
+            "summary": {
+                "created": 20,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/RentalEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/RentalModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/RentalService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/RentalRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/Rental.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/Rental.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/RentalController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/RentalApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/RentalApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/RentalResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/rental.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/rental/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/rental/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/rental/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/rental/_pager.php"
+                },
+                "views.view.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/rental/view.php"
+                },
+                "views._form.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/rental/_form.php"
+                },
+                "views.create.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/rental/create.php"
+                },
+                "views.edit.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/rental/edit.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/rental.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/rental.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "sales_by_film_category": {
+            "status": "ok",
+            "summary": {
+                "created": 16,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/SalesByFilmCategoryEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/SalesByFilmCategoryModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/SalesByFilmCategoryService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/SalesByFilmCategoryRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/SalesByFilmCategory.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/SalesByFilmCategory.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/SalesByFilmCategoryController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/SalesByFilmCategoryApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/SalesByFilmCategoryApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/SalesByFilmCategoryResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/sales_by_film_category.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/sales_by_film_category/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/sales_by_film_category/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/sales_by_film_category/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/sales_by_film_category/_pager.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/sales_by_film_category.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/sales_by_film_category.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "sales_by_store": {
+            "status": "ok",
+            "summary": {
+                "created": 16,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/SalesByStoreEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/SalesByStoreModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/SalesByStoreService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/SalesByStoreRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/SalesByStore.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/SalesByStore.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/SalesByStoreController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/SalesByStoreApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/SalesByStoreApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/SalesByStoreResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/sales_by_store.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/sales_by_store/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/sales_by_store/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/sales_by_store/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/sales_by_store/_pager.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/sales_by_store.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/sales_by_store.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "staff": {
+            "status": "ok",
+            "summary": {
+                "created": 20,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/StaffEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/StaffModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/StaffService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/StaffRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/Staff.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/Staff.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/StaffController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/StaffApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/StaffApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/StaffResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/staff.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/staff/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/staff/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/staff/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/staff/_pager.php"
+                },
+                "views.view.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/staff/view.php"
+                },
+                "views._form.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/staff/_form.php"
+                },
+                "views.create.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/staff/create.php"
+                },
+                "views.edit.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/staff/edit.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/staff.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/staff.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "staff_list": {
+            "status": "ok",
+            "summary": {
+                "created": 16,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/StaffListEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/StaffListModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/StaffListService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/StaffListRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/StaffList.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/StaffList.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/StaffListController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/StaffListApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/StaffListApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/StaffListResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/staff_list.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/staff_list/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/staff_list/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/staff_list/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/staff_list/_pager.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/staff_list.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/staff_list.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        },
+        "store": {
+            "status": "ok",
+            "summary": {
+                "created": 20,
+                "overwritten": 7,
+                "skipped": 0,
+                "planned": 0
+            },
+            "files": {
+                "runtime.list_request": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudListRequest.php"
+                },
+                "runtime.submission_guard": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/SubmissionGuard.php"
+                },
+                "runtime.input_processor": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudInputProcessor.php"
+                },
+                "runtime.exporter": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/CrudExporter.php"
+                },
+                "runtime.csv_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/CsvWriter.php"
+                },
+                "runtime.word_writer": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Libraries/Crud/Export/WordHtmlWriter.php"
+                },
+                "entity": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Entities/StoreEntity.php"
+                },
+                "model": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Models/StoreModel.php"
+                },
+                "service": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Services/StoreService.php"
+                },
+                "validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/StoreRules.php"
+                },
+                "language.it": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/it/Store.php"
+                },
+                "language.en": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Language/en/Store.php"
+                },
+                "controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/StoreController.php"
+                },
+                "api_validation": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Validation/StoreApiRules.php"
+                },
+                "api.base_controller": {
+                    "status": "overwritten",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/BaseApiController.php"
+                },
+                "api.controller": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Controllers/Api/V1/StoreApiController.php"
+                },
+                "api.resource": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/API/Resources/StoreResource.php"
+                },
+                "openapi": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/OpenApi/store.yaml"
+                },
+                "views.index.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/store/index.php"
+                },
+                "views._filters.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/store/_filters.php"
+                },
+                "views._table.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/store/_table.php"
+                },
+                "views._pager.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/store/_pager.php"
+                },
+                "views.view.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/store/view.php"
+                },
+                "views._form.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/store/_form.php"
+                },
+                "views.create.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/store/create.php"
+                },
+                "views.edit.php": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Views/store/edit.php"
+                },
+                "routes": {
+                    "status": "created",
+                    "path": "/var/www/html/myCrudGpt/app/Generated/Routes/store.php"
+                }
+            },
+            "configPath": "/var/www/html/myCrudGpt/app/MyCrudConfig/store.php",
+            "configSource": "database+saved-config",
+            "schemaDrift": false
+        }
+    },
+    "summary": {
+        "tablesSelected": 23,
+        "tablesOk": 23,
+        "tablesFailed": 0,
+        "created": 431,
+        "overwritten": 154,
+        "skipped": 0,
+        "planned": 0,
+        "errors": 0
+    },
+    "durationSeconds": 0.1857
+}

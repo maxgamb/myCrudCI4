@@ -5,29 +5,29 @@
 <div class="container-fluid py-4">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-            <h1 class="h3 mb-1"><?= $report['dryRun'] ? 'Simulazione completata' : 'Generazione completata' ?></h1>
+            <h1 class="h3 mb-1"><?= $report['dryRun'] ? 'Simulation complete' : 'Generation complete' ?></h1>
             <div class="text-muted">
                 <?= esc(ucfirst($report['architecture'])) ?> · <?= number_format((float) $report['durationSeconds'], 3, ',', '.') ?> secondi
             </div>
         </div>
         <div class="d-flex gap-2">
             <a class="btn btn-outline-secondary" href="<?= site_url('mycrud/quick/report/' . rawurlencode($reportFile)) ?>">
-                <i class="bi bi-download"></i> Report JSON
+                <i class="bi bi-download"></i> JSON report
             </a>
             <a class="btn btn-primary" href="<?= site_url('mycrud/quick') ?>">
-                <i class="bi bi-arrow-repeat"></i> Nuova operazione
+                <i class="bi bi-arrow-repeat"></i> New operation
             </a>
         </div>
     </div>
 
     <div class="row g-3 mb-4">
         <?php foreach ([
-            ['Tabelle OK', $summary['tablesOk'], 'success'],
-            ['Fallite', $summary['tablesFailed'], 'danger'],
-            ['Creati', $summary['created'], 'primary'],
-            ['Sovrascritti', $summary['overwritten'], 'warning'],
-            ['Saltati', $summary['skipped'], 'secondary'],
-            ['Pianificati', $summary['planned'], 'info'],
+            ['Tables OK', $summary['tablesOk'], 'success'],
+            ['Failed', $summary['tablesFailed'], 'danger'],
+            ['Created', $summary['created'], 'primary'],
+            ['Overwritten', $summary['overwritten'], 'warning'],
+            ['Skipped', $summary['skipped'], 'secondary'],
+            ['Planned', $summary['planned'], 'info'],
         ] as [$label, $value, $color]): ?>
             <div class="col-6 col-lg-2">
                 <div class="card border-<?= esc($color) ?> h-100">
@@ -57,14 +57,14 @@
                         <?php else: ?>
                             <div class="small text-body-secondary mb-2">
                                 <i class="bi bi-sliders me-1"></i>
-                                Configurazione: <strong><?= (($result['configSource'] ?? 'database') === 'database+saved-config') ? 'DB + configurazione salvata' : 'solo DB' ?></strong>
+                                Configuration: <strong><?= (($result['configSource'] ?? 'database') === 'database+saved-config') ? 'DB + saved configuration' : 'solo DB' ?></strong>
                                 <?php if (!empty($result['schemaDrift'])): ?>
                                     <span class="badge text-bg-warning ms-1">schema drift rilevato</span>
                                 <?php endif ?>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-sm align-middle mb-0">
-                                    <thead><tr><th>Componente</th><th>Stato</th><th>Percorso</th></tr></thead>
+                                    <thead><tr><th>Component</th><th>Status</th><th>Path</th></tr></thead>
                                     <tbody>
                                     <?php foreach ($result['files'] as $component => $file): ?>
                                         <tr>

@@ -12,6 +12,7 @@ $parentContext = (array) ($parentContext ?? []);
 $submissionToken = $submissionToken ?? '';
 ?>
 
+<!-- mycrud:start form -->
 <div class="container py-4">
     <div class="card shadow-sm">
         <div class="card-header">
@@ -40,10 +41,14 @@ $submissionToken = $submissionToken ?? '';
                 <?php foreach ($navigationContext as $contextField => $contextValue): ?>
                     <input type="hidden" name="_context[<?= esc((string) $contextField) ?>]" value="<?= esc((string) $contextValue) ?>">
                 <?php endforeach; ?>
+                <?php if (!empty($cascadeTrail)): ?>
+                    <input type="hidden" name="_trail" value="<?= esc(\App\Libraries\Crud\CrudNavigationTrail::encode((array) $cascadeTrail)) ?>">
+                <?php endif; ?>
                 <?php if (!empty($parentContext['field'])): ?>
                     <input type="hidden" name="_parent_field" value="<?= esc((string) $parentContext['field']) ?>">
                 <?php endif; ?>
 
+<!-- mycrud:start fields -->
                 <div class="col-md-6">
                     <label for="title" class="form-label">
                         <?= esc(lang('Film.title')) ?>
@@ -127,18 +132,7 @@ $submissionToken = $submissionToken ?? '';
                             </option>
                         <?php endforeach; ?>
                     </select>
-                        <a
-                            href="#"
-                            target="_blank"
-                            rel="noopener"
-                            class="btn btn-outline-secondary js-relation-parent-link disabled"
-                            data-value-source="language_id"
-                            data-base-url="<?= site_url('language/view') ?>"
-                            title="Apri record padre"
-                            aria-label="Apri record padre"
-                        >
-                            <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
-                        </a>                    <?php if ($row === null): ?>
+                    <?php if ($row === null): ?>
                         <button
                             type="button"
                             class="btn btn-outline-secondary crud-related-create-toggle"
@@ -149,11 +143,11 @@ $submissionToken = $submissionToken ?? '';
                             data-related-field="language_id"
                             data-panel-target="related_create_language_id"
                             data-state-target="related_create_language_id_state"
-                            title="Crea nuovo Language"
-                            aria-label="Crea nuovo Language"
+                            title="Create new Language"
+                            aria-label="Create new Language"
                         >
                             <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
-                            Nuovo
+                            New
                         </button>
                     <?php endif; ?>
 </div>
@@ -179,6 +173,7 @@ $submissionToken = $submissionToken ?? '';
                         <div
                             id="related_create_language_id"
                             class="offcanvas offcanvas-end crud-related-create-panel"
+                            style="--bs-offcanvas-width: min(640px, 100vw);"
                             tabindex="-1"
                             aria-labelledby="related_create_language_id_label"
                             data-related-field="language_id"
@@ -188,8 +183,8 @@ $submissionToken = $submissionToken ?? '';
                         >
                             <div class="offcanvas-header border-bottom">
                                 <div>
-                                    <h2 class="offcanvas-title h5 mb-0" id="related_create_language_id_label">Nuovo Language</h2>
-                                    <small class="text-muted">Relazione language_id</small>
+                                    <h2 class="offcanvas-title h5 mb-0" id="related_create_language_id_label">New Language</h2>
+                                    <small class="text-muted">Relation language_id</small>
                                 </div>
                                 <button
                                     type="button"
@@ -197,12 +192,12 @@ $submissionToken = $submissionToken ?? '';
                                     data-related-field="language_id"
                                     data-state-target="related_create_language_id_state"
                                     data-bs-dismiss="offcanvas"
-                                    aria-label="Annulla nuovo Language"
+                                    aria-label="Cancel new Language"
                                 ></button>
                             </div>
                             <div class="offcanvas-body">
                                 <div class="alert alert-light border small" role="note">
-                                    Compila i dati del nuovo Language. Il record collegato e questo record verranno salvati insieme al submit del form principale, nella stessa transazione.
+                                    Enter the new Language data. The related record and this record will be saved together when the main form is submitted, within the same transaction.
                                 </div>
                                 <?= view('film/_related_create_language_id', [
                                     'relatedField'        => 'language_id',
@@ -221,7 +216,7 @@ $submissionToken = $submissionToken ?? '';
                                     data-bs-dismiss="offcanvas"
                                 >
                                     <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
-                                    Annulla
+                                    Cancel
                                 </button>
                                 <button
                                     type="button"
@@ -231,7 +226,7 @@ $submissionToken = $submissionToken ?? '';
                                     data-bs-dismiss="offcanvas"
                                 >
                                     <i class="bi bi-check2-circle me-1" aria-hidden="true"></i>
-                                    Applica nuovo Language
+                                    Apply new Language
                                 </button>
                             </div>
                         </div>
@@ -259,18 +254,7 @@ $submissionToken = $submissionToken ?? '';
                             </option>
                         <?php endforeach; ?>
                     </select>
-                        <a
-                            href="#"
-                            target="_blank"
-                            rel="noopener"
-                            class="btn btn-outline-secondary js-relation-parent-link disabled"
-                            data-value-source="original_language_id"
-                            data-base-url="<?= site_url('language/view') ?>"
-                            title="Apri record padre"
-                            aria-label="Apri record padre"
-                        >
-                            <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
-                        </a>                    <?php if ($row === null): ?>
+                    <?php if ($row === null): ?>
                         <button
                             type="button"
                             class="btn btn-outline-secondary crud-related-create-toggle"
@@ -281,11 +265,11 @@ $submissionToken = $submissionToken ?? '';
                             data-related-field="original_language_id"
                             data-panel-target="related_create_original_language_id"
                             data-state-target="related_create_original_language_id_state"
-                            title="Crea nuovo Language"
-                            aria-label="Crea nuovo Language"
+                            title="Create new Language"
+                            aria-label="Create new Language"
                         >
                             <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
-                            Nuovo
+                            New
                         </button>
                     <?php endif; ?>
 </div>
@@ -311,6 +295,7 @@ $submissionToken = $submissionToken ?? '';
                         <div
                             id="related_create_original_language_id"
                             class="offcanvas offcanvas-end crud-related-create-panel"
+                            style="--bs-offcanvas-width: min(640px, 100vw);"
                             tabindex="-1"
                             aria-labelledby="related_create_original_language_id_label"
                             data-related-field="original_language_id"
@@ -320,8 +305,8 @@ $submissionToken = $submissionToken ?? '';
                         >
                             <div class="offcanvas-header border-bottom">
                                 <div>
-                                    <h2 class="offcanvas-title h5 mb-0" id="related_create_original_language_id_label">Nuovo Language</h2>
-                                    <small class="text-muted">Relazione original_language_id</small>
+                                    <h2 class="offcanvas-title h5 mb-0" id="related_create_original_language_id_label">New Language</h2>
+                                    <small class="text-muted">Relation original_language_id</small>
                                 </div>
                                 <button
                                     type="button"
@@ -329,12 +314,12 @@ $submissionToken = $submissionToken ?? '';
                                     data-related-field="original_language_id"
                                     data-state-target="related_create_original_language_id_state"
                                     data-bs-dismiss="offcanvas"
-                                    aria-label="Annulla nuovo Language"
+                                    aria-label="Cancel new Language"
                                 ></button>
                             </div>
                             <div class="offcanvas-body">
                                 <div class="alert alert-light border small" role="note">
-                                    Compila i dati del nuovo Language. Il record collegato e questo record verranno salvati insieme al submit del form principale, nella stessa transazione.
+                                    Enter the new Language data. The related record and this record will be saved together when the main form is submitted, within the same transaction.
                                 </div>
                                 <?= view('film/_related_create_original_language_id', [
                                     'relatedField'        => 'original_language_id',
@@ -353,7 +338,7 @@ $submissionToken = $submissionToken ?? '';
                                     data-bs-dismiss="offcanvas"
                                 >
                                     <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
-                                    Annulla
+                                    Cancel
                                 </button>
                                 <button
                                     type="button"
@@ -363,7 +348,7 @@ $submissionToken = $submissionToken ?? '';
                                     data-bs-dismiss="offcanvas"
                                 >
                                     <i class="bi bi-check2-circle me-1" aria-hidden="true"></i>
-                                    Applica nuovo Language
+                                    Apply new Language
                                 </button>
                             </div>
                         </div>
@@ -381,7 +366,6 @@ $submissionToken = $submissionToken ?? '';
                         class="form-control <?= isset($errors['rental_duration']) ? 'is-invalid' : '' ?>"
                         aria-describedby="rental_duration-error"
                         aria-invalid="<?= isset($errors['rental_duration']) ? 'true' : 'false' ?>"
-                        required
                     >
                     <?php if (!empty($errors['rental_duration'])): ?>
                         <div id="rental_duration-error" class="invalid-feedback d-block">
@@ -402,7 +386,6 @@ $submissionToken = $submissionToken ?? '';
                         class="form-control <?= isset($errors['rental_rate']) ? 'is-invalid' : '' ?>"
                         aria-describedby="rental_rate-error"
                         aria-invalid="<?= isset($errors['rental_rate']) ? 'true' : 'false' ?>"
-                        required
                     >
                     <?php if (!empty($errors['rental_rate'])): ?>
                         <div id="rental_rate-error" class="invalid-feedback d-block">
@@ -443,7 +426,6 @@ $submissionToken = $submissionToken ?? '';
                         class="form-control <?= isset($errors['replacement_cost']) ? 'is-invalid' : '' ?>"
                         aria-describedby="replacement_cost-error"
                         aria-invalid="<?= isset($errors['replacement_cost']) ? 'true' : 'false' ?>"
-                        required
                     >
                     <?php if (!empty($errors['replacement_cost'])): ?>
                         <div id="replacement_cost-error" class="invalid-feedback d-block">
@@ -494,6 +476,516 @@ $submissionToken = $submissionToken ?? '';
                     <?php endif; ?>
                 </div>
 
+                <div class="col-md-6">
+                    <label for="uploads" class="form-label">
+                        <?= esc(lang('Film.uploads')) ?>
+                    </label>
+                    <input
+                        type="text"
+                        name="uploads"
+                        id="uploads"
+                        value="<?= esc(old('uploads', $row->{'uploads'} ?? ($context['uploads'] ?? ''))) ?>"
+                        class="form-control <?= isset($errors['uploads']) ? 'is-invalid' : '' ?>"
+                        aria-describedby="uploads-error"
+                        aria-invalid="<?= isset($errors['uploads']) ? 'true' : 'false' ?>"
+                        maxlength="200"
+                    >
+                    <?php if (!empty($errors['uploads'])): ?>
+                        <div id="uploads-error" class="invalid-feedback d-block">
+                            <?= esc($errors['uploads']) ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- mycrud:start relation-panels -->
+                <?php
+                $m2mCreateEnabled = true;
+                $m2mEditEnabled = true;
+                $m2mVisible = ($row === null && $m2mCreateEnabled) || ($row !== null && $m2mEditEnabled);
+                ?>
+                <?php if ($m2mVisible): ?>
+                <div class="col-12 col-md-12">
+                    <!-- mycrud:start many-to-many relation -->
+                    <div class="card border-primary-subtle h-100">
+                        <div class="card-header"><i class="bi bi-diagram-2 me-1"></i><strong>Actor</strong> <small class="text-muted">N:N</small></div>
+                        <div class="card-body">
+                            <?php
+                            $manyOld = old('_many', $manyToManySelected ?? []);
+                            $selected = array_map('strval', (array) ($manyOld['many__film_actor__film_id'] ?? []));
+                            $manyOptions = (array) (($manyToManyOptions ?? [])['many__film_actor__film_id'] ?? []);
+                            ?>
+                            <input type="hidden" name="_many_present[many__film_actor__film_id]" value="1">
+                            <div id="many_component_many__film_actor__film_id" class="crud-many-selector">
+                                <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                                    <label class="form-label mb-0">Select Actor</label>
+                                    <span class="badge text-bg-secondary" data-many-count>0 selected</span>
+                                </div>
+
+                                <div class="d-flex flex-wrap gap-1 mb-2" data-many-selected></div>
+
+                                <div class="input-group input-group-sm mb-2 crud-many-primary-actions">
+                                    <button
+                                        class="btn btn-outline-secondary text-start flex-grow-1"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#many_picker_many__film_actor__film_id"
+                                        aria-expanded="false"
+                                        aria-controls="many_picker_many__film_actor__film_id"
+                                    >
+                                        <i class="bi bi-search me-1"></i>Search and select Actor
+                                    </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-primary btn-sm crud-many-related-create-toggle"
+                                    id="many_related_create_many__film_actor__film_id_toggle"
+                                    data-bs-toggle="offcanvas"
+                                    data-bs-target="#many_related_create_many__film_actor__film_id"
+                                    aria-controls="many_related_create_many__film_actor__film_id"
+                                    title="Create new Actor"
+                                    aria-label="Create new Actor"
+                                >
+                                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>New Actor
+                                </button>                                </div>
+
+                                <div class="collapse mt-2" id="many_picker_many__film_actor__film_id">
+                                    <div class="border rounded p-2 bg-body-tertiary">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                            <input
+                                                type="search"
+                                                class="form-control"
+                                                placeholder="Search Actor..."
+                                                autocomplete="off"
+                                                data-many-search
+                                            >
+                                        </div>
+                                        <div class="list-group overflow-auto" style="max-height: 260px;" data-many-options>
+                                            <?php foreach ($manyOptions as $option): ?>
+                                                <?php
+                                                $optionId = (string) ($option['id'] ?? '');
+                                                $optionText = (string) ($option['text'] ?? $optionId);
+                                                ?>
+                                                <label class="list-group-item list-group-item-action py-2" data-many-option data-search="<?= esc(strtolower($optionText)) ?>">
+                                                    <input
+                                                        class="form-check-input me-2"
+                                                        type="checkbox"
+                                                        name="_many[many__film_actor__film_id][]"
+                                                        value="<?= esc($optionId) ?>"
+                                                        data-many-checkbox
+                                                        data-many-label="<?= esc($optionText) ?>"
+                                                        <?= in_array($optionId, $selected, true) ? 'checked' : '' ?>
+                                                    >
+                                                    <span><?= esc($optionText) ?></span>
+                                                </label>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <?php
+                                $manyCreateRelatedState = (array) old('_many_new', []);
+                                $manyCreateRelatedActive = !empty($manyCreateRelatedState['many__film_actor__film_id']);
+                                ?>
+                                <div class="mt-2 d-flex flex-wrap align-items-center gap-2">
+                                    <input
+                                        type="hidden"
+                                        name="_many_new[many__film_actor__film_id]"
+                                        id="many_related_create_many__film_actor__film_id_state"
+                                        value="<?= $manyCreateRelatedActive ? '1' : '0' ?>"
+                                    >
+                                    <span
+                                        class="badge text-bg-success<?= $manyCreateRelatedActive ? '' : ' d-none' ?>"
+                                        id="many_related_create_many__film_actor__film_id_ready"
+                                    >
+                                        <i class="bi bi-check-circle me-1" aria-hidden="true"></i>
+                                        New Actor ready
+                                    </span>
+                                    <button
+                                        type="button"
+                                        class="btn btn-link btn-sm text-danger p-0<?= $manyCreateRelatedActive ? '' : ' d-none' ?> crud-many-related-create-remove"
+                                        id="many_related_create_many__film_actor__film_id_remove"
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+
+                                <div
+                                    id="many_related_create_many__film_actor__film_id"
+                                    class="offcanvas offcanvas-end crud-many-related-create-panel"
+                                    style="--bs-offcanvas-width: min(640px, 100vw);"
+                                    tabindex="-1"
+                                    aria-labelledby="many_related_create_many__film_actor__film_id_label"
+                                    data-state-target="many_related_create_many__film_actor__film_id_state"
+                                    data-toggle-target="many_related_create_many__film_actor__film_id_toggle"
+                                    data-ready-target="many_related_create_many__film_actor__film_id_ready"
+                                    data-remove-target="many_related_create_many__film_actor__film_id_remove"
+                                    data-bs-backdrop="static"
+                                >
+                                    <div class="offcanvas-header border-bottom">
+                                        <div>
+                                            <h2 class="offcanvas-title h5 mb-0" id="many_related_create_many__film_actor__film_id_label">New Actor</h2>
+                                            <small class="text-muted">Create and add to this many-to-many relation</small>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            class="btn-close crud-many-related-create-cancel"
+                                            data-bs-dismiss="offcanvas"
+                                            aria-label="Cancel new Actor"
+                                        ></button>
+                                    </div>
+                                    <div class="offcanvas-body">
+                                        <div class="alert alert-light border small" role="note">
+                                            Enter the new Actor data. It will be created with the main record and automatically added to this selection when the main form is submitted.
+                                        </div>
+                                        <div class="row g-3" data-many-related-fields>
+<div class="col-12 col-md-6">
+    <label class="form-label" for="many_related_create_many__film_actor__film_id_first_name">First Name</label>
+    <input
+    id="many_related_create_many__film_actor__film_id_first_name"
+    type="text"
+    name="_many_related[many__film_actor__film_id][first_name]"
+    value="<?= esc((string) old('_many_related.many__film_actor__film_id.first_name', '')) ?>"
+    class="form-control <?= isset($errors['many__film_actor__film_id__many_related__first_name']) ? 'is-invalid' : '' ?> crud-many-related-field"
+    data-many-related-field
+    disabled required maxlength="45"
+>
+    <?php if (!empty($errors['many__film_actor__film_id__many_related__first_name'])): ?><div class="invalid-feedback d-block"><?= esc($errors['many__film_actor__film_id__many_related__first_name']) ?></div><?php endif; ?>
+</div>
+<div class="col-12 col-md-6">
+    <label class="form-label" for="many_related_create_many__film_actor__film_id_last_name">Last Name</label>
+    <input
+    id="many_related_create_many__film_actor__film_id_last_name"
+    type="text"
+    name="_many_related[many__film_actor__film_id][last_name]"
+    value="<?= esc((string) old('_many_related.many__film_actor__film_id.last_name', '')) ?>"
+    class="form-control <?= isset($errors['many__film_actor__film_id__many_related__last_name']) ? 'is-invalid' : '' ?> crud-many-related-field"
+    data-many-related-field
+    disabled required maxlength="45"
+>
+    <?php if (!empty($errors['many__film_actor__film_id__many_related__last_name'])): ?><div class="invalid-feedback d-block"><?= esc($errors['many__film_actor__film_id__many_related__last_name']) ?></div><?php endif; ?>
+</div>
+                                        </div>
+                                    </div>
+                                    <div class="offcanvas-footer border-top p-3 d-flex justify-content-between gap-2">
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-secondary crud-many-related-create-cancel"
+                                            data-bs-dismiss="offcanvas"
+                                        >
+                                            <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn btn-primary crud-many-related-create-apply"
+                                            data-bs-dismiss="offcanvas"
+                                        >
+                                            <i class="bi bi-check2-circle me-1" aria-hidden="true"></i>
+                                            Apply new Actor
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="form-text"><i class="bi bi-shield-check me-1"></i>Selected associations are revalidated server-side before pivot synchronization.</div>
+                            </div>
+                            <script>
+                            (() => {
+                                const root = document.getElementById('many_component_many__film_actor__film_id');
+                                if (!root || root.dataset.initialized === '1') return;
+                                root.dataset.initialized = '1';
+
+                                const search = root.querySelector('[data-many-search]');
+                                const selectedBox = root.querySelector('[data-many-selected]');
+                                const count = root.querySelector('[data-many-count]');
+                                const checkboxes = Array.from(root.querySelectorAll('[data-many-checkbox]'));
+                                const optionRows = Array.from(root.querySelectorAll('[data-many-option]'));
+
+                                const renderSelected = () => {
+                                    const selected = checkboxes.filter((checkbox) => checkbox.checked);
+                                    count.textContent = selected.length + ' selected';
+                                    selectedBox.innerHTML = '';
+
+                                    if (selected.length === 0) {
+                                        const empty = document.createElement('span');
+                                        empty.className = 'small text-muted';
+                                        empty.textContent = 'No selection';
+                                        selectedBox.appendChild(empty);
+                                        return;
+                                    }
+
+                                    selected.forEach((checkbox) => {
+                                        const badge = document.createElement('button');
+                                        badge.type = 'button';
+                                        badge.className = 'btn btn-primary btn-sm rounded-pill py-0 px-2';
+                                        badge.setAttribute('aria-label', 'Remove ' + (checkbox.dataset.manyLabel || checkbox.value));
+                                        badge.innerHTML = '<span class="me-1"></span><i class="bi bi-x-lg"></i>';
+                                        badge.querySelector('span').textContent = checkbox.dataset.manyLabel || checkbox.value;
+                                        badge.addEventListener('click', () => {
+                                            checkbox.checked = false;
+                                            checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                                        });
+                                        selectedBox.appendChild(badge);
+                                    });
+                                };
+
+                                checkboxes.forEach((checkbox) => checkbox.addEventListener('change', renderSelected));
+
+                                if (search) {
+                                    search.addEventListener('input', () => {
+                                        const needle = search.value.trim().toLocaleLowerCase();
+                                        optionRows.forEach((row) => {
+                                            row.hidden = needle !== '' && !String(row.dataset.search || '').includes(needle);
+                                        });
+                                    });
+                                }
+
+                                renderSelected();
+                            })();
+                            </script>
+                        </div>
+                    </div>
+                    <!-- mycrud:end many-to-many relation -->
+                </div>
+                <?php endif; ?>
+                <?php
+                $m2mCreateEnabled = true;
+                $m2mEditEnabled = true;
+                $m2mVisible = ($row === null && $m2mCreateEnabled) || ($row !== null && $m2mEditEnabled);
+                ?>
+                <?php if ($m2mVisible): ?>
+                <div class="col-12 col-md-12">
+                    <!-- mycrud:start many-to-many relation -->
+                    <div class="card border-primary-subtle h-100">
+                        <div class="card-header"><i class="bi bi-diagram-2 me-1"></i><strong>Category</strong> <small class="text-muted">N:N</small></div>
+                        <div class="card-body">
+                            <?php
+                            $manyOld = old('_many', $manyToManySelected ?? []);
+                            $selected = array_map('strval', (array) ($manyOld['many__film_category__film_id'] ?? []));
+                            $manyOptions = (array) (($manyToManyOptions ?? [])['many__film_category__film_id'] ?? []);
+                            ?>
+                            <input type="hidden" name="_many_present[many__film_category__film_id]" value="1">
+                            <div id="many_component_many__film_category__film_id" class="crud-many-selector">
+                                <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                                    <label class="form-label mb-0">Select Category</label>
+                                    <span class="badge text-bg-secondary" data-many-count>0 selected</span>
+                                </div>
+
+                                <div class="d-flex flex-wrap gap-1 mb-2" data-many-selected></div>
+
+                                <div class="input-group input-group-sm mb-2 crud-many-primary-actions">
+                                    <button
+                                        class="btn btn-outline-secondary text-start flex-grow-1"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#many_picker_many__film_category__film_id"
+                                        aria-expanded="false"
+                                        aria-controls="many_picker_many__film_category__film_id"
+                                    >
+                                        <i class="bi bi-search me-1"></i>Search and select Category
+                                    </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-primary btn-sm crud-many-related-create-toggle"
+                                    id="many_related_create_many__film_category__film_id_toggle"
+                                    data-bs-toggle="offcanvas"
+                                    data-bs-target="#many_related_create_many__film_category__film_id"
+                                    aria-controls="many_related_create_many__film_category__film_id"
+                                    title="Create new Category"
+                                    aria-label="Create new Category"
+                                >
+                                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>New Category
+                                </button>                                </div>
+
+                                <div class="collapse mt-2" id="many_picker_many__film_category__film_id">
+                                    <div class="border rounded p-2 bg-body-tertiary">
+                                        <div class="input-group input-group-sm mb-2">
+                                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                            <input
+                                                type="search"
+                                                class="form-control"
+                                                placeholder="Search Category..."
+                                                autocomplete="off"
+                                                data-many-search
+                                            >
+                                        </div>
+                                        <div class="list-group overflow-auto" style="max-height: 260px;" data-many-options>
+                                            <?php foreach ($manyOptions as $option): ?>
+                                                <?php
+                                                $optionId = (string) ($option['id'] ?? '');
+                                                $optionText = (string) ($option['text'] ?? $optionId);
+                                                ?>
+                                                <label class="list-group-item list-group-item-action py-2" data-many-option data-search="<?= esc(strtolower($optionText)) ?>">
+                                                    <input
+                                                        class="form-check-input me-2"
+                                                        type="checkbox"
+                                                        name="_many[many__film_category__film_id][]"
+                                                        value="<?= esc($optionId) ?>"
+                                                        data-many-checkbox
+                                                        data-many-label="<?= esc($optionText) ?>"
+                                                        <?= in_array($optionId, $selected, true) ? 'checked' : '' ?>
+                                                    >
+                                                    <span><?= esc($optionText) ?></span>
+                                                </label>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <?php
+                                $manyCreateRelatedState = (array) old('_many_new', []);
+                                $manyCreateRelatedActive = !empty($manyCreateRelatedState['many__film_category__film_id']);
+                                ?>
+                                <div class="mt-2 d-flex flex-wrap align-items-center gap-2">
+                                    <input
+                                        type="hidden"
+                                        name="_many_new[many__film_category__film_id]"
+                                        id="many_related_create_many__film_category__film_id_state"
+                                        value="<?= $manyCreateRelatedActive ? '1' : '0' ?>"
+                                    >
+                                    <span
+                                        class="badge text-bg-success<?= $manyCreateRelatedActive ? '' : ' d-none' ?>"
+                                        id="many_related_create_many__film_category__film_id_ready"
+                                    >
+                                        <i class="bi bi-check-circle me-1" aria-hidden="true"></i>
+                                        New Category ready
+                                    </span>
+                                    <button
+                                        type="button"
+                                        class="btn btn-link btn-sm text-danger p-0<?= $manyCreateRelatedActive ? '' : ' d-none' ?> crud-many-related-create-remove"
+                                        id="many_related_create_many__film_category__film_id_remove"
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+
+                                <div
+                                    id="many_related_create_many__film_category__film_id"
+                                    class="offcanvas offcanvas-end crud-many-related-create-panel"
+                                    style="--bs-offcanvas-width: min(640px, 100vw);"
+                                    tabindex="-1"
+                                    aria-labelledby="many_related_create_many__film_category__film_id_label"
+                                    data-state-target="many_related_create_many__film_category__film_id_state"
+                                    data-toggle-target="many_related_create_many__film_category__film_id_toggle"
+                                    data-ready-target="many_related_create_many__film_category__film_id_ready"
+                                    data-remove-target="many_related_create_many__film_category__film_id_remove"
+                                    data-bs-backdrop="static"
+                                >
+                                    <div class="offcanvas-header border-bottom">
+                                        <div>
+                                            <h2 class="offcanvas-title h5 mb-0" id="many_related_create_many__film_category__film_id_label">New Category</h2>
+                                            <small class="text-muted">Create and add to this many-to-many relation</small>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            class="btn-close crud-many-related-create-cancel"
+                                            data-bs-dismiss="offcanvas"
+                                            aria-label="Cancel new Category"
+                                        ></button>
+                                    </div>
+                                    <div class="offcanvas-body">
+                                        <div class="alert alert-light border small" role="note">
+                                            Enter the new Category data. It will be created with the main record and automatically added to this selection when the main form is submitted.
+                                        </div>
+                                        <div class="row g-3" data-many-related-fields>
+<div class="col-12 col-md-6">
+    <label class="form-label" for="many_related_create_many__film_category__film_id_name">Name</label>
+    <input
+    id="many_related_create_many__film_category__film_id_name"
+    type="text"
+    name="_many_related[many__film_category__film_id][name]"
+    value="<?= esc((string) old('_many_related.many__film_category__film_id.name', '')) ?>"
+    class="form-control <?= isset($errors['many__film_category__film_id__many_related__name']) ? 'is-invalid' : '' ?> crud-many-related-field"
+    data-many-related-field
+    disabled required maxlength="25"
+>
+    <?php if (!empty($errors['many__film_category__film_id__many_related__name'])): ?><div class="invalid-feedback d-block"><?= esc($errors['many__film_category__film_id__many_related__name']) ?></div><?php endif; ?>
+</div>
+                                        </div>
+                                    </div>
+                                    <div class="offcanvas-footer border-top p-3 d-flex justify-content-between gap-2">
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-secondary crud-many-related-create-cancel"
+                                            data-bs-dismiss="offcanvas"
+                                        >
+                                            <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn btn-primary crud-many-related-create-apply"
+                                            data-bs-dismiss="offcanvas"
+                                        >
+                                            <i class="bi bi-check2-circle me-1" aria-hidden="true"></i>
+                                            Apply new Category
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="form-text"><i class="bi bi-shield-check me-1"></i>Selected associations are revalidated server-side before pivot synchronization.</div>
+                            </div>
+                            <script>
+                            (() => {
+                                const root = document.getElementById('many_component_many__film_category__film_id');
+                                if (!root || root.dataset.initialized === '1') return;
+                                root.dataset.initialized = '1';
+
+                                const search = root.querySelector('[data-many-search]');
+                                const selectedBox = root.querySelector('[data-many-selected]');
+                                const count = root.querySelector('[data-many-count]');
+                                const checkboxes = Array.from(root.querySelectorAll('[data-many-checkbox]'));
+                                const optionRows = Array.from(root.querySelectorAll('[data-many-option]'));
+
+                                const renderSelected = () => {
+                                    const selected = checkboxes.filter((checkbox) => checkbox.checked);
+                                    count.textContent = selected.length + ' selected';
+                                    selectedBox.innerHTML = '';
+
+                                    if (selected.length === 0) {
+                                        const empty = document.createElement('span');
+                                        empty.className = 'small text-muted';
+                                        empty.textContent = 'No selection';
+                                        selectedBox.appendChild(empty);
+                                        return;
+                                    }
+
+                                    selected.forEach((checkbox) => {
+                                        const badge = document.createElement('button');
+                                        badge.type = 'button';
+                                        badge.className = 'btn btn-primary btn-sm rounded-pill py-0 px-2';
+                                        badge.setAttribute('aria-label', 'Remove ' + (checkbox.dataset.manyLabel || checkbox.value));
+                                        badge.innerHTML = '<span class="me-1"></span><i class="bi bi-x-lg"></i>';
+                                        badge.querySelector('span').textContent = checkbox.dataset.manyLabel || checkbox.value;
+                                        badge.addEventListener('click', () => {
+                                            checkbox.checked = false;
+                                            checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                                        });
+                                        selectedBox.appendChild(badge);
+                                    });
+                                };
+
+                                checkboxes.forEach((checkbox) => checkbox.addEventListener('change', renderSelected));
+
+                                if (search) {
+                                    search.addEventListener('input', () => {
+                                        const needle = search.value.trim().toLocaleLowerCase();
+                                        optionRows.forEach((row) => {
+                                            row.hidden = needle !== '' && !String(row.dataset.search || '').includes(needle);
+                                        });
+                                    });
+                                }
+
+                                renderSelected();
+                            })();
+                            </script>
+                        </div>
+                    </div>
+                    <!-- mycrud:end many-to-many relation -->
+                </div>
+                <?php endif; ?>
+                <!-- mycrud:end relation-panels -->
+                <!-- mycrud:end fields -->
+                <!-- mycrud:start form-actions -->
                 <div class="col-12 d-flex flex-wrap gap-2">
                     <button type="submit" class="btn btn-success" id="submitButton">
                         <span class="submit-normal"><i class="bi bi-check-circle"></i> Salva</span>
@@ -505,16 +997,18 @@ $submissionToken = $submissionToken ?? '';
                     <?php if (!empty($parentContext['url'])): ?>
                         <a href="<?= esc((string) $parentContext['url']) ?>" class="btn btn-outline-secondary">
                             <i class="bi bi-arrow-left"></i>
-                            Annulla e torna a <?= esc((string) ($parentContext['label'] ?? 'record padre')) ?>
+                            Cancel and return to <?= esc((string) ($parentContext['label'] ?? 'parent record')) ?>
                         </a>
                     <?php endif; ?>
 
                 </div>
+                <!-- mycrud:end form-actions -->
 
             <?= form_close() ?>
         </div>
     </div>
 </div>
+<!-- mycrud:end form -->
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -525,7 +1019,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let submitted = false;
 
-    // Select AJAX per relazioni grandi: il browser carica soltanto i risultati
+    // AJAX select for large relations: the browser loads only results
     // cercati dall'utente, evitando migliaia di <option> nel form.
     document.querySelectorAll('.crud-relation-search').forEach(function (input) {
         const valueTarget = document.getElementById(input.dataset.valueTarget || '');
@@ -559,7 +1053,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             signal: controller.signal
                         }
                     );
-                    if (!response.ok) throw new Error('Errore ricerca relazione');
+                    if (!response.ok) throw new Error('Relation search error');
 
                     const payload = await response.json();
                     const rows = Array.isArray(payload.results) ? payload.results : [];
@@ -593,7 +1087,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Mantiene il link al record padre sincronizzato con il valore FK,
+    // Mantiene il link al parent record sincronizzato con il valore FK,
     // qualunque sia il controllo usato (hidden, select, input o select AJAX).
     const refreshParentLink = function (link) {
         const source = document.getElementById(link.dataset.valueSource || '');
@@ -606,7 +1100,12 @@ document.addEventListener('DOMContentLoaded', function () {
             link.setAttribute('aria-disabled', 'true');
             return;
         }
-        link.href = baseUrl + '/' + encodeURIComponent(value);
+        let href = baseUrl + '/' + encodeURIComponent(value);
+        const trail = String(link.dataset.trail || '').trim();
+        if (trail !== '') {
+            href += '?_trail=' + encodeURIComponent(trail);
+        }
+        link.href = href;
         link.classList.remove('disabled');
         link.removeAttribute('aria-disabled');
     };
@@ -620,9 +1119,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Relational Create tramite Bootstrap Offcanvas. Il pannello si
     // sovrappone alla vista senza alterare il layout del form principale.
-    // La select/relazione originaria resta visivamente e funzionalmente
+    // The original select/relation remains visually and functionally
     // invariata; quando _related_new[field]=1 il server ignora la FK esistente
-    // e crea il nuovo parent nella stessa transazione del record principale.
+    // and creates the new parent in the same transaction as the main record.
     const setRelatedCreateState = function (panel, active) {
         const field = String(panel.dataset.relatedField || '');
         const state = document.getElementById(String(panel.dataset.stateTarget || ''));
@@ -633,8 +1132,8 @@ document.addEventListener('DOMContentLoaded', function () {
             input.disabled = !active;
         });
 
-        // Se viene creato un nuovo parent, la FK originaria può essere vuota:
-        // il valore sarà imposto server-side con la PK appena generata. Sospendi
+        // If a new parent is created, the original foreign key may be empty:
+        // the value will be set server-side with the newly generated primary key. Suspend
         // quindi solo il vincolo HTML5 required della FK, senza alterarne la UI.
         const source = document.getElementById(field);
         if (source) {
@@ -683,7 +1182,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
 
-        // Solo "Applica" mantiene attiva la creazione inline dopo la chiusura.
+        // Only "Apply" keeps inline creation active after closing.
         // X, Annulla ed eventuale chiusura da tastiera annullano l'operazione.
         panel.addEventListener('hidden.bs.offcanvas', function () {
             if (String(panel.dataset.relatedApplied || '0') !== '1') {
@@ -693,8 +1192,87 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Se la validazione server ha restituito errori sul nuovo parent,
-        // riapri automaticamente il pannello per mostrare campi ed errori.
+        // If server validation returned errors for the new parent,
+        // automatically reopen the panel to show fields and errors.
+        if (String(state.value || '0') === '1' && window.bootstrap?.Offcanvas) {
+            window.bootstrap.Offcanvas.getOrCreateInstance(panel).show();
+        }
+    });
+
+    // Many-to-many Related Create uses the same offcanvas interaction pattern
+    // as belongsTo Related Create. The main form stays compact; the nested
+    // target form is enabled only after the user explicitly applies it.
+    const setManyRelatedCreateState = function (panel, active) {
+        const state = document.getElementById(String(panel.dataset.stateTarget || ''));
+        if (!state) return;
+
+        state.value = active ? '1' : '0';
+        panel.querySelectorAll('[data-many-related-field]').forEach(function (input) {
+            input.disabled = !active;
+        });
+
+        const toggle = document.getElementById(String(panel.dataset.toggleTarget || ''));
+        if (toggle) {
+            toggle.classList.toggle('active', active);
+            toggle.setAttribute('aria-pressed', active ? 'true' : 'false');
+        }
+
+        const ready = document.getElementById(String(panel.dataset.readyTarget || ''));
+        if (ready) ready.classList.toggle('d-none', !active);
+
+        const remove = document.getElementById(String(panel.dataset.removeTarget || ''));
+        if (remove) remove.classList.toggle('d-none', !active);
+    };
+
+    document.querySelectorAll('.crud-many-related-create-panel.offcanvas').forEach(function (panel) {
+        const state = document.getElementById(String(panel.dataset.stateTarget || ''));
+        if (!state) return;
+
+        setManyRelatedCreateState(panel, String(state.value || '0') === '1');
+
+        panel.addEventListener('show.bs.offcanvas', function () {
+            panel.dataset.manyRelatedApplied = '0';
+            setManyRelatedCreateState(panel, true);
+        });
+
+        panel.querySelectorAll('.crud-many-related-create-apply').forEach(function (button) {
+            button.addEventListener('click', function () {
+                panel.dataset.manyRelatedApplied = '1';
+                setManyRelatedCreateState(panel, true);
+            });
+        });
+
+        panel.querySelectorAll('.crud-many-related-create-cancel').forEach(function (button) {
+            button.addEventListener('click', function () {
+                panel.dataset.manyRelatedApplied = '0';
+                setManyRelatedCreateState(panel, false);
+            });
+        });
+
+        const remove = document.getElementById(String(panel.dataset.removeTarget || ''));
+        if (remove) {
+            remove.addEventListener('click', function () {
+                panel.dataset.manyRelatedApplied = '0';
+                setManyRelatedCreateState(panel, false);
+                panel.querySelectorAll('[data-many-related-field]').forEach(function (input) {
+                    if (input.type === 'checkbox' || input.type === 'radio') {
+                        input.checked = false;
+                    } else {
+                        input.value = '';
+                    }
+                });
+            });
+        }
+
+        panel.addEventListener('hidden.bs.offcanvas', function () {
+            setManyRelatedCreateState(
+                panel,
+                String(panel.dataset.manyRelatedApplied || '0') === '1'
+            );
+        });
+
+        // Reopen after server-side validation errors so the user sees the
+        // invalid nested fields instead of a collapsed/hidden form.
         if (String(state.value || '0') === '1' && window.bootstrap?.Offcanvas) {
             window.bootstrap.Offcanvas.getOrCreateInstance(panel).show();
         }

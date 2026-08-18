@@ -14,7 +14,7 @@ use RuntimeException;
 /**
  * Confronta il codice che la versione corrente genererebbe con il progetto.
  *
- * La generazione di confronto avviene in writable/ e non modifica né app/
+ * Comparison generation happens under writable/ and modifies neither app/
  * né app/Generated/. Il report distingue i file propri del CRUD dai file
  * infrastrutturali condivisi e può fornire il numero di righe aggiunte/rimosse.
  */
@@ -41,8 +41,8 @@ final class GenerationDiffService
         $resolved = $configuration->resolve($table, true);
         if (!$resolved['saved']) {
             throw new RuntimeException(
-                'Configurazione persistente non trovata per ' . $table
-                . '. Genera o salva prima il CRUD con la linea 2.8.'
+                'Persistent configuration not found per ' . $table
+                . '. Generate or save the CRUD first.'
             );
         }
 
@@ -51,6 +51,7 @@ final class GenerationDiffService
         $generator = $this->generator ?? new CrudGeneratorService();
 
         $originalGeneratedPath = $settings->generatedPath;
+        $originalExtensionPath = $settings->serviceExtensionPath;
         $temporaryBase = rtrim(WRITEPATH, DIRECTORY_SEPARATOR)
             . DIRECTORY_SEPARATOR
             . 'mycrud-diff'
@@ -65,9 +66,10 @@ final class GenerationDiffService
         }
 
         try {
-            // GeneratorTrait legge Config\MyCrud ad ogni scrittura: cambiare
+            // GeneratorTrait legge Config\MyCrud ad ogni write: cambiare
             // temporaneamente generatedPath consente un dry generation reale.
             $settings->generatedPath = $temporaryBase;
+            $settings->serviceExtensionPath = $temporaryBase . 'CustomServiceExtensions';
             $generator->generate($resolved['config'], true);
 
             $generatedRoot = $temporaryBase . 'Generated' . DIRECTORY_SEPARATOR;
@@ -82,7 +84,7 @@ final class GenerationDiffService
             foreach ($files as $relative => $proposedPath) {
                 $currentPath = $target === 'generated'
                     ? APPPATH . 'Generated' . DIRECTORY_SEPARATOR . $relative
-                    : APPPATH . $relative;
+                    : $this->operationalPath($relative);
 
                 if (!is_file($currentPath)) {
                     $status = 'new';
@@ -130,8 +132,26 @@ final class GenerationDiffService
             ];
         } finally {
             $settings->generatedPath = $originalGeneratedPath;
+            $settings->serviceExtensionPath = $originalExtensionPath;
             $this->removeDirectory($temporaryBase);
         }
+    }
+
+    private function operationalPath(string $relative): string
+    {
+        $relative = str_replace('\\', '/', $relative);
+
+        if (str_starts_with($relative, 'Tests/')) {
+            $testRelative = substr($relative, strlen('Tests/'));
+
+            return rtrim(ROOTPATH, DIRECTORY_SEPARATOR)
+                . DIRECTORY_SEPARATOR
+                . 'tests'
+                . DIRECTORY_SEPARATOR
+                . str_replace('/', DIRECTORY_SEPARATOR, $testRelative);
+        }
+
+        return APPPATH . str_replace('/', DIRECTORY_SEPARATOR, $relative);
     }
 
     /** @return array{new:int,changed:int,unchanged:int} */
@@ -217,7 +237,7 @@ final class GenerationDiffService
             return 0;
         }
 
-        // Mantiene la seconda dimensione più corta per ridurre la memoria.
+        // Keeps the second dimension shorter to reduce memory usage.
         if (count($right) > count($left)) {
             [$left, $right] = [$right, $left];
         }

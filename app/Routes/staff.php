@@ -4,7 +4,7 @@ use CodeIgniter\Router\RouteCollection;
 
 /*
  * Route modulari del CRUD staff.
- * myCrudGpt genera volutamente un file per tabella: app/Config/Routes.php
+ * myCrudCI4 intentionally generates one file per table: app/Config/Routes.php
  * può caricare app/Routes/*.php senza concentrare tutte le route in un unico file.
  */
 

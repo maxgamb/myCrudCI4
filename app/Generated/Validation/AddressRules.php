@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Validation;
 
+/** Regole server-side generate secondo le capability effettive del CRUD. */
 final class AddressRules
 {
+    /** @return array<string,string> */
     public static function createRules(): array
     {
         return array (
@@ -17,7 +19,7 @@ final class AddressRules
   'phone' => 'required|max_length[20]',
 );
     }
-
+    /** @return array<string,string> */
     public static function updateRules(int|string $id): array
     {
         $rules = array (
@@ -33,12 +35,11 @@ final class AddressRules
         }
         return $rules;
     }
-
-    /** Regole dei record padre creati nello stesso submit. */
+    /** @return array<string,array<string,string>> */
     public static function relatedCreateRules(): array
     {
         return array (
-  'city_id' => 
+  'city_id' =>
   array (
     'city' => 'required|max_length[50]',
     'country_id' => 'required|integer|is_not_unique[country.country_id]',
@@ -46,6 +47,13 @@ final class AddressRules
 );
     }
 
+    /** @return array<string,array<string,string>> */
+    public static function manyToManyRelatedCreateRules(): array
+    {
+        return array (
+);
+    }
+    /** @return array<string,string> */
     public static function messages(): array
     {
         return [];

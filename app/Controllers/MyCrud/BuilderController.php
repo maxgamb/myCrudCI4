@@ -19,7 +19,7 @@ class BuilderController extends BaseController
         $tables = TableFilter::validTables($db);
 
         return view('mycrud/table_list', [
-            'title'       => 'myCrudGpt',
+            'title'       => 'myCrudCI4',
             'tables'      => $tables,
             'objectTypes' => TableFilter::objectTypes($db),
         ]);
@@ -37,7 +37,7 @@ class BuilderController extends BaseController
             }
 
             return view('mycrud/builder', [
-                'title'  => 'Configura ' . $table,
+                'title'  => 'Configure ' . $table,
                 'config' => $config,
                 'table'  => $table,
                 'fields'               => $config['fields'],
@@ -56,7 +56,7 @@ class BuilderController extends BaseController
 
             return redirect()
                 ->to(site_url('mycrud/builder/configure/' . $config['table']))
-                ->with('message', 'Configurazione salvata.');
+                ->with('message', 'Configuration saved.');
         } catch (Throwable $e) {
             return redirect()
                 ->back()
@@ -76,12 +76,12 @@ class BuilderController extends BaseController
             $result = (new CrudGeneratorService())->generate($config, $force);
 
             return view('mycrud/result', [
-                'title'  => 'Generazione personalizzata',
+                'title'  => 'Custom generation',
                 'table'  => $config['table'],
                 'result' => $result,
             ]);
         } catch (Throwable $e) {
-            log_message('error', '[myCrudGpt] {message}', ['message' => $e->getMessage()]);
+            log_message('error', '[myCrudCI4] {message}', ['message' => $e->getMessage()]);
 
             return redirect()
                 ->back()

@@ -5,7 +5,7 @@ $relatedCreateOptions = (array) ($relatedCreateOptions ?? []);
 $errors = (array) ($errors ?? []);
 ?>
 <div class="row g-3">
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <label for="related_create_customer_id_store_id" class="form-label"><?= esc('Store Id') ?></label>
                 <select
                     name="_related[customer_id][store_id]"
@@ -29,7 +29,7 @@ $errors = (array) ($errors ?? []);
                 <?php if (!empty($errors['customer_id__related__store_id'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['customer_id__related__store_id']) ?></div>
                 <?php endif; ?>
-            </div>            <div class="col-md-6">
+            </div>            <div class="col-12 col-md-6">
                 <label for="related_create_customer_id_first_name" class="form-label"><?= esc('First Name') ?></label>
                 <input
                     type="text"
@@ -44,7 +44,7 @@ $errors = (array) ($errors ?? []);
                 <?php if (!empty($errors['customer_id__related__first_name'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['customer_id__related__first_name']) ?></div>
                 <?php endif; ?>
-            </div>            <div class="col-md-6">
+            </div>            <div class="col-12 col-md-6">
                 <label for="related_create_customer_id_last_name" class="form-label"><?= esc('Last Name') ?></label>
                 <input
                     type="text"
@@ -59,7 +59,7 @@ $errors = (array) ($errors ?? []);
                 <?php if (!empty($errors['customer_id__related__last_name'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['customer_id__related__last_name']) ?></div>
                 <?php endif; ?>
-            </div>            <div class="col-md-6">
+            </div>            <div class="col-12 col-md-6">
                 <label for="related_create_customer_id_email" class="form-label"><?= esc('Email') ?></label>
                 <input
                     type="email"
@@ -74,7 +74,7 @@ $errors = (array) ($errors ?? []);
                 <?php if (!empty($errors['customer_id__related__email'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['customer_id__related__email']) ?></div>
                 <?php endif; ?>
-            </div>            <div class="col-md-6">
+            </div>            <div class="col-12 col-md-6">
                 <label for="related_create_customer_id_address_id" class="form-label"><?= esc('Address Id') ?></label>
                 <select
                     name="_related[customer_id][address_id]"
@@ -98,7 +98,7 @@ $errors = (array) ($errors ?? []);
                 <?php if (!empty($errors['customer_id__related__address_id'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['customer_id__related__address_id']) ?></div>
                 <?php endif; ?>
-            </div>            <div class="col-md-6">
+            </div>            <div class="col-12 col-md-6">
                 <label for="related_create_customer_id_active" class="form-label"><?= esc('Active') ?></label>
                 <input
                     type="hidden"
@@ -123,7 +123,7 @@ $errors = (array) ($errors ?? []);
                 <?php if (!empty($errors['customer_id__related__active'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['customer_id__related__active']) ?></div>
                 <?php endif; ?>
-            </div>            <div class="col-md-6">
+            </div>            <div class="col-12 col-md-6">
                 <label for="related_create_customer_id_create_date" class="form-label"><?= esc('Create Date') ?></label>
                 <input
                     type="datetime-local"

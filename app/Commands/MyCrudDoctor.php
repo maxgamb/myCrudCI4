@@ -15,26 +15,26 @@ use JsonException;
 use Throwable;
 
 /**
- * Diagnostica generale o di una singola tabella.
- * Senza argomenti controlla myCrudGpt; con una tabella analizza schema, indici,
- * relazioni e, su richiesta, piano EXPLAIN e benchmark non distruttivo.
+ * Performs general diagnostics or diagnostics for a single table.
+ * Without arguments, checks myCrudCI4; with a table, analyzes schema, indexes,
+ * relations and, when requested, EXPLAIN plan and a non-destructive benchmark.
  */
 final class MyCrudDoctor extends BaseCommand
 {
-    protected $group       = 'myCrudGpt';
+    protected $group       = 'myCrudCI4';
     protected $name        = 'mycrud:doctor';
-    protected $description = 'Controlla progetto oppure schema/indici/performance di una tabella.';
+    protected $description = 'Checks the project or table schema/indexes/performance.';
     protected $usage       = 'mycrud:doctor [table] [--explain] [--benchmark] [--json] [--report path]';
 
     protected $arguments = [
-        'table' => 'Tabella opzionale da analizzare.',
+        'table' => 'Optional table to analyze.',
     ];
 
     protected $options = [
-        '--explain'   => 'Esegue EXPLAIN su query rappresentative della lista.',
-        '--benchmark' => 'Esegue benchmark sintetico e non distruttivo.',
-        '--json'      => 'Stampa il report in formato JSON.',
-        '--report'    => 'Salva anche il report JSON nel percorso indicato.',
+        '--explain'   => 'Runs EXPLAIN on representative list queries.',
+        '--benchmark' => 'Runs a synthetic, non-destructive benchmark.',
+        '--json'      => 'Prints the report in JSON format.',
+        '--report'    => 'Save anche il report JSON nel percorso indicato.',
     ];
 
     public function run(array $params)
@@ -95,7 +95,7 @@ final class MyCrudDoctor extends BaseCommand
 
     private function printReport(DiagnosticReport $report, string $table = ''): void
     {
-        CLI::write($table === '' ? 'myCrudGpt Doctor' : 'myCrudGpt Doctor: ' . $table, 'yellow');
+        CLI::write($table === '' ? 'myCrudCI4 Doctor' : 'myCrudCI4 Doctor: ' . $table, 'yellow');
         CLI::newLine();
 
         foreach ($report->results() as $result) {
@@ -125,7 +125,7 @@ final class MyCrudDoctor extends BaseCommand
         try {
             $directory = dirname($path);
             if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) {
-                CLI::error('Impossibile creare la directory del report: ' . $directory);
+                CLI::error('Unable to create report directory: ' . $directory);
                 return;
             }
 

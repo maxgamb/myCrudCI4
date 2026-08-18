@@ -10,7 +10,7 @@ final class PhpLintService
             return new DiagnosticResult(
                 'PHP lint: ' . $path,
                 DiagnosticResult::FAIL,
-                'File non trovato.'
+                'File not found.'
             );
         }
 
@@ -18,7 +18,7 @@ final class PhpLintService
             return new DiagnosticResult(
                 'PHP lint: ' . $path,
                 DiagnosticResult::SKIP,
-                'proc_open() non disponibile; lint esterno non eseguito.'
+                'proc_open() unavailable; external lint was not executed.'
             );
         }
 
@@ -52,7 +52,7 @@ final class PhpLintService
         return new DiagnosticResult(
             'PHP lint: ' . $path,
             $exitCode === 0 ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
-            $exitCode === 0 ? 'Sintassi PHP valida.' : 'Errore di sintassi PHP.',
+            $exitCode === 0 ? 'Valid PHP syntax.' : 'PHP syntax error.',
             ['output' => $output]
         );
     }

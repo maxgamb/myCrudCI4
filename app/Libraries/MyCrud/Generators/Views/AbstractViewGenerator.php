@@ -49,8 +49,8 @@ abstract class AbstractViewGenerator
     }
 
     /**
-     * Rendering compatto dei soli campi testuali molto grandi nelle tabelle.
-     * Il valore completo resta invariato in DB, dettaglio, form ed export.
+     * Compact rendering for very large text fields in tables only.
+     * The full value remains unchanged in the database, detail view, form, and export.
      */
     protected function tabularValueMarkup(string $expression, string $type, string $key = 'value'): string
     {
@@ -82,6 +82,55 @@ abstract class AbstractViewGenerator
                                             : \$__crudValue_{$suffix};
                                     }
                                     ?><?= esc(\$__crudShown_{$suffix}) ?>
+PHP;
+    }
+
+
+    /**
+     * Render sicuro di file/immagini conservati fuori dalla public/.
+     * The browser always goes through the generated Controller, which verifies the record and field.
+     */
+    protected function uploadValueMarkup(
+        string $table,
+        string $primaryKeyExpression,
+        string $fieldName,
+        string $valueExpression,
+        string $inputType,
+        bool $detail = false
+    ): string {
+        $tableExport = var_export($table, true);
+        $fieldExport = var_export($fieldName, true);
+        $image = strtolower($inputType) === 'image';
+
+        if ($image) {
+            $class = $detail
+                ? 'img-fluid rounded border'
+                : 'img-thumbnail';
+            $style = $detail
+                ? 'max-height:420px;max-width:100%;'
+                : 'width:64px;height:48px;object-fit:cover;';
+
+            return <<<PHP
+<?php if (trim((string) ({$valueExpression} ?? '')) !== ''): ?>
+    <?php \$__uploadUrl = site_url({$tableExport} . '/upload/' . rawurlencode((string) ({$primaryKeyExpression} ?? '')) . '/' . rawurlencode({$fieldExport})); ?>
+    <a href="<?= esc(\$__uploadUrl) ?>" target="_blank" rel="noopener">
+        <img src="<?= esc(\$__uploadUrl) ?>" alt="<?= esc(basename((string) {$valueExpression})) ?>" class="{$class}" style="{$style}">
+    </a>
+<?php else: ?>
+    <span class="text-muted">—</span>
+<?php endif; ?>
+PHP;
+        }
+
+        return <<<PHP
+<?php if (trim((string) ({$valueExpression} ?? '')) !== ''): ?>
+    <?php \$__uploadUrl = site_url({$tableExport} . '/upload/' . rawurlencode((string) ({$primaryKeyExpression} ?? '')) . '/' . rawurlencode({$fieldExport})); ?>
+    <a href="<?= esc(\$__uploadUrl) ?>" target="_blank" rel="noopener" class="text-decoration-none">
+        <i class="bi bi-file-earmark-arrow-down me-1" aria-hidden="true"></i><?= esc(basename((string) {$valueExpression})) ?>
+    </a>
+<?php else: ?>
+    <span class="text-muted">—</span>
+<?php endif; ?>
 PHP;
     }
 

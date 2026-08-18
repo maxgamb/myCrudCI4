@@ -27,8 +27,8 @@
         break-inside: auto;
     }
 
-    /* Il dettaglio iniziale resta compatto; i pannelli hasMany possono invece
-       iniziare nello spazio disponibile e proseguire sulla pagina successiva. */
+    /* The initial detail section remains compact; hasMany panels may instead
+       start in the available space and continue on the next page. */
     #crud-print-area > .card:first-child {
         break-inside: avoid;
     }
@@ -37,7 +37,11 @@
 
 <?php
 $navigationContext = (array) ($navigationContext ?? []);
-$navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navigationContext);
+$cascadeTrail = (array) ($cascadeTrail ?? []);
+$navigationParams = $navigationContext;
+$encodedTrail = \App\Libraries\Crud\CrudNavigationTrail::encode($cascadeTrail);
+if ($encodedTrail !== '') $navigationParams['_trail'] = $encodedTrail;
+$navigationQuery = $navigationParams === [] ? '' : '?' . http_build_query($navigationParams);
 ?>
 
 <div class="container py-4">
@@ -45,25 +49,36 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
         <nav aria-label="breadcrumb" class="mb-2">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="<?= site_url('/') ?>">Home</a></li>
+                <?php $trailPrefix = []; ?>
+                <?php foreach ($cascadeTrail as $segment): ?>
+                    <?php
+                    $segmentQuery = \App\Libraries\Crud\CrudNavigationTrail::encode($trailPrefix);
+                    $segmentUrl = site_url((string) $segment['table'] . '/view/' . rawurlencode((string) $segment['id']));
+                    if ($segmentQuery !== '') $segmentUrl .= '?_trail=' . rawurlencode($segmentQuery);
+                    ?>
+                    <li class="breadcrumb-item"><a href="<?= esc($segmentUrl) ?>"><?= esc((string) $segment['label']) ?></a></li>
+                    <?php $trailPrefix[] = $segment; ?>
+                <?php endforeach; ?>
                 <li class="breadcrumb-item"><a href="<?= site_url('{{ROUTE}}') . $navigationQuery ?>">{{TABLE}}</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Dettaglio</li>
+                <li class="breadcrumb-item active" aria-current="page">Details</li>
             </ol>
         </nav>
 
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
             <div>
                 <h1 class="h3 mb-0">{{TABLE}}</h1>
-                <small class="text-muted">Dettaglio record</small>
+                <small class="text-muted">Record details</small>
             </div>
             <div class="d-flex flex-wrap justify-content-end gap-2">
 {{TOOLBAR_ACTIONS}}            </div>
         </div>
     </div>
 
+    <!-- mycrud:start record-detail -->
     <div id="crud-print-area">
         <div class="card shadow-sm">
             <div class="card-header">
-                <h2 class="h4 mb-0"><i class="bi bi-eye"></i> Dettaglio record</h2>
+                <h2 class="h4 mb-0"><i class="bi bi-eye"></i> Record details</h2>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -75,7 +90,10 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
             </div>
         </div>
 
-{{PANELS}}    </div>
+        <!-- mycrud:start relation-panels -->
+{{PANELS}}        <!-- mycrud:end relation-panels -->
+    </div>
+    <!-- mycrud:end record-detail -->
 </div>
 
 <?= $this->endSection() ?>

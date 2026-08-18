@@ -1,4 +1,4 @@
-<?php /* Frammento sostituito via AJAX: doppio Pager e tabella Bootstrap compatta. */ ?>
+<?php /* AJAX-replaced fragment: dual Pager and compact Bootstrap table. */ ?>
 <?php
 $navigationContext = (array) ($navigationContext ?? []);
 $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navigationContext);
@@ -104,14 +104,15 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                         <th><?= esc(lang('Film.rating')) ?></th>
                         <th><?= esc(lang('Film.special_features')) ?></th>
                         <th><?= esc(lang('Film.last_update')) ?></th>
+                        <th><?= esc(lang('Film.uploads')) ?></th>
                         <th class="text-end">Azioni</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($rows)): ?>
                         <tr>
-                            <td colspan="14" class="text-center text-muted py-4">
-                                Nessun record trovato.
+                            <td colspan="15" class="text-center text-muted py-4">
+                                No record found.
                             </td>
                         </tr>
                     <?php else: ?>
@@ -128,7 +129,7 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                                             href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
                                             class="js-list-link text-decoration-none"
                                             data-quick-filter="1"
-                                            title="Filtra per questo valore"
+                                            title="Filter by this value"
                                         ><?= esc($row->{'film_id'} ?? '') ?></a>
                                     <?php endif; ?>
                                 </td>                                <td>
@@ -142,58 +143,33 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                                             href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
                                             class="js-list-link text-decoration-none"
                                             data-quick-filter="1"
-                                            title="Filtra per questo valore"
+                                            title="Filter by this value"
                                         ><?= esc($row->{'title'} ?? '') ?></a>
                                     <?php endif; ?>
                                 </td>                                <td><?= esc($row->{'description'} ?? '') ?></td>
                                 <td><?= esc($row->{'release_year'} ?? '') ?></td>
                                 <td>
-                                    <?php if ((string) ($row->{'language_id'} ?? '') !== ''): ?><a href="<?= site_url('language/view/' . rawurlencode((string) $row->{'language_id'})) ?>" class="text-decoration-none"><?= esc($row->{'language_id__label'} ?? $row->{'language_id'} ?? '') ?></a><?php else: ?><?= esc($row->{'language_id__label'} ?? '') ?><?php endif; ?>
-                                    <?php
-                                    $quickQuery = (array) ($query ?? []);
-                                    $quickQuery['language_id'] = (string) ($row->{'language_id'} ?? '');
-                                    unset($quickQuery['page']);
-                                    ?>
-                                    <?php if ((string) ($row->{'language_id'} ?? '') !== ''): ?>
-                                        <a
-                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
-                                            class="js-list-link ms-1 text-decoration-none"
-                                            data-quick-filter="1"
-                                            title="Filtra per questo valore"
-                                            aria-label="Filtra per questo valore"
-                                        ><i class="bi bi-funnel"></i></a>
-                                    <?php endif; ?>                                </td>                                <td>
-                                    <?php if ((string) ($row->{'original_language_id'} ?? '') !== ''): ?><a href="<?= site_url('language/view/' . rawurlencode((string) $row->{'original_language_id'})) ?>" class="text-decoration-none"><?= esc($row->{'original_language_id__label'} ?? $row->{'original_language_id'} ?? '') ?></a><?php else: ?><?= esc($row->{'original_language_id__label'} ?? '') ?><?php endif; ?>
-                                    <?php
-                                    $quickQuery = (array) ($query ?? []);
-                                    $quickQuery['original_language_id'] = (string) ($row->{'original_language_id'} ?? '');
-                                    unset($quickQuery['page']);
-                                    ?>
-                                    <?php if ((string) ($row->{'original_language_id'} ?? '') !== ''): ?>
-                                        <a
-                                            href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
-                                            class="js-list-link ms-1 text-decoration-none"
-                                            data-quick-filter="1"
-                                            title="Filtra per questo valore"
-                                            aria-label="Filtra per questo valore"
-                                        ><i class="bi bi-funnel"></i></a>
-                                    <?php endif; ?>                                </td>                                <td><?= esc($row->{'rental_duration'} ?? '') ?></td>
+                                    <?= esc($row->{'language_id__label'} ?? $row->{'language_id'} ?? '') ?>
+                                </td>                                <td>
+                                    <?= esc($row->{'original_language_id__label'} ?? $row->{'original_language_id'} ?? '') ?>
+                                </td>                                <td><?= esc($row->{'rental_duration'} ?? '') ?></td>
                                 <td><?= esc($row->{'rental_rate'} ?? '') ?></td>
                                 <td><?= esc($row->{'length'} ?? '') ?></td>
                                 <td><?= esc($row->{'replacement_cost'} ?? '') ?></td>
                                 <td><?= esc($row->{'rating'} ?? '') ?></td>
                                 <td><?= esc($row->{'special_features'} ?? '') ?></td>
                                 <td><?= esc($row->{'last_update'} ?? '') ?></td>
+                                <td><?= esc($row->{'uploads'} ?? '') ?></td>
                                 <td class="text-end text-nowrap">
                                     <?php $id = $row->{'film_id'} ?? ''; ?>
-                                    <div class="btn-group btn-group-sm" role="group" aria-label="Azioni record">
+                                    <div class="btn-group btn-group-sm" role="group" aria-label="Record actions">
                                         <a href="<?= site_url('film/view/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="btn btn-outline-info" title="Visualizza">
                                             <i class="bi bi-eye" aria-hidden="true"></i>
                                         </a>
-                                        <a href="<?= site_url('film/edit/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="btn btn-outline-warning" title="Modifica">
+                                        <a href="<?= site_url('film/edit/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="btn btn-outline-warning" title="Edit">
                                             <i class="bi bi-pencil-square" aria-hidden="true"></i>
                                         </a>
-                                        <form method="post" action="<?= site_url('film/delete/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="d-inline" onsubmit="return confirm('Eliminare questo record?')">
+                                        <form method="post" action="<?= site_url('film/delete/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="d-inline" onsubmit="return confirm('Delete this record?')">
                                             <?= csrf_field() ?>
                                             <?php foreach ((array) ($navigationContext ?? []) as $contextField => $contextValue): ?>
                                                 <input type="hidden" name="_context[<?= esc((string) $contextField) ?>]" value="<?= esc((string) $contextValue) ?>">

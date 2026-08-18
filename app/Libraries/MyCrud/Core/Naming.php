@@ -12,7 +12,7 @@ final class Naming
     }
 
     /**
-     * Converte il nome fisico della tabella in StudlyCase senza tentare
+     * Converts the physical table name to StudlyCase without attempting
      * singularizzazioni linguistiche. Il database resta la fonte del nome:
      * clienti -> Clienti, conti -> Conti, foglio_giorno -> FoglioGiorno.
      */

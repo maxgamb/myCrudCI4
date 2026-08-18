@@ -16,12 +16,12 @@ $version = (string) ($project['version'] ?? '');
                 Project Dashboard
             </h1>
             <p class="text-muted mb-0">
-                Stato dei CRUD configurati e delle tabelle disponibili nel progetto.
+                Status of configured CRUDs and database tables available in the project.
             </p>
         </div>
 
         <span class="badge text-bg-dark fs-6">
-            myCrudGpt <?= esc($version) ?>
+            myCrudCI4 <?= esc($version) ?>
         </span>
     </div>
 
@@ -29,7 +29,7 @@ $version = (string) ($project['version'] ?? '');
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="bi bi-check-circle me-1"></i>
             <?= esc(session('message')) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Chiudi"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     <?php endif ?>
 
@@ -37,7 +37,7 @@ $version = (string) ($project['version'] ?? '');
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="bi bi-exclamation-triangle me-1"></i>
             <?= esc(session('error')) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Chiudi"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     <?php endif ?>
 
@@ -45,7 +45,7 @@ $version = (string) ($project['version'] ?? '');
         <div class="col-6 col-md-4 col-xl-2">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
-                    <div class="text-muted small">Tabelle DB</div>
+                    <div class="text-muted small">DB tables</div>
                     <div class="fs-3 fw-semibold"><?= (int) ($summary['dbTables'] ?? 0) ?></div>
                 </div>
             </div>
@@ -54,7 +54,7 @@ $version = (string) ($project['version'] ?? '');
         <div class="col-6 col-md-4 col-xl-2">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
-                    <div class="text-muted small">CRUD configurati</div>
+                    <div class="text-muted small">Configured CRUDs</div>
                     <div class="fs-3 fw-semibold"><?= (int) ($summary['configured'] ?? 0) ?></div>
                 </div>
             </div>
@@ -90,7 +90,7 @@ $version = (string) ($project['version'] ?? '');
         <div class="col-6 col-md-4 col-xl-2">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
-                    <div class="text-muted small">Operativi</div>
+                    <div class="text-muted small">Operational</div>
                     <div class="fs-3 fw-semibold"><?= (int) ($summary['operational'] ?? 0) ?></div>
                 </div>
             </div>
@@ -100,12 +100,12 @@ $version = (string) ($project['version'] ?? '');
     <div class="d-flex flex-wrap gap-2 mb-3">
         <a href="<?= site_url('mycrud/builder') ?>" class="btn btn-primary">
             <i class="bi bi-plus-circle me-1"></i>
-            Nuovo / configura CRUD
+            Configure CRUD
         </a>
 
         <a href="<?= site_url('mycrud/quick') ?>" class="btn btn-outline-primary">
             <i class="bi bi-lightning-charge me-1"></i>
-            Quick globale
+            Quick generation
         </a>
 
         <a href="<?= site_url('mycrud/tools/menu') ?>" class="btn btn-outline-secondary">
@@ -115,12 +115,12 @@ $version = (string) ($project['version'] ?? '');
 
         <a href="<?= site_url('mycrud/tools/ai-context') ?>" class="btn btn-outline-secondary">
             <i class="bi bi-robot me-1"></i>
-            Contesto IA
+            AI Context
         </a>
 
         <a href="<?= site_url('mycrud/docs') ?>" class="btn btn-outline-secondary">
             <i class="bi bi-book me-1"></i>
-            Documentazione
+            Documentation
         </a>
 
         <form method="post" action="<?= site_url('mycrud/project/generate-all') ?>" class="d-inline">
@@ -128,32 +128,32 @@ $version = (string) ($project['version'] ?? '');
             <button
                 type="submit"
                 class="btn btn-success"
-                onclick="return confirm('Rigenerare tutti i CRUD configurati in app/Generated/?');"
+                onclick="return confirm('Regeneratere tutti i Configured CRUDs in app/Generated/?');"
             >
                 <i class="bi bi-arrow-repeat me-1"></i>
-                Genera tutti
+                Generate all
             </button>
         </form>
     </div>
 
     <div class="card shadow-sm">
         <div class="card-header bg-body d-flex flex-wrap justify-content-between align-items-center gap-2">
-            <strong>Progetto</strong>
+            <strong>Project</strong>
 
             <div class="d-flex gap-2">
                 <input
                     id="projectSearch"
                     type="search"
                     class="form-control form-control-sm"
-                    placeholder="Cerca tabella..."
+                    placeholder="Search table..."
                     autocomplete="off"
                 >
 
                 <select id="projectFilter" class="form-select form-select-sm">
-                    <option value="all">Tutte</option>
-                    <option value="configured">Configurate</option>
-                    <option value="unconfigured">Non configurate</option>
-                    <option value="operational">Operative</option>
+                    <option value="all">All</option>
+                    <option value="configured">Configured</option>
+                    <option value="unconfigured">Not configured</option>
+                    <option value="operational">Operational</option>
                     <option value="staged">In staging</option>
                 </select>
             </div>
@@ -163,14 +163,14 @@ $version = (string) ($project['version'] ?? '');
             <table class="table table-sm table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>Tabella</th>
-                        <th>Architettura</th>
+                        <th>Table</th>
+                        <th>Architecture</th>
                         <th>Config</th>
                         <th>DB</th>
-                        <th class="text-end">Righe ~</th>
-                        <th class="text-center">Relazioni</th>
-                        <th>Stato</th>
-                        <th class="text-end">Azioni</th>
+                        <th class="text-end">Rows ~</th>
+                        <th class="text-center">Relations</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
                     </tr>
                 </thead>
 
@@ -220,14 +220,14 @@ $version = (string) ($project['version'] ?? '');
 
                         <td>
                             <?php if ($configured): ?>
-                                <span class="badge text-bg-success">Salvata</span>
+                                <span class="badge text-bg-success">Saved</span>
                                 <?php if (!empty($row['savedVersion'])): ?>
                                     <div class="small text-muted mt-1">
                                         <?= esc((string) $row['savedVersion']) ?>
                                     </div>
                                 <?php endif ?>
                             <?php else: ?>
-                                <span class="badge text-bg-light border text-dark">Non configurata</span>
+                                <span class="badge text-bg-light border text-dark">Not configured</span>
                             <?php endif ?>
                         </td>
 
@@ -235,12 +235,12 @@ $version = (string) ($project['version'] ?? '');
                             <?php if ($dbExists): ?>
                                 <span class="text-success">
                                     <i class="bi bi-check-circle-fill"></i>
-                                    Presente
+                                    Present
                                 </span>
                             <?php else: ?>
                                 <span class="text-danger">
                                     <i class="bi bi-x-circle-fill"></i>
-                                    Mancante
+                                    Missing
                                 </span>
                             <?php endif ?>
                         </td>
@@ -255,13 +255,13 @@ $version = (string) ($project['version'] ?? '');
 
                         <td>
                             <?php if ($operational): ?>
-                                <span class="badge text-bg-success">Operativo</span>
+                                <span class="badge text-bg-success">Operational</span>
                             <?php elseif ($staged): ?>
                                 <span class="badge text-bg-warning">Staging</span>
                             <?php elseif ($configured): ?>
-                                <span class="badge text-bg-secondary">Configurato</span>
+                                <span class="badge text-bg-secondary">Configured</span>
                             <?php else: ?>
-                                <span class="badge text-bg-light border text-dark">Da configurare</span>
+                                <span class="badge text-bg-light border text-dark">Needs configuration</span>
                             <?php endif ?>
                         </td>
 
@@ -271,7 +271,7 @@ $version = (string) ($project['version'] ?? '');
                                     <a
                                         href="<?= site_url('mycrud/builder/configure/' . $table) ?>"
                                         class="btn btn-outline-primary"
-                                        title="Configura"
+                                        title="Configure"
                                     >
                                         <i class="bi bi-sliders"></i>
                                     </a>
@@ -287,7 +287,7 @@ $version = (string) ($project['version'] ?? '');
                                         <button
                                             type="submit"
                                             class="btn btn-outline-success rounded-0"
-                                            title="Genera in staging"
+                                            title="Generate in staging"
                                         >
                                             <i class="bi bi-gear"></i>
                                         </button>
@@ -316,7 +316,7 @@ $version = (string) ($project['version'] ?? '');
                                     <a
                                         href="<?= site_url($table) ?>"
                                         class="btn btn-outline-dark"
-                                        title="Apri CRUD"
+                                        title="Open CRUD"
                                         target="_blank"
                                     >
                                         <i class="bi bi-box-arrow-up-right"></i>
@@ -331,7 +331,7 @@ $version = (string) ($project['version'] ?? '');
         </div>
 
         <div id="projectEmpty" class="card-body text-center text-muted d-none">
-            Nessuna tabella corrisponde al filtro selezionato.
+            No table matches the selected filter.
         </div>
     </div>
 

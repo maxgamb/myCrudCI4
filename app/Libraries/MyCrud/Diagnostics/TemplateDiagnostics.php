@@ -70,7 +70,7 @@ final class TemplateDiagnostics
                 $dangerous ? DiagnosticResult::FAIL : DiagnosticResult::PASS,
                 $dangerous
                     ? 'Il template contiene include/require e potrebbe essere eseguito accidentalmente.'
-                    : 'Nessun include/require rilevato.',
+                    : 'No include/require detected.',
                 ['path' => $path]
             );
 

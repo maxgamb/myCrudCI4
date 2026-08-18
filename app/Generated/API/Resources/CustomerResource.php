@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\API\Resources;
 
-/** Serializza la risorsa customer secondo la configurazione del Builder. */
+/**
+ * Output-only serializer for `customer`.
+ *
+ * It performs no queries, request parsing, validation, or persistence.
+ */
 final class CustomerResource
 {
     private const READABLE = array (
@@ -19,27 +23,6 @@ final class CustomerResource
   8 => 'last_update',
   9 => 'address_id__label',
   10 => 'store_id__label',
-);
-    private const WRITABLE = array (
-  0 => 'store_id',
-  1 => 'first_name',
-  2 => 'last_name',
-  3 => 'email',
-  4 => 'address_id',
-  5 => 'active',
-  6 => 'create_date',
-);
-    private const FILTERABLE = array (
-  0 => 'customer_id',
-  1 => 'store_id',
-  2 => 'last_name',
-  3 => 'address_id',
-);
-    private const SORTABLE = array (
-  0 => 'customer_id',
-  1 => 'store_id',
-  2 => 'last_name',
-  3 => 'address_id',
 );
 
     public static function make(object|array $record): array
@@ -60,20 +43,5 @@ final class CustomerResource
     public static function collection(array $records): array
     {
         return array_map(static fn (object|array $record): array => self::make($record), $records);
-    }
-
-    public static function writableData(array $data): array
-    {
-        return array_intersect_key($data, array_flip(self::WRITABLE));
-    }
-
-    public static function filterableFields(): array
-    {
-        return self::FILTERABLE;
-    }
-
-    public static function sortableFields(): array
-    {
-        return self::SORTABLE;
     }
 }

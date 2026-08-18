@@ -13,20 +13,20 @@ use RuntimeException;
 /** Verifica il Query Layer comune delle architetture 2.7.4. */
 final class MyCrudQueryLayerCheck extends BaseCommand
 {
-    protected $group = 'myCrudGpt';
+    protected $group = 'myCrudCI4';
     protected $name = 'mycrud:check-query-layer';
-    protected $description = 'Genera il CRUD Full e controlla Bootstrap AJAX, CSV, Word, Query Layer e lint.';
+    protected $description = 'Generates the Full CRUD and checks Bootstrap AJAX, CSV, Word, Query Layer, and lint.';
     protected $usage = 'mycrud:check-query-layer <table>';
 
     protected $arguments = [
-        'table' => 'Tabella reale da usare per la verifica.',
+        'table' => 'Table reale da usare per la verifica.',
     ];
 
     public function run(array $params)
     {
         $table = trim((string) ($params[0] ?? ''));
         if ($table === '') {
-            CLI::error('Specificare il nome della tabella.');
+            CLI::error('Specify the table name.');
             return EXIT_ERROR;
         }
 

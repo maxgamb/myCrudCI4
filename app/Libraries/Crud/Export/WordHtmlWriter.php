@@ -58,7 +58,7 @@ final class WordHtmlWriter
             $items[] = '<li>' . $this->escape($logic . $field . ' ' . $operator . ' ' . $shownValue) . '</li>';
         }
 
-        return $items === [] ? '' : '<h2>Filtri applicati</h2><ul>' . implode('', $items) . '</ul>';
+        return $items === [] ? '' : '<h2>Applied filters</h2><ul>' . implode('', $items) . '</ul>';
     }
 
     private function escape(mixed $value): string

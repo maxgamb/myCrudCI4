@@ -5,7 +5,7 @@ $relatedCreateOptions = (array) ($relatedCreateOptions ?? []);
 $errors = (array) ($errors ?? []);
 ?>
 <div class="row g-3">
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <label for="related_create_rental_id_rental_date" class="form-label"><?= esc('Rental Date') ?></label>
                 <input
                     type="datetime-local"
@@ -20,7 +20,7 @@ $errors = (array) ($errors ?? []);
                 <?php if (!empty($errors['rental_id__related__rental_date'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['rental_id__related__rental_date']) ?></div>
                 <?php endif; ?>
-            </div>            <div class="col-md-6">
+            </div>            <div class="col-12 col-md-6">
                 <label for="related_create_rental_id_inventory_id" class="form-label"><?= esc('Inventory Id') ?></label>
                 <select
                     name="_related[rental_id][inventory_id]"
@@ -44,7 +44,7 @@ $errors = (array) ($errors ?? []);
                 <?php if (!empty($errors['rental_id__related__inventory_id'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['rental_id__related__inventory_id']) ?></div>
                 <?php endif; ?>
-            </div>            <div class="col-md-6">
+            </div>            <div class="col-12 col-md-6">
                 <label for="related_create_rental_id_customer_id" class="form-label"><?= esc('Customer Id') ?></label>
                 <select
                     name="_related[rental_id][customer_id]"
@@ -68,7 +68,7 @@ $errors = (array) ($errors ?? []);
                 <?php if (!empty($errors['rental_id__related__customer_id'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['rental_id__related__customer_id']) ?></div>
                 <?php endif; ?>
-            </div>            <div class="col-md-6">
+            </div>            <div class="col-12 col-md-6">
                 <label for="related_create_rental_id_return_date" class="form-label"><?= esc('Return Date') ?></label>
                 <input
                     type="datetime-local"
@@ -78,12 +78,12 @@ $errors = (array) ($errors ?? []);
                     class="form-control <?= isset($errors['rental_id__related__return_date']) ? 'is-invalid' : '' ?> crud-related-create-field"
                     data-related-field="rental_id"
                     <?= $relatedCreateActive ? '' : 'disabled' ?>
-                    
+
                 >
                 <?php if (!empty($errors['rental_id__related__return_date'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['rental_id__related__return_date']) ?></div>
                 <?php endif; ?>
-            </div>            <div class="col-md-6">
+            </div>            <div class="col-12 col-md-6">
                 <label for="related_create_rental_id_staff_id" class="form-label"><?= esc('Staff Id') ?></label>
                 <select
                     name="_related[rental_id][staff_id]"

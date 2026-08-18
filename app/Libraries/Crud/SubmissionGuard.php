@@ -6,7 +6,7 @@ namespace App\Libraries\Crud;
 
 /**
  * Protegge i form CRUD dal doppio invio accidentale.
- * Ogni token è monouso e viene eliminato dalla sessione al primo consumo.
+ * Each token is single-use and is removed from the session on first consumption.
  */
 final class SubmissionGuard
 {

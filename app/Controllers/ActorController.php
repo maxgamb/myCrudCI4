@@ -6,9 +6,11 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Libraries\Crud\CrudExporter;
-use App\Libraries\Crud\CrudInputProcessor;
 use App\Libraries\Crud\CrudListRequest;
+use App\Libraries\Crud\CrudNavigationTrail;
+use App\Libraries\Crud\CrudInputProcessor;
 use App\Libraries\Crud\SubmissionGuard;
+use App\Models\ActorModel;
 use App\Services\ActorService;
 use App\Validation\ActorRules;
 use CodeIgniter\Exceptions\PageNotFoundException;
@@ -16,14 +18,14 @@ use RuntimeException;
 use Throwable;
 
 /**
- * Controller CRUD full per actor.
+ * CRUD full controller for resource `actor`.
  *
- * Lato sito: coordina request, validazione, view e redirect. Le query restano
- * nel Model; Standard/Full demandano inoltre la logica applicativa al Service.
+ * Handles the HTTP flow and delegates queries/persistence to Model/Service.
+ * Contains no SQL queries.
  */
 final class ActorController extends BaseController
 {
-    /** Limiti export configurati al momento della generazione. */
+    /** Export limits configured at generation time. */
     private const EXPORT_OPTIONS = [
         'csv' => [
             'chunkSize' => 2000,
@@ -37,22 +39,32 @@ final class ActorController extends BaseController
         ],
     ];
 
-    /** Solo le FK reali della tabella possono viaggiare come contesto URL. */
+    /** Only real table foreign keys may travel as URL context. */
     private const NAVIGATION_CONTEXT_FIELDS = array (
 );
 
-    /** FK autorizzate alla creazione atomica del record padre nello stesso form. */
-    private const RELATED_CREATE_FIELDS = array (
+    /** Fields allowed for inline many-to-many target creation. */
+    private const MANY_TO_MANY_RELATED_CREATE_FIELDS = array (
+  'many__film_actor__actor_id' =>
+  array (
+    0 => 'title',
+    1 => 'description',
+    2 => 'release_year',
+    3 => 'language_id',
+    4 => 'original_language_id',
+    5 => 'rental_duration',
+    6 => 'rental_rate',
+    7 => 'length',
+    8 => 'replacement_cost',
+    9 => 'rating',
+    10 => 'special_features',
+    11 => 'uploads',
+  ),
 );
 
-    /**
-     * Contesti parent ammessi per il Create avviato da una relazione hasMany.
-     * La tabella di ritorno deriva esclusivamente dallo schema generato, mai dal POST.
-     */
-    private const PARENT_CONTEXT_FIELDS = array (
-);
-
-    private ActorService $gateway;
+    /** Read/query dependency: the generated Model. */
+    private ActorModel $model;
+    private ActorService $service;
     private CrudExporter $exporter;
     private CrudInputProcessor $inputProcessor;
     private SubmissionGuard $submissionGuard;
@@ -60,14 +72,20 @@ final class ActorController extends BaseController
     public function __construct()
     {
         helper(['form', 'url']);
-        $this->gateway = new ActorService();
-        // Runtime comune del sito: una sola implementazione per export, input e token.
+        $this->model = new ActorModel();
+        $this->service = new ActorService();
+        // Shared site runtime: a single implementation for export, input, and tokens.
         $this->exporter = new CrudExporter();
         $this->inputProcessor = new CrudInputProcessor();
         $this->submissionGuard = new SubmissionGuard();
     }
 
-    /** Pagina completa o frammento AJAX della tabella Bootstrap. */
+    /**
+     * Displays the full list or the AJAX table fragment.
+     *
+     * Filters, pagination, and sorting are validated by the CRUD runtime before
+     * reaching Model/Service.
+     */
     public function index()
     {
         $listRequest = CrudListRequest::fromRequest(
@@ -85,160 +103,173 @@ final class ActorController extends BaseController
         );
 
         $navigationContext = $this->navigationContextFromQuery();
-        $data = $this->gateway->listPage($listRequest->filters, $listRequest->page, $listRequest->perPage, $listRequest->sort, $listRequest->direction);
+        $cascadeTrail = $this->cascadeTrailFromQuery();
+        $data = $this->model->getListPage($listRequest->filters, $listRequest->page, $listRequest->perPage, $listRequest->sort, $listRequest->direction);
         $data += [
             'title' => 'actor',
             'primaryKey' => 'actor_id',
             'filters' => $listRequest->filters,
             'query' => $listRequest->query,
             'navigationContext' => $navigationContext,
+            'cascadeTrail' => $cascadeTrail,
         ];
 
         if ($this->request->isAJAX()) {
             return view('actor/_table', $data);
         }
 
-        $data['options'] = $this->gateway->relationOptions();
+        $data['options'] = [];
 
         return view('actor/index', $data);
     }
 
-    /** Endpoint JSON usato dalle select AJAX delle relazioni grandi. */
-    public function relationOptions(string $field)
-    {
-        $query = trim((string) $this->request->getGet('q'));
-        if (strlen($query) < 2) {
-            return $this->response->setJSON(['results' => []]);
-        }
-
-        return $this->response->setJSON([
-            'results' => $this->gateway->searchRelationOptions($field, $query, 20),
-        ]);
-    }
-
+    /** Streams the current filtered result set as CSV. */
     public function exportCsv()
     {
         return $this->export('csv');
     }
 
+    /** Streams the current filtered result set as a Word-compatible document. */
     public function exportWord()
     {
         return $this->export('word');
     }
 
+    /**
+     * Displays one record and its explicitly configured child relations.
+     *
+     * @param int|string $id Record identifier.
+     */
     public function view(int|string $id)
     {
         $row = $this->findRecordOrFail($id);
         $navigationContext = $this->navigationContextFromQuery();
+        $cascadeTrail = $this->cascadeTrailFromQuery();
 
         return view('actor/view', [
-            'title' => 'Dettaglio',
+            'title' => 'Details',
             'row' => $row,
-            'children' => $this->gateway->loadHasMany($id),
+            'children' => $this->model->loadHasMany($id),
             'navigationContext' => $navigationContext,
+            'cascadeTrail' => $cascadeTrail,
         ]);
     }
+    /** Displays the Create form with generated relation/context options. */
     public function create()
     {
         $navigationContext = $this->navigationContextFromQuery();
-        $parentContext = $this->parentContextFromQuery($navigationContext);
+        $cascadeTrail = $this->cascadeTrailFromQuery();
+        $parentContext = [];
         $context = [];
         $contextLabels = [];
-        foreach (array (
-) as $field) {
-            $requested = $navigationContext[$field] ?? null;
-            if (!is_scalar($requested) || trim((string) $requested) === '') {
-                continue;
-            }
-            $option = $this->gateway->relationOptionById($field, (string) $requested);
-            if ($option === null) {
-                throw PageNotFoundException::forPageNotFound('Valore FK non valido per ' . $field . '.');
-            }
-            $context[$field] = (string) $option['id'];
-            $contextLabels[$field] = (string) $option['text'];
-        }
 
         return view('actor/create', [
-            'title' => 'Nuovo record',
+            'title' => 'New record',
             'row' => null,
             'errors' => session('errors') ?? [],
-            'options' => $this->gateway->relationOptions(),
-            'relatedCreateOptions' => $this->gateway->relatedCreateRelationOptions(),
+            'options' => [],
+            'relatedCreateOptions' => [],
+            'manyToManyOptions' => $this->model->manyToManyFormOptions(),
+            'manyToManyRelatedCreateOptions' => $this->model->manyToManyRelatedCreateRelationOptions(),
+            'manyToManySelected' => [],
             'context' => $context,
             'contextLabels' => $contextLabels,
             'navigationContext' => $navigationContext,
             'parentContext' => $parentContext,
+            'cascadeTrail' => $cascadeTrail,
             'submissionToken' => $this->submissionGuard->create('store'),
         ]);
     }
 
+    /** Validates the HTTP payload and delegates the Create use-case to the Service. */
     public function store()
     {
         $navigationContext = $this->navigationContextFromPost();
-        $parentContext = $this->parentContextFromPost($navigationContext);
+        $cascadeTrail = $this->cascadeTrailFromPost();
+        $parentContext = [];
         if (!$this->submissionGuard->consume('store', $this->request->getPost('_submission_token'))) {
-            return redirect()->back()->withInput()->with('error', 'Il form è già stato inviato oppure è scaduto.');
+            return redirect()->back()->withInput()->with('error', 'The form has already been submitted or has expired.');
         }
 
-        $related = $this->relatedCreateDataFromPost();
-        $createRules = ActorRules::createRules();
-        foreach (array_keys($related) as $relatedField) {
-            // La FK viene prodotta dalla creazione del padre nella stessa
-            // transazione, quindi non può essere obbligatoria prima dell'INSERT.
-            unset($createRules[$relatedField]);
+        $manyToManyNew = $this->manyToManyRelatedCreateDataFromPost();
+        $manyToManyNewErrors = $this->validateManyToManyRelatedCreates($manyToManyNew);
+        if ($manyToManyNewErrors !== []) {
+            return redirect()->back()->withInput()->with('errors', $manyToManyNewErrors);
         }
+        $createRules = ActorRules::createRules();
         if (!$this->validate($createRules, ActorRules::messages())) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
-        }
-
-        $relatedErrors = $this->validateRelatedCreates($related);
-        if ($relatedErrors !== []) {
-            return redirect()->back()->withInput()->with('errors', $relatedErrors);
         }
 
         $data = $this->formData(false);
         unset($data['actor_id']);
         try {
-            $this->gateway->create($data, $related);
+            $this->service->create($data, $this->manyToManyDataFromPost(), $manyToManyNew);
         } catch (Throwable $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
-        $redirectUrl = $parentContext['url'] ?? $this->contextUrl('actor', $navigationContext);
-        return redirect()->to($redirectUrl)->with('message', 'Record creato correttamente.');
+        $redirectUrl = $parentContext['url'] ?? $this->contextUrl('actor', $navigationContext, $cascadeTrail);
+        return redirect()->to($redirectUrl)->with('message', 'Record created successfully.');
     }
+    /**
+     * Displays the Edit form for one record.
+     *
+     * @param int|string $id Record identifier.
+     */
     public function edit(int|string $id)
     {
         $navigationContext = $this->navigationContextFromQuery();
+        $cascadeTrail = $this->cascadeTrailFromQuery();
 
         return view('actor/edit', [
-            'title' => 'Modifica record',
+            'title' => 'Edit record',
             'row' => $this->findRecordOrFail($id),
             'errors' => session('errors') ?? [],
-            'options' => $this->gateway->relationOptions(),
+            'options' => [],
+            'manyToManyOptions' => $this->model->manyToManyFormOptions(),
+            'manyToManyRelatedCreateOptions' => $this->model->manyToManyRelatedCreateRelationOptions(),
+            'manyToManySelected' => $this->model->manyToManySelected($id),
             'navigationContext' => $navigationContext,
+            'cascadeTrail' => $cascadeTrail,
             'submissionToken' => $this->submissionGuard->create('update_' . (string) $id),
         ]);
     }
 
+    /**
+     * Validates the HTTP payload and delegates the Update use-case to the Service.
+     *
+     * @param int|string $id Record identifier.
+     */
     public function update(int|string $id)
     {
         $navigationContext = $this->navigationContextFromPost();
+        $cascadeTrail = $this->cascadeTrailFromPost();
         if (!$this->submissionGuard->consume('update_' . (string) $id, $this->request->getPost('_submission_token'))) {
-            return redirect()->back()->withInput()->with('error', 'Il form è già stato inviato oppure è scaduto.');
+            return redirect()->back()->withInput()->with('error', 'The form has already been submitted or has expired.');
         }
         if (!$this->validate(ActorRules::updateRules($id), ActorRules::messages())) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
+        $manyToManyNew = $this->manyToManyRelatedCreateDataFromPost();
+        $manyToManyNewErrors = $this->validateManyToManyRelatedCreates($manyToManyNew);
+        if ($manyToManyNewErrors !== []) {
+            return redirect()->back()->withInput()->with('errors', $manyToManyNewErrors);
+        }
         $data = $this->formData(true);
         unset($data['actor_id']);
         try {
-            $this->gateway->update($id, $data);
+            $this->service->update($id, $data, $this->manyToManyDataFromPost(), $manyToManyNew);
         } catch (Throwable $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
-        return redirect()->to($this->contextUrl('actor', $navigationContext))->with('message', 'Record aggiornato correttamente.');
+        return redirect()->to($this->contextUrl('actor', $navigationContext, $cascadeTrail))->with('message', 'Record updated successfully.');
     }
 
+    /**
+     * Delegates record deletion to the generated Service.
+     *
+     * @param int|string $id Record identifier.
+     */
     public function delete(int|string $id)
     {
         $navigationContext = $this->navigationContextFromPost();
@@ -247,20 +278,20 @@ final class ActorController extends BaseController
         }
 
         try {
-            $this->gateway->delete($id);
+            $this->service->delete($id);
         } catch (Throwable $e) {
             return redirect()->to($this->contextUrl('actor', $navigationContext))->with('error', $e->getMessage());
         }
-        return redirect()->to($this->contextUrl('actor', $navigationContext))->with('message', 'Record eliminato correttamente.');
+        return redirect()->to($this->contextUrl('actor', $navigationContext))->with('message', 'Record deleted successfully.');
     }
     /**
-     * Unifica CSV e Word: cambia solo il writer selezionato dalla libreria runtime.
+     * Unifies CSV and Word: only the writer selected by the runtime library changes.
      */
     private function export(string $format)
     {
         $options = self::EXPORT_OPTIONS[$format] ?? null;
         if (!is_array($options)) {
-            throw new RuntimeException('Formato export non supportato.');
+            throw new RuntimeException('Unsupported export format.');
         }
 
         $listRequest = CrudListRequest::fromRequest($this->request, 'actor_id', array (
@@ -278,10 +309,10 @@ final class ActorController extends BaseController
                 response: $this->response,
                 filename: 'actor',
                 languageGroup: 'Actor',
-                fields: $this->gateway->exportFields(),
+                fields: $this->model->exportFields(),
                 filters: $listRequest->filters,
-                countProvider: fn (array $filters): int => $this->gateway->countExportRows($filters),
-                rowProvider: fn (array $filters, int $limit, int|string|null $after): array => $this->gateway->exportRows($filters, $limit, $after),
+                countProvider: fn (array $filters): int => $this->model->countExportRows($filters),
+                rowProvider: fn (array $filters, int $limit, int|string|null $after): array => $this->model->getExportRows($filters, $limit, $after),
                 primaryKey: 'actor_id',
                 chunkSize: (int) $options['chunkSize'],
                 maximumRows: (int) $options['maximumRows'],
@@ -298,25 +329,29 @@ final class ActorController extends BaseController
         }
     }
 
-    /** Recupera il record o converte l'assenza in un normale 404 del sito. */
+    /** Retrieves the record and converts any missing result into a standard HTTP 404. */
     private function findRecordOrFail(int|string $id): object
     {
         try {
-            $record = $this->gateway->find($id);
+            $record = $this->model->getDetail($id);
         } catch (Throwable) {
-            throw PageNotFoundException::forPageNotFound('Record non trovato.');
+            throw PageNotFoundException::forPageNotFound('Record not found.');
         }
 
         if (!is_object($record)) {
-            throw PageNotFoundException::forPageNotFound('Record non trovato.');
+            throw PageNotFoundException::forPageNotFound('Record not found.');
         }
 
         return $record;
     }
-
     /**
-     * Pulizia meccanica comune ai form. In Standard/Full date e password sono
-     * preparate dal Service; in Basic vengono gestite qui dal runtime CRUD.
+     * Extracts and sanitizes write payload from the current HTTP request.
+     *
+     * Standard/Full leave password/date normalization to the Service; Basic may
+     * apply the corresponding runtime transformations here.
+     *
+     * @param bool $isUpdate True while handling an Edit submission.
+     * @return array<string,mixed> Sanitized application payload.
      */
     private function formData(bool $isUpdate): array
     {
@@ -332,41 +367,67 @@ final class ActorController extends BaseController
             array (
 ),
             [],
-            false
+            false,
+            array (
+)
         );
     }
-
-    /** @return array<string,array<string,mixed>> */
-    private function relatedCreateDataFromPost(): array
+    /** @return array<string,list<string>> */
+    private function manyToManyDataFromPost(): array
     {
-        $flags = $this->request->getPost('_related_new');
-        $payload = $this->request->getPost('_related');
+        $payload = $this->request->getPost('_many');
+        $present = $this->request->getPost('_many_present');
+        $payload = is_array($payload) ? $payload : [];
+        $present = is_array($present) ? $present : [];
+        $result = [];
+
+        // _many_present distinguishes an intentionally cleared relation from a
+        // many-to-many relation not managed by the current form.
+        foreach ($present as $key => $flag) {
+            if (!is_string($key) || empty($flag)) {
+                continue;
+            }
+            $ids = $payload[$key] ?? [];
+            $ids = is_array($ids) ? $ids : [];
+            $result[$key] = array_values(array_unique(array_map('strval', array_filter(
+                $ids,
+                static fn ($id): bool => is_scalar($id) && trim((string) $id) !== ''
+            ))));
+        }
+        return $result;
+    }
+    /** @return array<string,array<string,mixed>> */
+    private function manyToManyRelatedCreateDataFromPost(): array
+    {
+        $flags = $this->request->getPost('_many_new');
+        $payload = $this->request->getPost('_many_related');
         $flags = is_array($flags) ? $flags : [];
         $payload = is_array($payload) ? $payload : [];
-        $related = [];
+        $result = [];
 
-        foreach (self::RELATED_CREATE_FIELDS as $field => $allowedFields) {
-            if (empty($flags[$field]) || !isset($payload[$field]) || !is_array($payload[$field])) {
+        foreach (self::MANY_TO_MANY_RELATED_CREATE_FIELDS as $relationKey => $allowedFields) {
+            if (empty($flags[$relationKey]) || !isset($payload[$relationKey]) || !is_array($payload[$relationKey])) {
                 continue;
             }
             $allowed = array_fill_keys((array) $allowedFields, true);
-            $related[$field] = array_intersect_key($payload[$field], $allowed);
+            $result[(string) $relationKey] = array_intersect_key($payload[$relationKey], $allowed);
         }
 
-        return $related;
+        return $result;
     }
 
     /** @return array<string,string> */
-    private function validateRelatedCreates(array $related): array
+    private function validateManyToManyRelatedCreates(array $payloads): array
     {
-        if ($related === []) {
+        if ($payloads === []) {
             return [];
         }
 
-        $definitions = ActorRules::relatedCreateRules();
+        $definitions = ActorRules::manyToManyRelatedCreateRules();
         $errors = [];
-        foreach ($related as $field => $payload) {
-            $relationRules = (array) ($definitions[$field] ?? []);
+
+        foreach ($payloads as $relationKey => $payload) {
+            $relationRules = (array) ($definitions[$relationKey] ?? []);
             if ($relationRules === []) {
                 continue;
             }
@@ -378,26 +439,17 @@ final class ActorController extends BaseController
                 continue;
             }
 
-            foreach ($validation->getErrors() as $relatedField => $message) {
-                $errors[$field . '__related__' . $relatedField] = (string) $message;
+            foreach ($validation->getErrors() as $field => $message) {
+                $errors[$relationKey . '__many_related__' . $field] = $message;
             }
         }
 
         return $errors;
     }
-
     /** @return array<string,string> */
     private function navigationContextFromQuery(): array
     {
         return $this->sanitizeNavigationContext((array) $this->request->getGet());
-    }
-
-    /** @return array<string,string> */
-    private function navigationContextFromPost(): array
-    {
-        $context = $this->request->getPost('_context');
-
-        return $this->sanitizeNavigationContext(is_array($context) ? $context : []);
     }
 
     /** @return array<string,string> */
@@ -415,61 +467,39 @@ final class ActorController extends BaseController
         return $context;
     }
 
-    /** @return array{field:string,table:string,id:string,label:string,url:string}|array{} */
-    private function parentContextFromQuery(array $navigationContext): array
+    /** @return list<array{table:string,id:string,label:string}> */
+    private function cascadeTrailFromQuery(): array
     {
-        return $this->parentContext((string) ($this->request->getGet('_parent_field') ?? ''), $navigationContext);
+        return CrudNavigationTrail::decode($this->request->getGet('_trail'));
+    }
+    /** @return array<string,string> */
+    private function navigationContextFromPost(): array
+    {
+        $context = $this->request->getPost('_context');
+        return $this->sanitizeNavigationContext(is_array($context) ? $context : []);
     }
 
-    /** @return array{field:string,table:string,id:string,label:string,url:string}|array{} */
-    private function parentContextFromPost(array $navigationContext): array
+    /** @return list<array{table:string,id:string,label:string}> */
+    private function cascadeTrailFromPost(): array
     {
-        return $this->parentContext((string) ($this->request->getPost('_parent_field') ?? ''), $navigationContext);
+        return CrudNavigationTrail::decode($this->request->getPost('_trail'));
     }
-
-    /**
-     * Risolve un ritorno contestuale sicuro verso il padre hasMany.
-     * Il client sceglie solo la FK; tabella e route sono whitelist generate dallo schema.
-     *
-     * @return array{field:string,table:string,id:string,label:string,url:string}|array{}
-     */
-    private function parentContext(string $field, array $navigationContext): array
-    {
-        if ($field === '' || !isset(self::PARENT_CONTEXT_FIELDS[$field])) {
-            return [];
-        }
-        $id = $navigationContext[$field] ?? null;
-        if (!is_scalar($id) || trim((string) $id) === '') {
-            return [];
-        }
-        $definition = self::PARENT_CONTEXT_FIELDS[$field];
-        $table = (string) ($definition['table'] ?? '');
-        if ($table === '') {
-            return [];
-        }
-        $id = (string) $id;
-
-        return [
-            'field' => $field,
-            'table' => $table,
-            'id' => $id,
-            'label' => (string) ($definition['label'] ?? $table),
-            'url' => site_url($table . '/view/' . rawurlencode($id)),
-        ];
-    }
-
-    private function contextUrl(string $path, array $context): string
+    private function contextUrl(string $path, array $context, array $cascadeTrail = []): string
     {
         $url = site_url($path);
+        $query = $context;
+        $encodedTrail = CrudNavigationTrail::encode($cascadeTrail);
+        if ($encodedTrail !== '') {
+            $query['_trail'] = $encodedTrail;
+        }
 
-        return $context === [] ? $url : $url . '?' . http_build_query($context);
+        return $query === [] ? $url : $url . '?' . http_build_query($query);
     }
-
     private function exportLimitRedirect(string $format, bool $unfiltered)
     {
         $message = $unfiltered
-            ? 'La tabella contiene troppi record per un export senza filtri. Applicare almeno un filtro prima di esportare in ' . $format . '.'
-            : 'Il numero di record supera il limite configurato per ' . $format . '. Applicare filtri più restrittivi.';
+            ? 'The table contains too many records for an unfiltered export. Apply at least one filter before exporting to ' . $format . '.'
+            : 'The number of records exceeds the configured limit for ' . $format . '. Apply more restrictive filters.';
 
         $query = (array) $this->request->getGet();
         $url = site_url('actor') . ($query === [] ? '' : '?' . http_build_query($query));

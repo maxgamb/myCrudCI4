@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Libraries\MyCrud\Generators;
 
-/** Genera controller REST v1 e Resource di serializzazione. */
+/** Generates the REST v1 controller and serialization Resource. */
 final class ApiGenerator
 {
     use GeneratorTrait;
@@ -14,13 +14,23 @@ final class ApiGenerator
         $table = (string) $config['table'];
         $api = (string) $config['classes']['api'];
         $service = (string) $config['classes']['service'];
+        $model = (string) $config['classes']['model'];
         $rules = (string) $config['classes']['apiRules'];
         $pk = (string) $config['primaryKey'];
         $resource = (string) ($config['classes']['resource'] ?? (preg_replace('/ApiController$/', 'Resource', $api) ?: $api . 'Resource'));
         $softDeleteField = (string) ($config['softDelete']['field'] ?? 'deleted_at');
-        $readOnly = !empty($config['features']['readOnly']);
+        $apiCaps = (array) ($config['apiCapabilities'] ?? []);
+        $apiList = !empty($apiCaps['list']);
+        $apiRead = !empty($apiCaps['read']);
+        $apiCreate = !empty($apiCaps['create']);
+        $apiUpdate = !empty($apiCaps['update']);
+        $apiDelete = !empty($apiCaps['delete']);
+        $apiTrash = !empty($apiCaps['trash']);
+        $apiRestore = !empty($apiCaps['restore']);
+        $apiForceDelete = !empty($apiCaps['forceDelete']);
+        $apiWritable = $apiCreate || $apiUpdate;
         $isView = !empty($config['isView']);
-        $recordDetail = !empty($config['features']['recordDetail']);
+        $recordDetail = $apiRead;
         $timestampsEnabled = !empty($config['features']['timestamps'])
             && isset($config['fields']['created_at'], $config['fields']['updated_at']);
 
@@ -28,6 +38,7 @@ final class ApiGenerator
         $writable = [];
         $filterable = [];
         $sortable = [];
+        $uploadFields = [];
 
         foreach ($config['fields'] as $field) {
             $name = (string) $field['name'];
@@ -42,17 +53,27 @@ final class ApiGenerator
                 || !empty($index['unique'])
                 || !empty($index['leading']);
 
-            // La visibilità API è una scelta esplicita del Builder e non viene
-            // dedotta dal nome del campo.
+            // API visibility is an explicit Builder choice and is not
+            // derived from the field name.
             if (!array_key_exists('apiVisible', $ui) || !empty($ui['apiVisible'])) {
                 $readable[] = $name;
             }
 
-            // In assenza di una proprietà apiWritable dedicata, l'API accetta
-            // gli stessi campi gestiti dal form web, esclusi quelli amministrati
-            // dal framework o dichiarati readonly/disabled.
+            $inputType = strtolower((string) ($field['inputType'] ?? $ui['inputType'] ?? 'text'));
+            $isUpload = in_array($inputType, ['file', 'image'], true);
+
+            if ($isUpload && ($apiCreate || $apiUpdate)) {
+                $uploadFields[$name] = [
+                    'type' => $inputType,
+                    'required' => empty($field['nullable']) && ($field['default'] ?? null) === null,
+                ];
+            }
+
+            // Binary fields never accept arbitrary persisted filenames from JSON/form payloads.
+            // They use the generated multipart upload path and CrudUploadManager only.
             if (
-                !$readOnly
+                $apiWritable
+                && !$isUpload
                 && !$primaryAuto
                 && !$managedField
                 && !empty($ui['visibleForm'])
@@ -89,7 +110,8 @@ final class ApiGenerator
         $writableCode = var_export(array_values(array_unique($writable)), true);
         $filterableCode = var_export(array_values(array_unique($filterable)), true);
         $sortableCode = var_export(array_values(array_unique($sortable)), true);
-
+        $uploadFieldsCode = var_export($uploadFields, true);
+        $hasApiUploads = $uploadFields !== [] && ($apiCreate || $apiUpdate);
         $baseControllerContent = <<<'BASEAPI'
 <?php
 
@@ -103,7 +125,7 @@ use Throwable;
 
 /**
  * Base comune delle API generate.
- * Uniforma payload, errori e limiti di paginazione.
+ * Standardizes payloads, errors, and pagination limits.
  */
 abstract class BaseApiController extends BaseController
 {
@@ -174,7 +196,7 @@ abstract class BaseApiController extends BaseController
 
         return $this->error(
             'INTERNAL_ERROR',
-            'Errore interno del server.',
+            'Internal server error.',
             500
         );
     }
@@ -189,13 +211,14 @@ declare(strict_types=1);
 
 namespace App\API\Resources;
 
-/** Serializza la risorsa {$table} secondo la configurazione del Builder. */
+/**
+ * Output-only serializer for `{$table}`.
+ *
+ * It performs no queries, request parsing, validation, or persistence.
+ */
 final class {$resource}
 {
     private const READABLE = {$readableCode};
-    private const WRITABLE = {$writableCode};
-    private const FILTERABLE = {$filterableCode};
-    private const SORTABLE = {$sortableCode};
 
     public static function make(object|array \$record): array
     {
@@ -216,35 +239,28 @@ final class {$resource}
     {
         return array_map(static fn (object|array \$record): array => self::make(\$record), \$records);
     }
-
-    public static function writableData(array \$data): array
-    {
-        return array_intersect_key(\$data, array_flip(self::WRITABLE));
-    }
-
-    public static function filterableFields(): array
-    {
-        return self::FILTERABLE;
-    }
-
-    public static function sortableFields(): array
-    {
-        return self::SORTABLE;
-    }
 }
 
 PHP;
 
-        $softMethods = !empty($config['features']['softDeletes']) ? <<<PHP
+        $softMethods = '';
+
+        if ($apiTrash) {
+            $softMethods .= <<<PHP
 
     public function trash()
     {
         try {
-            return \$this->success({$resource}::collection(\$this->service->deletedList()));
+            return \$this->success({$resource}::collection(\$this->model->getDeletedList()));
         } catch (Throwable \$e) {
             return \$this->internalError(\$e);
         }
     }
+PHP;
+        }
+
+        if ($apiRestore) {
+            $softMethods .= <<<PHP
 
     public function restore(int|string \$id)
     {
@@ -257,6 +273,11 @@ PHP;
             return \$this->internalError(\$e);
         }
     }
+PHP;
+        }
+
+        if ($apiForceDelete) {
+            $softMethods .= <<<PHP
 
     public function forceDelete(int|string \$id)
     {
@@ -269,19 +290,24 @@ PHP;
             return \$this->internalError(\$e);
         }
     }
-PHP : '';
+PHP;
+        }
 
         $resourceUse = "use App\\API\\Resources\\{$resource};";
         $serviceUse = "use App\\Services\\{$service};";
-        $rulesUse = "use App\\Validation\\{$rules};";
+        $modelUse = "use App\\Models\\{$model};";
+        $uploadUse = $hasApiUploads ? "use App\\Libraries\\Crud\\CrudUploadManager;\n" : '';
+        $rulesUse = ($apiCreate || $apiUpdate) ? "use App\\Validation\\{$rules};\n" : '';
+        $uploadProperty = $hasApiUploads ? "    private CrudUploadManager \$uploadManager;\n" : '';
+        $uploadInit = $hasApiUploads ? "        \$this->uploadManager = new CrudUploadManager();\n" : '';
 
         $recordApiMethod = $recordDetail ? <<<PHP
     public function show(int|string \$id)
     {
         try {
-            return \$this->success({$resource}::make(\$this->service->find(\$id)));
+            return \$this->success({$resource}::make(\$this->recordOrFail(\$id)));
         } catch (RuntimeException) {
-            return \$this->error('NOT_FOUND', 'Record non trovato.', 404);
+            return \$this->error('NOT_FOUND', 'Record not found.', 404);
         } catch (Throwable \$e) {
             return \$this->internalError(\$e);
         }
@@ -289,18 +315,39 @@ PHP : '';
 
 PHP : '';
 
-        $writeApiMethods = $readOnly ? '' : <<<PHP
+        $createUploadValidation = $hasApiUploads ? <<<'PHP'
+        $uploadErrors = $this->apiUploadErrors(false);
+        if ($uploadErrors !== []) {
+            return $this->error('VALIDATION_ERROR', 'Upload non valido.', 422, $uploadErrors);
+        }
+PHP : '';
+        $createEmptyCondition = $hasApiUploads
+            ? '$data === [] && !$this->hasApiUpload()'
+            : '$data === []';
+        $createUploadPersistence = $hasApiUploads ? <<<'PHP'
+            $uploadData = $this->storeApiUploads($id);
+            if ($uploadData !== []) {
+                $this->service->updateUploads($id, $uploadData);
+            }
+PHP : '';
+
+        $writeApiMethods = '';
+
+        if ($apiCreate) {
+            $writeApiMethods .= <<<PHP
     public function create()
     {
-        \$data = {$resource}::writableData(\$this->payload());
-        if (\$data === []) {
-            return \$this->error('EMPTY_PAYLOAD', 'Nessun campo scrivibile ricevuto.', 422);
+        \$data = \$this->writableData(\$this->payload());
+{$createUploadValidation}
+        if ({$createEmptyCondition}) {
+            return \$this->error('EMPTY_PAYLOAD', 'No writable field received.', 422);
         }
         if (!\$this->validateData(\$data, {$rules}::createRules(), {$rules}::messages())) {
             return \$this->error('VALIDATION_ERROR', 'Dati non validi.', 422, \$this->validator->getErrors());
         }
         try {
             \$id = \$this->service->create(\$data);
+{$createUploadPersistence}
             return \$this->success(['{$pk}' => \$id], [], [], 201);
         } catch (RuntimeException \$e) {
             return \$this->error('CREATE_FAILED', \$e->getMessage(), 400);
@@ -309,6 +356,11 @@ PHP : '';
         }
     }
 
+PHP;
+        }
+
+        if ($apiUpdate) {
+            $writeApiMethods .= <<<PHP
     public function update(int|string \$id)
     {
         return \$this->writeUpdate(\$id, false);
@@ -321,10 +373,10 @@ PHP : '';
 
     private function writeUpdate(int|string \$id, bool \$partial)
     {
-        \$data = {$resource}::writableData(\$this->payload());
+        \$data = \$this->writableData(\$this->payload());
         unset(\$data['{$pk}']);
         if (\$data === []) {
-            return \$this->error('EMPTY_PAYLOAD', 'Nessun campo scrivibile ricevuto.', 422);
+            return \$this->error('EMPTY_PAYLOAD', 'No writable field received.', 422);
         }
         \$rules = {$rules}::updateRules(\$id);
         if (\$partial) {
@@ -334,12 +386,16 @@ PHP : '';
             return \$this->error('VALIDATION_ERROR', 'Dati non validi.', 422, \$this->validator->getErrors());
         }
         try {
-            \$this->service->find(\$id);
-            \$this->service->update(\$id, \$data);
-            return \$this->success({$resource}::make(\$this->service->find(\$id)));
+            \$this->recordOrFail(\$id);
+            if (\$partial) {
+                \$this->service->patch(\$id, \$data);
+            } else {
+                \$this->service->update(\$id, \$data);
+            }
+            return \$this->success({$resource}::make(\$this->recordOrFail(\$id)));
         } catch (RuntimeException \$e) {
-            if (\$e->getMessage() === 'Record non trovato.') {
-                return \$this->error('NOT_FOUND', 'Record non trovato.', 404);
+            if (\$e->getMessage() === 'Record not found.') {
+                return \$this->error('NOT_FOUND', 'Record not found.', 404);
             }
             return \$this->error('UPDATE_FAILED', \$e->getMessage(), 400);
         } catch (Throwable \$e) {
@@ -347,15 +403,63 @@ PHP : '';
         }
     }
 
+PHP;
+        }
+
+        if ($apiUpdate && $hasApiUploads) {
+            $writeApiMethods .= <<<PHP
+    /**
+     * Replaces one or more upload fields through multipart/form-data POST.
+     *
+     * Separate endpoint from PUT/PATCH for PHP 8.3 compatibility, where
+     * \$_FILES viene popolato automaticamente per multipart POST.
+     */
+    public function upload(int|string \$id)
+    {
+        \$uploadErrors = \$this->apiUploadErrors(true);
+        if (\$uploadErrors !== []) {
+            return \$this->error('VALIDATION_ERROR', 'Upload non valido.', 422, \$uploadErrors);
+        }
+        if (!\$this->hasApiUpload()) {
+            return \$this->error('EMPTY_UPLOAD', 'No file ricevuto.', 422);
+        }
+
+        try {
+            \$this->recordOrFail(\$id);
+            \$oldUploadValues = \$this->currentApiUploadValues(\$id);
+            \$uploadData = \$this->storeApiUploads(\$id);
+            if (\$uploadData === []) {
+                return \$this->error('EMPTY_UPLOAD', 'No file valido ricevuto.', 422);
+            }
+
+            \$this->service->updateUploads(\$id, \$uploadData);
+            \$this->deleteReplacedApiUploads(\$oldUploadValues, \$uploadData);
+
+            return \$this->success({$resource}::make(\$this->recordOrFail(\$id)));
+        } catch (RuntimeException \$e) {
+            if (\$e->getMessage() === 'Record not found.') {
+                return \$this->error('NOT_FOUND', 'Record not found.', 404);
+            }
+            return \$this->error('UPLOAD_FAILED', \$e->getMessage(), 400);
+        } catch (Throwable \$e) {
+            return \$this->internalError(\$e);
+        }
+    }
+
+PHP;
+        }
+
+        if ($apiDelete) {
+            $writeApiMethods .= <<<PHP
     public function delete(int|string \$id)
     {
         try {
-            \$this->service->find(\$id);
+            \$this->recordOrFail(\$id);
             \$this->service->delete(\$id);
             return \$this->response->setStatusCode(204)->setBody('');
         } catch (RuntimeException \$e) {
-            if (\$e->getMessage() === 'Record non trovato.') {
-                return \$this->error('NOT_FOUND', 'Record non trovato.', 404);
+            if (\$e->getMessage() === 'Record not found.') {
+                return \$this->error('NOT_FOUND', 'Record not found.', 404);
             }
             return \$this->error('DELETE_FAILED', \$e->getMessage(), 400);
         } catch (Throwable \$e) {
@@ -364,6 +468,136 @@ PHP : '';
     }
 
 PHP;
+        }
+
+        $runtimeExceptionUse = (
+            $apiRead || $apiCreate || $apiUpdate || $apiDelete || $apiRestore || $apiForceDelete
+        ) ? "use RuntimeException;\n" : '';
+        $controllerDoc = $isView
+            ? "/**\n * Read-only API for SQL VIEW `{$table}`.\n * Exposes only GET operations compatible with generated capabilities.\n * READ operations are delegated to the generated Model; no SQL is composed here.\n */"
+            : "/**\n * REST API v1 for resource `{$table}`.\n * Exposed operations follow capabilities generated by the Builder/schema.\n * READ operations use the generated Model; WRITE operations use the generated Service.\n * This controller never composes SQL or resolves relation classes dynamically.\n */";
+
+        $listApiMethod = $apiList ? <<<PHP
+    public function index()
+    {
+        try {
+            \$query = (array) \$this->request->getGet();
+            \$query['perPage'] = \$this->safePerPage();
+            \$result = \$this->model->apiList(\$query, self::FILTERABLE_FIELDS, self::SORTABLE_FIELDS);
+            return \$this->success({$resource}::collection(\$result['rows']), \$result['meta'], \$result['links']);
+        } catch (Throwable \$e) {
+            return \$this->internalError(\$e);
+        }
+    }
+
+PHP : '';
+
+        $writableDataHelper = $apiWritable ? <<<'PHP'
+
+    /**
+     * Filters an incoming REST payload against the generated API write whitelist.
+     *
+     * Input filtering belongs to the API boundary. The Resource remains an
+     * output-only serializer and never performs persistence or request handling.
+     *
+     * @param array<string,mixed> $data
+     * @return array<string,mixed>
+     */
+    private function writableData(array $data): array
+    {
+        return array_intersect_key($data, array_flip(self::WRITABLE_FIELDS));
+    }
+
+PHP : '';
+
+        $recordLookupHelper = ($apiRead || $apiUpdate || $apiDelete || $hasApiUploads) ? <<<'PHP'
+
+    /**
+     * Reads one record through the Model and translates absence into the API
+     * application exception used by the existing error mapping.
+     */
+    private function recordOrFail(int|string $id): object
+    {
+        $record = $this->model->getDetail($id);
+        if (!is_object($record)) {
+            throw new RuntimeException('Record not found.');
+        }
+
+        return $record;
+    }
+
+PHP : '';
+
+        $apiUploadHelpers = $hasApiUploads ? <<<'PHP'
+    /** @return array<string,string> */
+    private function apiUploadErrors(bool $isUpdate): array
+    {
+        return $this->uploadManager->validate(
+            self::UPLOAD_FIELDS,
+            $this->request->getFiles(),
+            $isUpdate
+        );
+    }
+
+    private function hasApiUpload(): bool
+    {
+        foreach (array_keys(self::UPLOAD_FIELDS) as $field) {
+            $file = $this->request->getFile($field);
+            if ($file !== null && $file->getError() !== UPLOAD_ERR_NO_FILE) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** @return array<string,string> */
+    private function storeApiUploads(int|string $id): array
+    {
+        return $this->uploadManager->store(
+            self::API_TABLE,
+            $id,
+            self::UPLOAD_FIELDS,
+            $this->request->getFiles()
+        );
+    }
+
+    /** @return array<string,string> */
+    private function currentApiUploadValues(int|string $id): array
+    {
+        if (self::UPLOAD_FIELDS === []) {
+            return [];
+        }
+
+        $record = $this->recordOrFail($id);
+        $values = [];
+        foreach (array_keys(self::UPLOAD_FIELDS) as $field) {
+            if (is_array($record)) {
+                $values[$field] = (string) ($record[$field] ?? '');
+            } else {
+                $values[$field] = isset($record->{$field}) ? (string) $record->{$field} : '';
+            }
+        }
+
+        return $values;
+    }
+
+    /** @param array<string,string> $old @param array<string,string> $new */
+    private function deleteReplacedApiUploads(array $old, array $new): void
+    {
+        foreach ($new as $field => $filename) {
+            $previous = (string) ($old[$field] ?? '');
+            if ($previous !== '' && $previous !== $filename) {
+                $this->uploadManager->delete($previous);
+            }
+        }
+    }
+
+PHP : '';
+
+        $apiRuntimeConstants = $hasApiUploads
+            ? "    private const API_TABLE = '{$table}';\n    private const UPLOAD_FIELDS = {$uploadFieldsCode};\n"
+            : '';
 
         $controllerContent = <<<PHP
 <?php
@@ -374,32 +608,29 @@ namespace App\Controllers\Api\V1;
 
 {$resourceUse}
 use App\Controllers\Api\BaseApiController;
+{$uploadUse}{$modelUse}
 {$serviceUse}
-{$rulesUse}
-use RuntimeException;
-use Throwable;
+{$rulesUse}{$runtimeExceptionUse}use Throwable;
 
-/** API REST v1 per la risorsa {$table}. */
+{$controllerDoc}
 final class {$api} extends BaseApiController
 {
-    public function __construct(private readonly {$service} \$service = new {$service}())
-    {
-    }
+{$apiRuntimeConstants}    /** Fields accepted as REST list filters. API query policy belongs to the HTTP boundary. */
+    private const FILTERABLE_FIELDS = {$filterableCode};
 
-    public function index()
-    {
-        try {
-            \$query = (array) \$this->request->getGet();
-            \$query['perPage'] = \$this->safePerPage();
-            \$result = \$this->service->apiList(\$query, {$resource}::filterableFields(), {$resource}::sortableFields());
-            return \$this->success({$resource}::collection(\$result['rows']), \$result['meta'], \$result['links']);
-        } catch (Throwable \$e) {
-            return \$this->internalError(\$e);
-        }
-    }
+    /** Fields accepted for REST list sorting. API query policy belongs to the HTTP boundary. */
+    private const SORTABLE_FIELDS = {$sortableCode};
 
-{$recordApiMethod}{$writeApiMethods}{$softMethods}
-}
+    /** Fields accepted from REST JSON/form request bodies. Binary upload fields are intentionally excluded. */
+    private const WRITABLE_FIELDS = {$writableCode};
+
+{$uploadProperty}    public function __construct(
+        private readonly {$model} \$model = new {$model}(),
+        private readonly {$service} \$service = new {$service}()
+    ) {
+{$uploadInit}    }
+
+{$listApiMethod}{$recordApiMethod}{$writeApiMethods}{$softMethods}{$writableDataHelper}{$recordLookupHelper}{$apiUploadHelpers}}
 
 PHP;
 

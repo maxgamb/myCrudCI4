@@ -11,19 +11,19 @@ use JsonException;
 
 final class MyCrudTest extends BaseCommand
 {
-    protected $group       = 'myCrudGpt';
+    protected $group       = 'myCrudCI4';
     protected $name        = 'mycrud:test';
-    protected $description = 'Genera e verifica un CRUD 2.7.4 su una tabella reale.';
+    protected $description = 'Generates and verifies a CRUD on a real table.';
     protected $usage       = 'mycrud:test <table> [--no-force] [--json] [--report path]';
 
     protected $arguments = [
-        'table' => 'Tabella da usare per il test di generazione.',
+        'table' => 'Table da usare per il test di generazione.',
     ];
 
     protected $options = [
         '--no-force' => 'Non sovrascrive i file già presenti nel percorso di generazione.',
         '--json'     => 'Stampa il report JSON.',
-        '--report'   => 'Salva il report JSON nel percorso indicato.',
+        '--report'   => 'Save il report JSON nel percorso indicato.',
     ];
 
     public function run(array $params)
@@ -31,7 +31,7 @@ final class MyCrudTest extends BaseCommand
         $table = trim((string) ($params[0] ?? ''));
 
         if ($table === '') {
-            CLI::error('Specificare la tabella: php spark mycrud:test nome_tabella');
+            CLI::error('Specificare la table: php spark mycrud:test nome_table');
             return EXIT_ERROR;
         }
 
@@ -45,12 +45,12 @@ final class MyCrudTest extends BaseCommand
             try {
                 $directory = dirname($reportPath);
                 if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) {
-                    CLI::error('Impossibile creare la directory del report: ' . $directory);
+                    CLI::error('Unable to create report directory: ' . $directory);
                 } else {
                     file_put_contents($reportPath, $report->toJson() . PHP_EOL, LOCK_EX);
                 }
             } catch (JsonException $exception) {
-                CLI::error('Errore report JSON: ' . $exception->getMessage());
+                CLI::error('Error report JSON: ' . $exception->getMessage());
             }
         }
 
@@ -70,7 +70,7 @@ final class MyCrudTest extends BaseCommand
 
     private function printReport(DiagnosticReport $report, string $table): void
     {
-        CLI::write('myCrudGpt generation test: ' . $table, 'yellow');
+        CLI::write('myCrudCI4 generation test: ' . $table, 'yellow');
         CLI::newLine();
 
         foreach ($report->results() as $result) {

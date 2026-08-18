@@ -6,16 +6,34 @@ namespace App\Controllers\Api\V1;
 
 use App\API\Resources\SalesByFilmCategoryResource;
 use App\Controllers\Api\BaseApiController;
+use App\Models\SalesByFilmCategoryModel;
 use App\Services\SalesByFilmCategoryService;
-use App\Validation\SalesByFilmCategoryApiRules;
-use RuntimeException;
 use Throwable;
 
-/** API REST v1 per la risorsa sales_by_film_category. */
+/**
+ * Read-only API for SQL VIEW `sales_by_film_category`.
+ * Exposes only GET operations compatible with generated capabilities.
+ * READ operations are delegated to the generated Model; no SQL is composed here.
+ */
 final class SalesByFilmCategoryApiController extends BaseApiController
 {
-    public function __construct(private readonly SalesByFilmCategoryService $service = new SalesByFilmCategoryService())
-    {
+    /** Fields accepted as REST list filters. API query policy belongs to the HTTP boundary. */
+    private const FILTERABLE_FIELDS = array (
+);
+
+    /** Fields accepted for REST list sorting. API query policy belongs to the HTTP boundary. */
+    private const SORTABLE_FIELDS = array (
+  0 => 'category',
+);
+
+    /** Fields accepted from REST JSON/form request bodies. Binary upload fields are intentionally excluded. */
+    private const WRITABLE_FIELDS = array (
+);
+
+    public function __construct(
+        private readonly SalesByFilmCategoryModel $model = new SalesByFilmCategoryModel(),
+        private readonly SalesByFilmCategoryService $service = new SalesByFilmCategoryService()
+    ) {
     }
 
     public function index()
@@ -23,12 +41,10 @@ final class SalesByFilmCategoryApiController extends BaseApiController
         try {
             $query = (array) $this->request->getGet();
             $query['perPage'] = $this->safePerPage();
-            $result = $this->service->apiList($query, SalesByFilmCategoryResource::filterableFields(), SalesByFilmCategoryResource::sortableFields());
+            $result = $this->model->apiList($query, self::FILTERABLE_FIELDS, self::SORTABLE_FIELDS);
             return $this->success(SalesByFilmCategoryResource::collection($result['rows']), $result['meta'], $result['links']);
         } catch (Throwable $e) {
             return $this->internalError($e);
         }
     }
-
-
 }

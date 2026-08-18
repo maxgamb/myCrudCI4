@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 /**
- * Configurazione persistente myCrudGpt per la tabella rental.
+ * myCrudCI4 persistent configuration for table rental.
  *
  * Questo file contiene solo le scelte dello sviluppatore.
- * Tipi DB, indici e relazioni vengono riletti dallo schema ad ogni generazione.
+ * DB types, indexes, and relations are reread from the schema on every generation.
  */
 return array (
   'table' => 'rental',
@@ -21,6 +21,9 @@ return array (
     5 => 'staff_id',
     6 => 'last_update',
   ),
+  'formSections' => 
+  array (
+  ),
   'fields' => 
   array (
     'rental_id' => 
@@ -28,6 +31,7 @@ return array (
       'label' => '',
       'inputType' => 'number',
       'width' => 6,
+      'section' => '',
       'relationMode' => '',
       'relationDisplayField' => '',
       'relationDisplayTemplate' => '',
@@ -43,7 +47,13 @@ return array (
       array (
         'enabled' => false,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -64,6 +74,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'exact',
+        'mcpVisible' => true,
       ),
     ),
     'rental_date' => 
@@ -71,6 +82,7 @@ return array (
       'label' => '',
       'inputType' => 'datetime-local',
       'width' => 6,
+      'section' => '',
       'relationMode' => '',
       'relationDisplayField' => '',
       'relationDisplayTemplate' => '',
@@ -86,7 +98,13 @@ return array (
       array (
         'enabled' => false,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'now',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -108,6 +126,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'exact',
+        'mcpVisible' => true,
       ),
     ),
     'inventory_id' => 
@@ -115,6 +134,7 @@ return array (
       'label' => '',
       'inputType' => 'select',
       'width' => 6,
+      'section' => '',
       'relationMode' => 'select',
       'relationDisplayField' => 'inventory_id',
       'relationDisplayTemplate' => '',
@@ -130,7 +150,13 @@ return array (
       array (
         'enabled' => true,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -152,6 +178,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'exact',
+        'mcpVisible' => true,
       ),
     ),
     'customer_id' => 
@@ -159,6 +186,7 @@ return array (
       'label' => '',
       'inputType' => 'select',
       'width' => 6,
+      'section' => '',
       'relationMode' => 'select',
       'relationDisplayField' => 'last_name',
       'relationDisplayTemplate' => '',
@@ -174,7 +202,13 @@ return array (
       array (
         'enabled' => true,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -196,6 +230,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'exact',
+        'mcpVisible' => true,
       ),
     ),
     'return_date' => 
@@ -203,6 +238,7 @@ return array (
       'label' => '',
       'inputType' => 'datetime-local',
       'width' => 6,
+      'section' => '',
       'relationMode' => '',
       'relationDisplayField' => '',
       'relationDisplayTemplate' => '',
@@ -218,7 +254,13 @@ return array (
       array (
         'enabled' => false,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'now',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -239,6 +281,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'range',
+        'mcpVisible' => true,
       ),
     ),
     'staff_id' => 
@@ -246,6 +289,7 @@ return array (
       'label' => '',
       'inputType' => 'select',
       'width' => 6,
+      'section' => '',
       'relationMode' => 'select',
       'relationDisplayField' => 'last_name',
       'relationDisplayTemplate' => '',
@@ -261,7 +305,13 @@ return array (
       array (
         'enabled' => true,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -283,6 +333,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'exact',
+        'mcpVisible' => true,
       ),
     ),
     'last_update' => 
@@ -290,6 +341,7 @@ return array (
       'label' => '',
       'inputType' => 'datetime-local',
       'width' => 6,
+      'section' => '',
       'relationMode' => '',
       'relationDisplayField' => '',
       'relationDisplayTemplate' => '',
@@ -305,7 +357,13 @@ return array (
       array (
         'enabled' => false,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -326,6 +384,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'range',
+        'mcpVisible' => true,
       ),
     ),
   ),
@@ -334,6 +393,68 @@ return array (
     'relations' => true,
     'softDeletes' => false,
     'timestamps' => true,
+  ),
+  'apiCapabilities' => 
+  array (
+    'list' => true,
+    'read' => true,
+    'create' => true,
+    'update' => true,
+    'delete' => true,
+    'trash' => false,
+    'restore' => false,
+    'forceDelete' => false,
+  ),
+  'crudSecurity' => 
+  array (
+    'auth' => 'none',
+    'permissions' => 
+    array (
+      'list' => '',
+      'read' => '',
+      'create' => '',
+      'update' => '',
+      'delete' => '',
+      'trash' => '',
+      'restore' => '',
+      'forceDelete' => '',
+    ),
+  ),
+  'apiSecurity' => 
+  array (
+    'auth' => 'none',
+    'permissions' => 
+    array (
+      'list' => '',
+      'read' => '',
+      'create' => '',
+      'update' => '',
+      'delete' => '',
+      'trash' => '',
+      'restore' => '',
+      'forceDelete' => '',
+      'upload' => '',
+    ),
+  ),
+  'mcp' => 
+  array (
+    'enabled' => true,
+    'transport' => 'stdio',
+    'mode' => 'read_only',
+    'serverName' => 'myCrudCI4',
+    'security' => 
+    array (
+      'boundary' => 'local_process',
+      'inheritsApiSecurity' => false,
+      'remoteTransportAllowed' => false,
+      'oauthRequiredForRemote' => true,
+    ),
+    'capabilities' => 
+    array (
+      'list' => true,
+      'read' => true,
+      'relations' => true,
+    ),
   ),
   'relationsConfig' => 
   array (
@@ -349,7 +470,12 @@ return array (
         'showCreateButton' => true,
         'showViewAllButton' => true,
         'showViewButton' => true,
+        'collapsible' => true,
+        'collapsed' => false,
       ),
+    ),
+    'manyToMany' => 
+    array (
     ),
   ),
   'list' => 
@@ -358,9 +484,9 @@ return array (
   ),
   '_meta' => 
   array (
-    'generatorVersion' => '2.8.0-dev33',
-    'savedAt' => '2026-08-10T17:56:16+00:00',
+    'generatorVersion' => '2.9.1-dev24-fix11-fix48',
+    'savedAt' => '2026-08-18T16:48:30+00:00',
     'schemaFingerprint' => 'd5f022f999cbcd79bb0c52c3c39927e4e954e416be7061c7ac29751abe12ffa1',
-    'configHash' => '4612dc8215557dab74f37e2ae6604faebab6e4f1eea202f89f0b15306d110ffa',
+    'configHash' => '77ac3e6eebf8ebc79fd386fae01a4be3827cb2298f3021b0ce6116a2e20a8fed',
   ),
 );

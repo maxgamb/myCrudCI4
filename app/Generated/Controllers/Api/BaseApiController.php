@@ -10,7 +10,7 @@ use Throwable;
 
 /**
  * Base comune delle API generate.
- * Uniforma payload, errori e limiti di paginazione.
+ * Standardizes payloads, errors, and pagination limits.
  */
 abstract class BaseApiController extends BaseController
 {
@@ -81,7 +81,7 @@ abstract class BaseApiController extends BaseController
 
         return $this->error(
             'INTERNAL_ERROR',
-            'Errore interno del server.',
+            'Internal server error.',
             500
         );
     }

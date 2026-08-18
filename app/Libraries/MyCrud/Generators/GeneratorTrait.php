@@ -36,7 +36,7 @@ trait GeneratorTrait
             || in_array('..', $segments, true)
         ) {
             throw new RuntimeException(
-                'Scrittura bloccata: il percorso deve essere relativo ad app/Generated/.'
+                'Write blocked: the path must be relative to app/Generated/.'
             );
         }
 
@@ -56,6 +56,8 @@ trait GeneratorTrait
             ];
         }
 
+        $content = $this->formatGeneratedContent($relativePath, $content);
+
         if (file_put_contents($path, $content, LOCK_EX) === false) {
             throw new RuntimeException('Impossibile scrivere il file: ' . $path);
         }
@@ -64,6 +66,20 @@ trait GeneratorTrait
             'status' => $exists ? 'overwritten' : 'created',
             'path'   => $path,
         ];
+    }
+
+    private function formatGeneratedContent(string $relativePath, string $content): string
+    {
+        // Keep generated source compact without changing executable structure:
+        // trim trailing whitespace and cap vertical spacing at one empty line.
+        if (!str_ends_with(strtolower($relativePath), '.php')) {
+            return $content;
+        }
+
+        $content = preg_replace('/[ \t]+$/m', '', $content) ?? $content;
+        $content = preg_replace("/\n{3,}/", "\n\n", $content) ?? $content;
+
+        return rtrim($content) . "\n";
     }
 
     private function exportArray(array $value, int $indent = 4): string

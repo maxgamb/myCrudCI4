@@ -3,9 +3,9 @@
 
 <div class="container py-4">
     <div class="mb-4">
-        <h1 class="h2">myCrudGpt</h1>
+        <h1 class="h2">myCrudCI4</h1>
         <p class="text-muted mb-0">
-            Generazione automatica o personalizzata di moduli CodeIgniter 4.
+            Configure CodeIgniter 4 CRUDs from the current database schema.
         </p>
     </div>
 
@@ -15,7 +15,7 @@
 
     <div class="card shadow-sm">
         <div class="card-header">
-            <strong>Oggetti database disponibili</strong>
+            <strong>Available database objects</strong>
         </div>
 
         <div class="list-group list-group-flush">
@@ -32,16 +32,10 @@
                     </span>
 
                     <div class="btn-group">
-                        <a href="<?= site_url('mycrud/auto/' . $table) ?>"
-                           class="btn btn-success btn-sm">
-                            <i class="bi bi-lightning-charge"></i>
-                            Automatico
-                        </a>
-
-                        <a href="<?= site_url('mycrud/builder/configure/' . $table) ?>"
+<a href="<?= site_url('mycrud/builder/configure/' . $table) ?>"
                            class="btn btn-primary btn-sm">
                             <i class="bi bi-sliders"></i>
-                            Personalizza
+                            Configure
                         </a>
 
                         <a href="<?= site_url('mycrud/schema/' . $table) ?>"

@@ -12,13 +12,13 @@ $error = trim((string) ($error ?? ''));
         <div>
             <h1 class="h3 mb-1">
                 <i class="bi bi-robot me-1"></i>
-                Contesto IA del progetto
+                Project AI context
             </h1>
             <p class="text-muted mb-0">
-                Genera una mappa strutturata del progetto CI4 affinché un agente IA conosca architettura, CRUD, campi e relazioni prima di modificare il codice.
+                Generates a structured map of the CI4 project so an AI agent understands architecture, CRUDs, fields, and relations before modifying code.
             </p>
         </div>
-        <span class="badge text-bg-dark fs-6">myCrudGpt <?= esc((string) ($version ?? '')) ?></span>
+        <span class="badge text-bg-dark fs-6">myCrudCI4 <?= esc((string) ($version ?? '')) ?></span>
     </div>
 
     <?php if ($error !== ''): ?>
@@ -32,7 +32,7 @@ $error = trim((string) ($error ?? ''));
         <div class="alert alert-success">
             <div class="fw-semibold mb-2">
                 <i class="bi bi-check-circle me-1"></i>
-                Contesto generato
+                Generated context
             </div>
             <ul class="mb-0">
                 <?php foreach ((array) ($result['files'] ?? []) as $file): ?>
@@ -53,9 +53,9 @@ $error = trim((string) ($error ?? ''));
         <div class="col-xl-7">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
-                    <h2 class="h5">Genera contesto</h2>
+                    <h2 class="h5">Generate context</h2>
                     <p class="text-muted">
-                        Il contesto completo descrive l'intero progetto. In alternativa puoi rigenerare soltanto la scheda di un CRUD.
+                        The full context describes the entire project. Alternatively, regenerate only a single CRUD profile.
                     </p>
 
                     <form method="post" action="<?= site_url('mycrud/tools/ai-context/generate') ?>">
@@ -75,7 +75,7 @@ $error = trim((string) ($error ?? ''));
 
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-file-earmark-code me-1"></i>
-                            Genera contesto IA
+                            Generate context IA
                         </button>
                     </form>
                 </div>
@@ -94,7 +94,7 @@ $error = trim((string) ($error ?? ''));
                         ...
                     </div>
                     <p class="small text-muted mb-0">
-                        Questi file sono documentazione del progetto, non codice runtime. Non contengono record del database, credenziali, password o valori del file <code>.env</code>.
+                        These files are project documentation, not runtime code. They do not contain database records, credentials, passwords, or values from the <code>.env</code> file.
                     </p>
                 </div>
             </div>
@@ -106,8 +106,8 @@ $error = trim((string) ($error ?? ''));
             <h2 class="h5">Come usarlo con un agente IA</h2>
             <div class="bg-dark text-light rounded p-3 font-monospace small">
                 Prima di modificare il progetto, leggi AI_PROJECT_CONTEXT.md.<br>
-                Se lavori su un CRUD, leggi anche docs/ai/crud/&lt;tabella&gt;.md.<br>
-                Rispetta architettura, naming e convenzioni indicate nei file.
+                Se lavori su un CRUD, leggi anche docs/ai/crud/&lt;table&gt;.md.<br>
+                Follow the architecture, naming, and conventions described in these files.
             </div>
         </div>
     </div>

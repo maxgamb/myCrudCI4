@@ -10,7 +10,7 @@ use CodeIgniter\Database\BaseConnection;
 use Config\Database;
 use Throwable;
 
-/** Esegue EXPLAIN sulle query che rappresentano realmente la lista generata. */
+/** Runs EXPLAIN on queries that actually represent the generated list. */
 final class ExplainAnalyzer
 {
     public function __construct(
@@ -34,10 +34,10 @@ final class ExplainAnalyzer
             $builder = $this->listBuilder($db, $table, $config)
                 ->orderBy($table . '.' . $primaryKey, 'DESC')
                 ->limit($perPage);
-            $results[] = $this->explainCompiled($db, 'EXPLAIN lista generata', $builder->getCompiledSelect());
+            $results[] = $this->explainCompiled($db, 'EXPLAIN generated list', $builder->getCompiledSelect());
         } catch (Throwable $exception) {
             $results[] = new DiagnosticResult(
-                'EXPLAIN lista generata',
+                'EXPLAIN generated list',
                 DiagnosticResult::FAIL,
                 $exception->getMessage()
             );
@@ -46,9 +46,9 @@ final class ExplainAnalyzer
         $leading = $this->firstUsefulLeadingIndex((array) ($info['indexes'] ?? []), $primaryKey);
         if ($leading === null) {
             $results[] = new DiagnosticResult(
-                'EXPLAIN filtro indicizzato',
+                'EXPLAIN indexed filter',
                 DiagnosticResult::SKIP,
-                'Nessun indice secondario leading disponibile.'
+                'No leading secondary index is available.'
             );
             return $results;
         }
@@ -63,9 +63,9 @@ final class ExplainAnalyzer
             $sampleValue = $sample[$leading] ?? null;
             if ($sampleValue === null) {
                 $results[] = new DiagnosticResult(
-                    'EXPLAIN filtro indicizzato',
+                    'EXPLAIN indexed filter',
                     DiagnosticResult::SKIP,
-                    'Nessun valore campione disponibile per ' . $leading . '.'
+                    'No sample value is available for ' . $leading . '.'
                 );
                 return $results;
             }
@@ -76,12 +76,12 @@ final class ExplainAnalyzer
                 ->limit($perPage);
             $results[] = $this->explainCompiled(
                 $db,
-                'EXPLAIN filtro ' . $leading,
+                'EXPLAIN filter ' . $leading,
                 $builder->getCompiledSelect()
             );
         } catch (Throwable $exception) {
             $results[] = new DiagnosticResult(
-                'EXPLAIN filtro ' . $leading,
+                'EXPLAIN filter ' . $leading,
                 DiagnosticResult::FAIL,
                 $exception->getMessage()
             );
@@ -98,7 +98,7 @@ final class ExplainAnalyzer
         return is_array($saved) ? $builder->mergeSavedConfiguration($config, $saved) : $config;
     }
 
-    /** Riproduce SELECT/JOIN/soft-delete della tabella Bootstrap generata. */
+    /** Reproduces SELECT/JOIN/soft-delete behavior of the generated Bootstrap table. */
     private function listBuilder(BaseConnection $db, string $table, array $config): BaseBuilder
     {
         $builder = $db->table($table);

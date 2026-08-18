@@ -5,7 +5,7 @@ $relatedCreateOptions = (array) ($relatedCreateOptions ?? []);
 $errors = (array) ($errors ?? []);
 ?>
 <div class="row g-3">
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <label for="related_create_city_id_city" class="form-label"><?= esc('City') ?></label>
                 <input
                     type="text"
@@ -20,7 +20,7 @@ $errors = (array) ($errors ?? []);
                 <?php if (!empty($errors['city_id__related__city'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['city_id__related__city']) ?></div>
                 <?php endif; ?>
-            </div>            <div class="col-md-6">
+            </div>            <div class="col-12 col-md-6">
                 <label for="related_create_city_id_country_id" class="form-label"><?= esc('Country Id') ?></label>
                 <select
                     name="_related[city_id][country_id]"

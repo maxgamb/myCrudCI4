@@ -68,11 +68,11 @@ final class GlobalGenerationService
             try {
                 // QUICK 2.8 consolidata:
                 // - lo schema corrente viene sempre riletto dal database;
-                // - se esiste una configurazione persistente, le decisioni dello
+                // - se esiste una persistent configuration, le decisioni dello
                 //   sviluppatore vengono mantenute tramite lo stesso merge usato
                 //   dal Builder e dalla rigenerazione;
-                // - una FK reale riceve di default il link al record padre e può
-                //   essere accettata come contesto del Create;
+                // - a real foreign key gets a parent-record link by default and may
+                //   be accepted as Create context;
                 // - le scelte di navigazione salvate esplicitamente dal Builder restano intatte.
                 $savedConfig = $repository->load($table);
                 $resolved = $configuration->resolve($table, true);
@@ -80,7 +80,7 @@ final class GlobalGenerationService
                 $config = $this->applyQuickForeignKeyDefaults($config, $savedConfig ?? []);
 
                 // La scelta dell'architettura nella schermata Quick è esplicita e
-                // quindi prevale sull'eventuale valore salvato in precedenza.
+                // therefore it overrides any value saved previously.
                 $config['architecture'] = $architecture;
                 $config['features'] = $this->featuresForArchitecture($architecture, $config);
 
@@ -121,7 +121,7 @@ final class GlobalGenerationService
                     'line'    => $e->getLine(),
                 ];
 
-                log_message('error', '[myCrudGpt global] {table}: {message}', [
+                log_message('error', '[myCrudCI4 global] {table}: {message}', [
                     'table'   => $table,
                     'message' => $e->getMessage(),
                 ]);
@@ -134,13 +134,13 @@ final class GlobalGenerationService
     }
 
     /**
-     * Applica i default specifici della generazione Quick alle relazioni belongsTo.
+     * Applies Quick-generation defaults to belongsTo relations.
      *
-     * La Quick non prova a dedurre un campo descrittivo da nomi come `name`,
+     * Quick does not try to infer a descriptive field from names such as `name`,
      * `descrizione` o dal primo varchar: usa sempre la colonna realmente
      * referenziata dalla foreign key. Il Builder potrà poi sostituirla con un
-     * displayField o un displayTemplate. La Quick abilita il link certo al record padre
-     * e l'uso della FK come contesto del Create; le altre opzioni restano al Builder.
+     * displayField, or displayTemplate. Quick enables the deterministic parent-record link
+     * and use of the foreign key as Create context; other options remain under Builder control.
      *
      * @param array<string, mixed> $config
      * @return array<string, mixed>
@@ -165,8 +165,8 @@ final class GlobalGenerationService
 
             // La descrizione applicativa resta developer-driven. Se il Builder
             // aveva già scelto un displayField/template, il merge lo ha già
-            // ripristinato e la Quick non lo modifica. In assenza di una scelta
-            // persistente, usiamo la chiave padre come display neutrale.
+            // restored and Quick does not modify it. In the absence of a
+            // persistent choice, the parent key is used as a neutral display.
             $savedDisplayField = trim((string) ($savedField['relationDisplayField'] ?? ''));
             $savedDisplayTemplate = trim((string) ($savedField['relationDisplayTemplate'] ?? ''));
             $hasSavedDisplayChoice = $savedDisplayTemplate !== ''
@@ -186,10 +186,10 @@ final class GlobalGenerationService
                 continue;
             }
 
-            // Una FK reale certifica la destinazione del record padre e rende
-            // sicuro anche il contesto del Create: il Controller verificherà
-            // comunque l'esistenza del record padre prima di precompilare il form.
-            // Le altre opzioni restano developer-driven. Se il Builder ha già
+            // A real foreign key guarantees the parent-record destination and makes
+            // Create context safe as well: the Controller will verify
+            // the parent record existence before pre-filling the form.
+            // Other options remain developer-driven. If the Builder has already
             // salvato esplicitamente la navigazione, la Quick la preserva integralmente.
             $navigationCustomized = !empty($savedField['relationNavigationCustomized']);
             if (!$navigationCustomized) {
@@ -243,6 +243,11 @@ final class GlobalGenerationService
         }
         if (!empty($config['features']['service'])) {
             $paths['service'] = "Services/{$classes['service']}.php";
+            if (empty($config['features']['readOnly'])) {
+                $paths['service_extension'] = [
+                    '__custom_extension__' => "{$classes['service']}Extension.php",
+                ];
+            }
         }
         if (!empty($config['features']['api'])) {
             $paths['api_validation'] = "Validation/{$classes['apiRules']}.php";
@@ -264,6 +269,21 @@ final class GlobalGenerationService
         $mapped = [];
 
         foreach ($paths as $key => $value) {
+            if (is_array($value) && isset($value['__custom_extension__'])) {
+                /** @var MyCrud $settings */
+                $settings = $this->settings ?? config('MyCrud');
+                $path = rtrim($settings->serviceExtensionPath, DIRECTORY_SEPARATOR)
+                    . DIRECTORY_SEPARATOR . (string) $value['__custom_extension__'];
+                $exists = is_file($path);
+                $mapped[$key] = [
+                    'status' => $exists ? 'skipped' : 'planned',
+                    'action' => $exists ? 'skip' : 'create',
+                    'path' => $path,
+                    'protected' => true,
+                    'custom' => true,
+                ];
+                continue;
+            }
             if (is_array($value)) {
                 $mapped[$key] = $this->mapPlanPaths($value, $root, $force);
                 continue;
@@ -271,10 +291,14 @@ final class GlobalGenerationService
 
             $path = $root . ltrim($value, DIRECTORY_SEPARATOR);
             $exists = is_file($path);
+            $isProtectedExtension = false;
             $mapped[$key] = [
-                'status' => $exists && !$force ? 'skipped' : 'planned',
-                'action' => $exists ? ($force ? 'overwrite' : 'skip') : 'create',
+                'status' => $exists && (!$force || $isProtectedExtension) ? 'skipped' : 'planned',
+                'action' => $exists
+                    ? (($force && !$isProtectedExtension) ? 'overwrite' : 'skip')
+                    : 'create',
                 'path'   => $path,
+                'protected' => $isProtectedExtension,
             ];
         }
 

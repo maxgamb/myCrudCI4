@@ -9,29 +9,29 @@ use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use Throwable;
 
-/** Mostra cosa cambierebbe rigenerando un CRUD, senza scrivere nel progetto. */
+/** Shows what would change by regenerating a CRUD without writing to the project. */
 final class MyCrudDiff extends BaseCommand
 {
-    protected $group       = 'myCrudGpt';
+    protected $group       = 'myCrudCI4';
     protected $name        = 'mycrud:diff';
     protected $description = 'Confronta la nuova generazione con app/ o app/Generated/ senza modificare file.';
     protected $usage       = 'mycrud:diff <table> [--target app|generated] [--all] [--details]';
 
     protected $arguments = [
-        'table' => 'Nome della tabella configurata.',
+        'table' => 'Nome della table configurata.',
     ];
 
     protected $options = [
         '--target'  => 'Target del confronto: app (default) oppure generated.',
-        '--all'     => 'Mostra anche i file invariati.',
-        '--details' => 'Mostra il numero di righe aggiunte/rimosse per i file nuovi o modificati.',
+        '--all'     => 'Also shows unchanged files.',
+        '--details' => 'Shows added/removed line counts for new or modified files.',
     ];
 
     public function run(array $params)
     {
         $table = trim((string) ($params[0] ?? ''));
         if ($table === '') {
-            CLI::error('Specificare il nome della tabella.');
+            CLI::error('Specify the table name.');
             return EXIT_ERROR;
         }
 
@@ -44,13 +44,13 @@ final class MyCrudDiff extends BaseCommand
             return EXIT_ERROR;
         }
 
-        CLI::write('myCrudGpt diff: ' . $table, 'cyan');
+        CLI::write('myCrudCI4 diff: ' . $table, 'cyan');
         CLI::write('Generator: ' . $report['generatorVersion']
             . ' | Config salvata con: ' . ($report['savedVersion'] ?: 'n/d'));
         CLI::write('Target: ' . ($target === 'app' ? 'app/ operativo' : 'app/Generated/ staging'));
 
         if (!empty($report['schemaDrift'])) {
-            CLI::write('! Schema drift rilevato rispetto al salvataggio della configurazione.', 'yellow');
+            CLI::write('! Schema drift detected compared with the saved configuration.', 'yellow');
         }
 
         $showAll = (bool) CLI::getOption('all');
@@ -64,7 +64,7 @@ final class MyCrudDiff extends BaseCommand
         $this->printSummary('SHARED', $report['summaryByCategory']['shared']);
         $this->printSummary('TOTAL', $report['summary']);
 
-        CLI::write('Nessun file è stato modificato.', 'cyan');
+        CLI::write('No file è stato modificato.', 'cyan');
 
         return EXIT_SUCCESS;
     }

@@ -6,19 +6,19 @@
         <div class="card-header bg-success text-white">
             <h1 class="h4 mb-0">
                 <i class="bi bi-check-circle"></i>
-                Generazione completata
+                Generation complete
             </h1>
         </div>
 
         <div class="card-body">
             <dl class="row">
-                <dt class="col-sm-3">Tabella</dt>
+                <dt class="col-sm-3">Table</dt>
                 <dd class="col-sm-9"><?= esc($result['table']) ?></dd>
 
-                <dt class="col-sm-3">Architettura</dt>
+                <dt class="col-sm-3">Architecture</dt>
                 <dd class="col-sm-9"><?= esc($result['architecture']) ?></dd>
 
-                <dt class="col-sm-3">Sovrascrittura</dt>
+                <dt class="col-sm-3">Sovrawrite</dt>
                 <dd class="col-sm-9"><?= $result['force'] ? 'Sì' : 'No' ?></dd>
             </dl>
 
@@ -32,7 +32,7 @@
             </div>
 
             <a href="<?= site_url('mycrud') ?>" class="btn btn-primary">
-                <i class="bi bi-arrow-left"></i> Torna alle tabelle
+                <i class="bi bi-arrow-left"></i> Back to tables
             </a>
         </div>
     </div>

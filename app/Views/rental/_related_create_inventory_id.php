@@ -5,7 +5,7 @@ $relatedCreateOptions = (array) ($relatedCreateOptions ?? []);
 $errors = (array) ($errors ?? []);
 ?>
 <div class="row g-3">
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <label for="related_create_inventory_id_film_id" class="form-label"><?= esc('Film Id') ?></label>
                 <select
                     name="_related[inventory_id][film_id]"
@@ -29,7 +29,7 @@ $errors = (array) ($errors ?? []);
                 <?php if (!empty($errors['inventory_id__related__film_id'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['inventory_id__related__film_id']) ?></div>
                 <?php endif; ?>
-            </div>            <div class="col-md-6">
+            </div>            <div class="col-12 col-md-6">
                 <label for="related_create_inventory_id_store_id" class="form-label"><?= esc('Store Id') ?></label>
                 <select
                     name="_related[inventory_id][store_id]"

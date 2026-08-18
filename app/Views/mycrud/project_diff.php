@@ -25,7 +25,7 @@
         <?php if (!empty($report['schemaDrift'])): ?>
             <div class="alert alert-warning">
                 <i class="bi bi-exclamation-triangle me-1"></i>
-                Schema DB modificato rispetto alla configurazione salvata.
+                Schema DB modificato rispetto alla saved configuration.
             </div>
         <?php endif ?>
 
@@ -38,7 +38,7 @@
             </div>
             <div class="col-md-4">
                 <div class="card shadow-sm"><div class="card-body">
-                    <div class="text-muted small">Modificati</div>
+                    <div class="text-muted small">Editti</div>
                     <div class="fs-3 fw-semibold text-warning"><?= (int) ($summary['changed'] ?? 0) ?></div>
                 </div></div>
             </div>
@@ -62,13 +62,13 @@
             <div class="card shadow-sm mb-3">
                 <div class="card-header"><strong><?= esc($heading) ?></strong></div>
                 <?php if ($categoryRows === []): ?>
-                    <div class="card-body text-muted">Nessuna modifica.</div>
+                    <div class="card-body text-muted">No changes.</div>
                 <?php else: ?>
                     <div class="table-responsive">
                         <table class="table table-sm align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Stato</th>
+                                    <th>Status</th>
                                     <th>File</th>
                                     <th class="text-end">Righe</th>
                                 </tr>

@@ -41,7 +41,7 @@ final class ProjectDiagnostics
                 ? DiagnosticResult::PASS
                 : DiagnosticResult::FAIL,
             is_dir($generatedPath)
-                ? 'Directory Generated disponibile.'
+                ? 'Generated directory available.'
                 : 'La directory può essere creata nel percorso configurato.',
             ['path' => $generatedPath]
         ));
@@ -56,8 +56,8 @@ final class ProjectDiagnostics
             'MyCrudConfig path',
             $configWritable ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
             $configWritable
-                ? 'Directory configurazioni persistenti disponibile/scrivibile.'
-                : 'Directory configurazioni persistenti non scrivibile.',
+                ? 'Persistent configuration directory available/writable.'
+                : 'Persistent configuration directory is not writable.',
             ['path' => $crudConfigPath]
         ));
 

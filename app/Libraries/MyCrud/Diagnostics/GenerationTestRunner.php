@@ -9,7 +9,7 @@ use Throwable;
 
 final class GenerationTestRunner
 {
-    /** Esegue una generazione reale usando l’architettura predefinita. */
+    /** Runs a real generation using the default architecture. */
     public function run(string $table, bool $force = true): DiagnosticReport
     {
         $report = new DiagnosticReport();
@@ -21,7 +21,7 @@ final class GenerationTestRunner
             $report->add(new DiagnosticResult(
                 'Generazione ' . ucfirst((string) ($config['architecture'] ?? 'basic')),
                 DiagnosticResult::PASS,
-                'CRUD generato correttamente.',
+                'CRUD generated successfully.',
                 ['result' => $result]
             ));
         } catch (Throwable $exception) {

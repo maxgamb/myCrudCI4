@@ -6,9 +6,11 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Libraries\Crud\CrudExporter;
-use App\Libraries\Crud\CrudInputProcessor;
 use App\Libraries\Crud\CrudListRequest;
+use App\Libraries\Crud\CrudNavigationTrail;
+use App\Libraries\Crud\CrudInputProcessor;
 use App\Libraries\Crud\SubmissionGuard;
+use App\Models\FilmCategoryModel;
 use App\Services\FilmCategoryService;
 use App\Validation\FilmCategoryRules;
 use CodeIgniter\Exceptions\PageNotFoundException;
@@ -16,14 +18,14 @@ use RuntimeException;
 use Throwable;
 
 /**
- * Controller CRUD full per film_category.
+ * Read/create controller for `film_category`.
  *
- * Lato sito: coordina request, validazione, view e redirect. Le query restano
- * nel Model; Standard/Full demandano inoltre la logica applicativa al Service.
+ * The schema allows Create but not record-level Edit/Delete actions.
+ * Contains no SQL queries.
  */
 final class FilmCategoryController extends BaseController
 {
-    /** Limiti export configurati al momento della generazione. */
+    /** Export limits configured at generation time. */
     private const EXPORT_OPTIONS = [
         'csv' => [
             'chunkSize' => 2000,
@@ -37,38 +39,55 @@ final class FilmCategoryController extends BaseController
         ],
     ];
 
-    /** Solo le FK reali della tabella possono viaggiare come contesto URL. */
+    /** Only real table foreign keys may travel as URL context. */
     private const NAVIGATION_CONTEXT_FIELDS = array (
   0 => 'film_id',
   1 => 'category_id',
 );
 
-    /** FK autorizzate alla creazione atomica del record padre nello stesso form. */
+    /** Foreign keys authorized for atomic parent creation within the same form. */
     private const RELATED_CREATE_FIELDS = array (
-  'category_id' => 
+  'film_id' =>
+  array (
+    0 => 'title',
+    1 => 'description',
+    2 => 'release_year',
+    3 => 'language_id',
+    4 => 'original_language_id',
+    5 => 'rental_duration',
+    6 => 'rental_rate',
+    7 => 'length',
+    8 => 'replacement_cost',
+    9 => 'rating',
+    10 => 'special_features',
+    11 => 'uploads',
+  ),
+  'category_id' =>
   array (
     0 => 'name',
   ),
 );
 
     /**
-     * Contesti parent ammessi per il Create avviato da una relazione hasMany.
-     * La tabella di ritorno deriva esclusivamente dallo schema generato, mai dal POST.
+     * Allowed parent contexts for Create started from a hasMany relation.
+     * The return table is derived exclusively from the generated schema, never from POST.
      */
     private const PARENT_CONTEXT_FIELDS = array (
-  'film_id' => 
+  'film_id' =>
   array (
     'table' => 'film',
     'label' => 'Film',
   ),
-  'category_id' => 
+  'category_id' =>
   array (
     'table' => 'category',
     'label' => 'Category',
   ),
 );
 
-    private FilmCategoryService $gateway;
+    /** Read/query dependency: the generated Model. */
+    private FilmCategoryModel $model;
+    private FilmCategoryService $service;
     private CrudExporter $exporter;
     private CrudInputProcessor $inputProcessor;
     private SubmissionGuard $submissionGuard;
@@ -76,14 +95,20 @@ final class FilmCategoryController extends BaseController
     public function __construct()
     {
         helper(['form', 'url']);
-        $this->gateway = new FilmCategoryService();
-        // Runtime comune del sito: una sola implementazione per export, input e token.
+        $this->model = new FilmCategoryModel();
+        $this->service = new FilmCategoryService();
+        // Shared site runtime: a single implementation for export, input, and tokens.
         $this->exporter = new CrudExporter();
         $this->inputProcessor = new CrudInputProcessor();
         $this->submissionGuard = new SubmissionGuard();
     }
 
-    /** Pagina completa o frammento AJAX della tabella Bootstrap. */
+    /**
+     * Displays the full list or the AJAX table fragment.
+     *
+     * Filters, pagination, and sorting are validated by the CRUD runtime before
+     * reaching Model/Service.
+     */
     public function index()
     {
         $listRequest = CrudListRequest::fromRequest(
@@ -101,25 +126,30 @@ final class FilmCategoryController extends BaseController
         );
 
         $navigationContext = $this->navigationContextFromQuery();
-        $data = $this->gateway->listPage($listRequest->filters, $listRequest->page, $listRequest->perPage, $listRequest->sort, $listRequest->direction);
+        $cascadeTrail = $this->cascadeTrailFromQuery();
+        $data = $this->model->getListPage($listRequest->filters, $listRequest->page, $listRequest->perPage, $listRequest->sort, $listRequest->direction);
         $data += [
             'title' => 'film_category',
             'primaryKey' => 'film_id',
             'filters' => $listRequest->filters,
             'query' => $listRequest->query,
             'navigationContext' => $navigationContext,
+            'cascadeTrail' => $cascadeTrail,
         ];
 
         if ($this->request->isAJAX()) {
             return view('film_category/_table', $data);
         }
 
-        $data['options'] = $this->gateway->relationOptions();
+        $data['options'] = $this->model->relationOptions();
 
         return view('film_category/index', $data);
     }
 
-    /** Endpoint JSON usato dalle select AJAX delle relazioni grandi. */
+    /**
+     * JSON endpoint for searching belongsTo options in AJAX mode.
+     * The requested field is checked against the generated whitelist.
+     */
     public function relationOptions(string $field)
     {
         $query = trim((string) $this->request->getGet('q'));
@@ -128,24 +158,27 @@ final class FilmCategoryController extends BaseController
         }
 
         return $this->response->setJSON([
-            'results' => $this->gateway->searchRelationOptions($field, $query, 20),
+            'results' => $this->model->searchRelationOptions($field, $query, 20),
         ]);
     }
-
+    /** Streams the current filtered result set as CSV. */
     public function exportCsv()
     {
         return $this->export('csv');
     }
 
+    /** Streams the current filtered result set as a Word-compatible document. */
     public function exportWord()
     {
         return $this->export('word');
     }
 
+    /** Displays the Create form with generated relation/context options. */
     public function create()
     {
         $navigationContext = $this->navigationContextFromQuery();
-        $parentContext = $this->parentContextFromQuery($navigationContext);
+        $cascadeTrail = $this->cascadeTrailFromQuery();
+        $parentContext = $this->parentContextFromQuery($navigationContext, $cascadeTrail);
         $context = [];
         $contextLabels = [];
         foreach (array (
@@ -156,44 +189,48 @@ final class FilmCategoryController extends BaseController
             if (!is_scalar($requested) || trim((string) $requested) === '') {
                 continue;
             }
-            $option = $this->gateway->relationOptionById($field, (string) $requested);
+            $option = $this->model->relationOptionById($field, (string) $requested);
             if ($option === null) {
-                throw PageNotFoundException::forPageNotFound('Valore FK non valido per ' . $field . '.');
+                throw PageNotFoundException::forPageNotFound('Invalid foreign-key value for ' . $field . '.');
             }
             $context[$field] = (string) $option['id'];
             $contextLabels[$field] = (string) $option['text'];
         }
-
         return view('film_category/create', [
-            'title' => 'Nuovo record',
+            'title' => 'New record',
             'row' => null,
             'errors' => session('errors') ?? [],
-            'options' => $this->gateway->relationOptions(),
-            'relatedCreateOptions' => $this->gateway->relatedCreateRelationOptions(),
+            'options' => $this->model->relationOptions(),
+            'relatedCreateOptions' => $this->model->relatedCreateRelationOptions(),
+            'manyToManyOptions' => [],
+            'manyToManyRelatedCreateOptions' => [],
+            'manyToManySelected' => [],
             'context' => $context,
             'contextLabels' => $contextLabels,
             'navigationContext' => $navigationContext,
             'parentContext' => $parentContext,
+            'cascadeTrail' => $cascadeTrail,
             'submissionToken' => $this->submissionGuard->create('store'),
         ]);
     }
 
+    /** Validates the HTTP payload and delegates the Create use-case to the Service. */
     public function store()
     {
         $navigationContext = $this->navigationContextFromPost();
-        $parentContext = $this->parentContextFromPost($navigationContext);
+        $cascadeTrail = $this->cascadeTrailFromPost();
+        $parentContext = $this->parentContextFromPost($navigationContext, $cascadeTrail);
         if (!$this->submissionGuard->consume('store', $this->request->getPost('_submission_token'))) {
-            return redirect()->back()->withInput()->with('error', 'Il form è già stato inviato oppure è scaduto.');
+            return redirect()->back()->withInput()->with('error', 'The form has already been submitted or has expired.');
         }
 
         $related = $this->relatedCreateDataFromPost();
         $createRules = FilmCategoryRules::createRules();
         foreach (array_keys($related) as $relatedField) {
-            // La FK viene prodotta dalla creazione del padre nella stessa
-            // transazione, quindi non può essere obbligatoria prima dell'INSERT.
+            // The foreign key is produced by creating the parent within the same
+            // transaction, so it cannot be required before the INSERT.
             unset($createRules[$relatedField]);
-        }
-        if (!$this->validate($createRules, FilmCategoryRules::messages())) {
+        }        if (!$this->validate($createRules, FilmCategoryRules::messages())) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
@@ -201,24 +238,23 @@ final class FilmCategoryController extends BaseController
         if ($relatedErrors !== []) {
             return redirect()->back()->withInput()->with('errors', $relatedErrors);
         }
-
         $data = $this->formData(false);
         try {
-            $this->gateway->create($data, $related);
+            $this->service->create($data, $related);
         } catch (Throwable $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
-        $redirectUrl = $parentContext['url'] ?? $this->contextUrl('film_category', $navigationContext);
-        return redirect()->to($redirectUrl)->with('message', 'Record creato correttamente.');
+        $redirectUrl = $parentContext['url'] ?? $this->contextUrl('film_category', $navigationContext, $cascadeTrail);
+        return redirect()->to($redirectUrl)->with('message', 'Record created successfully.');
     }
     /**
-     * Unifica CSV e Word: cambia solo il writer selezionato dalla libreria runtime.
+     * Unifies CSV and Word: only the writer selected by the runtime library changes.
      */
     private function export(string $format)
     {
         $options = self::EXPORT_OPTIONS[$format] ?? null;
         if (!is_array($options)) {
-            throw new RuntimeException('Formato export non supportato.');
+            throw new RuntimeException('Unsupported export format.');
         }
 
         $listRequest = CrudListRequest::fromRequest($this->request, 'film_id', array (
@@ -236,10 +272,10 @@ final class FilmCategoryController extends BaseController
                 response: $this->response,
                 filename: 'film_category',
                 languageGroup: 'FilmCategory',
-                fields: $this->gateway->exportFields(),
+                fields: $this->model->exportFields(),
                 filters: $listRequest->filters,
-                countProvider: fn (array $filters): int => $this->gateway->countExportRows($filters),
-                rowProvider: fn (array $filters, int $limit, int|string|null $after): array => $this->gateway->exportRows($filters, $limit, $after),
+                countProvider: fn (array $filters): int => $this->model->countExportRows($filters),
+                rowProvider: fn (array $filters, int $limit, int|string|null $after): array => $this->model->getExportRows($filters, $limit, $after),
                 primaryKey: array (
   0 => 'film_id',
   1 => 'category_id',
@@ -259,25 +295,14 @@ final class FilmCategoryController extends BaseController
         }
     }
 
-    /** Recupera il record o converte l'assenza in un normale 404 del sito. */
-    private function findRecordOrFail(int|string $id): object
-    {
-        try {
-            $record = $this->gateway->find($id);
-        } catch (Throwable) {
-            throw PageNotFoundException::forPageNotFound('Record non trovato.');
-        }
-
-        if (!is_object($record)) {
-            throw PageNotFoundException::forPageNotFound('Record non trovato.');
-        }
-
-        return $record;
-    }
-
     /**
-     * Pulizia meccanica comune ai form. In Standard/Full date e password sono
-     * preparate dal Service; in Basic vengono gestite qui dal runtime CRUD.
+     * Extracts and sanitizes write payload from the current HTTP request.
+     *
+     * Standard/Full leave password/date normalization to the Service; Basic may
+     * apply the corresponding runtime transformations here.
+     *
+     * @param bool $isUpdate True while handling an Edit submission.
+     * @return array<string,mixed> Sanitized application payload.
      */
     private function formData(bool $isUpdate): array
     {
@@ -293,10 +318,11 @@ final class FilmCategoryController extends BaseController
             array (
 ),
             [],
-            false
+            false,
+            array (
+)
         );
     }
-
     /** @return array<string,array<string,mixed>> */
     private function relatedCreateDataFromPost(): array
     {
@@ -346,19 +372,10 @@ final class FilmCategoryController extends BaseController
 
         return $errors;
     }
-
     /** @return array<string,string> */
     private function navigationContextFromQuery(): array
     {
         return $this->sanitizeNavigationContext((array) $this->request->getGet());
-    }
-
-    /** @return array<string,string> */
-    private function navigationContextFromPost(): array
-    {
-        $context = $this->request->getPost('_context');
-
-        return $this->sanitizeNavigationContext(is_array($context) ? $context : []);
     }
 
     /** @return array<string,string> */
@@ -376,25 +393,42 @@ final class FilmCategoryController extends BaseController
         return $context;
     }
 
-    /** @return array{field:string,table:string,id:string,label:string,url:string}|array{} */
-    private function parentContextFromQuery(array $navigationContext): array
+    /** @return list<array{table:string,id:string,label:string}> */
+    private function cascadeTrailFromQuery(): array
     {
-        return $this->parentContext((string) ($this->request->getGet('_parent_field') ?? ''), $navigationContext);
+        return CrudNavigationTrail::decode($this->request->getGet('_trail'));
+    }
+    /** @return array<string,string> */
+    private function navigationContextFromPost(): array
+    {
+        $context = $this->request->getPost('_context');
+        return $this->sanitizeNavigationContext(is_array($context) ? $context : []);
+    }
+
+    /** @return list<array{table:string,id:string,label:string}> */
+    private function cascadeTrailFromPost(): array
+    {
+        return CrudNavigationTrail::decode($this->request->getPost('_trail'));
+    }
+    /** @return array{field:string,table:string,id:string,label:string,url:string}|array{} */
+    private function parentContextFromQuery(array $navigationContext, array $cascadeTrail = []): array
+    {
+        return $this->parentContext((string) ($this->request->getGet('_parent_field') ?? ''), $navigationContext, $cascadeTrail);
     }
 
     /** @return array{field:string,table:string,id:string,label:string,url:string}|array{} */
-    private function parentContextFromPost(array $navigationContext): array
+    private function parentContextFromPost(array $navigationContext, array $cascadeTrail = []): array
     {
-        return $this->parentContext((string) ($this->request->getPost('_parent_field') ?? ''), $navigationContext);
+        return $this->parentContext((string) ($this->request->getPost('_parent_field') ?? ''), $navigationContext, $cascadeTrail);
     }
 
     /**
-     * Risolve un ritorno contestuale sicuro verso il padre hasMany.
-     * Il client sceglie solo la FK; tabella e route sono whitelist generate dallo schema.
+     * Resolves a safe contextual return to the hasMany parent.
+     * The client selects only the foreign key; table and route come from the schema-driven whitelist.
      *
      * @return array{field:string,table:string,id:string,label:string,url:string}|array{}
      */
-    private function parentContext(string $field, array $navigationContext): array
+    private function parentContext(string $field, array $navigationContext, array $cascadeTrail = []): array
     {
         if ($field === '' || !isset(self::PARENT_CONTEXT_FIELDS[$field])) {
             return [];
@@ -409,28 +443,37 @@ final class FilmCategoryController extends BaseController
             return [];
         }
         $id = (string) $id;
+        $ancestorTrail = CrudNavigationTrail::ancestorsForParent($cascadeTrail, $table, $id);
+        $parentUrl = site_url($table . '/view/' . rawurlencode($id));
+        $encodedTrail = CrudNavigationTrail::encode($ancestorTrail);
+        if ($encodedTrail !== '') {
+            $parentUrl .= '?_trail=' . rawurlencode($encodedTrail);
+        }
 
         return [
             'field' => $field,
             'table' => $table,
             'id' => $id,
             'label' => (string) ($definition['label'] ?? $table),
-            'url' => site_url($table . '/view/' . rawurlencode($id)),
+            'url' => $parentUrl,
         ];
     }
-
-    private function contextUrl(string $path, array $context): string
+    private function contextUrl(string $path, array $context, array $cascadeTrail = []): string
     {
         $url = site_url($path);
+        $query = $context;
+        $encodedTrail = CrudNavigationTrail::encode($cascadeTrail);
+        if ($encodedTrail !== '') {
+            $query['_trail'] = $encodedTrail;
+        }
 
-        return $context === [] ? $url : $url . '?' . http_build_query($context);
+        return $query === [] ? $url : $url . '?' . http_build_query($query);
     }
-
     private function exportLimitRedirect(string $format, bool $unfiltered)
     {
         $message = $unfiltered
-            ? 'La tabella contiene troppi record per un export senza filtri. Applicare almeno un filtro prima di esportare in ' . $format . '.'
-            : 'Il numero di record supera il limite configurato per ' . $format . '. Applicare filtri più restrittivi.';
+            ? 'The table contains too many records for an unfiltered export. Apply at least one filter before exporting to ' . $format . '.'
+            : 'The number of records exceeds the configured limit for ' . $format . '. Apply more restrictive filters.';
 
         $query = (array) $this->request->getGet();
         $url = site_url('film_category') . ($query === [] ? '' : '?' . http_build_query($query));

@@ -37,14 +37,38 @@ class ConfigBuilder
         $this->labels = $labels ?? new FieldLabelResolver();
     }
 
+    private function availableFieldWidths(): array
+    {
+        $widths = array_map('intval', array_keys((array) ($this->config->bootstrapFieldWidths ?? [])));
+        $widths = array_values(array_unique(array_filter($widths, static fn (int $width): bool => $width >= 1 && $width <= 12)));
+
+        return $widths !== [] ? $widths : [12, 6];
+    }
+
+    private function defaultFieldWidth(): int
+    {
+        $available = $this->availableFieldWidths();
+        $default = max(1, min(12, (int) ($this->config->defaultBootstrapFieldWidth ?? 6)));
+
+        return in_array($default, $available, true) ? $default : $available[0];
+    }
+
+    private function normalizeFieldWidth(mixed $value): int
+    {
+        $requested = max(1, min(12, (int) ($value ?? $this->defaultFieldWidth())));
+        return in_array($requested, $this->availableFieldWidths(), true)
+            ? $requested
+            : $this->defaultFieldWidth();
+    }
+
     public function buildFromTable(string $table): array
     {
         $info = $this->schema->getTableInfo($table);
         $isView = !empty($info['isView']);
-        // Le SQL VIEW sono sorgenti di lettura: myCrudGpt non tenta di
-        // inventare relazioni o semantiche di scrittura sulla query sottostante.
+        // SQL VIEWs are read sources: myCrudCI4 does not attempt to
+        // invent relations or write semantics on the underlying query.
         $relations = $isView
-            ? ['belongsTo' => [], 'hasMany' => []]
+            ? ['belongsTo' => [], 'hasMany' => [], 'manyToMany' => []]
             : $this->relations->resolve($table);
         $uniqueFields = $this->uniqueFields($info['indexes']);
         $indexMetadata = $this->indexMetadata($info['indexes']);
@@ -72,6 +96,10 @@ class ConfigBuilder
                 'defaultGenerated' => str_contains(strtolower((string) ($column['extra'] ?? '')), 'default_generated'),
                 'autoOnUpdate' => preg_match('/on\s+update\s+current_timestamp(?:\([0-9]*\))?/i', (string) ($column['extra'] ?? '')) === 1,
                 'databaseManaged' => FieldPolicy::isDatabaseManagedTimestamp($column),
+                'initialValue' => [
+                    'mode' => 'none',
+                    'custom' => '',
+                ],
                 'maxLength' => $column['maxLength'],
                 'numericPrecision' => $column['numericPrecision'],
                 'numericScale' => $column['numericScale'],
@@ -91,9 +119,9 @@ class ConfigBuilder
                 'relationDisplayField' => (string) ($relations['belongsTo'][$name]['displayField'] ?? ''),
                 'relationDisplayTemplate' => '',
                 'relationNavigation' => isset($relations['belongsTo'][$name]) ? [
-                    // Una FK reale può essere usata in sicurezza come contesto del Create:
-                    // il valore viene comunque verificato server-side sulla tabella padre.
-                    // Le altre opzioni di navigazione restano scelte applicative.
+                    // A real foreign key can safely be used as Create context:
+                    // the value is still verified server-side against the parent table.
+                    // Other navigation options remain application-level choices.
                     'quickFilter' => false,
                     'parentLink' => false,
                     'acceptContext' => true,
@@ -102,8 +130,11 @@ class ConfigBuilder
                 'relationNavigationCustomized' => false,
                 'relationCreate' => isset($relations['belongsTo'][$name]) ? [
                     'available' => !empty($relations['belongsTo'][$name]['relatedCreate']['available']),
-                    'enabled' => false,
+                    // Quick/generate-all exposes safe inline parent creation by default.
+                    // The Builder can explicitly disable it and that decision is persisted.
+                    'enabled' => !empty($relations['belongsTo'][$name]['relatedCreate']['available']),
                 ] : [],
+                'relationCreateCustomized' => false,
                 'uiVisibilityCustomized' => false,
                 'inputType' => $this->inferInputType(
                     $column,
@@ -112,7 +143,9 @@ class ConfigBuilder
                 'label' => '',
                 'defaultLabel' => $this->labels->resolve($name),
                 'languageKey' => $languageFile . '.' . $name,
-                'width' => 6,
+                'width' => $this->defaultFieldWidth(),
+                // dev40: a single logical section per field. Empty string = General.
+                'section' => '',
                 'attributes' => $this->inferAttributes($column),
                 'ui' => $this->inferUi(
                     $column,
@@ -156,14 +189,28 @@ class ConfigBuilder
             'architecture' => $architecture,
             'fields' => $fields,
             'order' => array_keys($fields),
+            // dev40 Form Sections v2: no section is mandatory.
+            // Unassigned fields are rendered under "General".
+            'formSections' => [],
             'relations' => $relations,
             'relationsConfig' => [
-                'hasMany' => $this->buildHasManyConfig($relations['hasMany'] ?? []),
+                'hasMany' => $this->buildHasManyConfig($relations['hasMany'] ?? [], $relations['manyToMany'] ?? []),
+                'manyToMany' => $this->buildManyToManyConfig($relations['manyToMany'] ?? []),
             ],
             'features' => $features,
+            'apiCapabilities' => $this->defaultApiCapabilities(
+                $architecture,
+                $readOnly,
+                $createAllowed,
+                !$readOnly,
+                $softAvailable
+            ),
+            'crudSecurity' => $this->defaultCrudSecurity(),
+            'apiSecurity' => $this->defaultApiSecurity(),
+            'mcp' => $this->defaultMcpConfig($architecture),
             'softDelete' => ['available' => $softAvailable, 'field' => $deletedField],
             'list' => [
-                'filtersSummary' => 'Filtri di ricerca',
+                'filtersSummary' => 'Search filters',
             ],
         ]);
     }
@@ -173,7 +220,7 @@ class ConfigBuilder
         $table = trim((string) ($post['table'] ?? ''));
 
         if ($table === '') {
-            throw new InvalidArgumentException('Nome tabella mancante.');
+            throw new InvalidArgumentException('Missing table name.');
         }
 
         $config = $this->buildFromTable($table);
@@ -189,7 +236,8 @@ class ConfigBuilder
             $field['inputType'] = in_array($requestedInputType, self::INPUT_TYPES, true)
                 ? $requestedInputType
                 : (string) $field['inputType'];
-            $field['width'] = max(1, min(12, (int) ($post['width'][$name] ?? 6)));
+            $field['width'] = $this->normalizeFieldWidth($post['width'][$name] ?? $field['width'] ?? null);
+            $field['section'] = trim((string) ($post['section'][$name] ?? ''));
 
             if (!empty($field['foreignKey'])) {
                 $requestedRelationMode = strtolower(trim((string) (
@@ -235,7 +283,7 @@ class ConfigBuilder
                     $field['relationNavigation'][$flag] = in_array($flag, $postedNavigation, true);
                 }
                 // Il Builder rappresenta una scelta esplicita dello sviluppatore.
-                // La Quick non sovrascriverà queste opzioni nelle rigenerazioni successive.
+                // Quick will not overwrite these options in subsequent regenerations.
                 $field['relationNavigationCustomized'] = true;
 
                 $relatedCreateAvailable = !empty($field['foreignKey']['relatedCreate']['available']);
@@ -243,9 +291,11 @@ class ConfigBuilder
                     'available' => $relatedCreateAvailable,
                     'enabled' => $relatedCreateAvailable && !empty($post['relationCreate'][$name]),
                 ];
+                // A Builder save is an explicit developer decision, including an unchecked box.
+                $field['relationCreateCustomized'] = true;
 
-                // Relational Create sostituisce il vecchio link di navigazione "Nuovo padre".
-                // Le due UX non devono convivere: la creazione inline preserva il form corrente,
+                // Relational Create replaces the old "New parent" navigation link.
+                // The two UX paths must not coexist: inline creation preserves the current form,
                 // mentre createParentLink porta su una pagina separata e farebbe perdere i dati non salvati.
                 if (!empty($field['relationCreate']['enabled'])) {
                     $field['relationNavigation']['createParentLink'] = false;
@@ -271,18 +321,75 @@ class ConfigBuilder
                 }
             }
 
+            // dev37: initial Create value for writable temporal fields.
+            // È una comodità UI, non sostituisce i DEFAULT/ON UPDATE del DB.
+            $temporalType = strtolower((string) ($field['type'] ?? ''));
+            $temporalInput = strtolower((string) ($field['inputType'] ?? ''));
+            $supportsInitialValue = empty($field['databaseManaged'])
+                && (in_array($temporalType, ['date', 'datetime', 'timestamp', 'time'], true)
+                    || in_array($temporalInput, ['date', 'datetime-local', 'time'], true));
+            if ($supportsInitialValue) {
+                $initialInput = (array) (($post['initialValue'][$name] ?? []));
+                $allowedModes = ['none', 'today', 'now', 'time', 'custom'];
+                $mode = (string) ($initialInput['mode'] ?? ($field['initialValue']['mode'] ?? 'none'));
+                $field['initialValue'] = [
+                    'mode' => in_array($mode, $allowedModes, true) ? $mode : 'none',
+                    'custom' => trim((string) ($initialInput['custom'] ?? ($field['initialValue']['custom'] ?? ''))),
+                ];
+            } else {
+                $field['initialValue'] = ['mode' => 'none', 'custom' => ''];
+            }
+
             if (array_key_exists($name, (array) ($post['ui'] ?? []))) {
                 $postedUi = array_values(array_intersect(
                     (array) $post['ui'][$name],
-                    ['searchable', 'sortable', 'visibleIndex', 'visibleForm', 'visibleView', 'sensitive', 'exportable', 'apiVisible']
+                    ['searchable', 'sortable', 'visibleIndex', 'visibleForm', 'visibleView', 'sensitive', 'exportable', 'apiVisible', 'mcpVisible']
                 ));
-                foreach (['searchable', 'sortable', 'visibleIndex', 'visibleForm', 'visibleView', 'sensitive', 'exportable', 'apiVisible'] as $flag) {
+                foreach (['searchable', 'sortable', 'visibleIndex', 'visibleForm', 'visibleView', 'sensitive', 'exportable', 'apiVisible', 'mcpVisible'] as $flag) {
                     $field['ui'][$flag] = in_array($flag, $postedUi, true);
                 }
                 // Dal dev22 le scelte di visibilita del Builder sono marcate
                 // esplicitamente. In assenza del marker le vecchie config non
                 // possono reintrodurre i limiti automatici delle versioni precedenti.
                 $field['uiVisibilityCustomized'] = true;
+            }
+        }
+        unset($field);
+
+        // dev40 Form Sections v2.
+        // The section contains presentation metadata only; fields keep
+        // il riferimento tramite fields.<name>.section. In questo modo non esistono
+        // two field lists to synchronize.
+        $postedSections = (array) ($post['formSections'] ?? []);
+        $postedSectionOrder = array_values((array) ($post['formSectionOrder'] ?? []));
+        $sections = [];
+        foreach ($postedSectionOrder as $sectionId) {
+            $sectionId = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $sectionId) ?? '';
+            if ($sectionId === '' || isset($sections[$sectionId]) || !isset($postedSections[$sectionId])) {
+                continue;
+            }
+
+            $sectionPost = (array) $postedSections[$sectionId];
+            $title = trim((string) ($sectionPost['title'] ?? ''));
+            if ($title === '') {
+                continue;
+            }
+
+            $sections[$sectionId] = [
+                'id' => $sectionId,
+                'title' => mb_substr($title, 0, 120),
+                'description' => mb_substr(trim((string) ($sectionPost['description'] ?? '')), 0, 255),
+                'width' => max(1, min(12, (int) ($sectionPost['width'] ?? 12))),
+                'collapsed' => !empty($sectionPost['collapsed']),
+            ];
+        }
+        $config['formSections'] = array_values($sections);
+
+        $validSectionIds = array_fill_keys(array_keys($sections), true);
+        foreach ($config['fields'] as &$field) {
+            $sectionId = trim((string) ($field['section'] ?? ''));
+            if ($sectionId === '' || !isset($validSectionIds[$sectionId])) {
+                $field['section'] = '';
             }
         }
         unset($field);
@@ -306,17 +413,43 @@ class ConfigBuilder
             $config['features']['softDeletes'] = false;
         }
 
+        $config['apiCapabilities'] = $this->apiCapabilitiesFromPost(
+            $post,
+            $architecture,
+            (array) ($config['apiCapabilities'] ?? []),
+            (array) $config['features']
+        );
+        $config['crudSecurity'] = $this->crudSecurityFromPost(
+            $post,
+            (array) ($config['crudSecurity'] ?? [])
+        );
+        $config['apiSecurity'] = $this->apiSecurityFromPost(
+            $post,
+            $architecture,
+            (array) ($config['apiSecurity'] ?? [])
+        );
+        $config['mcp'] = $this->mcpFromPost(
+            $post,
+            $architecture,
+            (array) ($config['mcp'] ?? []),
+            (array) ($config['features'] ?? [])
+        );
+
         $config['relationsConfig']['hasMany'] = $this->hasManyConfigFromPost(
             $post,
             $config['relationsConfig']['hasMany'] ?? []
         );
+        $config['relationsConfig']['manyToMany'] = $this->manyToManyConfigFromPost(
+            $post,
+            $config['relationsConfig']['manyToMany'] ?? []
+        );
         $config['list']['filtersSummary'] = trim((string) (
             $post['list']['filtersSummary']
             ?? $config['list']['filtersSummary']
-            ?? 'Filtri di ricerca'
+            ?? 'Search filters'
         ));
         if ($config['list']['filtersSummary'] === '') {
-            $config['list']['filtersSummary'] = 'Filtri di ricerca';
+            $config['list']['filtersSummary'] = 'Search filters';
         }
 
         return $this->finalize($config);
@@ -333,10 +466,10 @@ class ConfigBuilder
         /*
          * Lo schema corrente resta sempre autorevole.
          *
-         * Una configurazione persistente può contenere riferimenti a campi o
-         * relazioni che nel frattempo sono stati rimossi/rinominati nel DB.
+         * A persistent configuration may contain references to fields or
+         * relations that have since been removed/renamed in the DB.
          * array_replace_recursive() aggiungerebbe tali chiavi obsolete al
-         * risultato finale, producendo relazioni prive dei metadati di schema
+         * final result, producing relations without schema metadata
          * (per esempio childTable/foreignKey). Conserviamo quindi soltanto le
          * personalizzazioni ancora compatibili con lo schema corrente.
          */
@@ -344,7 +477,7 @@ class ConfigBuilder
         $saved['fields'] = array_intersect_key($savedFields, (array) ($base['fields'] ?? []));
 
         /*
-         * Le configurazioni legacy possono contenere l'intero snapshot campo
+         * Legacy configurations may contain the full field snapshot
          * (type, index, foreignKey, nullable, ecc.). Questi dati non sono
          * decisioni dello sviluppatore e non devono mai prevalere sul DB
          * corrente. Manteniamo soltanto le proprieta realmente configurabili.
@@ -353,14 +486,17 @@ class ConfigBuilder
             'label',
             'inputType',
             'width',
+            'section',
             'relationMode',
             'relationDisplayField',
             'relationDisplayTemplate',
             'relationNavigation',
             'relationNavigationCustomized',
             'relationCreate',
+            'relationCreateCustomized',
             'uiVisibilityCustomized',
             'attributes',
+            'initialValue',
             'ui',
         ], true);
         foreach ($saved['fields'] as $fieldName => $savedField) {
@@ -375,13 +511,35 @@ class ConfigBuilder
                 unset($savedField['ui']['visibleIndex'], $savedField['ui']['visibleView']);
             }
 
+            // dev39-fix3: nelle prime config Upload, file/image venivano trattati
+            // come dati binari anche quando la colonna DB contiene soltanto il
+            // filename VARCHAR. La coppia visibleIndex=false + visibleView=false
+            // era quindi salvata automaticamente dal Builder. In quel caso
+            // lasciamo tornare i nuovi default schema-driven.
+            $savedInputType = strtolower((string) ($savedField['inputType'] ?? ''));
+            if (
+                in_array($savedInputType, ['file', 'image'], true)
+                && isset($savedField['ui'])
+                && empty($savedField['ui']['visibleIndex'])
+                && empty($savedField['ui']['visibleView'])
+            ) {
+                unset($savedField['ui']['visibleIndex'], $savedField['ui']['visibleView']);
+            }
+
             // Migrazione dev28: nelle config precedenti la Quick salvava
             // acceptContext=false anche quando non era una scelta del Builder.
             // Se la navigazione non è marcata come personalizzata, lasciamo
-            // prevalere il nuovo default schema-driven (FK accettata nel Create).
+            // allow the new schema-driven default to prevail (foreign key accepted in Create).
             if (empty($savedField['relationNavigationCustomized']) && isset($savedField['relationNavigation'])) {
                 $savedField['relationNavigation'] = (array) $savedField['relationNavigation'];
                 unset($savedField['relationNavigation']['acceptContext']);
+            }
+
+            // fix11-fix1 migration: old snapshots stored relationCreate.enabled=false
+            // even when the developer had never made a Builder choice. Do not let that
+            // technical default hide a safe Related Create action introduced by Quick.
+            if (empty($savedField['relationCreateCustomized'])) {
+                unset($savedField['relationCreate']);
             }
 
             $saved['fields'][$fieldName] = $savedField;
@@ -396,13 +554,13 @@ class ConfigBuilder
         /*
          * hasMany contiene sia scelte UI sia metadati tecnici derivati dallo
          * schema. Dal dev22 le colonne sono sempre schema-authoritative e
-         * complete: nessun limite numerico e nessuna lista legacy puo
-         * eliminarle. Il programmatore resta libero di ridurre la tabella nel
+         * complete: no numeric limit and no legacy list can
+         * remove them. The developer remains free to reduce the table in
          * codice generato o tramite future scelte esplicite del Builder.
          */
         $hasManyCustomizationKeys = array_fill_keys([
             'enabled', 'title', 'icon', 'limit', 'showCount', 'showCreateButton',
-            'showViewAllButton', 'showViewButton',
+            'showViewAllButton', 'showViewButton', 'collapsible', 'collapsed',
         ], true);
 
         foreach ($savedHasMany as $relationKey => $savedRelation) {
@@ -413,9 +571,33 @@ class ConfigBuilder
         }
         $saved['relationsConfig']['hasMany'] = $savedHasMany;
 
+        $baseManyToMany = (array) ($base['relationsConfig']['manyToMany'] ?? []);
+        $savedManyToMany = array_intersect_key(
+            (array) ($saved['relationsConfig']['manyToMany'] ?? []),
+            $baseManyToMany
+        );
+        $manyToManyCustomizationKeys = array_fill_keys([
+            'enabled', 'title', 'icon', 'limit', 'showCount', 'showViewButton',
+            'createEnabled', 'editEnabled', 'createRelatedEnabled', 'createRelatedCustomized',
+            'formWidth', 'collapsible', 'collapsed',
+        ], true);
+        foreach ($savedManyToMany as $relationKey => $savedRelation) {
+            $savedRelation = array_intersect_key(
+                (array) $savedRelation,
+                $manyToManyCustomizationKeys
+            );
+            // Legacy false values were generator defaults, not necessarily Builder choices.
+            // Without the customization marker, let the current safe schema-driven default win.
+            if (empty($savedRelation['createRelatedCustomized'])) {
+                unset($savedRelation['createRelatedEnabled']);
+            }
+            $savedManyToMany[$relationKey] = $savedRelation;
+        }
+        $saved['relationsConfig']['manyToMany'] = $savedManyToMany;
+
         /*
          * L'ordine salvato conserva le preferenze dello sviluppatore, ma non
-         * deve reintrodurre campi eliminati. I nuovi campi DB vengono aggiunti
+         * must not reintroduce removed fields. New DB fields are added
          * in coda così restano immediatamente disponibili nel Builder.
          */
         $baseOrder = array_keys((array) ($base['fields'] ?? []));
@@ -430,8 +612,8 @@ class ConfigBuilder
 
         /*
          * Migrazione delle vecchie configurazioni:
-         * una label uguale al valore automatico non è una personalizzazione.
-         * In questo caso la riportiamo a stringa vuota, così la view genera
+         * a label equal to the automatic value is not a customization.
+         * In this case we reset it to an empty string so the view generates
          * lang('Fields.nome_campo').
          */
         foreach ($base['fields'] as $name => $baseField) {
@@ -480,7 +662,7 @@ class ConfigBuilder
         }
 
         // readOnly/writable/recordDetail derivano esclusivamente dallo schema
-        // corrente e non possono essere riattivati da una configurazione stale.
+        // current and cannot be re-enabled by stale configuration.
         foreach (['readOnly', 'createAllowed', 'writable', 'recordDetail', 'recordActions', 'readOnlyReason'] as $feature) {
             if (array_key_exists($feature, (array) ($base['features'] ?? []))) {
                 $baseFeatures[$feature] = $base['features'][$feature];
@@ -507,17 +689,42 @@ class ConfigBuilder
         $entity = Naming::tableClass((string) $config['table']);
         $languageFile = Naming::studly((string) $config['table']);
 
-        // Iteriamo direttamente sugli array della configurazione: un foreach
-        // by-reference su una espressione castata modifica soltanto una copia
+        // We iterate directly over configuration arrays: a foreach
+        // by-reference on a cast expression modifies only a copy
         // temporanea e perderebbe normalizzazioni/policy (es. spatial).
         $config['fields'] = (array) ($config['fields'] ?? []);
+
+        // Normalizzazione Form Sections v2 anche per persistent configurations.
+        $normalizedSections = [];
+        $validSectionIds = [];
+        foreach ((array) ($config['formSections'] ?? []) as $rawSection) {
+            $rawSection = (array) $rawSection;
+            $sectionId = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) ($rawSection['id'] ?? '')) ?? '';
+            $title = trim((string) ($rawSection['title'] ?? ''));
+            if ($sectionId === '' || $title === '' || isset($validSectionIds[$sectionId])) {
+                continue;
+            }
+
+            $validSectionIds[$sectionId] = true;
+            $normalizedSections[] = [
+                'id' => $sectionId,
+                'title' => mb_substr($title, 0, 120),
+                'description' => mb_substr(trim((string) ($rawSection['description'] ?? '')), 0, 255),
+                'width' => max(1, min(12, (int) ($rawSection['width'] ?? 12))),
+                'collapsed' => !empty($rawSection['collapsed']),
+            ];
+        }
+        $config['formSections'] = $normalizedSections;
+
         foreach ($config['fields'] as $name => &$field) {
             $field['languageKey'] = $languageFile . '.' . $name;
             $field['ui'] = (array) ($field['ui'] ?? []);
+            $sectionId = trim((string) ($field['section'] ?? ''));
+            $field['section'] = ($sectionId !== '' && isset($validSectionIds[$sectionId])) ? $sectionId : '';
 
-            // I filtri e l'ordinamento server-side sono ammessi soltanto sui
-            // campi che guidano un indice (PRIMARY, UNIQUE o prima colonna
-            // di un indice semplice/composto). Le altre opzioni restano una
+            // Server-side filtering and sorting are allowed only on
+            // fields that lead an index (PRIMARY, UNIQUE, or first column
+            // of a simple/composite index). Other options remain an
             // decisione esplicita dello sviluppatore nel Builder.
             $index = (array) ($field['index'] ?? []);
             $indexEligible = !empty($index['primary'])
@@ -530,7 +737,7 @@ class ConfigBuilder
             }
 
             if (!empty($field['databaseManaged'])) {
-                // Metadato tecnico derivato dal DB: una configurazione persistente
+                // Metadato tecnico derivato dal DB: una persistent configuration
                 // non può trasformare un timestamp automatico in un input editabile.
                 $field['ui']['visibleForm'] = false;
                 $field['attributes'] = (array) ($field['attributes'] ?? []);
@@ -538,11 +745,12 @@ class ConfigBuilder
                     (array) ($field['attributes']['boolean'] ?? []),
                     ['required', 'readonly', 'disabled']
                 ));
+                $field['initialValue'] = ['mode' => 'none', 'custom' => ''];
             }
 
             if (FieldPolicy::isSpatial((string) ($field['type'] ?? ''))) {
                 // In 2.8 i tipi spatial sono leggibili tramite ST_AsText(), ma
-                // non vengono modificati o usati come filtro/ordinamento finché
+                // are not modified or used for filtering/sorting until
                 // non esiste un editor spatial dedicato.
                 $field['ui']['searchable'] = false;
                 $field['ui']['sortable'] = false;
@@ -550,6 +758,7 @@ class ConfigBuilder
                 $field['ui']['visibleForm'] = false;
                 $field['ui']['exportable'] = false;
                 $field['ui']['apiVisible'] = false;
+                $field['ui']['mcpVisible'] = false;
                 $field['ui']['visibleView'] = true;
             }
 
@@ -557,8 +766,15 @@ class ConfigBuilder
                 $field['ui']['apiVisible'] = true;
             }
 
-            // dev32: una SQL VIEW è scaffolding di sola lettura. Anche una
-            // configurazione salvata non può riattivare campi di form o
+            // dev13: MCP ha una superficie dati indipendente dalla REST API.
+            // Legacy configurations inherit apiVisible, except sensitive fields.
+            if (!array_key_exists('mcpVisible', $field['ui'])) {
+                $field['ui']['mcpVisible'] = !empty($field['ui']['apiVisible'])
+                    && empty($field['ui']['sensitive']);
+            }
+
+            // dev32: a SQL VIEW is read-only scaffolding. Even a
+            // saved configuration cannot reactivate form fields or
             // Relational Create sulla VIEW. Lo sviluppatore resta libero di
             // estendere manualmente i file generati se conosce la VIEW.
             if (!empty($config['isView'])) {
@@ -603,14 +819,15 @@ class ConfigBuilder
                 $field['relationDisplayTemplate'] = $displayTemplate;
                 $field['relationNavigation'] = $navigation;
                 $field['relationNavigationCustomized'] = !empty($field['relationNavigationCustomized']);
+                $field['relationCreateCustomized'] = !empty($field['relationCreateCustomized']);
                 $relatedCreateAvailable = !empty($field['foreignKey']['relatedCreate']['available']);
                 $field['relationCreate'] = [
                     'available' => $relatedCreateAvailable,
                     'enabled' => $relatedCreateAvailable && !empty($field['relationCreate']['enabled']),
                 ];
 
-                // Normalizzazione di sicurezza anche per configurazioni persistenti precedenti:
-                // se Relational Create è attivo, il link "Nuovo padre" viene sempre spento.
+                // Safety normalization also applies to previous persistent configurations:
+                // when Relational Create is active, the "New parent" link is always disabled.
                 if (!empty($field['relationCreate']['enabled'])) {
                     $field['relationNavigation']['createParentLink'] = false;
                 }
@@ -632,14 +849,46 @@ class ConfigBuilder
         unset($field);
 
         if (!empty($config['isView'])) {
-            $config['relations'] = ['belongsTo' => [], 'hasMany' => []];
-            $config['relationsConfig'] = ['hasMany' => []];
+            $config['relations'] = ['belongsTo' => [], 'hasMany' => [], 'manyToMany' => []];
+            $config['relationsConfig'] = ['hasMany' => [], 'manyToMany' => []];
             $config['features']['relations'] = false;
             $config['features']['softDeletes'] = false;
         }
 
         $config['relationsConfig'] = (array) ($config['relationsConfig'] ?? []);
         $config['relationsConfig']['hasMany'] = (array) ($config['relationsConfig']['hasMany'] ?? []);
+        $config['relationsConfig']['manyToMany'] = (array) ($config['relationsConfig']['manyToMany'] ?? []);
+        $purePivotTables = array_fill_keys(array_values(array_filter(array_map(
+            static fn (array $relation): string => !empty($relation['enabled']) ? (string) ($relation['pivotTable'] ?? '') : '',
+            $config['relationsConfig']['manyToMany']
+        ))), true);
+
+        foreach ($config['relationsConfig']['manyToMany'] as &$manyToManyRelation) {
+            if (empty($manyToManyRelation['createRelatedAvailable'])) {
+                $manyToManyRelation['createRelatedEnabled'] = false;
+            }
+        }
+        unset($manyToManyRelation);
+
+        foreach ($config['relationsConfig']['hasMany'] as &$hasManyRelation) {
+            $isPurePivot = isset($purePivotTables[(string) ($hasManyRelation['childTable'] ?? '')]);
+
+            /*
+             * Pure pivot tables are disabled as hasMany by default because the
+             * many-to-many relation is normally the more useful representation.
+             *
+             * An explicit Builder choice must nevertheless win. This matches the
+             * contract established by buildHasManyConfig(): developers may expose
+             * the technical pivot table as a read-only hasMany panel when useful.
+             */
+            if ($isPurePivot && empty($hasManyRelation['enabled'])) {
+                $hasManyRelation['enabled'] = false;
+                $hasManyRelation['suppressedByManyToMany'] = true;
+            } else {
+                $hasManyRelation['suppressedByManyToMany'] = false;
+            }
+        }
+        unset($hasManyRelation);
         foreach ($config['relationsConfig']['hasMany'] as $key => &$relation) {
             if (empty($relation['childRecordDetail'])) {
                 $relation['showViewButton'] = false;
@@ -648,7 +897,36 @@ class ConfigBuilder
         unset($relation);
 
         $config['languageFile'] = $languageFile;
-        $config['list']['filtersSummary'] = trim((string) ($config['list']['filtersSummary'] ?? 'Filtri di ricerca')) ?: 'Filtri di ricerca';
+        $config['list']['filtersSummary'] = trim((string) ($config['list']['filtersSummary'] ?? 'Search filters')) ?: 'Search filters';
+
+        $apiDefaults = $this->defaultApiCapabilities(
+            (string) ($config['architecture'] ?? 'basic'),
+            !empty($config['features']['readOnly']),
+            !empty($config['features']['createAllowed']),
+            !empty($config['features']['writable']),
+            !empty($config['features']['softDeletes'])
+        );
+        $savedApiCapabilities = (array) ($config['apiCapabilities'] ?? []);
+        if ($savedApiCapabilities === []) {
+            $config['apiCapabilities'] = $apiDefaults;
+        } else {
+            foreach ($apiDefaults as $name => $available) {
+                $config['apiCapabilities'][$name] = $available && !empty($savedApiCapabilities[$name]);
+            }
+        }
+
+        $config['crudSecurity'] = $this->normalizeCrudSecurity(
+            (array) ($config['crudSecurity'] ?? [])
+        );
+        $config['apiSecurity'] = $this->normalizeApiSecurity(
+            (array) ($config['apiSecurity'] ?? []),
+            (string) ($config['architecture'] ?? 'basic')
+        );
+        $config['mcp'] = $this->normalizeMcpConfig(
+            (array) ($config['mcp'] ?? []),
+            (string) ($config['architecture'] ?? 'basic'),
+            (array) ($config['features'] ?? [])
+        );
 
         $config['classes'] = [
             'entity' => $entity . 'Entity',
@@ -666,8 +944,8 @@ class ConfigBuilder
     }
 
     /**
-     * Mantiene nel template descrittivo solo placeholder riferiti a colonne
-     * realmente disponibili nella tabella padre. Il testo libero resta intatto.
+     * Keeps only placeholders referencing columns
+     * actually available in the parent table. Free text remains unchanged.
      */
     private function sanitizeDisplayTemplate(string $template, array $allowedFields): string
     {
@@ -695,6 +973,292 @@ class ConfigBuilder
         return in_array($architecture, self::ARCHITECTURES, true)
             ? $architecture
             : 'basic';
+    }
+
+    /** @return array{enabled:bool,transport:string,mode:string,serverName:string,capabilities:array{list:bool,read:bool,relations:bool}} */
+    private function defaultMcpConfig(string $architecture): array
+    {
+        $full = $this->normalizeArchitecture($architecture) === 'full';
+
+        return [
+            'enabled' => false,
+            'transport' => 'stdio',
+            'mode' => 'read_only',
+            'serverName' => 'myCrudCI4',
+            'security' => [
+                'boundary' => 'local_process',
+                'inheritsApiSecurity' => false,
+                'remoteTransportAllowed' => false,
+                'oauthRequiredForRemote' => true,
+            ],
+            'capabilities' => [
+                'list' => $full,
+                'read' => $full,
+                'relations' => $full,
+            ],
+        ];
+    }
+
+    /** @return array{enabled:bool,transport:string,mode:string,serverName:string,capabilities:array{list:bool,read:bool,relations:bool}} */
+    private function mcpFromPost(
+        array $post,
+        string $architecture,
+        array $current,
+        array $features
+    ): array {
+        if ($this->normalizeArchitecture($architecture) !== 'full') {
+            return $this->defaultMcpConfig($architecture);
+        }
+
+        $mcp = (array) ($post['mcp'] ?? []);
+        $enabled = !empty($mcp['enabled']);
+        $serverName = trim((string) ($mcp['serverName'] ?? ($current['serverName'] ?? 'myCrudCI4')));
+        if ($serverName === '') {
+            $serverName = 'myCrudCI4';
+        }
+        $serverName = substr($serverName, 0, 80);
+
+        $postedCapabilities = (array) ($mcp['capabilities'] ?? []);
+
+        return [
+            'enabled' => $enabled,
+            'transport' => 'stdio',
+            'mode' => 'read_only',
+            'serverName' => $serverName,
+            'security' => [
+                'boundary' => 'local_process',
+                'inheritsApiSecurity' => false,
+                'remoteTransportAllowed' => false,
+                'oauthRequiredForRemote' => true,
+            ],
+            'capabilities' => [
+                'list' => !empty($postedCapabilities['list']),
+                'read' => !empty($features['recordDetail']) && !empty($postedCapabilities['read']),
+                'relations' => !empty($features['relations']) && !empty($postedCapabilities['relations']),
+            ],
+        ];
+    }
+
+    /** @return array{enabled:bool,transport:string,mode:string,serverName:string,capabilities:array{list:bool,read:bool,relations:bool}} */
+    private function normalizeMcpConfig(array $mcp, string $architecture, array $features): array
+    {
+        if ($this->normalizeArchitecture($architecture) !== 'full') {
+            return $this->defaultMcpConfig($architecture);
+        }
+
+        $serverName = trim((string) ($mcp['serverName'] ?? 'myCrudCI4'));
+        if ($serverName === '') {
+            $serverName = 'myCrudCI4';
+        }
+
+        $caps = (array) ($mcp['capabilities'] ?? []);
+
+        return [
+            'enabled' => !empty($mcp['enabled']),
+            'transport' => 'stdio',
+            'mode' => 'read_only',
+            'serverName' => substr($serverName, 0, 80),
+            'security' => [
+                'boundary' => 'local_process',
+                'inheritsApiSecurity' => false,
+                'remoteTransportAllowed' => false,
+                'oauthRequiredForRemote' => true,
+            ],
+            'capabilities' => [
+                'list' => array_key_exists('list', $caps) ? !empty($caps['list']) : true,
+                'read' => !empty($features['recordDetail'])
+                    && (array_key_exists('read', $caps) ? !empty($caps['read']) : true),
+                'relations' => !empty($features['relations'])
+                    && (array_key_exists('relations', $caps) ? !empty($caps['relations']) : true),
+            ],
+        ];
+    }
+
+    /** @return array{auth:string,permissions:array<string,string>} */
+    private function defaultCrudSecurity(): array
+    {
+        return [
+            'auth' => 'none',
+            'permissions' => [
+                'list' => '',
+                'read' => '',
+                'create' => '',
+                'update' => '',
+                'delete' => '',
+                'trash' => '',
+                'restore' => '',
+                'forceDelete' => '',
+            ],
+        ];
+    }
+
+    /** @return array{auth:string,permissions:array<string,string>} */
+    private function crudSecurityFromPost(array $post, array $current): array
+    {
+        $requestedAuth = strtolower(trim((string) ($post['crudSecurity']['auth'] ?? 'none')));
+        $auth = $requestedAuth === 'shield_session' ? 'shield_session' : 'none';
+
+        // Web CRUD Shield integration is optional and must not emit unavailable filters.
+        if ($auth === 'shield_session' && !class_exists(\CodeIgniter\Shield\Filters\TokenAuth::class)) {
+            $auth = 'none';
+        }
+
+        $permissions = [];
+        foreach (array_keys($this->defaultCrudSecurity()['permissions']) as $capability) {
+            $permission = strtolower(trim((string) ($post['crudSecurity']['permissions'][$capability] ?? '')));
+            $permissions[$capability] = preg_match('/^[a-z0-9][a-z0-9._-]*$/D', $permission) === 1
+                ? $permission
+                : '';
+        }
+
+        return ['auth' => $auth, 'permissions' => $permissions];
+    }
+
+    /** @return array{auth:string,permissions:array<string,string>} */
+    private function normalizeCrudSecurity(array $security): array
+    {
+        $auth = (string) ($security['auth'] ?? 'none');
+        if (!in_array($auth, ['none', 'shield_session'], true)) {
+            $auth = 'none';
+        }
+
+        $permissions = [];
+        foreach (array_keys($this->defaultCrudSecurity()['permissions']) as $capability) {
+            $permission = strtolower(trim((string) ($security['permissions'][$capability] ?? '')));
+            $permissions[$capability] = preg_match('/^[a-z0-9][a-z0-9._-]*$/D', $permission) === 1
+                ? $permission
+                : '';
+        }
+
+        return ['auth' => $auth, 'permissions' => $permissions];
+    }
+
+    /** @return array{auth:string,permissions:array<string,string>} */
+    private function defaultApiSecurity(): array
+    {
+        return [
+            'auth' => 'none',
+            'permissions' => [
+                'list' => '',
+                'read' => '',
+                'create' => '',
+                'update' => '',
+                'delete' => '',
+                'trash' => '',
+                'restore' => '',
+                'forceDelete' => '',
+                'upload' => '',
+            ],
+        ];
+    }
+
+    /** @return array{auth:string,permissions:array<string,string>} */
+    private function apiSecurityFromPost(array $post, string $architecture, array $current): array
+    {
+        if ($this->normalizeArchitecture($architecture) !== 'full') {
+            return $this->defaultApiSecurity();
+        }
+
+        $requestedAuth = strtolower(trim((string) ($post['apiSecurity']['auth'] ?? 'none')));
+        $auth = $requestedAuth === 'shield_tokens' ? 'shield_tokens' : 'none';
+
+        // We do not generate Shield filter references when the package is not installed.
+        if ($auth === 'shield_tokens' && !class_exists(\CodeIgniter\Shield\Filters\TokenAuth::class)) {
+            $auth = 'none';
+        }
+
+        $permissions = [];
+        foreach (array_keys($this->defaultApiSecurity()['permissions']) as $capability) {
+            $permission = strtolower(trim((string) ($post['apiSecurity']['permissions'][$capability] ?? '')));
+            $permissions[$capability] = preg_match('/^[a-z0-9][a-z0-9._-]*$/D', $permission) === 1
+                ? $permission
+                : '';
+        }
+
+        return [
+            'auth' => $auth,
+            'permissions' => $permissions,
+        ];
+    }
+
+    /** @return array{auth:string,permissions:array<string,string>} */
+    private function normalizeApiSecurity(array $security, string $architecture): array
+    {
+        if ($this->normalizeArchitecture($architecture) !== 'full') {
+            return $this->defaultApiSecurity();
+        }
+
+        $auth = (string) ($security['auth'] ?? 'none');
+        if (!in_array($auth, ['none', 'shield_tokens'], true)) {
+            $auth = 'none';
+        }
+
+        $permissions = [];
+        foreach (array_keys($this->defaultApiSecurity()['permissions']) as $capability) {
+            $permission = strtolower(trim((string) ($security['permissions'][$capability] ?? '')));
+            $permissions[$capability] = preg_match('/^[a-z0-9][a-z0-9._-]*$/D', $permission) === 1
+                ? $permission
+                : '';
+        }
+
+        return ['auth' => $auth, 'permissions' => $permissions];
+    }
+
+    /**
+     * Capability API indipendenti dalle capability web.
+     *
+     * Le capability impossibili per schema/architettura vengono sempre spente,
+     * anche se una persistent configuration precedente le aveva abilitate.
+     *
+     * @return array<string,bool>
+     */
+    private function defaultApiCapabilities(
+        string $architecture,
+        bool $readOnly,
+        bool $createAllowed,
+        bool $writable,
+        bool $softDeleteAvailable
+    ): array {
+        $full = $this->normalizeArchitecture($architecture) === 'full';
+
+        return [
+            'list' => $full,
+            'read' => $full && !$readOnly,
+            'create' => $full && $createAllowed,
+            'update' => $full && $writable && !$readOnly,
+            'delete' => $full && $writable && !$readOnly,
+            'trash' => $full && $writable && $softDeleteAvailable,
+            'restore' => $full && $writable && $softDeleteAvailable,
+            'forceDelete' => $full && $writable && $softDeleteAvailable,
+        ];
+    }
+
+    /** @return array<string,bool> */
+    private function apiCapabilitiesFromPost(
+        array $post,
+        string $architecture,
+        array $current,
+        array $features
+    ): array {
+        $available = $this->defaultApiCapabilities(
+            $architecture,
+            !empty($features['readOnly']),
+            !empty($features['createAllowed']),
+            !empty($features['writable']),
+            !empty($features['softDeletes'])
+        );
+
+        if ($this->normalizeArchitecture($architecture) !== 'full') {
+            return array_fill_keys(array_keys($available), false);
+        }
+
+        // Nel Builder l'assenza del checkbox significa scelta esplicita "off".
+        $posted = (array) ($post['apiCapabilities'] ?? []);
+        foreach ($available as $name => $canEnable) {
+            $available[$name] = $canEnable && !empty($posted[$name]);
+        }
+
+        return $available;
     }
 
     private function featuresFor(string $architecture, bool $softAvailable): array
@@ -811,8 +1375,8 @@ class ConfigBuilder
         $databaseManaged = FieldPolicy::isDatabaseManagedTimestamp($column);
 
         return [
-            // Per dataset grandi i filtri e l'ordinamento vengono proposti solo
-            // sui campi che guidano un indice. Il Builder può fare override.
+            // For large datasets, filters and sorting are proposed only
+            // for fields that lead an index. The Builder may override this.
             'searchable'   => !$managed && !$sensitive && !$large && !$spatial && $indexed,
             'sortable'     => !$managed && !$large && !$binary && !$spatial && $indexed,
             'visibleIndex' => !$sensitive && !$binary,
@@ -826,8 +1390,8 @@ class ConfigBuilder
     }
 
     /**
-     * La lista generata non applica limiti arbitrari al numero di colonne.
-     * Tutti i campi visualizzabili vengono inclusi; il Builder o il
+     * The generated list applies no arbitrary limit to the number of columns.
+     * All displayable fields are included; the Builder or
      * programmatore possono poi nasconderli esplicitamente. Restano esclusi
      * soltanto dati sensibili o binari che non sono sicuri da stampare raw.
      */
@@ -839,8 +1403,7 @@ class ConfigBuilder
             $ui = (array) ($field['ui'] ?? []);
             $type = strtolower((string) ($field['type'] ?? ''));
             $inputType = strtolower((string) ($field['inputType'] ?? 'text'));
-            $binary = in_array($inputType, ['file', 'image'], true)
-                || str_contains($type, 'blob')
+            $binary = str_contains($type, 'blob')
                 || str_contains($type, 'binary');
 
             $field['ui']['visibleIndex'] = empty($ui['sensitive']) && !$binary;
@@ -850,13 +1413,22 @@ class ConfigBuilder
         return $fields;
     }
 
-    private function buildHasManyConfig(array $relations): array
+    private function buildHasManyConfig(array $relations, array $manyToMany = []): array
     {
         $config = [];
 
+        $pivotTables = array_fill_keys(array_values(array_filter(array_map(
+            static fn (array $relation): string => !empty($relation['purePivot']) ? (string) ($relation['pivotTable'] ?? '') : '',
+            $manyToMany
+        ))), true);
+
         foreach ($relations as $key => $relation) {
+            $childTable = (string) ($relation['childTable'] ?? '');
             $config[$key] = [
-                'enabled' => true,
+                // Pure pivots are represented by the many-to-many relation and are not
+                // duplicates as a technical hasMany table. The developer may
+                // manually re-enable hasMany from the Builder/configuration.
+                'enabled' => !isset($pivotTables[$childTable]),
                 'mode' => 'readonly',
                 'title' => Naming::human((string) $relation['childTable']),
                 'icon' => 'bi-diagram-3',
@@ -877,10 +1449,83 @@ class ConfigBuilder
                 'showCreateButton' => !empty($relation['childCreateAllowed']),
                 'showViewAllButton' => true,
                 'showViewButton' => !empty($relation['childRecordDetail']),
+                'collapsible' => true,
+                'collapsed' => false,
             ];
         }
 
         return $config;
+    }
+
+    private function buildManyToManyConfig(array $relations): array
+    {
+        $config = [];
+        foreach ($relations as $key => $relation) {
+            if (empty($relation['purePivot'])) {
+                continue;
+            }
+            $config[(string) $key] = [
+                'enabled' => true,
+                'title' => Naming::human((string) ($relation['relatedTable'] ?? 'Relation')),
+                'icon' => 'bi-diagram-2',
+                'limit' => 20,
+                'showCount' => true,
+                'showViewButton' => !empty($relation['relatedRecordDetail']),
+                'formWidth' => max(1, min(12, (int) ((config('MyCrud')->relationPanelWidths['manyToMany'] ?? 12)))),
+                'createEnabled' => true,
+                'editEnabled' => true,
+                'createRelatedAvailable' => !empty($relation['relatedCreateSimple']),
+                // Safe M2M target creation is scaffolded by Quick/generate-all by default.
+                'createRelatedEnabled' => !empty($relation['relatedCreateSimple']),
+                'createRelatedCustomized' => false,
+                'createRelatedUnavailableReason' => (string) ($relation['relatedCreateUnavailableReason'] ?? ''),
+                'relatedCreate' => (array) ($relation['relatedCreate'] ?? []),
+                'collapsible' => true,
+                'collapsed' => false,
+                'pivotTable' => (string) ($relation['pivotTable'] ?? ''),
+                'ownPivotField' => (string) ($relation['ownPivotField'] ?? ''),
+                'ownParentField' => (string) ($relation['ownParentField'] ?? ''),
+                'relatedTable' => (string) ($relation['relatedTable'] ?? ''),
+                'relatedPivotField' => (string) ($relation['relatedPivotField'] ?? ''),
+                'relatedKey' => (string) ($relation['relatedKey'] ?? ''),
+                'relatedDisplayField' => (string) ($relation['relatedDisplayField'] ?? ''),
+                'relatedDisplayFields' => array_values((array) ($relation['relatedDisplayFields'] ?? [])),
+                'relatedRecordDetail' => !empty($relation['relatedRecordDetail']),
+                'columns' => (array) ($relation['relatedColumns'] ?? []),
+                'columnTypes' => (array) ($relation['relatedColumnTypes'] ?? []),
+                // Scaffolding dev34: i metodi attach/detach/sync vengono sempre
+                // generati come punti di estensione, senza imporre una UI di editing.
+                'scaffoldMutators' => true,
+            ];
+        }
+        return $config;
+    }
+
+    private function manyToManyConfigFromPost(array $post, array $base): array
+    {
+        $posted = (array) ($post['relationsConfig']['manyToMany'] ?? []);
+        foreach ($base as $key => &$relation) {
+            $input = (array) ($posted[$key] ?? []);
+            $relation['enabled'] = !empty($input['enabled']);
+            $relation['title'] = trim((string) ($input['title'] ?? $relation['title'])) ?: (string) $relation['title'];
+            $relation['icon'] = trim((string) ($input['icon'] ?? $relation['icon'])) ?: 'bi-diagram-2';
+            $relation['limit'] = max(1, min(200, (int) ($input['limit'] ?? 20)));
+            $relation['showCount'] = !empty($input['showCount']);
+            $relation['showViewButton'] = !empty($input['showViewButton']) && !empty($relation['relatedRecordDetail']);
+            $allowedWidths = array_map('intval', array_keys((array) (config('MyCrud')->bootstrapFieldWidths ?? [])));
+            $requestedWidth = (int) ($input['formWidth'] ?? $relation['formWidth'] ?? 12);
+            $relation['formWidth'] = in_array($requestedWidth, $allowedWidths, true) ? $requestedWidth : (int) ($relation['formWidth'] ?? 12);
+            $relation['createEnabled'] = !empty($input['createEnabled']);
+            $relation['editEnabled'] = !empty($input['editEnabled']);
+            $relation['createRelatedEnabled'] = !empty($relation['createRelatedAvailable'])
+                && !empty($input['createRelatedEnabled']);
+            // A Builder save explicitly chooses whether inline target creation is enabled.
+            $relation['createRelatedCustomized'] = true;
+            $relation['collapsible'] = !empty($input['collapsible']);
+            $relation['collapsed'] = !empty($input['collapsed']) && $relation['collapsible'];
+        }
+        unset($relation);
+        return $base;
     }
 
     private function hasManyConfigFromPost(array $post, array $base): array
@@ -900,6 +1545,8 @@ class ConfigBuilder
             $relation['showViewAllButton'] = !empty($input['showViewAllButton']);
             $relation['showViewButton'] = !empty($input['showViewButton'])
                 && !empty($relation['childRecordDetail']);
+            $relation['collapsible'] = !empty($input['collapsible']);
+            $relation['collapsed'] = !empty($input['collapsed']) && $relation['collapsible'];
 
             $allowedColumns = array_values(array_unique((array) ($relation['columns'] ?? [])));
             $selectedColumns = array_values(array_intersect(

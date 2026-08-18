@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\API\Resources;
 
-/** Serializza la risorsa actor secondo la configurazione del Builder. */
+/**
+ * Output-only serializer for `actor`.
+ *
+ * It performs no queries, request parsing, validation, or persistence.
+ */
 final class ActorResource
 {
     private const READABLE = array (
@@ -12,18 +16,6 @@ final class ActorResource
   1 => 'first_name',
   2 => 'last_name',
   3 => 'last_update',
-);
-    private const WRITABLE = array (
-  0 => 'first_name',
-  1 => 'last_name',
-);
-    private const FILTERABLE = array (
-  0 => 'actor_id',
-  1 => 'last_name',
-);
-    private const SORTABLE = array (
-  0 => 'actor_id',
-  1 => 'last_name',
 );
 
     public static function make(object|array $record): array
@@ -44,20 +36,5 @@ final class ActorResource
     public static function collection(array $records): array
     {
         return array_map(static fn (object|array $record): array => self::make($record), $records);
-    }
-
-    public static function writableData(array $data): array
-    {
-        return array_intersect_key($data, array_flip(self::WRITABLE));
-    }
-
-    public static function filterableFields(): array
-    {
-        return self::FILTERABLE;
-    }
-
-    public static function sortableFields(): array
-    {
-        return self::SORTABLE;
     }
 }

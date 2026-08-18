@@ -9,7 +9,7 @@ use App\Libraries\MyCrud\Core\ConfigBuilder;
 use App\Libraries\MyCrud\MyCrudVersion;
 use Throwable;
 
-/** Verifica il nuovo ciclo 2.8: snapshot persistente, reload e merge su schema fresco. */
+/** Verifies the persistent configuration cycle: snapshot, reload, and merge against a fresh schema. */
 final class ConfigurationRegressionRunner
 {
     public function run(string $table): DiagnosticReport
@@ -26,11 +26,11 @@ final class ConfigurationRegressionRunner
             $settings = config('MyCrud');
             $versionOk = (string) ($settings->version ?? '') === MyCrudVersion::VERSION;
             $report->add(new DiagnosticResult(
-                '2.8 versione centralizzata',
+                'Centralized version',
                 $versionOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
                 $versionOk
-                    ? 'Versione generatore letta dalla costante unica ' . MyCrudVersion::VERSION . '.'
-                    : 'Config\\MyCrud e MyCrudVersion non riportano la stessa versione.'
+                    ? 'Generator version read from the single constant ' . MyCrudVersion::VERSION . '.'
+                    : 'Config\\MyCrud and MyCrudVersion do not report the same version.'
             ));
 
             $builder = new ConfigBuilder();
@@ -41,7 +41,7 @@ final class ConfigurationRegressionRunner
             $test['architecture'] = 'standard';
             $firstField = array_key_first((array) ($test['fields'] ?? []));
             if ($firstField !== null) {
-                $test['fields'][$firstField]['label'] = 'Test persistente 2.8';
+                $test['fields'][$firstField]['label'] = 'Persistent test';
             }
 
             $firstRelationField = null;
@@ -65,15 +65,24 @@ final class ConfigurationRegressionRunner
                 }
             }
 
+            $manyToManyRelatedCreateKey = null;
+            foreach ((array) ($test['relationsConfig']['manyToMany'] ?? []) as $relationKey => $relation) {
+                if (!empty($relation['createRelatedAvailable'])) {
+                    $manyToManyRelatedCreateKey = (string) $relationKey;
+                    $test['relationsConfig']['manyToMany'][$relationKey]['createRelatedEnabled'] = true;
+                    break;
+                }
+            }
+
             $path = $repository->save($table, $test);
             $loaded = $repository->load($table);
 
             $report->add(new DiagnosticResult(
-                '2.8 config persistente',
+                'Persistent configuration',
                 is_file($path) && is_array($loaded) ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
                 is_file($path) && is_array($loaded)
-                    ? 'Snapshot PHP creato e riletto.'
-                    : 'Impossibile creare o rileggere lo snapshot PHP.'
+                    ? 'PHP snapshot created and reloaded.'
+                    : 'Unable to create or reload the PHP snapshot.'
             ));
 
             $compact = is_array($loaded)
@@ -83,11 +92,11 @@ final class ConfigurationRegressionRunner
                 && ($firstField === null || !array_key_exists('index', (array) ($loaded['fields'][$firstField] ?? [])));
 
             $report->add(new DiagnosticResult(
-                '2.8 snapshot compatto',
+                'Compact snapshot',
                 $compact ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
                 $compact
-                    ? 'Persistite solo decisioni dello sviluppatore; schema DB non congelato.'
-                    : 'Lo snapshot contiene informazioni di schema che dovrebbero essere rilette dal DB.'
+                    ? 'Only developer decisions are persisted; DB schema is not frozen.'
+                    : 'The snapshot contains schema information that should be reread from the DB.'
             ));
 
             if ($firstRelationField !== null) {
@@ -96,17 +105,39 @@ final class ConfigurationRegressionRunner
                     && array_key_exists('relationDisplayTemplate', $loadedRelationField)
                     && !empty($loadedRelationField['relationNavigation']['acceptContext']);
                 $report->add(new DiagnosticResult(
-                    '2.8 configurazione descrizione FK',
+                    'Foreign-key description configuration',
                     $relationPersistenceOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
                     $relationPersistenceOk
-                        ? 'Campo descrittivo, template e navigazione FK persistono nella config.'
-                        : 'Configurazione descrittiva/navigazione FK non persistita correttamente.'
+                        ? 'Descriptive field, template, and foreign-key navigation persist in configuration.'
+                        : 'Descriptive/foreign-key navigation configuration was not persisted correctly.'
                 ));
             } else {
                 $report->add(new DiagnosticResult(
-                    '2.8 configurazione descrizione FK',
+                    'Foreign-key description configuration',
                     DiagnosticResult::SKIP,
-                    'La tabella non contiene foreign key da verificare.'
+                    'The table contains no foreign key to verify.'
+                ));
+            }
+
+            if ($manyToManyRelatedCreateKey !== null) {
+                $m2mLoaded = (array) ($loaded['relationsConfig']['manyToMany'][$manyToManyRelatedCreateKey] ?? []);
+                $m2mPersistenceOk = !empty($m2mLoaded['createRelatedEnabled']);
+                $report->add(new DiagnosticResult(
+                    'Many-to-many related-create persistence',
+                    $m2mPersistenceOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+                    $m2mPersistenceOk
+                        ? 'createRelatedEnabled survives Builder/config persistence.'
+                        : 'createRelatedEnabled was lost while saving the persistent configuration.'
+                ));
+            } else {
+                $manyToManyRelations = (array) ($test['relationsConfig']['manyToMany'] ?? []);
+                $message = $manyToManyRelations === []
+                    ? 'Not applicable: this table has no many-to-many relation.'
+                    : 'Not applicable: this table has many-to-many relations, but none supports related-create.';
+                $report->add(new DiagnosticResult(
+                    'Many-to-many related-create persistence',
+                    DiagnosticResult::SKIP,
+                    $message
                 ));
             }
 
@@ -115,11 +146,11 @@ final class ConfigurationRegressionRunner
                 && !empty($meta['schemaFingerprint'])
                 && !empty($meta['configHash']);
             $report->add(new DiagnosticResult(
-                '2.8 metadati config',
+                'Configuration metadata',
                 $metaOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
                 $metaOk
-                    ? 'Versione, fingerprint schema e hash configurazione presenti.'
-                    : 'Metadati configurazione incompleti.'
+                    ? 'Version, schema fingerprint, and configuration hash are present.'
+                    : 'Configuration metadata is incomplete.'
             ));
 
             $fresh = $builder->buildFromTable($table);
@@ -132,30 +163,30 @@ final class ConfigurationRegressionRunner
             if ($firstField !== null) {
                 $mergeOk = $mergeOk
                     && (string) ($merged['fields'][$firstField]['name'] ?? '') === (string) $firstField
-                    && (string) ($merged['fields'][$firstField]['label'] ?? '') === 'Test persistente 2.8';
+                    && (string) ($merged['fields'][$firstField]['label'] ?? '') === 'Persistent test';
             }
 
             $report->add(new DiagnosticResult(
-                '2.8 merge schema + config',
+                'Schema + configuration merge',
                 $mergeOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
                 $mergeOk
-                    ? 'Schema corrente preservato e scelte persistenti riapplicate.'
-                    : 'Merge fra schema corrente e configurazione non coerente.'
+                    ? 'Current schema preserved and persistent choices reapplied.'
+                    : 'Merge between current schema and configuration is inconsistent.'
             ));
 
             /*
-             * Regressione dev2: una configurazione salvata può riferirsi a un
-             * campo o a una relazione hasMany non più presenti nel DB. Queste
+             * Regressione dev2: una saved configuration può riferirsi a un
+             * field or hasMany relation no longer present in the DB. These
              * chiavi devono essere ignorate e non reintrodotte nel config finale.
              */
             $staleSaved = is_array($loaded) ? $loaded : [];
             $staleSaved['fields']['__campo_rimosso__'] = [
-                'label' => 'Campo rimosso',
+                'label' => 'Removed field',
                 'inputType' => 'text',
             ];
             $staleSaved['relationsConfig']['hasMany']['__relazione_rimossa__'] = [
                 'enabled' => true,
-                'title' => 'Relazione rimossa',
+                'title' => 'Removed relation',
             ];
 
             $staleMerged = $builder->mergeSavedConfiguration($fresh, $staleSaved);
@@ -166,8 +197,8 @@ final class ConfigurationRegressionRunner
                 '2.8 merge schema drift sicuro',
                 $staleOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
                 $staleOk
-                    ? 'Campi e relazioni obsolete vengono scartati; lo schema DB resta autorevole.'
-                    : 'Una configurazione obsoleta ha reintrodotto elementi non presenti nello schema corrente.'
+                    ? 'Obsolete fields and relations are discarded; the DB schema remains authoritative.'
+                    : 'An obsolete configuration reintroduced elements not present in the current schema.'
             ));
 
             $savedFingerprint = (string) ($meta['schemaFingerprint'] ?? '');
@@ -186,8 +217,8 @@ final class ConfigurationRegressionRunner
                 '2.8 elenco configurazioni',
                 in_array($table, $tables, true) ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
                 in_array($table, $tables, true)
-                    ? 'Configurazione rilevata da generate-all.'
-                    : 'Configurazione non rilevata nell’elenco persistente.'
+                    ? 'Configuration detected by generate-all.'
+                    : 'Configuration not detected in the persistent list.'
             ));
         } catch (Throwable $e) {
             $report->add(new DiagnosticResult(

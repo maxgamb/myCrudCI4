@@ -24,7 +24,7 @@ final class DatabaseValidationResolver
 
         if ($maxLength > 0 && $maxLength <= 65535) {
             // CHAR(n) indica la capacità massima della colonna DB, non una
-            // lunghezza applicativa obbligatoria. exact_length deve restare
+            // required application length. exact_length must remain
             // una scelta esplicita del programmatore/Builder.
             $rules[] = 'max_length[' . $maxLength . ']';
         }

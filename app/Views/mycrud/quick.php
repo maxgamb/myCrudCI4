@@ -9,10 +9,10 @@
                 Quick globale
             </h1>
             <p class="text-muted mb-0">
-                Generazione rapida: schema dal database, personalizzazioni già salvate preservate.
+                Quick generation: schema from database, previously saved customizations preserved.
             </p>
         </div>
-        <span class="badge text-bg-primary fs-6"><?= count($tables) ?> tabelle disponibili</span>
+        <span class="badge text-bg-primary fs-6"><?= count($tables) ?> tables disponibili</span>
     </div>
 
     <?php if (session('error')): ?>
@@ -23,7 +23,7 @@
         <div class="row g-4">
             <div class="col-12 col-xl-4">
                 <div class="card shadow-sm mb-4">
-                    <div class="card-header"><strong>Generatore</strong></div>
+                    <div class="card-header"><strong>Generator</strong></div>
                     <div class="card-body">
                         <?php $selectedArchitecture = (string) old('architecture', config('MyCrud')->defaultArchitecture); ?>
                         <?php foreach ([
@@ -60,22 +60,22 @@
                         </div>
 
                         <div class="alert alert-warning small mt-3 mb-0 d-none" id="forceWarning">
-                            La sovrascrittura può eliminare modifiche manuali nei file generati.
+                            Overwriting may remove manual changes in generated files.
                         </div>
 
 
                         <div class="alert alert-info small mt-3 mb-0">
                             <i class="bi bi-save"></i>
-                            In myCrudGpt 2.8 ogni generazione reale aggiorna la configurazione
+                            Every real generation updates the persistent configuration
                             versionabile in <code>app/MyCrudConfig/</code>. Se esiste già, le scelte
-                            salvate nel Builder vengono mantenute e unite allo schema DB corrente.
+                            salvate nel Builder vengono mantenute e unite allo DB schema corrente.
                         </div>
 
                         <div class="alert alert-light border small mt-3 mb-0">
                             <i class="bi bi-diagram-3"></i>
-                            <strong>Quick = schema DB + scelte salvate.</strong> Per una FK nuova la Quick
-                            usa la chiave referenziata come display neutro e abilita il link al record padre,
-                            perché la destinazione è certa dallo schema. Le altre opzioni restano al Builder.
+                            <strong>Quick = DB schema + saved choices.</strong> For a new foreign key, Quick
+                            uses the referenced key as a neutral display and enables the parent record link,
+                            because the destination is certain from the schema. Other options remain under Builder control.
                         </div>
                     </div>
                 </div>
@@ -84,17 +84,17 @@
             <div class="col-12 col-xl-8">
                 <div class="card shadow-sm h-100">
                     <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
-                        <strong><i class="bi bi-database"></i> Tabelle</strong>
+                        <strong><i class="bi bi-database"></i> Tables</strong>
                         <span class="badge text-bg-secondary" id="selectedCount">0 selezionate</span>
                     </div>
                     <div class="card-body">
                         <div class="row g-2 mb-3">
                             <div class="col-md-7">
-                                <input type="search" class="form-control" id="tableSearch" placeholder="Cerca tabella...">
+                                <input type="search" class="form-control" id="tableSearch" placeholder="Search table...">
                             </div>
                             <div class="col-md-5 d-flex gap-2">
                                 <button type="button" class="btn btn-outline-primary flex-fill" id="selectAll">Tutte</button>
-                                <button type="button" class="btn btn-outline-secondary flex-fill" id="selectNone">Nessuna</button>
+                                <button type="button" class="btn btn-outline-secondary flex-fill" id="selectNone">None</button>
                             </div>
                         </div>
 
@@ -123,7 +123,7 @@
                     <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
                         <div id="generationSummary" class="text-muted"></div>
                         <button type="submit" class="btn btn-danger btn-lg" id="generateAllButton">
-                            <span class="button-normal"><i class="bi bi-lightning-charge-fill"></i> Avvia</span>
+                            <span class="button-normal"><i class="bi bi-lightning-charge-fill"></i> Run</span>
                             <span class="button-loading d-none"><span class="spinner-border spinner-border-sm"></span> Elaborazione...</span>
                         </button>
                     </div>
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const selected = checkboxes.filter(item => item.checked).length;
         const architecture = architectures.find(item => item.checked)?.value || 'basic';
         selectedCount.textContent = `${selected} selezionate`;
-        summary.textContent = `Architettura: ${architecture} · Tabelle: ${selected} · Modalità: ${dryRun.checked ? 'simulazione' : 'scrittura'}`;
+        summary.textContent = `Architecture: ${architecture} · Tables: ${selected} · Mode: ${dryRun.checked ? 'simulation' : 'write'}`;
         forceWarning.classList.toggle('d-none', !force.checked || dryRun.checked);
     };
 
@@ -181,16 +181,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const selected = checkboxes.filter(item => item.checked).length;
         if (selected === 0) {
             event.preventDefault();
-            alert('Seleziona almeno una tabella.');
+            alert('Select at least one table.');
             return;
         }
 
         let message = dryRun.checked
-            ? `Simulare la generazione di ${selected} tabelle?`
-            : `Generare ${selected} tabelle?`;
+            ? `Simulate generation of ${selected} tables?`
+            : `Generate ${selected} tables?`;
 
         if (force.checked && !dryRun.checked) {
-            message += '\n\nATTENZIONE: i file esistenti saranno sovrascritti.';
+            message += '\n\nWARNING: existing files will be overwritten.';
         }
 
         if (!confirm(message)) {

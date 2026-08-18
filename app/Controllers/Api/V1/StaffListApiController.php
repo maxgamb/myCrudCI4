@@ -6,16 +6,34 @@ namespace App\Controllers\Api\V1;
 
 use App\API\Resources\StaffListResource;
 use App\Controllers\Api\BaseApiController;
+use App\Models\StaffListModel;
 use App\Services\StaffListService;
-use App\Validation\StaffListApiRules;
-use RuntimeException;
 use Throwable;
 
-/** API REST v1 per la risorsa staff_list. */
+/**
+ * Read-only API for SQL VIEW `staff_list`.
+ * Exposes only GET operations compatible with generated capabilities.
+ * READ operations are delegated to the generated Model; no SQL is composed here.
+ */
 final class StaffListApiController extends BaseApiController
 {
-    public function __construct(private readonly StaffListService $service = new StaffListService())
-    {
+    /** Fields accepted as REST list filters. API query policy belongs to the HTTP boundary. */
+    private const FILTERABLE_FIELDS = array (
+);
+
+    /** Fields accepted for REST list sorting. API query policy belongs to the HTTP boundary. */
+    private const SORTABLE_FIELDS = array (
+  0 => 'ID',
+);
+
+    /** Fields accepted from REST JSON/form request bodies. Binary upload fields are intentionally excluded. */
+    private const WRITABLE_FIELDS = array (
+);
+
+    public function __construct(
+        private readonly StaffListModel $model = new StaffListModel(),
+        private readonly StaffListService $service = new StaffListService()
+    ) {
     }
 
     public function index()
@@ -23,12 +41,10 @@ final class StaffListApiController extends BaseApiController
         try {
             $query = (array) $this->request->getGet();
             $query['perPage'] = $this->safePerPage();
-            $result = $this->service->apiList($query, StaffListResource::filterableFields(), StaffListResource::sortableFields());
+            $result = $this->model->apiList($query, self::FILTERABLE_FIELDS, self::SORTABLE_FIELDS);
             return $this->success(StaffListResource::collection($result['rows']), $result['meta'], $result['links']);
         } catch (Throwable $e) {
             return $this->internalError($e);
         }
     }
-
-
 }

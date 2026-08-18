@@ -4,7 +4,7 @@ use CodeIgniter\Router\RouteCollection;
 
 /*
  * Route modulari del CRUD country.
- * myCrudGpt genera volutamente un file per tabella: app/Config/Routes.php
+ * myCrudCI4 intentionally generates one file per table: app/Config/Routes.php
  * può caricare app/Routes/*.php senza concentrare tutte le route in un unico file.
  */
 
@@ -13,7 +13,6 @@ $routes->group('country', static function (RouteCollection $routes): void {
     $routes->get('/', 'CountryController::index');
     $routes->get('export-csv', 'CountryController::exportCsv');
     $routes->get('export-word', 'CountryController::exportWord');
-    $routes->get('relation-options/(:segment)', 'CountryController::relationOptions/$1');
     $routes->get('view/(:segment)', 'CountryController::view/$1');
     $routes->get('create', 'CountryController::create');
     $routes->post('store', 'CountryController::store');

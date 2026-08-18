@@ -4,7 +4,7 @@ use CodeIgniter\Router\RouteCollection;
 
 /*
  * Route modulari del CRUD language.
- * myCrudGpt genera volutamente un file per tabella: app/Config/Routes.php
+ * myCrudCI4 intentionally generates one file per table: app/Config/Routes.php
  * può caricare app/Routes/*.php senza concentrare tutte le route in un unico file.
  */
 
@@ -13,7 +13,6 @@ $routes->group('language', static function (RouteCollection $routes): void {
     $routes->get('/', 'LanguageController::index');
     $routes->get('export-csv', 'LanguageController::exportCsv');
     $routes->get('export-word', 'LanguageController::exportWord');
-    $routes->get('relation-options/(:segment)', 'LanguageController::relationOptions/$1');
     $routes->get('view/(:segment)', 'LanguageController::view/$1');
     $routes->get('create', 'LanguageController::create');
     $routes->post('store', 'LanguageController::store');

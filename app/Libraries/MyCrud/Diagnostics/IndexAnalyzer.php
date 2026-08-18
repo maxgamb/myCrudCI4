@@ -6,7 +6,7 @@ use App\Libraries\MyCrud\Config\CrudConfigRepository;
 use App\Libraries\MyCrud\Core\ConfigBuilder;
 use App\Libraries\MyCrud\Schema\DbSchema;
 
-/** Analizza indici, campi filtrabili e dimensione delle relazioni. */
+/** Analyzes indexes, filterable fields, and relation size. */
 final class IndexAnalyzer
 {
     public function __construct(
@@ -33,7 +33,7 @@ final class IndexAnalyzer
         $results = [];
         $rowEstimate = max(0, (int) ($info['rowEstimate'] ?? 0));
         $results[] = new DiagnosticResult(
-            'Tabella ' . $table,
+            'Table ' . $table,
             DiagnosticResult::PASS,
             'Righe stimate: ' . number_format($rowEstimate, 0, ',', '.') . '.',
             [
@@ -69,9 +69,9 @@ final class IndexAnalyzer
 
             if ((!empty($ui['searchable']) || !empty($ui['sortable'])) && !$leading) {
                 $results[] = new DiagnosticResult(
-                    'Campo ' . $name,
+                    'Field ' . $name,
                     DiagnosticResult::WARN,
-                    'Configurato per ricerca/ordinamento ma non guida un indice.',
+                    'Configured for search/sorting but does not lead an index.',
                     ['searchable' => !empty($ui['searchable']), 'sortable' => !empty($ui['sortable'])]
                 );
             }
@@ -86,7 +86,7 @@ final class IndexAnalyzer
                 : DiagnosticResult::PASS;
 
             $results[] = new DiagnosticResult(
-                'Relazione ' . $field,
+                'Relation ' . $field,
                 $status,
                 sprintf(
                     '%s → %s.%s, ~%s righe, modalità %s.',

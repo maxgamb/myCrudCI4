@@ -19,6 +19,11 @@ $routes->group('mycrud', ['namespace' => 'App\Controllers\MyCrud'], static funct
     $routes->post('quick/generate', 'AutoCrudController::generateAll');
     $routes->get('quick/report/(:segment)', 'AutoCrudController::report/$1');
 
+    $routes->get('dashboard', 'DashboardBuilderController::index');
+    $routes->post('dashboard/save', 'DashboardBuilderController::save');
+    $routes->post('dashboard/generate', 'DashboardBuilderController::generate');
+    $routes->post('dashboard/publish', 'DashboardBuilderController::publish');
+
     $routes->get('builder', 'BuilderController::index');
     $routes->get('builder/configure/(:segment)', 'BuilderController::configure/$1');
     $routes->post('builder/save', 'BuilderController::save');

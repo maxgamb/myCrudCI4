@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= esc($title ?? 'myCrudGpt') ?></title>
+    <title><?= esc($title ?? 'myCrudCI4') ?></title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -18,7 +18,7 @@
         <a class="navbar-brand fw-bold"
            href="<?= site_url('mycrud') ?>">
             <i class="bi bi-braces-asterisk"></i>
-            myCrudGpt
+            myCrudCI4
         </a>
 
         <button
@@ -28,7 +28,7 @@
             data-bs-target="#myCrudNavbar"
             aria-controls="myCrudNavbar"
             aria-expanded="false"
-            aria-label="Apri navigazione"
+            aria-label="Open navigation"
         >
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -54,7 +54,7 @@
                         data-bs-toggle="dropdown"
                     >
                         <i class="bi bi-stars"></i>
-                        Generazione
+                        Generation
                     </a>
 
                     <ul class="dropdown-menu">
@@ -62,7 +62,7 @@
                             <a class="dropdown-item"
                                href="<?= site_url('mycrud/quick') ?>">
                                 <i class="bi bi-lightning-charge-fill"></i>
-                                Quick globale
+                                Quick generation
                             </a>
                         </li>
 
@@ -70,7 +70,7 @@
                             <a class="dropdown-item"
                                href="<?= site_url('mycrud/builder') ?>">
                                 <i class="bi bi-sliders"></i>
-                                Generazione personalizzata
+                                Builder
                             </a>
                         </li>
                     </ul>
@@ -84,7 +84,7 @@
                         data-bs-toggle="dropdown"
                     >
                         <i class="bi bi-tools"></i>
-                        Strumenti
+                        Tools
                     </a>
 
                     <ul class="dropdown-menu">
@@ -94,7 +94,7 @@
                                 href="<?= site_url('mycrud/tools/routes') ?>"
                             >
                                 <i class="bi bi-signpost-split"></i>
-                                Genera Routes
+                                Generate Routes
                             </a>
                         </li>
 
@@ -104,7 +104,7 @@
                                 href="<?= site_url('mycrud/tools/fields') ?>"
                             >
                                 <i class="bi bi-translate"></i>
-                                Genera Fields.php
+                                Generate Fields.php
                             </a>
                         </li>
 
@@ -114,7 +114,7 @@
                                 href="<?= site_url('mycrud/tools/menu') ?>"
                             >
                                 <i class="bi bi-list"></i>
-                                Genera Menu
+                                Generate Menu
                             </a>
                         </li>
 
@@ -124,7 +124,7 @@
                                 href="<?= site_url('mycrud/tools/ai-context') ?>"
                             >
                                 <i class="bi bi-robot"></i>
-                                Contesto IA
+                                AI Context
                             </a>
                         </li>
 
@@ -134,16 +134,23 @@
                                 href="<?= site_url('mycrud/tools/schema') ?>"
                             >
                                 <i class="bi bi-diagram-3"></i>
-                                Schema database
+                                Database Schema
                             </a>
                         </li>
                     </ul>
                 </li>
 
                 <li class="nav-item">
+                    <a class="nav-link" href="<?= site_url('mycrud/dashboard') ?>">
+                        <i class="bi bi-grid-1x2"></i>
+                        Dashboard Builder
+                    </a>
+                </li>
+
+                <li class="nav-item">
                     <a class="nav-link" href="<?= site_url('mycrud/docs') ?>">
                         <i class="bi bi-book"></i>
-                        Documentazione
+                        Documentation
                     </a>
                 </li>
 

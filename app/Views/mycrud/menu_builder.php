@@ -5,9 +5,9 @@
 /**
  * Menu Builder 3 - aggregazione guidata.
  *
- * Tutte le tabelle partono nell'area "Non assegnate". Le foreign key vengono
- * mostrate esclusivamente come suggerimenti informativi: nessuna relazione SQL
- * modifica automaticamente la struttura di navigazione scelta dallo sviluppatore.
+ * Tutte le tables partono nell'area "Unassigned". Le foreign key vengono
+ * shown only as informational suggestions: no SQL relation
+ * automatically changes the navigation structure chosen by the developer.
  */
 $items = array_values((array) ($items ?? []));
 $related = (array) ($related ?? []);
@@ -33,7 +33,7 @@ $savedMenuJson = json_encode(
                 Menu Builder
             </h1>
             <p class="text-body-secondary mb-0">
-                Costruisci la navigazione per moduli funzionali, senza far dipendere il menu dalla struttura tecnica del database.
+                Build navigation around functional modules without coupling the menu to the database's technical structure.
             </p>
         </div>
 
@@ -52,7 +52,7 @@ $savedMenuJson = json_encode(
     <?php if ($savedMenu !== null): ?>
         <div class="alert alert-light border py-2 mb-3 small">
             <i class="bi bi-save me-1"></i>
-            Configurazione caricata da <code><?= esc($menuConfigPath) ?></code>
+            Configuration loaded from <code><?= esc($menuConfigPath) ?></code>
             <?php if (!empty($savedMenu['_meta']['savedAt'])): ?>
                 · <?= esc((string) $savedMenu['_meta']['savedAt']) ?>
             <?php endif ?>
@@ -63,9 +63,9 @@ $savedMenuJson = json_encode(
         <div class="d-flex gap-2 align-items-start">
             <i class="bi bi-info-circle mt-1"></i>
             <div>
-                <strong>Nessuna aggregazione automatica.</strong>
-                Le <?= count($items) ?> tabelle sono inizialmente non assegnate. Crea i gruppi che rappresentano davvero
-                l'applicazione e usa le <?= $relationCount ?> relazioni SQL solo per individuare velocemente tabelle correlate.
+                <strong>None aggregazione automatica.</strong>
+                Le <?= count($items) ?> tables are initially unassigned. Create groups that truly represent
+                l'applicazione e usa le <?= $relationCount ?> relations SQL solo per individuare velocemente tables correlate.
             </div>
         </div>
     </div>
@@ -82,8 +82,8 @@ $savedMenuJson = json_encode(
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label" for="menuType">Layout predefinito</label>
                         <select class="form-select" id="menuType" name="menuType">
-                            <option value="vertical" <?= (($savedMenu['type'] ?? 'vertical') === 'vertical') ? 'selected' : '' ?>>Verticale</option>
-                            <option value="horizontal" <?= (($savedMenu['type'] ?? 'vertical') === 'horizontal') ? 'selected' : '' ?>>Orizzontale</option>
+                            <option value="vertical" <?= (($savedMenu['type'] ?? 'vertical') === 'vertical') ? 'selected' : '' ?>>Vertical</option>
+                            <option value="horizontal" <?= (($savedMenu['type'] ?? 'vertical') === 'horizontal') ? 'selected' : '' ?>>Horizontal</option>
                         </select>
                         <div class="form-text">Entrambi i renderer vengono comunque generati.</div>
                     </div>
@@ -100,7 +100,7 @@ $savedMenuJson = json_encode(
                                 value="1"
                                 <?= ($savedMenu === null || !array_key_exists('search', $savedMenu) || !empty($savedMenu['search'])) ? 'checked' : '' ?>
                             >
-                            <label class="form-check-label" for="enableSearch">Ricerca nel menu finale</label>
+                            <label class="form-check-label" for="enableSearch">Search in final menu</label>
                         </div>
 
                         <input type="hidden" name="showFavorites" value="0">
@@ -114,7 +114,7 @@ $savedMenuJson = json_encode(
                                 value="1"
                                 <?= ($savedMenu === null || !array_key_exists('favorites', $savedMenu) || !empty($savedMenu['favorites'])) ? 'checked' : '' ?>
                             >
-                            <label class="form-check-label" for="showFavorites">Sezione Preferiti</label>
+                            <label class="form-check-label" for="showFavorites">Sezione Favorites</label>
                         </div>
                     </div>
 
@@ -123,7 +123,7 @@ $savedMenuJson = json_encode(
                         <div class="d-flex flex-wrap gap-1">
                             <span class="badge text-bg-light border">Gruppo</span>
                             <i class="bi bi-chevron-right text-body-secondary"></i>
-                            <span class="badge text-bg-light border">Sottogruppo</span>
+                            <span class="badge text-bg-light border">Subgroup</span>
                             <i class="bi bi-chevron-right text-body-secondary"></i>
                             <span class="badge text-bg-light border">Voce</span>
                         </div>
@@ -152,7 +152,7 @@ $savedMenuJson = json_encode(
                     <div class="card-header bg-body">
                         <div class="d-flex justify-content-between align-items-center gap-2">
                             <div>
-                                <strong>Voci non assegnate</strong>
+                                <strong>Unassigned items</strong>
                                 <span class="badge text-bg-secondary ms-1" id="unassignedCount">
                                     <?= count($items) ?>
                                 </span>
@@ -168,14 +168,14 @@ $savedMenuJson = json_encode(
                                 class="form-control"
                                 type="search"
                                 id="sourceSearch"
-                                placeholder="Cerca tabella, label o relazione..."
+                                placeholder="Search table, label o relation..."
                             >
                         </div>
 
                         <div class="d-flex flex-wrap gap-1 mb-2">
                             <button type="button" class="btn btn-sm btn-outline-secondary" id="selectVisible">
                                 <i class="bi bi-check2-square"></i>
-                                Seleziona visibili
+                                Select visibili
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-secondary" id="clearSelection">
                                 <i class="bi bi-square"></i>
@@ -189,7 +189,7 @@ $savedMenuJson = json_encode(
 
                         <div class="input-group input-group-sm mb-2">
                             <select class="form-select" id="bulkTarget" disabled>
-                                <option value="">Prima crea un gruppo...</option>
+                                <option value="">Create a group first...</option>
                             </select>
                             <button class="btn btn-outline-primary" type="button" id="assignSelected" disabled>
                                 Assegna
@@ -198,7 +198,7 @@ $savedMenuJson = json_encode(
 
                         <button type="button" class="btn btn-sm btn-outline-primary w-100" id="createGroupFromSelection">
                             <i class="bi bi-folder-plus"></i>
-                            Crea gruppo dalla selezione
+                            Create group from selection
                         </button>
                     </div>
 
@@ -231,7 +231,7 @@ $savedMenuJson = json_encode(
                 <div class="card shadow-sm">
                     <div class="card-header bg-body d-flex flex-wrap justify-content-between align-items-center gap-2">
                         <div>
-                            <strong>Struttura menu</strong>
+                            <strong>Menu structure</strong>
                             <span class="badge text-bg-primary ms-1" id="assignedCount">0</span>
                         </div>
 
@@ -242,7 +242,7 @@ $savedMenuJson = json_encode(
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-secondary" id="addManualItem">
                                 <i class="bi bi-plus-circle"></i>
-                                Voce manuale
+                                Manual item
                             </button>
                         </div>
                     </div>
@@ -250,10 +250,10 @@ $savedMenuJson = json_encode(
                     <div class="card-body p-2 menu-structure-zone" id="menuStructure">
                         <div class="menu-structure-empty text-center text-body-secondary py-5" id="structureEmpty">
                             <i class="bi bi-layout-sidebar fs-2 d-block mb-2"></i>
-                            <strong>Nessun gruppo creato</strong>
+                            <strong>No group created</strong>
                             <div class="small mt-1">
-                                Seleziona alcune tabelle a sinistra e usa <em>Crea gruppo dalla selezione</em>,
-                                oppure crea un gruppo vuoto.
+                                Select alcune tables a sinistra e usa <em>Create group from selection</em>,
+                                or create an empty group.
                             </div>
                         </div>
                     </div>
@@ -261,27 +261,27 @@ $savedMenuJson = json_encode(
             </div>
 
             <!-- =================================================
-                 DESTRA: RELAZIONI E ANTEPRIMA
+                 RIGHT: RELATIONS AND PREVIEW
                  ================================================= -->
             <div class="col-xxl-3 col-xl-3">
                 <div class="menu-sticky-panel">
                     <div class="card shadow-sm mb-3">
                         <div class="card-header bg-body d-flex justify-content-between align-items-center">
-                            <strong>Relazioni SQL</strong>
+                            <strong>Relations SQL</strong>
                             <i class="bi bi-diagram-3 text-body-secondary"></i>
                         </div>
                         <div class="card-body" id="relationsPanel">
                             <div class="text-body-secondary small">
-                                Clicca sull'icona <i class="bi bi-diagram-3"></i> di una tabella per vedere le tabelle correlate.
-                                Le relazioni sono solo informazioni: non spostano mai le voci automaticamente.
+                                Clicca sull'icona <i class="bi bi-diagram-3"></i> di una table per vedere le tables correlate.
+                                Le relations sono solo informazioni: non spostano mai le voci automaticamente.
                             </div>
                         </div>
                     </div>
 
                     <div class="card shadow-sm">
                         <div class="card-header bg-body d-flex flex-wrap justify-content-between align-items-center gap-2">
-                            <strong>Anteprima</strong>
-                            <div class="btn-group btn-group-sm" role="group" aria-label="Tipo anteprima">
+                            <strong>Preview</strong>
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Preview type">
                                 <button type="button" class="btn btn-primary" data-preview-mode="vertical">
                                     <i class="bi bi-layout-sidebar"></i>
                                 </button>
@@ -291,7 +291,7 @@ $savedMenuJson = json_encode(
                             </div>
                         </div>
                         <div class="card-body p-2" id="menuPreview">
-                            <div class="text-body-secondary small p-2">Il menu è ancora vuoto.</div>
+                            <div class="text-body-secondary small p-2">The menu is still empty.</div>
                         </div>
                     </div>
                 </div>
@@ -301,7 +301,7 @@ $savedMenuJson = json_encode(
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3">
             <div class="small text-body-secondary">
                 <i class="bi bi-shield-check me-1"></i>
-                La generazione scrive esclusivamente in <code>app/Generated/</code>.
+                Generation writes exclusively to <code>app/Generated/</code>.
             </div>
 
             <div class="d-flex flex-wrap gap-2">
@@ -311,11 +311,11 @@ $savedMenuJson = json_encode(
                     formaction="<?= site_url('mycrud/tools/menu/save') ?>"
                 >
                     <i class="bi bi-save"></i>
-                    Salva configurazione
+                    Save configuration
                 </button>
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-magic"></i>
-                    Genera Menu
+                    Generate Menu
                 </button>
             </div>
         </div>
@@ -332,7 +332,7 @@ $savedMenuJson = json_encode(
             <input
                 class="form-control form-control-sm fw-semibold"
                 style="max-width: 250px"
-                value="Nuovo sottogruppo"
+                value="New sottogruppo"
                 data-subgroup-label
                 aria-label="Nome sottogruppo"
             >
@@ -340,7 +340,7 @@ $savedMenuJson = json_encode(
                 type="button"
                 class="btn btn-sm btn-outline-danger ms-auto"
                 data-remove-subgroup
-                title="Rimuovi sottogruppo"
+                title="Remove sottogruppo"
             >
                 <i class="bi bi-x-lg"></i>
             </button>
@@ -486,7 +486,7 @@ $savedMenuJson = json_encode(
             }
 
             groupCard.querySelectorAll('[data-subgroup-card]').forEach((subgroupCard) => {
-                const subgroupLabel = subgroupCard.querySelector('[data-subgroup-label]')?.value.trim() || 'Sottogruppo';
+                const subgroupLabel = subgroupCard.querySelector('[data-subgroup-label]')?.value.trim() || 'Subgroup';
                 const zone = subgroupCard.querySelector('[data-dropzone]');
                 if (!zone) return;
 
@@ -523,7 +523,7 @@ $savedMenuJson = json_encode(
             });
 
             groupCard.querySelectorAll('[data-subgroup-card]').forEach((subgroupCard, subgroupIndex) => {
-                const subgroupLabel = subgroupCard.querySelector('[data-subgroup-label]')?.value.trim() || 'Sottogruppo';
+                const subgroupLabel = subgroupCard.querySelector('[data-subgroup-label]')?.value.trim() || 'Subgroup';
                 const zone = subgroupCard.querySelector('[data-dropzone]');
                 if (!zone) return;
 
@@ -552,7 +552,7 @@ $savedMenuJson = json_encode(
         renderPreview();
     }
 
-    function addGroup(label = 'Nuovo gruppo', icon = 'bi-folder2-open') {
+    function addGroup(label = 'New group', icon = 'bi-folder2-open') {
         const card = document.createElement('section');
         card.className = 'card shadow-sm mb-3 menu-group-card';
         card.dataset.menuGroupCard = '';
@@ -564,7 +564,7 @@ $savedMenuJson = json_encode(
                     style="max-width:220px"
                     value="${escHtml(label)}"
                     data-group-label
-                    aria-label="Nome gruppo"
+                    aria-label="Group name"
                 >
                 <input
                     class="form-control form-control-sm"
@@ -574,7 +574,7 @@ $savedMenuJson = json_encode(
                     aria-label="Icona gruppo"
                 >
                 <div class="ms-auto d-flex gap-1">
-                    <button type="button" class="btn btn-sm btn-outline-secondary" data-add-subgroup title="Aggiungi sottogruppo">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-add-subgroup title="Add sottogruppo">
                         <i class="bi bi-node-plus"></i>
                     </button>
                     <button type="button" class="btn btn-sm btn-outline-secondary" data-group-up title="Sposta gruppo su">
@@ -583,7 +583,7 @@ $savedMenuJson = json_encode(
                     <button type="button" class="btn btn-sm btn-outline-secondary" data-group-down title="Sposta gruppo giù">
                         <i class="bi bi-arrow-down"></i>
                     </button>
-                    <button type="button" class="btn btn-sm btn-outline-danger" data-remove-group title="Rimuovi gruppo">
+                    <button type="button" class="btn btn-sm btn-outline-danger" data-remove-group title="Remove gruppo">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -605,7 +605,7 @@ $savedMenuJson = json_encode(
         return card;
     }
 
-    function addSubgroup(groupCard, label = 'Nuovo sottogruppo') {
+    function addSubgroup(groupCard, label = 'New sottogruppo') {
         const fragment = subgroupTemplate.content.cloneNode(true);
         const subgroup = fragment.querySelector('[data-subgroup-card]');
         subgroup.querySelector('[data-subgroup-label]').value = label;
@@ -623,7 +623,7 @@ $savedMenuJson = json_encode(
         item.draggable = true;
         item.dataset.menuItem = '';
         item.dataset.table = '';
-        item.dataset.search = 'nuova voce route manuale';
+        item.dataset.search = 'new item manual route';
 
         item.innerHTML = `
             <input type="hidden" name="items[${index}][table]" value="" data-item-table>
@@ -637,7 +637,7 @@ $savedMenuJson = json_encode(
 
             <div class="d-flex align-items-start gap-2">
                 <span class="menu-drag-handle text-body-secondary pt-1"><i class="bi bi-grip-vertical"></i></span>
-                <input class="form-check-input mt-1" type="checkbox" data-item-select aria-label="Seleziona voce manuale">
+                <input class="form-check-input mt-1" type="checkbox" data-item-select aria-label="Select voce manuale">
                 <div class="flex-grow-1 min-w-0">
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <span class="badge text-bg-primary">Route manuale</span>
@@ -651,7 +651,7 @@ $savedMenuJson = json_encode(
                     </div>
                     <div class="row g-2">
                         <div class="col-md-6">
-                            <input class="form-control form-control-sm" name="items[${index}][label]" value="Nuova voce" data-item-label placeholder="Etichetta">
+                            <input class="form-control form-control-sm" name="items[${index}][label]" value="New item" data-item-label placeholder="Label">
                         </div>
                         <div class="col-md-6">
                             <input class="form-control form-control-sm" name="items[${index}][route]" value="" data-item-route placeholder="route/interna">
@@ -662,7 +662,7 @@ $savedMenuJson = json_encode(
                             <label class="form-label small mb-1">Bootstrap Icon</label>
                             <input class="form-control form-control-sm" name="items[${index}][icon]" value="bi-link-45deg" data-item-icon>
                         </div>
-                        <div class="col-md-6 small text-body-secondary pt-4">Voce indipendente da una tabella DB.</div>
+                        <div class="col-md-6 small text-body-secondary pt-4">Voce indipendente da una table DB.</div>
                     </div>
                 </div>
             </div>
@@ -677,7 +677,7 @@ $savedMenuJson = json_encode(
         groupCard.querySelector('[data-group-icon]')?.addEventListener('input', syncStructure);
 
         groupCard.querySelector('[data-add-subgroup]')?.addEventListener('click', () => {
-            const name = window.prompt('Nome del sottogruppo:', 'Nuovo sottogruppo');
+            const name = window.prompt('Nome del sottogruppo:', 'New sottogruppo');
             if (name === null || !name.trim()) return;
             addSubgroup(groupCard, name.trim());
         });
@@ -827,14 +827,14 @@ $savedMenuJson = json_encode(
             empty.classList.toggle('d-none', !(trulyEmpty || (term !== '' && visible === 0)));
             empty.innerHTML = trulyEmpty
                 ? '<i class="bi bi-check-circle fs-3 d-block mb-1"></i>Tutte le voci sono state assegnate.'
-                : '<i class="bi bi-search fs-3 d-block mb-1"></i>Nessuna voce corrisponde alla ricerca.';
+                : '<i class="bi bi-search fs-3 d-block mb-1"></i>No item matches the search.';
         }
     }
 
     function moveSelectedTo(zone) {
         const selected = selectedUnassignedItems();
         if (!selected.length) {
-            window.alert('Seleziona almeno una voce non assegnata.');
+            window.alert('Select almeno una voce non assegnata.');
             return false;
         }
 
@@ -853,7 +853,7 @@ $savedMenuJson = json_encode(
     function showRelations(table) {
         currentRelationTable = table;
         if (!table) {
-            relationsPanel.innerHTML = '<div class="text-body-secondary small">Le voci manuali non hanno relazioni DB.</div>';
+            relationsPanel.innerHTML = '<div class="text-body-secondary small">Le voci manuali non hanno relations DB.</div>';
             return;
         }
 
@@ -861,20 +861,20 @@ $savedMenuJson = json_encode(
         if (!rows.length) {
             relationsPanel.innerHTML = `
                 <div class="fw-semibold mb-2"><code>${escHtml(table)}</code></div>
-                <div class="text-body-secondary small">Nessuna foreign key diretta rilevata.</div>
+                <div class="text-body-secondary small">None foreign key diretta rilevata.</div>
             `;
             return;
         }
 
         const html = rows.map((row) => {
-            const direction = row.direction === 'parent' ? 'Padre' : 'Figlia';
+            const direction = row.direction === 'parent' ? 'Parent' : 'Child';
             const icon = row.direction === 'parent' ? 'bi-arrow-up-right' : 'bi-arrow-down-right';
             return `
                 <button
                     type="button"
                     class="btn btn-sm btn-outline-secondary w-100 mb-2 relation-table-button"
                     data-related-table="${escHtml(row.table)}"
-                    title="Seleziona ${escHtml(row.table)} tra le voci non assegnate"
+                    title="Select ${escHtml(row.table)} tra le voci non assegnate"
                 >
                     <div class="d-flex justify-content-between gap-2">
                         <span><i class="bi ${icon} me-1"></i><strong>${escHtml(row.table)}</strong></span>
@@ -888,17 +888,17 @@ $savedMenuJson = json_encode(
         relationsPanel.innerHTML = `
             <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
                 <div>
-                    <div class="small text-body-secondary">Tabella selezionata</div>
+                    <div class="small text-body-secondary">Table selezionata</div>
                     <code>${escHtml(table)}</code>
                 </div>
                 <button type="button" class="btn btn-sm btn-outline-primary" id="selectRelatedTables">
                     <i class="bi bi-check2-square"></i>
-                    Seleziona correlate
+                    Select correlate
                 </button>
             </div>
             ${html}
             <div class="small text-body-secondary mt-1">
-                La selezione non assegna alcun gruppo: serve solo a velocizzare il lavoro manuale.
+                The selection does not assign any group: it only speeds up manual work.
             </div>
         `;
 
@@ -947,7 +947,7 @@ $savedMenuJson = json_encode(
 
             groupCard.querySelectorAll('[data-subgroup-card]').forEach((subgroupCard) => {
                 const subgroup = {
-                    label: subgroupCard.querySelector('[data-subgroup-label]')?.value.trim() || 'Sottogruppo',
+                    label: subgroupCard.querySelector('[data-subgroup-label]')?.value.trim() || 'Subgroup',
                     items: [],
                 };
                 subgroupCard.querySelector('[data-dropzone]')?.querySelectorAll(':scope > [data-menu-item]')
@@ -977,7 +977,7 @@ $savedMenuJson = json_encode(
             });
 
             groupCard.querySelectorAll('[data-subgroup-card]').forEach((subgroupCard, subgroupIndex) => {
-                const subgroupLabel = subgroupCard.querySelector('[data-subgroup-label]')?.value.trim() || 'Sottogruppo';
+                const subgroupLabel = subgroupCard.querySelector('[data-subgroup-label]')?.value.trim() || 'Subgroup';
                 subgroupCard.querySelector('[data-dropzone]')?.querySelectorAll(':scope > [data-menu-item]')
                     .forEach((item, itemIndex) => {
                         setItemAssigned(item, true);
@@ -1004,7 +1004,7 @@ $savedMenuJson = json_encode(
         const groups = groupSnapshot();
 
         if (!groups.length || !structure.querySelector('[data-menu-item]')) {
-            preview.innerHTML = '<div class="text-body-secondary small p-2">Il menu è ancora vuoto.</div>';
+            preview.innerHTML = '<div class="text-body-secondary small p-2">The menu is still empty.</div>';
             return;
         }
 
@@ -1037,7 +1037,7 @@ $savedMenuJson = json_encode(
             html += `
                 <div class="p-2 border-bottom">
                     <div class="form-control form-control-sm text-body-secondary">
-                        <i class="bi bi-search me-1"></i>Cerca nel menu...
+                        <i class="bi bi-search me-1"></i>Search nel menu...
                     </div>
                 </div>
             `;
@@ -1045,7 +1045,7 @@ $savedMenuJson = json_encode(
 
         if (document.getElementById('showFavorites')?.checked && favorites.length) {
             html += '<div class="p-2 border-bottom">';
-            html += '<div class="preview-subgroup-title text-body-secondary fw-semibold mb-1"><i class="bi bi-star-fill me-1"></i>Preferiti</div>';
+            html += '<div class="preview-subgroup-title text-body-secondary fw-semibold mb-1"><i class="bi bi-star-fill me-1"></i>Favorites</div>';
             favorites.slice(0, 6).forEach((item) => { html += previewItem(item); });
             html += '</div>';
         }
@@ -1145,7 +1145,7 @@ $savedMenuJson = json_encode(
 
             (Array.isArray(savedGroup?.subgroups) ? savedGroup.subgroups : [])
                 .forEach((savedSubgroup) => {
-                    const subgroup = addSubgroup(group, String(savedSubgroup?.label ?? 'Sottogruppo'));
+                    const subgroup = addSubgroup(group, String(savedSubgroup?.label ?? 'Subgroup'));
                     const zone = subgroup.querySelector('[data-dropzone]');
                     (Array.isArray(savedSubgroup?.items) ? savedSubgroup.items : [])
                         .forEach((savedItem) => appendSavedItem(zone, savedItem));
@@ -1160,7 +1160,7 @@ $savedMenuJson = json_encode(
     bindDropzones(document);
 
     document.getElementById('addGroup')?.addEventListener('click', () => {
-        const name = window.prompt('Nome del nuovo gruppo:', 'Nuovo gruppo');
+        const name = window.prompt('New group name:', 'New group');
         if (name === null || !name.trim()) return;
         addGroup(name.trim());
     });
@@ -1168,11 +1168,11 @@ $savedMenuJson = json_encode(
     document.getElementById('createGroupFromSelection')?.addEventListener('click', () => {
         const selected = selectedUnassignedItems();
         if (!selected.length) {
-            window.alert('Seleziona prima una o più tabelle.');
+            window.alert('Select prima una o più tables.');
             return;
         }
 
-        const name = window.prompt('Nome del gruppo:', 'Nuovo gruppo');
+        const name = window.prompt('Nome del gruppo:', 'New group');
         if (name === null || !name.trim()) return;
 
         const group = addGroup(name.trim());

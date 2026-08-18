@@ -16,10 +16,10 @@ use App\Libraries\MyCrud\Diagnostics\PersistentConfigAnalyzer;
 use Throwable;
 
 /**
- * Dashboard di progetto della linea 2.8.
+ * Project dashboard.
  *
- * Le azioni di generazione continuano a scrivere esclusivamente nello staging
- * app/Generated/. La Dashboard non introduce alcuna scrittura diretta in app/.
+ * Generation actions continue to write exclusively to staging
+ * app/Generated/. The Dashboard never writes directly to app/.
  */
 final class ProjectController extends BaseController
 {
@@ -40,7 +40,7 @@ final class ProjectController extends BaseController
             if (!$resolved['saved']) {
                 return redirect()
                     ->to(site_url('mycrud/builder/configure/' . $table))
-                    ->with('error', 'Configura e salva prima il CRUD ' . $table . '.');
+                    ->with('error', 'Configure and save the CRUD first: ' . $table . '.');
             }
 
             $result = (new CrudGeneratorService())->generate($resolved['config'], true);
@@ -50,7 +50,7 @@ final class ProjectController extends BaseController
                 ->with(
                     'message',
                     sprintf(
-                        'CRUD %s [%s] generato in app/Generated/.',
+                        'CRUD %s [%s] generated in app/Generated/.',
                         $table,
                         (string) ($result['architecture'] ?? '')
                     )
@@ -67,7 +67,7 @@ final class ProjectController extends BaseController
         $report = (new ConfiguredGenerationService())->generateAll(null, true);
 
         $message = sprintf(
-            'Generazione completa: OK %d | FAIL %d | SCHEMA DRIFT %d.',
+            'Generation complete: OK %d | FAIL %d | SCHEMA DRIFT %d.',
             (int) ($report['summary']['ok'] ?? 0),
             (int) ($report['summary']['failed'] ?? 0),
             (int) ($report['summary']['schemaDrift'] ?? 0)

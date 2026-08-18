@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Libraries\Crud;
 
 /**
- * Esegue la normalizzazione meccanica dei dati provenienti dai form CRUD.
+ * Performs mechanical normalization of data coming from CRUD forms.
  *
- * Non contiene regole di business: rimuove campi infrastrutturali, gestisce
- * date automatiche, campi readonly/managed e password configurate come tali.
+ * Contains no business rules: removes infrastructure fields and handles
+ * automatic dates, readonly/managed fields, and configured password fields.
  */
 final class CrudInputProcessor
 {
@@ -20,7 +20,8 @@ final class CrudInputProcessor
         array $managedFields = [],
         array $readonlyFields = [],
         array $passwordFields = [],
-        bool $hashPasswords = false
+        bool $hashPasswords = false,
+        array $nullableForeignKeyFields = []
     ): array {
         unset($data['_submission_token'], $data['_context'], $data['_related'], $data['_related_new']);
 
@@ -30,7 +31,7 @@ final class CrudInputProcessor
         }
 
         // Le select AJAX inviano anche una label di supporto per ripopolare il
-        // form dopo errori di validazione. Il database deve ricevere solo l'ID.
+        // form after validation errors. The database must receive only the ID.
         foreach (array_keys($data) as $field) {
             if (str_ends_with((string) $field, '__label')) {
                 unset($data[$field]);
@@ -65,6 +66,22 @@ final class CrudInputProcessor
                 if (isset($data[$field]) && trim((string) $data[$field]) !== '') {
                     $data[$field] = password_hash((string) $data[$field], PASSWORD_DEFAULT);
                 }
+            }
+        }
+
+        // Empty HTML selects submit an empty string. For nullable foreign keys
+        // the database representation must be NULL, not ''.
+        foreach ($nullableForeignKeyFields as $field) {
+            $field = (string) $field;
+            if ($field === '' || !array_key_exists($field, $data)) {
+                continue;
+            }
+            $value = $data[$field];
+            if ($value === null) {
+                continue;
+            }
+            if (is_scalar($value) && trim((string) $value) === '') {
+                $data[$field] = null;
             }
         }
 

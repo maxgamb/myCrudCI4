@@ -5,7 +5,7 @@
 
 $assigned = (bool) ($assigned ?? false);
 $table = (string) ($item['table'] ?? '');
-$label = (string) ($item['label'] ?? ($table !== '' ? $table : 'Nuova voce'));
+$label = (string) ($item['label'] ?? ($table !== '' ? $table : 'New item'));
 $route = (string) ($item['route'] ?? $table);
 $icon = (string) ($item['icon'] ?? 'bi-link-45deg');
 $relationHints = array_values((array) ($item['relationHints'] ?? []));
@@ -49,7 +49,7 @@ $relatedTables = array_values((array) ($item['relatedTables'] ?? []));
             class="form-check-input mt-1"
             type="checkbox"
             data-item-select
-            aria-label="Seleziona <?= esc($table !== '' ? $table : $label) ?>"
+            aria-label="Select <?= esc($table !== '' ? $table : $label) ?>"
         >
 
         <div class="flex-grow-1 min-w-0">
@@ -67,7 +67,7 @@ $relatedTables = array_values((array) ($item['relatedTables'] ?? []));
                         type="button"
                         class="btn btn-sm btn-outline-info py-0 px-2"
                         data-show-relations
-                        title="Mostra tabelle correlate"
+                        title="Show related tables"
                     >
                         <i class="bi bi-diagram-3"></i>
                         <?= count($relatedTables) ?>
@@ -103,8 +103,8 @@ $relatedTables = array_values((array) ($item['relatedTables'] ?? []));
                         name="items[<?= $index ?>][label]"
                         value="<?= esc($label) ?>"
                         data-item-label
-                        aria-label="Etichetta menu"
-                        placeholder="Etichetta"
+                        aria-label="Menu label"
+                        placeholder="Label"
                     >
                 </div>
                 <div class="col-md-6">
@@ -133,16 +133,16 @@ $relatedTables = array_values((array) ($item['relatedTables'] ?? []));
                 <div class="col-md-7">
                     <div class="small text-body-secondary pt-1">
                         <?php if ($relationHints !== []): ?>
-                            <strong>Relazioni SQL:</strong>
+                            <strong>Relations SQL:</strong>
                             <ul class="mb-0 ps-3">
                                 <?php foreach (array_slice($relationHints, 0, 4) as $hint): ?>
                                     <li><?= esc($hint) ?></li>
                                 <?php endforeach ?>
                             </ul>
                         <?php elseif ($table !== ''): ?>
-                            Nessuna foreign key diretta rilevata.
+                            None foreign key diretta rilevata.
                         <?php else: ?>
-                            Voce manuale: puoi indicare qualsiasi route interna valida.
+                            Manual item: puoi indicare qualsiasi route interna valida.
                         <?php endif ?>
                     </div>
                 </div>

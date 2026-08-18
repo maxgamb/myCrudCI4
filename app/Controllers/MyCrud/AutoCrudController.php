@@ -12,7 +12,7 @@ use RuntimeException;
 use Throwable;
 
 /**
- * Gestisce la generazione automatica globale dei CRUD.
+ * Handles global automatic CRUD generation.
  */
 final class AutoCrudController extends BaseController
 {
@@ -22,24 +22,24 @@ final class AutoCrudController extends BaseController
     }
 
     /**
-     * Mostra la selezione delle tabelle e dell'architettura.
+     * Displays table and architecture selection.
      */
     public function index()
     {
         return view('mycrud/quick', [
-            'title'  => 'Generazione automatica globale',
+            'title'  => 'Global automatic generation',
             'tables' => TableFilter::validTables(Database::connect()),
         ]);
     }
 
     /**
-     * Esegue oppure simula la generazione delle tabelle selezionate.
+     * Runs or simulates generation of the selected tables.
      */
     public function generateAll()
     {
         $architecture = strtolower(trim((string) ($this->request->getPost('architecture') ?? config('MyCrud')->defaultArchitecture)));
         if (!in_array($architecture, ['basic', 'standard', 'full'], true)) {
-            return redirect()->back()->withInput()->with('error', 'Architettura non valida.');
+            return redirect()->back()->withInput()->with('error', 'Invalid architecture.');
         }
 
         $availableTables = TableFilter::validTables(Database::connect());
@@ -50,7 +50,7 @@ final class AutoCrudController extends BaseController
 
         if ($selectedTables === []) {
             return redirect()->back()->withInput()
-                ->with('error', 'Seleziona almeno una tabella.');
+                ->with('error', 'Select at least one table.');
         }
 
         $force = $this->request->getPost('force') === '1';
@@ -67,12 +67,12 @@ final class AutoCrudController extends BaseController
             $reportFile = $this->saveReport($report);
 
             return view('mycrud/quick_result', [
-                'title'      => $dryRun ? 'Simulazione generazione globale' : 'Risultato generazione globale',
+                'title'      => $dryRun ? 'Global generation simulation' : 'Global generation result',
                 'report'     => $report,
                 'reportFile' => $reportFile,
             ]);
         } catch (Throwable $e) {
-            log_message('error', '[myCrudGpt quick] {message} in {file}:{line}', [
+            log_message('error', '[myCrudCI4 quick] {message} in {file}:{line}', [
                 'message' => $e->getMessage(),
                 'file'    => $e->getFile(),
                 'line'    => $e->getLine(),
@@ -101,7 +101,7 @@ final class AutoCrudController extends BaseController
     }
 
     /**
-     * Salva il report per consentirne il download.
+     * Save il report per consentirne il download.
      */
     private function saveReport(array $report): string
     {

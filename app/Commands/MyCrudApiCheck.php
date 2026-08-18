@@ -10,20 +10,20 @@ use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use RuntimeException;
 
-/** Verifica la generazione API v1 per una tabella reale. */
+/** Verifica la generazione API v1 per una table reale. */
 final class MyCrudApiCheck extends BaseCommand
 {
-    protected $group = 'myCrudGpt';
+    protected $group = 'myCrudCI4';
     protected $name = 'mycrud:check-api';
-    protected $description = 'Genera e controlla controller API, Resource, Routes e OpenAPI.';
+    protected $description = 'Generates and checks API controller, Resource, Routes, and OpenAPI.';
     protected $usage = 'mycrud:check-api <table>';
-    protected $arguments = ['table' => 'Tabella da verificare'];
+    protected $arguments = ['table' => 'Table da verificare'];
 
     public function run(array $params)
     {
         $table = trim((string) ($params[0] ?? ''));
         if ($table === '') {
-            CLI::error('Specificare una tabella.');
+            CLI::error('Specificare una table.');
             return EXIT_ERROR;
         }
         $config = (new ConfigBuilder())->buildFromTable($table);

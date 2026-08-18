@@ -4,9 +4,9 @@ use CodeIgniter\Router\RouteCollection;
 
 /*
  * Route modulari del CRUD staff_list.
- * myCrudGpt genera volutamente un file per tabella: app/Config/Routes.php
+ * myCrudCI4 intentionally generates one file per table: app/Config/Routes.php
  * può caricare app/Routes/*.php senza concentrare tutte le route in un unico file.
- * SQL VIEW: route di sola lettura; nessuna route di scrittura viene generata.
+ * SQL VIEW: read-only routes; no write route is generated.
  */
 
 /** @var RouteCollection $routes */

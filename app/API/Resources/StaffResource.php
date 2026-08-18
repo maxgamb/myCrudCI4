@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\API\Resources;
 
-/** Serializza la risorsa staff secondo la configurazione del Builder. */
+/**
+ * Output-only serializer for `staff`.
+ *
+ * It performs no queries, request parsing, validation, or persistence.
+ */
 final class StaffResource
 {
     private const READABLE = array (
@@ -20,27 +24,6 @@ final class StaffResource
   9 => 'last_update',
   10 => 'address_id__label',
   11 => 'store_id__label',
-);
-    private const WRITABLE = array (
-  0 => 'first_name',
-  1 => 'last_name',
-  2 => 'address_id',
-  3 => 'picture',
-  4 => 'email',
-  5 => 'store_id',
-  6 => 'active',
-  7 => 'username',
-  8 => 'password',
-);
-    private const FILTERABLE = array (
-  0 => 'staff_id',
-  1 => 'address_id',
-  2 => 'store_id',
-);
-    private const SORTABLE = array (
-  0 => 'staff_id',
-  1 => 'address_id',
-  2 => 'store_id',
 );
 
     public static function make(object|array $record): array
@@ -61,20 +44,5 @@ final class StaffResource
     public static function collection(array $records): array
     {
         return array_map(static fn (object|array $record): array => self::make($record), $records);
-    }
-
-    public static function writableData(array $data): array
-    {
-        return array_intersect_key($data, array_flip(self::WRITABLE));
-    }
-
-    public static function filterableFields(): array
-    {
-        return self::FILTERABLE;
-    }
-
-    public static function sortableFields(): array
-    {
-        return self::SORTABLE;
     }
 }

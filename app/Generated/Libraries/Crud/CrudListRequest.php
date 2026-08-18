@@ -9,9 +9,9 @@ use CodeIgniter\HTTP\IncomingRequest;
 /**
  * Normalizza i parametri comuni dell'elenco CRUD.
  *
- * Lato sito: Controller diversi condividono la stessa lettura di filtri,
- * pagina, righe per pagina e ordinamento. La whitelist effettiva di campi e
- * operatori resta nel Model, che è l'unico livello autorizzato a comporre query.
+ * On the site side, different Controllers share the same parsing of filters,
+ * page, rows per page, and sorting. The effective whitelist of fields and
+ * operators remains in the Model, the only layer authorized to compose queries.
  */
 final class CrudListRequest
 {
@@ -66,9 +66,9 @@ final class CrudListRequest
     }
 
     /**
-     * Converte la forma corta `?campo=valore` nello stesso filtro `eq` usato
+     * Converts the short form `?field=value` into the same `eq` filter used
      * dal motore dinamico. La whitelist viene generata dal CRUD e comprende
-     * solo campi realmente filtrabili; i parametri vuoti vengono ignorati.
+     * only genuinely filterable fields are accepted; empty parameters are ignored.
      *
      * @param array<string,mixed> $query
      * @param list<string> $allowedFields
@@ -106,8 +106,8 @@ final class CrudListRequest
     }
 
     /**
-     * Mantiene solo la forma strutturale dei filtri. Non considera attendibili
-     * campo e operatore: la validazione semantica viene eseguita dal Model.
+     * Keeps only the structural filter shape. It does not trust
+     * field and operator values: semantic validation is performed by the Model.
      *
      * @return list<array{field:string,operator:string,value:mixed,value_to:mixed,logic:string}>
      */

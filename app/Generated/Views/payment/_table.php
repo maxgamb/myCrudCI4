@@ -1,4 +1,4 @@
-<?php /* Frammento sostituito via AJAX: doppio Pager e tabella Bootstrap compatta. */ ?>
+<?php /* AJAX-replaced fragment: dual Pager and compact Bootstrap table. */ ?>
 <?php
 $navigationContext = (array) ($navigationContext ?? []);
 $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navigationContext);
@@ -105,7 +105,7 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                     <?php if (empty($rows)): ?>
                         <tr>
                             <td colspan="8" class="text-center text-muted py-4">
-                                Nessun record trovato.
+                                No record found.
                             </td>
                         </tr>
                     <?php else: ?>
@@ -122,11 +122,11 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                                             href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
                                             class="js-list-link text-decoration-none"
                                             data-quick-filter="1"
-                                            title="Filtra per questo valore"
+                                            title="Filter by this value"
                                         ><?= esc($row->{'payment_id'} ?? '') ?></a>
                                     <?php endif; ?>
                                 </td>                                <td>
-                                    <?php if ((string) ($row->{'customer_id'} ?? '') !== ''): ?><a href="<?= site_url('customer/view/' . rawurlencode((string) $row->{'customer_id'})) ?>" class="text-decoration-none"><?= esc($row->{'customer_id__label'} ?? $row->{'customer_id'} ?? '') ?></a><?php else: ?><?= esc($row->{'customer_id__label'} ?? '') ?><?php endif; ?>
+                                    <?php if ((string) ($row->{'customer_id'} ?? '') !== ''): ?><?php $parentTrailEncoded = \App\Libraries\Crud\CrudNavigationTrail::encode((array) ($cascadeTrail ?? [])); $parentHref = site_url('customer/view/' . rawurlencode((string) $row->{'customer_id'})); if ($parentTrailEncoded !== '') $parentHref .= '?_trail=' . rawurlencode($parentTrailEncoded); ?><a href="<?= esc($parentHref) ?>" class="text-decoration-none"><?= esc($row->{'customer_id__label'} ?? $row->{'customer_id'} ?? '') ?></a><?php else: ?><?= esc($row->{'customer_id__label'} ?? '') ?><?php endif; ?>
                                     <?php
                                     $quickQuery = (array) ($query ?? []);
                                     $quickQuery['customer_id'] = (string) ($row->{'customer_id'} ?? '');
@@ -137,11 +137,11 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                                             href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
                                             class="js-list-link ms-1 text-decoration-none"
                                             data-quick-filter="1"
-                                            title="Filtra per questo valore"
-                                            aria-label="Filtra per questo valore"
+                                            title="Filter by this value"
+                                            aria-label="Filter by this value"
                                         ><i class="bi bi-funnel"></i></a>
                                     <?php endif; ?>                                </td>                                <td>
-                                    <?php if ((string) ($row->{'staff_id'} ?? '') !== ''): ?><a href="<?= site_url('staff/view/' . rawurlencode((string) $row->{'staff_id'})) ?>" class="text-decoration-none"><?= esc($row->{'staff_id__label'} ?? $row->{'staff_id'} ?? '') ?></a><?php else: ?><?= esc($row->{'staff_id__label'} ?? '') ?><?php endif; ?>
+                                    <?php if ((string) ($row->{'staff_id'} ?? '') !== ''): ?><?php $parentTrailEncoded = \App\Libraries\Crud\CrudNavigationTrail::encode((array) ($cascadeTrail ?? [])); $parentHref = site_url('staff/view/' . rawurlencode((string) $row->{'staff_id'})); if ($parentTrailEncoded !== '') $parentHref .= '?_trail=' . rawurlencode($parentTrailEncoded); ?><a href="<?= esc($parentHref) ?>" class="text-decoration-none"><?= esc($row->{'staff_id__label'} ?? $row->{'staff_id'} ?? '') ?></a><?php else: ?><?= esc($row->{'staff_id__label'} ?? '') ?><?php endif; ?>
                                     <?php
                                     $quickQuery = (array) ($query ?? []);
                                     $quickQuery['staff_id'] = (string) ($row->{'staff_id'} ?? '');
@@ -152,11 +152,11 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                                             href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
                                             class="js-list-link ms-1 text-decoration-none"
                                             data-quick-filter="1"
-                                            title="Filtra per questo valore"
-                                            aria-label="Filtra per questo valore"
+                                            title="Filter by this value"
+                                            aria-label="Filter by this value"
                                         ><i class="bi bi-funnel"></i></a>
                                     <?php endif; ?>                                </td>                                <td>
-                                    <?php if ((string) ($row->{'rental_id'} ?? '') !== ''): ?><a href="<?= site_url('rental/view/' . rawurlencode((string) $row->{'rental_id'})) ?>" class="text-decoration-none"><?= esc($row->{'rental_id__label'} ?? $row->{'rental_id'} ?? '') ?></a><?php else: ?><?= esc($row->{'rental_id__label'} ?? '') ?><?php endif; ?>
+                                    <?php if ((string) ($row->{'rental_id'} ?? '') !== ''): ?><?php $parentTrailEncoded = \App\Libraries\Crud\CrudNavigationTrail::encode((array) ($cascadeTrail ?? [])); $parentHref = site_url('rental/view/' . rawurlencode((string) $row->{'rental_id'})); if ($parentTrailEncoded !== '') $parentHref .= '?_trail=' . rawurlencode($parentTrailEncoded); ?><a href="<?= esc($parentHref) ?>" class="text-decoration-none"><?= esc($row->{'rental_id__label'} ?? $row->{'rental_id'} ?? '') ?></a><?php else: ?><?= esc($row->{'rental_id__label'} ?? '') ?><?php endif; ?>
                                     <?php
                                     $quickQuery = (array) ($query ?? []);
                                     $quickQuery['rental_id'] = (string) ($row->{'rental_id'} ?? '');
@@ -167,22 +167,22 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                                             href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
                                             class="js-list-link ms-1 text-decoration-none"
                                             data-quick-filter="1"
-                                            title="Filtra per questo valore"
-                                            aria-label="Filtra per questo valore"
+                                            title="Filter by this value"
+                                            aria-label="Filter by this value"
                                         ><i class="bi bi-funnel"></i></a>
                                     <?php endif; ?>                                </td>                                <td><?= esc($row->{'amount'} ?? '') ?></td>
                                 <td><?= esc($row->{'payment_date'} ?? '') ?></td>
                                 <td><?= esc($row->{'last_update'} ?? '') ?></td>
                                 <td class="text-end text-nowrap">
                                     <?php $id = $row->{'payment_id'} ?? ''; ?>
-                                    <div class="btn-group btn-group-sm" role="group" aria-label="Azioni record">
+                                    <div class="btn-group btn-group-sm" role="group" aria-label="Record actions">
                                         <a href="<?= site_url('payment/view/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="btn btn-outline-info" title="Visualizza">
                                             <i class="bi bi-eye" aria-hidden="true"></i>
                                         </a>
-                                        <a href="<?= site_url('payment/edit/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="btn btn-outline-warning" title="Modifica">
+                                        <a href="<?= site_url('payment/edit/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="btn btn-outline-warning" title="Edit">
                                             <i class="bi bi-pencil-square" aria-hidden="true"></i>
                                         </a>
-                                        <form method="post" action="<?= site_url('payment/delete/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="d-inline" onsubmit="return confirm('Eliminare questo record?')">
+                                        <form method="post" action="<?= site_url('payment/delete/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="d-inline" onsubmit="return confirm('Delete this record?')">
                                             <?= csrf_field() ?>
                                             <?php foreach ((array) ($navigationContext ?? []) as $contextField => $contextValue): ?>
                                                 <input type="hidden" name="_context[<?= esc((string) $contextField) ?>]" value="<?= esc((string) $contextValue) ?>">

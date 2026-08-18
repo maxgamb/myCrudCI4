@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Configurazione persistente del Menu Builder myCrudGpt.
+ * Persistent configuration del Menu Builder myCrudCI4.
  * Il file descrive la navigazione scelta dallo sviluppatore.
  */
 return array (
@@ -14,132 +14,9 @@ return array (
   array (
     0 => 
     array (
-      'label' => 'Customer',
-      'icon' => 'bi-folder2-open',
-      'order' => 10,
-      'items' => 
-      array (
-        0 => 
-        array (
-          'label' => 'Customer',
-          'route' => 'customer',
-          'icon' => 'bi-table',
-          'order' => 10,
-          'favorite' => false,
-          'table' => 'customer',
-        ),
-      ),
-      'subgroups' => 
-      array (
-        0 => 
-        array (
-          'label' => 'Views',
-          'order' => 10,
-          'items' => 
-          array (
-            0 => 
-            array (
-              'label' => 'Customer List',
-              'route' => 'customer_list',
-              'icon' => 'bi-table',
-              'order' => 10,
-              'favorite' => false,
-              'table' => 'customer_list',
-            ),
-          ),
-        ),
-      ),
-    ),
-    1 => 
-    array (
-      'label' => 'Store',
-      'icon' => 'bi-folder2-open',
-      'order' => 20,
-      'items' => 
-      array (
-        0 => 
-        array (
-          'label' => 'Store',
-          'route' => 'store',
-          'icon' => 'bi-table',
-          'order' => 10,
-          'favorite' => false,
-          'table' => 'store',
-        ),
-        1 => 
-        array (
-          'label' => 'Sales By Store',
-          'route' => 'sales_by_store',
-          'icon' => 'bi-table',
-          'order' => 20,
-          'favorite' => false,
-          'table' => 'sales_by_store',
-        ),
-      ),
-      'subgroups' => 
-      array (
-        0 => 
-        array (
-          'label' => 'inventory',
-          'order' => 10,
-          'items' => 
-          array (
-            0 => 
-            array (
-              'label' => 'Inventory',
-              'route' => 'inventory',
-              'icon' => 'bi-table',
-              'order' => 10,
-              'favorite' => false,
-              'table' => 'inventory',
-            ),
-          ),
-        ),
-      ),
-    ),
-    2 => 
-    array (
-      'label' => 'Staff',
-      'icon' => 'bi-folder2-open',
-      'order' => 30,
-      'items' => 
-      array (
-        0 => 
-        array (
-          'label' => 'Staff',
-          'route' => 'staff',
-          'icon' => 'bi-person-badge',
-          'order' => 10,
-          'favorite' => false,
-          'table' => 'staff',
-        ),
-      ),
-      'subgroups' => 
-      array (
-        0 => 
-        array (
-          'label' => 'Views',
-          'order' => 10,
-          'items' => 
-          array (
-            0 => 
-            array (
-              'label' => 'Staff List',
-              'route' => 'staff_list',
-              'icon' => 'bi-person-badge',
-              'order' => 10,
-              'favorite' => false,
-              'table' => 'staff_list',
-            ),
-          ),
-        ),
-      ),
-    ),
-    3 => 
-    array (
       'label' => 'Actor',
       'icon' => 'bi-folder2-open',
-      'order' => 40,
+      'order' => 10,
       'items' => 
       array (
         0 => 
@@ -150,6 +27,15 @@ return array (
           'order' => 10,
           'favorite' => false,
           'table' => 'actor',
+        ),
+        1 => 
+        array (
+          'label' => 'dashboard',
+          'route' => 'dashboard',
+          'icon' => 'bi-link-45deg',
+          'order' => 20,
+          'favorite' => true,
+          'table' => '',
         ),
       ),
       'subgroups' => 
@@ -173,11 +59,11 @@ return array (
         ),
       ),
     ),
-    4 => 
+    1 => 
     array (
       'label' => 'Address',
       'icon' => 'bi-folder2-open',
-      'order' => 50,
+      'order' => 20,
       'items' => 
       array (
         0 => 
@@ -212,53 +98,49 @@ return array (
       array (
       ),
     ),
-    5 => 
+    2 => 
     array (
-      'label' => 'Rental',
+      'label' => 'Customer',
       'icon' => 'bi-folder2-open',
-      'order' => 60,
+      'order' => 30,
       'items' => 
       array (
         0 => 
         array (
-          'label' => 'Rental',
-          'route' => 'rental',
+          'label' => 'Customer',
+          'route' => 'customer',
           'icon' => 'bi-table',
           'order' => 10,
           'favorite' => false,
-          'table' => 'rental',
+          'table' => 'customer',
         ),
       ),
       'subgroups' => 
-      array (
-      ),
-    ),
-    6 => 
-    array (
-      'label' => 'Payment',
-      'icon' => 'bi-folder2-open',
-      'order' => 70,
-      'items' => 
       array (
         0 => 
         array (
-          'label' => 'Payment',
-          'route' => 'payment',
-          'icon' => 'bi-credit-card',
+          'label' => 'Views',
           'order' => 10,
-          'favorite' => false,
-          'table' => 'payment',
+          'items' => 
+          array (
+            0 => 
+            array (
+              'label' => 'Customer List',
+              'route' => 'customer_list',
+              'icon' => 'bi-table',
+              'order' => 10,
+              'favorite' => false,
+              'table' => 'customer_list',
+            ),
+          ),
         ),
       ),
-      'subgroups' => 
-      array (
-      ),
     ),
-    7 => 
+    3 => 
     array (
       'label' => 'Films',
       'icon' => 'bi-folder2-open',
-      'order' => 80,
+      'order' => 40,
       'items' => 
       array (
         0 => 
@@ -346,6 +228,133 @@ return array (
         ),
       ),
     ),
+    4 => 
+    array (
+      'label' => 'Rental',
+      'icon' => 'bi-folder2-open',
+      'order' => 50,
+      'items' => 
+      array (
+        0 => 
+        array (
+          'label' => 'Rental',
+          'route' => 'rental',
+          'icon' => 'bi-table',
+          'order' => 10,
+          'favorite' => false,
+          'table' => 'rental',
+        ),
+      ),
+      'subgroups' => 
+      array (
+      ),
+    ),
+    5 => 
+    array (
+      'label' => 'Staff',
+      'icon' => 'bi-folder2-open',
+      'order' => 60,
+      'items' => 
+      array (
+        0 => 
+        array (
+          'label' => 'Staff',
+          'route' => 'staff',
+          'icon' => 'bi-person-badge',
+          'order' => 10,
+          'favorite' => false,
+          'table' => 'staff',
+        ),
+      ),
+      'subgroups' => 
+      array (
+        0 => 
+        array (
+          'label' => 'Views',
+          'order' => 10,
+          'items' => 
+          array (
+            0 => 
+            array (
+              'label' => 'Staff List',
+              'route' => 'staff_list',
+              'icon' => 'bi-person-badge',
+              'order' => 10,
+              'favorite' => false,
+              'table' => 'staff_list',
+            ),
+          ),
+        ),
+      ),
+    ),
+    6 => 
+    array (
+      'label' => 'Store',
+      'icon' => 'bi-folder2-open',
+      'order' => 70,
+      'items' => 
+      array (
+        0 => 
+        array (
+          'label' => 'Store',
+          'route' => 'store',
+          'icon' => 'bi-table',
+          'order' => 10,
+          'favorite' => false,
+          'table' => 'store',
+        ),
+        1 => 
+        array (
+          'label' => 'Sales By Store',
+          'route' => 'sales_by_store',
+          'icon' => 'bi-table',
+          'order' => 20,
+          'favorite' => false,
+          'table' => 'sales_by_store',
+        ),
+      ),
+      'subgroups' => 
+      array (
+        0 => 
+        array (
+          'label' => 'inventory',
+          'order' => 10,
+          'items' => 
+          array (
+            0 => 
+            array (
+              'label' => 'Inventory',
+              'route' => 'inventory',
+              'icon' => 'bi-table',
+              'order' => 10,
+              'favorite' => false,
+              'table' => 'inventory',
+            ),
+          ),
+        ),
+      ),
+    ),
+    7 => 
+    array (
+      'label' => 'Payment',
+      'icon' => 'bi-folder2-open',
+      'order' => 80,
+      'items' => 
+      array (
+        0 => 
+        array (
+          'label' => 'Payment',
+          'route' => 'payment',
+          'icon' => 'bi-credit-card',
+          'order' => 10,
+          'favorite' => false,
+          'table' => 'payment',
+        ),
+      ),
+      'subgroups' => 
+      array (
+      ),
+    ),
     8 => 
     array (
       'label' => 'pivot',
@@ -370,7 +379,7 @@ return array (
   ),
   '_meta' => 
   array (
-    'generatorVersion' => '2.8.0-dev31',
-    'savedAt' => '2026-08-10T16:29:54+00:00',
+    'generatorVersion' => '2.9.1-dev7',
+    'savedAt' => '2026-08-15T16:21:52+00:00',
   ),
 );

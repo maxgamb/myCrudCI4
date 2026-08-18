@@ -90,7 +90,7 @@ class DbSchema
         )->getResultArray();
 
         // TABLE_ROWS e le dimensioni sono stime leggere, utili al Builder e
-        // alla diagnostica senza eseguire COUNT(*) durante la configurazione.
+        // to diagnostics without running COUNT(*) during configuration.
         $stats = $this->db->query(
             'SELECT TABLE_ROWS AS rowEstimate,
                     DATA_LENGTH AS dataLength,
@@ -125,7 +125,7 @@ class DbSchema
      * Restituisce tutte le tabelle del database che sono destinazione di
      * almeno una foreign key. L'elenco e' globale, deduplicato e limitato
      * alle tabelle configurabili dal Builder, cosi' ogni voce puo' essere
-     * aperta direttamente con /mycrud/builder/configure/<tabella>.
+     * opened directly with /mycrud/builder/configure/<table>.
      */
     public function parentTables(): array
     {
@@ -185,7 +185,7 @@ class DbSchema
             || !in_array($table, TableFilter::validTables($this->db, $this->config), true)
         ) {
             throw PageNotFoundException::forPageNotFound(
-                'Tabella non valida, inesistente o esclusa: ' . $table
+                'Invalid, missing, or excluded table: ' . $table
             );
         }
     }

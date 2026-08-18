@@ -12,29 +12,29 @@ use CodeIgniter\CLI\CLI;
 use Throwable;
 
 /**
- * Rigenerazione controllata: mostra prima il diff rispetto ad app/ e scrive
+ * Controlled regeneration: first shows the diff against app/ and writes
  * comunque soltanto nell'area sicura app/Generated/.
  */
 final class MyCrudRegenerate extends BaseCommand
 {
-    protected $group       = 'myCrudGpt';
+    protected $group       = 'myCrudCI4';
     protected $name        = 'mycrud:regenerate';
     protected $description = 'Rigenera da config persistente dopo aver mostrato il diff rispetto al codice operativo.';
     protected $usage       = 'mycrud:regenerate <table> [--force]';
 
     protected $arguments = [
-        'table' => 'Nome della tabella configurata.',
+        'table' => 'Nome della table configurata.',
     ];
 
     protected $options = [
-        '--force' => 'Aggiorna anche i file già presenti in app/Generated/.',
+        '--force' => 'Also updates files already present in app/Generated/.',
     ];
 
     public function run(array $params)
     {
         $table = trim((string) ($params[0] ?? ''));
         if ($table === '') {
-            CLI::error('Specificare il nome della tabella.');
+            CLI::error('Specify the table name.');
             return;
         }
 
@@ -44,7 +44,7 @@ final class MyCrudRegenerate extends BaseCommand
             $resolved = $configuration->resolve($table, true);
 
             if (!$resolved['saved']) {
-                CLI::error('Configurazione persistente non trovata per ' . $table . '.');
+                CLI::error('Persistent configuration not found per ' . $table . '.');
                 return;
             }
 
@@ -56,7 +56,7 @@ final class MyCrudRegenerate extends BaseCommand
             );
 
             if (!empty($diff['schemaDrift'])) {
-                CLI::write('! Schema drift rilevato: verrà usato lo schema DB corrente.', 'yellow');
+                CLI::write('! Schema drift rilevato: verrà usato lo DB schema corrente.', 'yellow');
             }
 
             $result = (new CrudGeneratorService())->generate(
@@ -69,7 +69,7 @@ final class MyCrudRegenerate extends BaseCommand
                 . ' [' . $result['architecture'] . ']',
                 'green'
             );
-            CLI::write('Nessun file operativo in app/ è stato sovrascritto.', 'cyan');
+            CLI::write('No file operativo in app/ è stato sovrascritto.', 'cyan');
         } catch (Throwable $e) {
             CLI::error($e->getMessage());
         }

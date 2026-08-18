@@ -16,8 +16,9 @@ return array (
   'rating' => 'Rating',
   'special_features' => 'Special Features',
   'last_update' => 'Last Update',
-  'filtersSummary' => 'Filtri di ricerca',
+  'uploads' => 'Uploads',
+  'filtersSummary' => 'Search filters',
   'actions' => 'Azioni',
   'recordsFound' => 'Record trovati',
-  'noRecords' => 'Nessun record trovato.',
+  'noRecords' => 'No record trovato.',
 );

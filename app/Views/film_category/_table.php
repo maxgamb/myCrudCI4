@@ -1,4 +1,4 @@
-<?php /* Frammento sostituito via AJAX: doppio Pager e tabella Bootstrap compatta. */ ?>
+<?php /* AJAX-replaced fragment: dual Pager and compact Bootstrap table. */ ?>
 <?php
 $navigationContext = (array) ($navigationContext ?? []);
 $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navigationContext);
@@ -62,16 +62,16 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                     <?php if (empty($rows)): ?>
                         <tr>
                             <td colspan="3" class="text-center text-muted py-4">
-                                Nessun record trovato.
+                                No record found.
                             </td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
                                 <td>
-                                    <?php if ((string) ($row->{'film_id'} ?? '') !== ''): ?><a href="<?= site_url('film/view/' . rawurlencode((string) $row->{'film_id'})) ?>" class="text-decoration-none"><?= esc($row->{'film_id__label'} ?? $row->{'film_id'} ?? '') ?></a><?php else: ?><?= esc($row->{'film_id__label'} ?? '') ?><?php endif; ?>
+                                    <?php if ((string) ($row->{'film_id'} ?? '') !== ''): ?><?php $parentTrailEncoded = \App\Libraries\Crud\CrudNavigationTrail::encode((array) ($cascadeTrail ?? [])); $parentHref = site_url('film/view/' . rawurlencode((string) $row->{'film_id'})); if ($parentTrailEncoded !== '') $parentHref .= '?_trail=' . rawurlencode($parentTrailEncoded); ?><a href="<?= esc($parentHref) ?>" class="text-decoration-none"><?= esc($row->{'film_id__label'} ?? $row->{'film_id'} ?? '') ?></a><?php else: ?><?= esc($row->{'film_id__label'} ?? '') ?><?php endif; ?>
                                 </td>                                <td>
-                                    <?php if ((string) ($row->{'category_id'} ?? '') !== ''): ?><a href="<?= site_url('category/view/' . rawurlencode((string) $row->{'category_id'})) ?>" class="text-decoration-none"><?= esc($row->{'category_id__label'} ?? $row->{'category_id'} ?? '') ?></a><?php else: ?><?= esc($row->{'category_id__label'} ?? '') ?><?php endif; ?>
+                                    <?php if ((string) ($row->{'category_id'} ?? '') !== ''): ?><?php $parentTrailEncoded = \App\Libraries\Crud\CrudNavigationTrail::encode((array) ($cascadeTrail ?? [])); $parentHref = site_url('category/view/' . rawurlencode((string) $row->{'category_id'})); if ($parentTrailEncoded !== '') $parentHref .= '?_trail=' . rawurlencode($parentTrailEncoded); ?><a href="<?= esc($parentHref) ?>" class="text-decoration-none"><?= esc($row->{'category_id__label'} ?? $row->{'category_id'} ?? '') ?></a><?php else: ?><?= esc($row->{'category_id__label'} ?? '') ?><?php endif; ?>
                                     <?php
                                     $quickQuery = (array) ($query ?? []);
                                     $quickQuery['category_id'] = (string) ($row->{'category_id'} ?? '');
@@ -82,8 +82,8 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                                             href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
                                             class="js-list-link ms-1 text-decoration-none"
                                             data-quick-filter="1"
-                                            title="Filtra per questo valore"
-                                            aria-label="Filtra per questo valore"
+                                            title="Filter by this value"
+                                            aria-label="Filter by this value"
                                         ><i class="bi bi-funnel"></i></a>
                                     <?php endif; ?>                                </td>                                <td><?= esc($row->{'last_update'} ?? '') ?></td>
                             </tr>

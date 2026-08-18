@@ -6,7 +6,7 @@ namespace App\Libraries\MyCrud\Core;
 
 use Throwable;
 
-/** Genera in batch tutti i CRUD che possiedono una configurazione persistente. */
+/** Batch-generates all CRUDs that have persistent configuration. */
 final class ConfiguredGenerationService
 {
     public function __construct(
@@ -42,7 +42,7 @@ final class ConfiguredGenerationService
             try {
                 $resolved = $configuration->resolve((string) $table, true);
                 if (!$resolved['saved']) {
-                    throw new \RuntimeException('Configurazione persistente non trovata.');
+                    throw new \RuntimeException('Persistent configuration not found.');
                 }
 
                 $result = $generator->generate($resolved['config'], $force);

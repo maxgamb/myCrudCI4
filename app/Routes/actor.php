@@ -4,7 +4,7 @@ use CodeIgniter\Router\RouteCollection;
 
 /*
  * Route modulari del CRUD actor.
- * myCrudGpt genera volutamente un file per tabella: app/Config/Routes.php
+ * myCrudCI4 intentionally generates one file per table: app/Config/Routes.php
  * può caricare app/Routes/*.php senza concentrare tutte le route in un unico file.
  */
 
@@ -13,7 +13,6 @@ $routes->group('actor', static function (RouteCollection $routes): void {
     $routes->get('/', 'ActorController::index');
     $routes->get('export-csv', 'ActorController::exportCsv');
     $routes->get('export-word', 'ActorController::exportWord');
-    $routes->get('relation-options/(:segment)', 'ActorController::relationOptions/$1');
     $routes->get('view/(:segment)', 'ActorController::view/$1');
     $routes->get('create', 'ActorController::create');
     $routes->post('store', 'ActorController::store');

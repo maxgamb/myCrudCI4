@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 /**
- * Configurazione persistente myCrudGpt per la tabella film.
+ * myCrudCI4 persistent configuration for table film.
  *
  * Questo file contiene solo le scelte dello sviluppatore.
- * Tipi DB, indici e relazioni vengono riletti dallo schema ad ogni generazione.
+ * DB types, indexes, and relations are reread from the schema on every generation.
  */
 return array (
   'table' => 'film',
@@ -14,26 +14,47 @@ return array (
   'order' => 
   array (
     0 => 'film_id',
-    1 => 'title',
-    2 => 'description',
-    3 => 'release_year',
-    4 => 'language_id',
-    5 => 'original_language_id',
-    6 => 'rental_duration',
-    7 => 'rental_rate',
-    8 => 'length',
-    9 => 'replacement_cost',
-    10 => 'rating',
-    11 => 'special_features',
-    12 => 'last_update',
+    1 => 'last_update',
+    2 => 'title',
+    3 => 'description',
+    4 => 'release_year',
+    5 => 'language_id',
+    6 => 'original_language_id',
+    7 => 'rental_duration',
+    8 => 'rental_rate',
+    9 => 'length',
+    10 => 'replacement_cost',
+    11 => 'rating',
+    12 => 'special_features',
+    13 => 'uploads',
+  ),
+  'formSections' => 
+  array (
+    0 => 
+    array (
+      'id' => 'section_mssksdrj_9wvjn',
+      'title' => 'prova',
+      'description' => '',
+      'width' => 6,
+      'collapsed' => false,
+    ),
+    1 => 
+    array (
+      'id' => 'section_msrobuix_a8whk',
+      'title' => 'Test',
+      'description' => 'Descrizione',
+      'width' => 6,
+      'collapsed' => false,
+    ),
   ),
   'fields' => 
   array (
     'film_id' => 
     array (
       'label' => '',
-      'inputType' => 'number',
+      'inputType' => 'hidden',
       'width' => 6,
+      'section' => 'section_msrobuix_a8whk',
       'relationMode' => '',
       'relationDisplayField' => '',
       'relationDisplayTemplate' => '',
@@ -49,7 +70,13 @@ return array (
       array (
         'enabled' => false,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -70,6 +97,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'exact',
+        'mcpVisible' => true,
       ),
     ),
     'title' => 
@@ -77,6 +105,7 @@ return array (
       'label' => '',
       'inputType' => 'text',
       'width' => 6,
+      'section' => '',
       'relationMode' => '',
       'relationDisplayField' => '',
       'relationDisplayTemplate' => '',
@@ -92,7 +121,13 @@ return array (
       array (
         'enabled' => false,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -115,6 +150,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'prefix',
+        'mcpVisible' => true,
       ),
     ),
     'description' => 
@@ -122,6 +158,7 @@ return array (
       'label' => '',
       'inputType' => 'textarea',
       'width' => 6,
+      'section' => '',
       'relationMode' => '',
       'relationDisplayField' => '',
       'relationDisplayTemplate' => '',
@@ -137,7 +174,13 @@ return array (
       array (
         'enabled' => false,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -159,6 +202,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'prefix',
+        'mcpVisible' => true,
       ),
     ),
     'release_year' => 
@@ -166,6 +210,7 @@ return array (
       'label' => '',
       'inputType' => 'text',
       'width' => 6,
+      'section' => 'section_msrobuix_a8whk',
       'relationMode' => '',
       'relationDisplayField' => '',
       'relationDisplayTemplate' => '',
@@ -181,7 +226,13 @@ return array (
       array (
         'enabled' => false,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -202,6 +253,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'prefix',
+        'mcpVisible' => true,
       ),
     ),
     'language_id' => 
@@ -209,6 +261,7 @@ return array (
       'label' => '',
       'inputType' => 'select',
       'width' => 6,
+      'section' => 'section_msrobuix_a8whk',
       'relationMode' => 'select',
       'relationDisplayField' => 'name',
       'relationDisplayTemplate' => '',
@@ -224,7 +277,13 @@ return array (
       array (
         'enabled' => true,
       ),
+      'relationCreateCustomized' => true,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -246,6 +305,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'exact',
+        'mcpVisible' => true,
       ),
     ),
     'original_language_id' => 
@@ -253,6 +313,7 @@ return array (
       'label' => '',
       'inputType' => 'select',
       'width' => 6,
+      'section' => 'section_mssksdrj_9wvjn',
       'relationMode' => 'select',
       'relationDisplayField' => 'name',
       'relationDisplayTemplate' => '',
@@ -268,7 +329,13 @@ return array (
       array (
         'enabled' => true,
       ),
+      'relationCreateCustomized' => true,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -289,6 +356,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'exact',
+        'mcpVisible' => true,
       ),
     ),
     'rental_duration' => 
@@ -296,6 +364,7 @@ return array (
       'label' => '',
       'inputType' => 'number',
       'width' => 6,
+      'section' => 'section_mssksdrj_9wvjn',
       'relationMode' => '',
       'relationDisplayField' => '',
       'relationDisplayTemplate' => '',
@@ -311,7 +380,13 @@ return array (
       array (
         'enabled' => false,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -333,6 +408,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'exact',
+        'mcpVisible' => true,
       ),
     ),
     'rental_rate' => 
@@ -340,6 +416,7 @@ return array (
       'label' => '',
       'inputType' => 'number',
       'width' => 6,
+      'section' => '',
       'relationMode' => '',
       'relationDisplayField' => '',
       'relationDisplayTemplate' => '',
@@ -355,7 +432,13 @@ return array (
       array (
         'enabled' => false,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -377,13 +460,15 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'exact',
+        'mcpVisible' => true,
       ),
     ),
     'length' => 
     array (
       'label' => '',
-      'inputType' => 'number',
+      'inputType' => 'text',
       'width' => 6,
+      'section' => 'section_mssksdrj_9wvjn',
       'relationMode' => '',
       'relationDisplayField' => '',
       'relationDisplayTemplate' => '',
@@ -399,7 +484,13 @@ return array (
       array (
         'enabled' => false,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -420,6 +511,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'exact',
+        'mcpVisible' => true,
       ),
     ),
     'replacement_cost' => 
@@ -427,6 +519,7 @@ return array (
       'label' => '',
       'inputType' => 'number',
       'width' => 6,
+      'section' => '',
       'relationMode' => '',
       'relationDisplayField' => '',
       'relationDisplayTemplate' => '',
@@ -442,7 +535,13 @@ return array (
       array (
         'enabled' => false,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -464,6 +563,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'exact',
+        'mcpVisible' => true,
       ),
     ),
     'rating' => 
@@ -471,6 +571,7 @@ return array (
       'label' => '',
       'inputType' => 'text',
       'width' => 6,
+      'section' => '',
       'relationMode' => '',
       'relationDisplayField' => '',
       'relationDisplayTemplate' => '',
@@ -486,7 +587,13 @@ return array (
       array (
         'enabled' => false,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -508,6 +615,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'prefix',
+        'mcpVisible' => true,
       ),
     ),
     'special_features' => 
@@ -515,6 +623,7 @@ return array (
       'label' => '',
       'inputType' => 'text',
       'width' => 6,
+      'section' => '',
       'relationMode' => '',
       'relationDisplayField' => '',
       'relationDisplayTemplate' => '',
@@ -530,7 +639,13 @@ return array (
       array (
         'enabled' => false,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -552,6 +667,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'prefix',
+        'mcpVisible' => true,
       ),
     ),
     'last_update' => 
@@ -559,6 +675,7 @@ return array (
       'label' => '',
       'inputType' => 'datetime-local',
       'width' => 6,
+      'section' => 'section_msrobuix_a8whk',
       'relationMode' => '',
       'relationDisplayField' => '',
       'relationDisplayTemplate' => '',
@@ -574,7 +691,13 @@ return array (
       array (
         'enabled' => false,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -595,6 +718,59 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'range',
+        'mcpVisible' => true,
+      ),
+    ),
+    'uploads' => 
+    array (
+      'label' => '',
+      'inputType' => 'file',
+      'width' => 6,
+      'section' => '',
+      'relationMode' => '',
+      'relationDisplayField' => '',
+      'relationDisplayTemplate' => '',
+      'relationNavigation' => 
+      array (
+        'quickFilter' => false,
+        'parentLink' => false,
+        'acceptContext' => false,
+        'createParentLink' => false,
+      ),
+      'relationNavigationCustomized' => false,
+      'relationCreate' => 
+      array (
+        'enabled' => false,
+      ),
+      'relationCreateCustomized' => false,
+      'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
+      'attributes' => 
+      array (
+        'boolean' => 
+        array (
+        ),
+        'values' => 
+        array (
+          'maxlength' => '200',
+        ),
+      ),
+      'ui' => 
+      array (
+        'searchable' => false,
+        'sortable' => false,
+        'visibleIndex' => true,
+        'visibleForm' => true,
+        'visibleView' => true,
+        'sensitive' => false,
+        'exportable' => true,
+        'apiVisible' => true,
+        'filterMode' => 'prefix',
+        'mcpVisible' => true,
       ),
     ),
   ),
@@ -603,6 +779,68 @@ return array (
     'relations' => true,
     'softDeletes' => false,
     'timestamps' => true,
+  ),
+  'apiCapabilities' => 
+  array (
+    'list' => true,
+    'read' => true,
+    'create' => true,
+    'update' => true,
+    'delete' => true,
+    'trash' => false,
+    'restore' => false,
+    'forceDelete' => false,
+  ),
+  'crudSecurity' => 
+  array (
+    'auth' => 'none',
+    'permissions' => 
+    array (
+      'list' => '',
+      'read' => '',
+      'create' => '',
+      'update' => '',
+      'delete' => '',
+      'trash' => '',
+      'restore' => '',
+      'forceDelete' => '',
+    ),
+  ),
+  'apiSecurity' => 
+  array (
+    'auth' => 'none',
+    'permissions' => 
+    array (
+      'list' => '',
+      'read' => '',
+      'create' => '',
+      'update' => '',
+      'delete' => '',
+      'trash' => '',
+      'restore' => '',
+      'forceDelete' => '',
+      'upload' => '',
+    ),
+  ),
+  'mcp' => 
+  array (
+    'enabled' => true,
+    'transport' => 'stdio',
+    'mode' => 'read_only',
+    'serverName' => 'myCrudCI4',
+    'security' => 
+    array (
+      'boundary' => 'local_process',
+      'inheritsApiSecurity' => false,
+      'remoteTransportAllowed' => false,
+      'oauthRequiredForRemote' => true,
+    ),
+    'capabilities' => 
+    array (
+      'list' => true,
+      'read' => true,
+      'relations' => true,
+    ),
   ),
   'relationsConfig' => 
   array (
@@ -618,6 +856,8 @@ return array (
         'showCreateButton' => true,
         'showViewAllButton' => true,
         'showViewButton' => false,
+        'collapsible' => true,
+        'collapsed' => false,
       ),
       'film_category__film_id' => 
       array (
@@ -629,6 +869,8 @@ return array (
         'showCreateButton' => true,
         'showViewAllButton' => true,
         'showViewButton' => false,
+        'collapsible' => true,
+        'collapsed' => false,
       ),
       'inventory__film_id' => 
       array (
@@ -640,6 +882,43 @@ return array (
         'showCreateButton' => true,
         'showViewAllButton' => true,
         'showViewButton' => true,
+        'collapsible' => true,
+        'collapsed' => false,
+      ),
+    ),
+    'manyToMany' => 
+    array (
+      'many__film_actor__film_id' => 
+      array (
+        'enabled' => true,
+        'title' => 'Actor',
+        'icon' => 'bi-diagram-2',
+        'limit' => 20,
+        'showCount' => true,
+        'showViewButton' => true,
+        'createEnabled' => true,
+        'editEnabled' => true,
+        'createRelatedEnabled' => true,
+        'createRelatedCustomized' => true,
+        'collapsible' => true,
+        'collapsed' => false,
+        'formWidth' => 6,
+      ),
+      'many__film_category__film_id' => 
+      array (
+        'enabled' => true,
+        'title' => 'Category',
+        'icon' => 'bi-diagram-2',
+        'limit' => 20,
+        'showCount' => true,
+        'showViewButton' => true,
+        'createEnabled' => true,
+        'editEnabled' => true,
+        'createRelatedEnabled' => true,
+        'createRelatedCustomized' => true,
+        'collapsible' => true,
+        'collapsed' => false,
+        'formWidth' => 6,
       ),
     ),
   ),
@@ -649,9 +928,9 @@ return array (
   ),
   '_meta' => 
   array (
-    'generatorVersion' => '2.8.0-dev33',
-    'savedAt' => '2026-08-10T17:56:16+00:00',
-    'schemaFingerprint' => 'c210a515a873f476cc709489da078f919cc17805d5eb164e90833d4894c17f64',
-    'configHash' => '9c987f91262469a6e9dfd54ab6dc9a3446ca72d78e39db1e8c3cf6170a764880',
+    'generatorVersion' => '2.9.1-dev24-fix11-fix50',
+    'savedAt' => '2026-08-18T17:15:22+00:00',
+    'schemaFingerprint' => '5e6b0c136aa11a392183de2ba85b2df5c003635dbfbec1f7931b9f6214416380',
+    'configHash' => 'dffcc89a4dc08e5bd6aa4fe28b987b4d638d1993a324ef7bf0473905b89d449b',
   ),
 );

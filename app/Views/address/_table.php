@@ -1,4 +1,4 @@
-<?php /* Frammento sostituito via AJAX: doppio Pager e tabella Bootstrap compatta. */ ?>
+<?php /* AJAX-replaced fragment: dual Pager and compact Bootstrap table. */ ?>
 <?php
 $navigationContext = (array) ($navigationContext ?? []);
 $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navigationContext);
@@ -69,7 +69,7 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                     <?php if (empty($rows)): ?>
                         <tr>
                             <td colspan="10" class="text-center text-muted py-4">
-                                Nessun record trovato.
+                                No record found.
                             </td>
                         </tr>
                     <?php else: ?>
@@ -86,14 +86,14 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                                             href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
                                             class="js-list-link text-decoration-none"
                                             data-quick-filter="1"
-                                            title="Filtra per questo valore"
+                                            title="Filter by this value"
                                         ><?= esc($row->{'address_id'} ?? '') ?></a>
                                     <?php endif; ?>
                                 </td>                                <td><?= esc($row->{'address'} ?? '') ?></td>
                                 <td><?= esc($row->{'address2'} ?? '') ?></td>
                                 <td><?= esc($row->{'district'} ?? '') ?></td>
                                 <td>
-                                    <?php if ((string) ($row->{'city_id'} ?? '') !== ''): ?><a href="<?= site_url('city/view/' . rawurlencode((string) $row->{'city_id'})) ?>" class="text-decoration-none"><?= esc($row->{'city_id__label'} ?? $row->{'city_id'} ?? '') ?></a><?php else: ?><?= esc($row->{'city_id__label'} ?? '') ?><?php endif; ?>
+                                    <?php if ((string) ($row->{'city_id'} ?? '') !== ''): ?><?php $parentTrailEncoded = \App\Libraries\Crud\CrudNavigationTrail::encode((array) ($cascadeTrail ?? [])); $parentHref = site_url('city/view/' . rawurlencode((string) $row->{'city_id'})); if ($parentTrailEncoded !== '') $parentHref .= '?_trail=' . rawurlencode($parentTrailEncoded); ?><a href="<?= esc($parentHref) ?>" class="text-decoration-none"><?= esc($row->{'city_id__label'} ?? $row->{'city_id'} ?? '') ?></a><?php else: ?><?= esc($row->{'city_id__label'} ?? '') ?><?php endif; ?>
                                     <?php
                                     $quickQuery = (array) ($query ?? []);
                                     $quickQuery['city_id'] = (string) ($row->{'city_id'} ?? '');
@@ -104,8 +104,8 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                                             href="<?= current_url() . '?' . http_build_query($quickQuery) ?>"
                                             class="js-list-link ms-1 text-decoration-none"
                                             data-quick-filter="1"
-                                            title="Filtra per questo valore"
-                                            aria-label="Filtra per questo valore"
+                                            title="Filter by this value"
+                                            aria-label="Filter by this value"
                                         ><i class="bi bi-funnel"></i></a>
                                     <?php endif; ?>                                </td>                                <td><?= esc($row->{'postal_code'} ?? '') ?></td>
                                 <td><?= esc($row->{'phone'} ?? '') ?></td>
@@ -113,14 +113,14 @@ $navigationQuery = $navigationContext === [] ? '' : '?' . http_build_query($navi
                                 <td><?= esc($row->{'last_update'} ?? '') ?></td>
                                 <td class="text-end text-nowrap">
                                     <?php $id = $row->{'address_id'} ?? ''; ?>
-                                    <div class="btn-group btn-group-sm" role="group" aria-label="Azioni record">
+                                    <div class="btn-group btn-group-sm" role="group" aria-label="Record actions">
                                         <a href="<?= site_url('address/view/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="btn btn-outline-info" title="Visualizza">
                                             <i class="bi bi-eye" aria-hidden="true"></i>
                                         </a>
-                                        <a href="<?= site_url('address/edit/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="btn btn-outline-warning" title="Modifica">
+                                        <a href="<?= site_url('address/edit/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="btn btn-outline-warning" title="Edit">
                                             <i class="bi bi-pencil-square" aria-hidden="true"></i>
                                         </a>
-                                        <form method="post" action="<?= site_url('address/delete/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="d-inline" onsubmit="return confirm('Eliminare questo record?')">
+                                        <form method="post" action="<?= site_url('address/delete/' . rawurlencode((string) $id)) . ($navigationQuery ?? '') ?>" class="d-inline" onsubmit="return confirm('Delete this record?')">
                                             <?= csrf_field() ?>
                                             <?php foreach ((array) ($navigationContext ?? []) as $contextField => $contextValue): ?>
                                                 <input type="hidden" name="_context[<?= esc((string) $contextField) ?>]" value="<?= esc((string) $contextValue) ?>">

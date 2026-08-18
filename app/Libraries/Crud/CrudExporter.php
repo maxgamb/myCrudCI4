@@ -12,7 +12,7 @@ use RuntimeException;
 /**
  * Coordina gli export comuni a tutti i CRUD del sito.
  *
- * Lato sito: il Controller indica formato, campi e callback dati; questa
+ * On the site side, the Controller provides format, fields, and data callbacks; this
  * libreria costruisce intestazioni, file temporanei e download. Il database
  * resta fuori dal runtime di export e continua a essere interrogato dal Model.
  */
@@ -73,7 +73,7 @@ final class CrudExporter
                 $maximumRows,
                 $unfilteredMaximumRows
             ),
-            default => throw new RuntimeException('Formato export non supportato.'),
+            default => throw new RuntimeException('Unsupported export format.'),
         };
     }
 

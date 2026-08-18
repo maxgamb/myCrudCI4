@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="CLI Arguments" tests="16" assertions="107" errors="0" failures="0" skipped="0" time="0.021369">
+    <testsuite name="Tests\MyCrud\DashboardBaselineGuardTest" file="/var/www/html/myCrudGpt/tests/MyCrud/DashboardBaselineGuardTest.php" tests="3" assertions="18" errors="0" failures="0" skipped="0" time="0.004402">
+      <testcase name="testGeneratorKeepsConfigurationArrayAndRuntimeDtoBoundariesSeparate" file="/var/www/html/myCrudGpt/tests/MyCrud/DashboardBaselineGuardTest.php" line="11" class="Tests\MyCrud\DashboardBaselineGuardTest" classname="Tests.MyCrud.DashboardBaselineGuardTest" assertions="6" time="0.003016"/>
+      <testcase name="testGeneratedRecentWidgetUsesConcreteModelAndNoRuntimeResolver" file="/var/www/html/myCrudGpt/tests/MyCrud/DashboardBaselineGuardTest.php" line="28" class="Tests\MyCrud\DashboardBaselineGuardTest" classname="Tests.MyCrud.DashboardBaselineGuardTest" assertions="6" time="0.001133"/>
+      <testcase name="testGeneratedControllerAndViewStayObjectFirst" file="/var/www/html/myCrudGpt/tests/MyCrud/DashboardBaselineGuardTest.php" line="58" class="Tests\MyCrud\DashboardBaselineGuardTest" classname="Tests.MyCrud.DashboardBaselineGuardTest" assertions="6" time="0.000254"/>
+    </testsuite>
+    <testsuite name="Tests\MyCrud\DashboardConfigBoundaryTest" file="/var/www/html/myCrudGpt/tests/MyCrud/DashboardConfigBoundaryTest.php" tests="2" assertions="13" errors="0" failures="0" skipped="0" time="0.001416">
+      <testcase name="testGeneratorTreatsBuilderWidgetsAsArraysBeforeRuntimeDtoCreation" file="/var/www/html/myCrudGpt/tests/MyCrud/DashboardConfigBoundaryTest.php" line="11" class="Tests\MyCrud\DashboardConfigBoundaryTest" classname="Tests.MyCrud.DashboardConfigBoundaryTest" assertions="8" time="0.001190"/>
+      <testcase name="testGeneratedServiceTreatsConfiguredWidgetsAsArraysUntilDtoCreation" file="/var/www/html/myCrudGpt/tests/MyCrud/DashboardConfigBoundaryTest.php" line="30" class="Tests\MyCrud\DashboardConfigBoundaryTest" classname="Tests.MyCrud.DashboardConfigBoundaryTest" assertions="5" time="0.000227"/>
+    </testsuite>
+    <testsuite name="Tests\MyCrud\BuilderIntentFirstUxTest" file="/var/www/html/myCrudGpt/tests/MyCrud/BuilderIntentFirstUxTest.php" tests="2" assertions="14" errors="0" failures="0" skipped="0" time="0.005630">
+      <testcase name="testBuilderKeepsCoreWorkflowVisibleAndTechnicalOptionsAdvanced" file="/var/www/html/myCrudGpt/tests/MyCrud/BuilderIntentFirstUxTest.php" line="11" class="Tests\MyCrud\BuilderIntentFirstUxTest" classname="Tests.MyCrud.BuilderIntentFirstUxTest" assertions="11" time="0.004395"/>
+      <testcase name="testFieldGuideIsCollapsedByDefault" file="/var/www/html/myCrudGpt/tests/MyCrud/BuilderIntentFirstUxTest.php" line="28" class="Tests\MyCrud\BuilderIntentFirstUxTest" classname="Tests.MyCrud.BuilderIntentFirstUxTest" assertions="3" time="0.001235"/>
+    </testsuite>
+    <testsuite name="BuilderParentTablesStickyUxTest" file="/var/www/html/myCrudGpt/tests/MyCrud/BuilderParentTablesStickyUxTest.php" tests="1" assertions="11" errors="0" failures="0" skipped="0" time="0.004323">
+      <testcase name="testParentDatabaseTablesStickyIsAppliedToAsideContainer" file="/var/www/html/myCrudGpt/tests/MyCrud/BuilderParentTablesStickyUxTest.php" line="9" class="BuilderParentTablesStickyUxTest" classname="BuilderParentTablesStickyUxTest" assertions="11" time="0.004323"/>
+    </testsuite>
+    <testsuite name="Tests\MyCrud\PublishManagedArtifactsTest" file="/var/www/html/myCrudGpt/tests/MyCrud/PublishManagedArtifactsTest.php" tests="1" assertions="9" errors="0" failures="0" skipped="0" time="0.000546">
+      <testcase name="testPublishKeepsGeneratedTestsAndMcpArtifactsSynchronized" file="/var/www/html/myCrudGpt/tests/MyCrud/PublishManagedArtifactsTest.php" line="11" class="Tests\MyCrud\PublishManagedArtifactsTest" classname="Tests.MyCrud.PublishManagedArtifactsTest" assertions="9" time="0.000546"/>
+    </testsuite>
+    <testsuite name="Tests\MyCrud\GeneratedUiConfigurabilityTest" file="/var/www/html/myCrudGpt/tests/MyCrud/GeneratedUiConfigurabilityTest.php" tests="7" assertions="42" errors="0" failures="0" skipped="0" time="0.005051">
+      <testcase name="testBuilderFieldWidthsComeFromProjectConfig" file="/var/www/html/myCrudGpt/tests/MyCrud/GeneratedUiConfigurabilityTest.php" line="12" class="Tests\MyCrud\GeneratedUiConfigurabilityTest" classname="Tests.MyCrud.GeneratedUiConfigurabilityTest" assertions="4" time="0.000945"/>
+      <testcase name="testRelationPanelWidthsComeFromProjectConfig" file="/var/www/html/myCrudGpt/tests/MyCrud/GeneratedUiConfigurabilityTest.php" line="23" class="Tests\MyCrud\GeneratedUiConfigurabilityTest" classname="Tests.MyCrud.GeneratedUiConfigurabilityTest" assertions="5" time="0.000672"/>
+      <testcase name="testManyToManyPrimaryActionsShareOneInputGroupAndBuilderWidth" file="/var/www/html/myCrudGpt/tests/MyCrud/GeneratedUiConfigurabilityTest.php" line="35" class="Tests\MyCrud\GeneratedUiConfigurabilityTest" classname="Tests.MyCrud.GeneratedUiConfigurabilityTest" assertions="6" time="0.001270"/>
+      <testcase name="testManyToManyFormWidthIsPersistedAcrossRegeneration" file="/var/www/html/myCrudGpt/tests/MyCrud/GeneratedUiConfigurabilityTest.php" line="49" class="Tests\MyCrud\GeneratedUiConfigurabilityTest" classname="Tests.MyCrud.GeneratedUiConfigurabilityTest" assertions="4" time="0.000521"/>
+      <testcase name="testRelatedCreateOffcanvasWidthComesFromProjectConfig" file="/var/www/html/myCrudGpt/tests/MyCrud/GeneratedUiConfigurabilityTest.php" line="62" class="Tests\MyCrud\GeneratedUiConfigurabilityTest" classname="Tests.MyCrud.GeneratedUiConfigurabilityTest" assertions="9" time="0.000993"/>
+      <testcase name="testGeneratedViewTemplatesExposeStableHtmlMarkers" file="/var/www/html/myCrudGpt/tests/MyCrud/GeneratedUiConfigurabilityTest.php" line="76" class="Tests\MyCrud\GeneratedUiConfigurabilityTest" classname="Tests.MyCrud.GeneratedUiConfigurabilityTest" assertions="10" time="0.000345"/>
+      <testcase name="testGeneratedPhpFormattingIsWhitespaceCompact" file="/var/www/html/myCrudGpt/tests/MyCrud/GeneratedUiConfigurabilityTest.php" line="93" class="Tests\MyCrud\GeneratedUiConfigurabilityTest" classname="Tests.MyCrud.GeneratedUiConfigurabilityTest" assertions="4" time="0.000303"/>
+    </testsuite>
+  </testsuite>
+</testsuites>

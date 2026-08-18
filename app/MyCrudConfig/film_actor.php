@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 /**
- * Configurazione persistente myCrudGpt per la tabella film_actor.
+ * myCrudCI4 persistent configuration for table film_actor.
  *
  * Questo file contiene solo le scelte dello sviluppatore.
- * Tipi DB, indici e relazioni vengono riletti dallo schema ad ogni generazione.
+ * DB types, indexes, and relations are reread from the schema on every generation.
  */
 return array (
   'table' => 'film_actor',
@@ -17,6 +17,9 @@ return array (
     1 => 'film_id',
     2 => 'last_update',
   ),
+  'formSections' => 
+  array (
+  ),
   'fields' => 
   array (
     'actor_id' => 
@@ -24,6 +27,7 @@ return array (
       'label' => '',
       'inputType' => 'select',
       'width' => 6,
+      'section' => '',
       'relationMode' => 'select',
       'relationDisplayField' => 'last_name',
       'relationDisplayTemplate' => '',
@@ -39,7 +43,13 @@ return array (
       array (
         'enabled' => true,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -61,6 +71,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'exact',
+        'mcpVisible' => true,
       ),
     ),
     'film_id' => 
@@ -68,12 +79,13 @@ return array (
       'label' => '',
       'inputType' => 'select',
       'width' => 6,
+      'section' => '',
       'relationMode' => 'select',
       'relationDisplayField' => 'title',
       'relationDisplayTemplate' => '',
       'relationNavigation' => 
       array (
-        'quickFilter' => false,
+        'quickFilter' => true,
         'parentLink' => true,
         'acceptContext' => true,
         'createParentLink' => false,
@@ -83,7 +95,13 @@ return array (
       array (
         'enabled' => true,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -105,6 +123,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'exact',
+        'mcpVisible' => true,
       ),
     ),
     'last_update' => 
@@ -112,6 +131,7 @@ return array (
       'label' => '',
       'inputType' => 'datetime-local',
       'width' => 6,
+      'section' => '',
       'relationMode' => '',
       'relationDisplayField' => '',
       'relationDisplayTemplate' => '',
@@ -127,7 +147,13 @@ return array (
       array (
         'enabled' => false,
       ),
+      'relationCreateCustomized' => false,
       'uiVisibilityCustomized' => true,
+      'initialValue' => 
+      array (
+        'mode' => 'none',
+        'custom' => '',
+      ),
       'attributes' => 
       array (
         'boolean' => 
@@ -148,6 +174,7 @@ return array (
         'exportable' => true,
         'apiVisible' => true,
         'filterMode' => 'range',
+        'mcpVisible' => true,
       ),
     ),
   ),
@@ -157,9 +184,74 @@ return array (
     'softDeletes' => false,
     'timestamps' => true,
   ),
+  'apiCapabilities' => 
+  array (
+    'list' => true,
+    'read' => false,
+    'create' => true,
+    'update' => false,
+    'delete' => false,
+    'trash' => false,
+    'restore' => false,
+    'forceDelete' => false,
+  ),
+  'crudSecurity' => 
+  array (
+    'auth' => 'none',
+    'permissions' => 
+    array (
+      'list' => '',
+      'read' => '',
+      'create' => '',
+      'update' => '',
+      'delete' => '',
+      'trash' => '',
+      'restore' => '',
+      'forceDelete' => '',
+    ),
+  ),
+  'apiSecurity' => 
+  array (
+    'auth' => 'none',
+    'permissions' => 
+    array (
+      'list' => '',
+      'read' => '',
+      'create' => '',
+      'update' => '',
+      'delete' => '',
+      'trash' => '',
+      'restore' => '',
+      'forceDelete' => '',
+      'upload' => '',
+    ),
+  ),
+  'mcp' => 
+  array (
+    'enabled' => false,
+    'transport' => 'stdio',
+    'mode' => 'read_only',
+    'serverName' => 'myCrudCI4',
+    'security' => 
+    array (
+      'boundary' => 'local_process',
+      'inheritsApiSecurity' => false,
+      'remoteTransportAllowed' => false,
+      'oauthRequiredForRemote' => true,
+    ),
+    'capabilities' => 
+    array (
+      'list' => true,
+      'read' => false,
+      'relations' => true,
+    ),
+  ),
   'relationsConfig' => 
   array (
     'hasMany' => 
+    array (
+    ),
+    'manyToMany' => 
     array (
     ),
   ),
@@ -169,9 +261,9 @@ return array (
   ),
   '_meta' => 
   array (
-    'generatorVersion' => '2.8.0-dev33',
-    'savedAt' => '2026-08-10T17:56:16+00:00',
+    'generatorVersion' => '2.9.1-dev24-fix11-fix48',
+    'savedAt' => '2026-08-18T16:48:30+00:00',
     'schemaFingerprint' => '6daac3df986feaf3166a7493d0583745718ff51c1a4277a32023ce3820ccaadf',
-    'configHash' => '73e961e154476cebe3402f825936b7cb02b51a314a2122d3782802f1f67c0c41',
+    'configHash' => '376f75f2587d5312c7c822a699823ec42e0007741156aa3a4e6a17d8697e529a',
   ),
 );

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Libraries\Crud\Export;
 
-/** Scrive il formato CSV comune, incluso BOM UTF-8 e protezione CSV injection. */
+/** Writes the shared CSV format, including UTF-8 BOM and CSV-injection protection. */
 final class CsvWriter
 {
     /** @param resource $handle */

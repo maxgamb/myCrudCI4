@@ -15,10 +15,10 @@ use RuntimeException;
 use Throwable;
 
 /**
- * Genera una mappa del progetto pensata per agenti IA.
+ * Generates a project map designed for AI agents.
  *
- * Il contesto viene derivato esclusivamente da schema DB, configurazioni
- * persistenti e convenzioni myCrudGpt. Non vengono esportati dati applicativi,
+ * The context is derived exclusively from the DB schema, configurations
+ * persistenti e convenzioni myCrudCI4. Non vengono esportati dati applicativi,
  * credenziali, valori di .env o altri segreti.
  */
 final class AiProjectContextGenerator
@@ -38,7 +38,7 @@ final class AiProjectContextGenerator
     }
 
     /**
-     * Genera il contesto globale e un file Markdown per ogni CRUD configurato.
+     * Generates the global context and one Markdown file for each configured CRUD.
      *
      * @return array{root:string,files:list<string>,crudCount:int,dbTableCount:int}
      */
@@ -111,8 +111,8 @@ final class AiProjectContextGenerator
             try {
                 $crud[$table] = $this->buildCrudSnapshot($table);
             } catch (Throwable $exception) {
-                // Una configurazione orfana resta utile alla mappa: l'agente deve
-                // sapere che esiste ma che lo schema DB corrente non la risolve.
+                // An orphaned configuration remains useful to the map: the agent must
+                // sapere che esiste ma che lo DB schema corrente non la risolve.
                 $saved = $this->repository->load($table) ?? [];
                 $crud[$table] = $this->orphanSnapshot($table, $saved, $exception->getMessage());
             }
@@ -125,8 +125,15 @@ final class AiProjectContextGenerator
 
         return [
             'formatVersion' => 1,
-            'generatedBy' => 'myCrudGpt',
+            'generatedBy' => 'myCrudCI4',
             'generatorVersion' => MyCrudVersion::VERSION,
+            'developerGuides' => [
+                'contributing' => 'CONTRIBUTING.md',
+                'architecture' => 'docs/development/ARCHITECTURE.md',
+                'architectureRules' => 'docs/development/ARCHITECTURE_RULES.md',
+                'addingFeature' => 'docs/development/ADDING_A_FEATURE.md',
+                'featureMatrix' => 'docs/development/FEATURE_MATRIX.md',
+            ],
             'generatedAt' => date(DATE_ATOM),
             'framework' => [
                 'name' => 'CodeIgniter 4',
@@ -150,7 +157,7 @@ final class AiProjectContextGenerator
                 'viewStructure' => [
                     'breadcrumb' => 'Every generated main CRUD view starts with a Bootstrap breadcrumb.',
                     'pageHeading' => 'Every generated main CRUD view has exactly one page-level h1 containing the table name.',
-                    'pageContext' => 'A small text under h1 identifies Elenco, Nuovo record, Modifica record, Dettaglio record or Cestino.',
+                    'pageContext' => 'A small text under h1 identifies List, New record, Edit record, Record details, or Trash.',
                     'cardHeading' => 'Inner form/detail card headings use h2 to preserve a single h1 per page.',
                 ],
                 'relationalCreate' => [
@@ -164,7 +171,10 @@ final class AiProjectContextGenerator
                 'basic' => 'Controller -> Model -> Database',
                 'standard' => 'Controller -> Service -> Model -> Database',
                 'fullWeb' => 'Controller -> Service -> Model -> Database',
-                'fullApi' => 'API Controller -> Service -> Model -> Resource -> JSON',
+                'fullApiRead' => 'API Controller -> Model -> Resource -> JSON',
+                'fullApiWrite' => 'API Controller -> Service -> Model',
+                'modelBase' => 'Concrete generated Models extend App\Models\BaseCrudModel; relation targets remain explicit in concrete Models.',
+                'mcpRead' => 'MCP Tool -> Model -> MCP Resource',
             ],
             'database' => [
                 'tables' => $dbTables,
@@ -240,7 +250,7 @@ final class AiProjectContextGenerator
                         'transactional' => true,
                         'foreignKeyAssignedServerSide' => true,
                         'ui' => 'bootstrap-input-group + bootstrap-offcanvas',
-                        'relationActions' => 'standard FK select uses one Bootstrap input-group; parent open = bi-box-arrow-up-right, relational create = bi-plus-circle + Nuovo',
+                        'relationActions' => 'standard FK select uses one Bootstrap input-group; parent open = bi-box-arrow-up-right, relational create = bi-plus-circle + New',
                         'partial' => '_related_create_<foreign-key>.php',
                         'loadsFullParentCreateView' => false,
                     ],
@@ -274,6 +284,25 @@ final class AiProjectContextGenerator
             ];
         }
 
+        $manyToMany = [];
+        foreach ((array) ($config['relationsConfig']['manyToMany'] ?? []) as $key => $relation) {
+            if (empty($relation['enabled'])) {
+                continue;
+            }
+            $manyToMany[] = [
+                'key' => (string) $key,
+                'pivotTable' => (string) ($relation['pivotTable'] ?? ''),
+                'relatedTable' => (string) ($relation['relatedTable'] ?? ''),
+                'ownPivotField' => (string) ($relation['ownPivotField'] ?? ''),
+                'relatedPivotField' => (string) ($relation['relatedPivotField'] ?? ''),
+                'scaffold' => ['read', 'attach', 'detach', 'sync'],
+                'selectorUi' => 'search-checkbox-badges',
+                'selectorBehavior' => 'single UI for all N:N relations; local options now, AJAX can reuse the same UI later',
+                'formLayout' => 'project-configurable via Config\\MyCrud::$relationPanelWidths[\'manyToMany\']; full width on mobile',
+                'relatedCreateOffcanvas' => 'single project-wide width via Config\\MyCrud::$relationOffcanvasWidth (default 640px) for belongsTo and many-to-many panels',
+            ];
+        }
+
         return [
             'table' => $table,
             'dbStatus' => 'present',
@@ -297,8 +326,10 @@ final class AiProjectContextGenerator
             'relations' => [
                 'belongsTo' => $belongsTo,
                 'hasMany' => $hasMany,
+                'manyToMany' => $manyToMany,
             ],
             'developmentGuidance' => $this->guidanceFor($architecture, $class),
+            'customization' => $this->customizationFor($architecture, $class),
         ];
     }
 
@@ -328,9 +359,10 @@ final class AiProjectContextGenerator
             'components' => $this->components($table, $class, $architecture),
             'features' => (array) ($saved['features'] ?? []),
             'fields' => array_keys((array) ($saved['fields'] ?? [])),
-            'relations' => ['belongsTo' => [], 'hasMany' => []],
-            'warning' => 'Configurazione presente ma tabella non risolvibile nel DB corrente: ' . $reason,
+            'relations' => ['belongsTo' => [], 'hasMany' => [], 'manyToMany' => []],
+            'warning' => 'Configuration exists but the table cannot be resolved in the current DB: ' . $reason,
             'developmentGuidance' => $this->guidanceFor($architecture, $class),
+            'customization' => $this->customizationFor($architecture, $class),
         ];
     }
 
@@ -349,6 +381,7 @@ final class AiProjectContextGenerator
 
         if (in_array($architecture, ['standard', 'full'], true)) {
             $components['service'] = 'app/Services/' . $class . 'Service.php';
+            $components['serviceExtension'] = 'app/Services/Extensions/' . $class . 'ServiceExtension.php';
             $components['entity'] = 'app/Entities/' . $class . 'Entity.php';
         }
 
@@ -360,6 +393,31 @@ final class AiProjectContextGenerator
         }
 
         return $components;
+    }
+
+    /** @return array<string,mixed> */
+    private function customizationFor(string $architecture, string $class): array
+    {
+        $standardOrFull = in_array($architecture, ['standard', 'full'], true);
+
+        return [
+            'generatedCodePolicy' => 'Do not patch app/Generated/ as a customization strategy; regenerate from configuration instead.',
+            'operationalCodePolicy' => 'Inspect app/ before editing because publish may overwrite generated operational files.',
+            'serviceExtensionAvailable' => $standardOrFull,
+            'serviceExtension' => $standardOrFull
+                ? 'app/Services/Extensions/' . $class . 'ServiceExtension.php'
+                : null,
+            'serviceExtensionPolicy' => $standardOrFull
+                ? 'Persistent create-only customization point. Use before/after CRUD hooks for application rules and side effects; never put SQL here.'
+                : 'Basic has no persistent ServiceExtension. Prefer Builder/generator configuration; move to Standard/Full when durable business hooks are required.',
+            'hookOrder' => $standardOrFull
+                ? 'prepareData -> beforeCreate/beforeUpdate -> Model persistence -> afterCreate/afterUpdate'
+                : null,
+            'queryOwner' => $class . 'Model',
+            'relationPolicy' => 'When the related resource is known at generation-time, call the concrete Model/Service explicitly. Never introduce runtime class/table resolvers.',
+            'exampleMethod' => $standardOrFull ? 'exampleApplyBusinessRule(array $data): array' : null,
+            'exampleUsage' => $standardOrFull ? 'It is generated commented/disabled. Uncomment, rename/adapt it to real fields, then call it explicitly from beforeCreate/beforeUpdate only when needed.' : null,
+        ];
     }
 
     /** @return list<string> */
@@ -376,7 +434,10 @@ final class AiProjectContextGenerator
         ];
 
         if (in_array($architecture, ['standard', 'full'], true)) {
-            $guidance[] = 'Put business logic in ' . $class . 'Service when it is not simple HTTP coordination.';
+            $guidance[] = 'Put generated business orchestration in ' . $class . 'Service. Put developer custom Service logic in app/Services/Extensions/' . $class . 'ServiceExtension.php; that file is created directly outside app/Generated/, is create-only, and must never be overwritten.';
+            $guidance[] = 'Available Service extension hooks are beforeCreate/afterCreate, beforeUpdate/afterUpdate and beforeDelete/afterDelete. Keep SQL/query composition in the Model.';
+            $guidance[] = 'The generated ServiceExtension contains a disabled/commented customization example named exampleApplyBusinessRule(). Uncomment, rename/adapt and call it explicitly from a hook only when needed; example helpers must not execute automatically.';
+            $guidance[] = 'For cross-resource writes, call the concrete generated Service explicitly (for example new CustomerService()->createRelated(...)); never introduce dynamic service/model/table resolvers.';
         }
 
         if ($architecture === 'full') {
@@ -392,6 +453,8 @@ final class AiProjectContextGenerator
     {
         return [
             'Read AI_PROJECT_CONTEXT.md before changing the project.',
+            'When modifying myCrudCI4 itself, read CONTRIBUTING.md and docs/development/ARCHITECTURE.md plus ARCHITECTURE_RULES.md before changing generators.',
+            'For a new generator feature, follow docs/development/ADDING_A_FEATURE.md and evaluate the feature impact matrix.',
             'When working on a CRUD, also read docs/ai/crud/<table>.md.',
             'Never rename database fields (hotel_id must not become hotelId).',
             'Never singularize table-derived class names (clienti -> ClientiController).',
@@ -405,6 +468,21 @@ final class AiProjectContextGenerator
             'Preserve generated CRUD page structure: Bootstrap breadcrumb + one table-name h1 + small page context; inner card headings are h2.',
             'Relational Create uses a Bootstrap input-group for the standard FK select/actions plus a Bootstrap Offcanvas and a dedicated parent-field partial that overlays the current view without changing its layout, never the full parent create view; the generated parent PK is the only authority for the current record FK.',
             'HasMany scaffolding uses dedicated child partials and contextual parent → child → parent navigation: New child passes the real FK plus a schema-whitelisted _parent_field, and a successful child Create returns to the parent detail; it does not generate recursive inline editing.',
+            'Cascaded Navigation (dev35 STABLE, includes fix1) propagates a navigation-only _trail across parent/child levels, including belongsTo parent links and contextual toolbar flows. Breadcrumb segments prefer descriptive record labels (name/title or composite first_name+last_name when available). The trail is used only for breadcrumbs and return links; it never authorizes writes or determines FK values. Direct FK context remains schema-whitelisted and server-validated.',
+            'Service Extension Points (dev36): writable Standard/Full CRUDs have app/Services/<Entity>Service.php plus app/Services/Extensions/<Entity>ServiceExtension.php. The extension trait lives directly in app/Services/Extensions/ outside staging, is create-only and must never be overwritten; app/Generated/ may be deleted safely without losing it; use its before/after create/update/delete hooks for custom application logic, while SQL remains in the Model.',
+            'Date/Time defaults (dev37): writable temporal fields may define a Create-only initial value (none/today/now/time/custom). old(), context and Edit values take precedence; databaseManaged timestamps remain DB-authoritative and never receive form defaults.',
+            'Relation panels (dev37): hasMany and many-to-many sections in detail views may be Bootstrap-collapse panels with configurable initial open/closed state; keep header, count and actions visible while collapsing only the related table/content.',
+            'Code quality (dev38): generated Controller, Model and Service classes use uniform PHPDoc to document layer responsibilities, array shapes, exceptions, relational side effects and extension points. Comments should explain non-obvious behavior rather than repeat method names.',
+            'Capability-aware generation (dev38 fix1): generated classes expose only operations supported by the resource. SQL VIEWs are read-only with no form helpers, write validation, write Service methods or ServiceExtension; create-only composite-key resources do not expose update/delete; normal writable CRUDs keep all documented ServiceExtension hooks.',
+            'Capability/PHPDoc consistency (dev38 fix2): create-only Controllers import PageNotFoundException when FK context helpers can throw 404; Read + Create resources are documented as such; ServiceExtension contract is prepareData -> beforeCreate/beforeUpdate -> Model persistence -> after hook.',
+            'Service extensions (dev38): app/Services/Extensions/<Entity>ServiceExtension.php is persistent custom code outside app/Generated; its hooks are documented and should orchestrate application logic while SQL remains in the Model.',
+            'Frozen dev24 architecture: concrete generated Models extend BaseCrudModel, but relation targets remain explicit/static in concrete Models and Services. BaseCrudModel owns only reusable current-table infrastructure; never add runtime relation resolvers.',
+            'Customization workflow: do not patch app/Generated/. For Standard/Full business customization use the persistent ServiceExtension hooks. Keep queries in Models; use explicit concrete Services for cross-resource writes. The generated exampleApplyBusinessRule() remains commented/disabled until the developer explicitly adapts and enables it.',
+            'REST boundary: API Controller owns HTTP input/filter/sort policy, READ uses Model, WRITE uses Service, Resource is output-only. PATCH and upload write paths remain explicit Service methods.',
+            'Shield boundary: Web CRUD security and REST API security are independent. Web CRUD uses generated session/permission route filters from crudSecurity; REST uses generated token/permission filters from apiSecurity. Do not introduce a runtime security resolver.',
+            'Builder UI boundary: Parent database tables is sticky navigation on desktop and follows the page scroll. Do not reintroduce a nested internal vertical scroller for this panel.',
+            'MCP boundary: MCP Tool owns filter/sort input policy, Model owns reads, MCP Resource is output-only.',
+            'Dashboard boundary: aggregate/statistical reads use DashboardQuery; Recent widgets reuse concrete generated Models wired at generation-time; Entity/object results are normalized through Dashboard DTOs before the View boundary. Never use runtime new $modelClass() when the Dashboard generator already knows the Model.',
             'Prefer existing project conventions over generic framework rewrites.',
         ];
     }
@@ -429,21 +507,25 @@ final class AiProjectContextGenerator
         $lines = [
             '# AI Project Context',
             '',
-            '> This file is generated by myCrudGpt. Read it before modifying the application.',
+            '> This file is generated by myCrudCI4. Read it before modifying the application.',
             '',
             '## Project identity',
             '',
             '- Framework: CodeIgniter 4',
-            '- Generator: myCrudGpt ' . MyCrudVersion::VERSION,
+            '- Generator: myCrudCI4 ' . MyCrudVersion::VERSION,
             '- Configured CRUDs: ' . count($crud),
-            '- Database tables visible to myCrudGpt: ' . count((array) ($db['tables'] ?? [])),
+            '- Database tables visible to myCrudCI4: ' . count((array) ($db['tables'] ?? [])),
             '',
             '## Core architecture rules',
             '',
             '- **Basic:** `Controller -> Model -> Database`',
             '- **Standard:** `Controller -> Service -> Model -> Database`',
             '- **Full web:** `Controller -> Service -> Model -> Database`',
-            '- **Full API:** `API Controller -> Service -> Model -> Resource -> JSON`',
+            '- **Full API READ:** `API Controller -> Model -> Resource -> JSON`',
+            '- **Full API WRITE:** `API Controller -> Service -> Model`',
+            '- **MCP READ:** `MCP Tool -> Model -> MCP Resource`',
+            '- **Dashboard aggregate:** `DashboardController -> DashboardService -> DashboardQuery -> DB`',
+            '- **Dashboard recent records:** `DashboardController -> DashboardService -> concrete Model -> Entity/object -> Dashboard DTO -> View`',
             '',
             '## Non-negotiable project conventions',
             '',
@@ -454,7 +536,7 @@ final class AiProjectContextGenerator
             '- Application layout: `app/Views/layouts/default_app.php`.',
             '- Frontend baseline: Bootstrap 5, Bootstrap Icons and vanilla JavaScript.',
             '- Every generated main CRUD view starts with a Bootstrap breadcrumb and has exactly one page-level `h1` containing the table name.',
-            '- A `<small class="text-muted">` under the page `h1` identifies the context: Elenco, Nuovo record, Modifica record, Dettaglio record or Cestino.',
+            '- A `<small class="text-muted">` under the page `h1` identifies the context: List, New record, Edit record, Record details, or Trash.',
             '- Inner form/detail card headings use `h2`; do not introduce a second page-level `h1`.',
             '- Relational Create can select an existing belongsTo parent from a standard FK input-group or create a new one inside a Bootstrap Offcanvas rendered from a dedicated parent-field partial that overlays the current view; the full parent create page is never embedded. Parent and current record are written in the same transaction and the generated parent PK is imposed server-side as the FK.',
             '- Do not introduce another frontend framework unless explicitly requested.',
@@ -473,6 +555,24 @@ final class AiProjectContextGenerator
             '',
             'The structure above is a project convention and must be preserved when an AI modifies generated or operational CRUD views.',
             '',
+            '## Safe customization workflow',
+            '',
+            '1. Configure behavior in Builder/myCrud config when the change belongs to generated scaffolding.',
+            '2. Never treat `app/Generated/` as a place for persistent manual edits.',
+            '3. In Standard/Full, put persistent business rules and side effects in `app/Services/Extensions/<Entity>ServiceExtension.php`.',
+            '4. Call custom helper methods explicitly from `beforeCreate`, `afterCreate`, `beforeUpdate`, `afterUpdate`, `beforeDelete` or `afterDelete`.',
+            '5. Keep SQL/query composition in the concrete Model. For cross-resource writes call a concrete generated Service explicitly; do not resolve Model/Service/table names dynamically.',
+            '6. The generated ServiceExtension contains a commented/disabled `exampleApplyBusinessRule()` example; uncomment, rename/adapt it to real fields before calling it.',
+            '',
+            'Example:',
+            '',
+            '```php',
+            'protected function beforeCreate(array $data): array',
+            '{',
+            '    return $this->exampleApplyBusinessRule($data);',
+            '}',
+            '```',
+            '',
             '## Important paths',
             '',
             '- Operational application: `app/`',
@@ -483,6 +583,11 @@ final class AiProjectContextGenerator
             '- Modular routes: `app/Routes/`',
             '- Detailed AI project map: `docs/ai/project.json`',
             '- CRUD-specific AI notes: `docs/ai/crud/<table>.md`',
+            '- Generator contribution guide: `CONTRIBUTING.md`',
+            '- Generator architecture: `docs/development/ARCHITECTURE.md`',
+            '- Architecture invariants: `docs/development/ARCHITECTURE_RULES.md`',
+            '- New-feature workflow: `docs/development/ADDING_A_FEATURE.md`',
+            '- Feature impact matrix: `docs/development/FEATURE_MATRIX.md`',
             '',
             '## CRUD map',
             '',
@@ -510,12 +615,13 @@ final class AiProjectContextGenerator
             '## How an AI agent should work',
             '',
             '1. Read this file.',
-            '2. Identify the CRUD involved.',
-            '3. Read `docs/ai/crud/<table>.md` for that CRUD.',
-            '4. Inspect the existing operational files before proposing changes.',
-            '5. Respect the architecture level and naming conventions.',
-            '6. Do not replace developer decisions with naming heuristics.',
-            '7. Do not modify the database unless explicitly asked.',
+            '2. If modifying myCrudCI4 itself, read `CONTRIBUTING.md` and `docs/development/ARCHITECTURE_RULES.md` before generator code.',
+            '3. Identify the CRUD involved.',
+            '4. Read `docs/ai/crud/<table>.md` for that CRUD.',
+            '5. Inspect the existing operational files before proposing changes.',
+            '6. Respect the architecture level and naming conventions.',
+            '7. Do not replace developer decisions with naming heuristics.',
+            '8. Do not modify the database unless explicitly asked.',
             '',
             '## Safety note',
             '',
@@ -561,7 +667,7 @@ final class AiProjectContextGenerator
             '',
             '- Main views use Bootstrap breadcrumb navigation.',
             '- The page-level `h1` contains the table name: `' . $this->md($table) . '`.',
-            '- A muted small label identifies the current context (Elenco / Nuovo record / Modifica record / Dettaglio record / Cestino).',
+            '- A muted small label identifies the current context (List / New record / Edit record / Record details / Trash).',
             '- Internal form/detail card titles use `h2`, not another `h1`.',
         ]);
 
@@ -636,6 +742,30 @@ final class AiProjectContextGenerator
             $lines = array_merge($lines, ['', '## Enabled features', '', implode(', ', array_map(static fn (string $f): string => '`' . $f . '`', $features))]);
         }
 
+        $customization = (array) ($crud['customization'] ?? []);
+        if ($customization !== []) {
+            $lines = array_merge($lines, ['', '## Safe customization', '']);
+            $lines[] = '- Generated staging policy: ' . (string) ($customization['generatedCodePolicy'] ?? '');
+            $lines[] = '- Query owner: `' . $this->md((string) ($customization['queryOwner'] ?? '')) . '`.';
+            $lines[] = '- Relation rule: ' . (string) ($customization['relationPolicy'] ?? '');
+            if (!empty($customization['serviceExtensionAvailable'])) {
+                $lines[] = '- Persistent Service extension: `' . $this->md((string) ($customization['serviceExtension'] ?? '')) . '`.';
+                $lines[] = '- Hook contract: `' . $this->md((string) ($customization['hookOrder'] ?? '')) . '`.';
+                $lines[] = '- Example helper: `' . $this->md((string) ($customization['exampleMethod'] ?? '')) . '` — ' . (string) ($customization['exampleUsage'] ?? '');
+                $lines = array_merge($lines, [
+                    '',
+                    '```php',
+                    'protected function beforeCreate(array $data): array',
+                    '{',
+                    '    return $this->exampleApplyBusinessRule($data);',
+                    '}',
+                    '```',
+                ]);
+            } else {
+                $lines[] = '- ' . (string) ($customization['serviceExtensionPolicy'] ?? '');
+            }
+        }
+
         $lines = array_merge($lines, ['', '## Development guidance', '']);
         foreach ((array) ($crud['developmentGuidance'] ?? []) as $rule) {
             $lines[] = '- ' . (string) $rule;
@@ -649,11 +779,11 @@ final class AiProjectContextGenerator
     {
         $table = trim($table);
         if ($table === '' || preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $table) !== 1) {
-            throw new RuntimeException('Nome tabella non valido: ' . $table);
+            throw new RuntimeException('Invalid table name: ' . $table);
         }
 
         if (!$this->repository->exists($table) && !in_array($table, TableFilter::validTables($this->db), true)) {
-            throw new RuntimeException('Tabella/configurazione non trovata: ' . $table);
+            throw new RuntimeException('Table/configuration not found: ' . $table);
         }
 
         return $table;

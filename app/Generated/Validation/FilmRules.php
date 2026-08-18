@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Validation;
 
+/** Regole server-side generate secondo le capability effettive del CRUD. */
 final class FilmRules
 {
+    /** @return array<string,string> */
     public static function createRules(): array
     {
         return array (
@@ -14,15 +16,16 @@ final class FilmRules
   'release_year' => 'permit_empty',
   'language_id' => 'required|integer|is_not_unique[language.language_id]',
   'original_language_id' => 'permit_empty|integer|is_not_unique[language.language_id]',
-  'rental_duration' => 'required|integer',
-  'rental_rate' => 'required|decimal',
+  'rental_duration' => 'permit_empty|integer',
+  'rental_rate' => 'permit_empty|decimal',
   'length' => 'permit_empty|integer',
-  'replacement_cost' => 'required|decimal',
+  'replacement_cost' => 'permit_empty|decimal',
   'rating' => 'permit_empty|max_length[5]',
   'special_features' => 'permit_empty|max_length[54]',
+  'uploads' => 'permit_empty|max_length[200]',
 );
     }
-
+    /** @return array<string,string> */
     public static function updateRules(int|string $id): array
     {
         $rules = array (
@@ -31,34 +34,50 @@ final class FilmRules
   'release_year' => 'permit_empty',
   'language_id' => 'required|integer|is_not_unique[language.language_id]',
   'original_language_id' => 'permit_empty|integer|is_not_unique[language.language_id]',
-  'rental_duration' => 'required|integer',
-  'rental_rate' => 'required|decimal',
+  'rental_duration' => 'permit_empty|integer',
+  'rental_rate' => 'permit_empty|decimal',
   'length' => 'permit_empty|integer',
-  'replacement_cost' => 'required|decimal',
+  'replacement_cost' => 'permit_empty|decimal',
   'rating' => 'permit_empty|max_length[5]',
   'special_features' => 'permit_empty|max_length[54]',
+  'uploads' => 'permit_empty|max_length[200]',
 );
         foreach ($rules as $field => $rule) {
             $rules[$field] = str_replace('{id}', (string) $id, $rule);
         }
         return $rules;
     }
-
-    /** Regole dei record padre creati nello stesso submit. */
+    /** @return array<string,array<string,string>> */
     public static function relatedCreateRules(): array
     {
         return array (
-  'language_id' => 
+  'language_id' =>
   array (
     'name' => 'required|max_length[20]',
   ),
-  'original_language_id' => 
+  'original_language_id' =>
   array (
     'name' => 'required|max_length[20]',
   ),
 );
     }
 
+    /** @return array<string,array<string,string>> */
+    public static function manyToManyRelatedCreateRules(): array
+    {
+        return array (
+  'many__film_actor__film_id' =>
+  array (
+    'first_name' => 'required|max_length[45]',
+    'last_name' => 'required|max_length[45]',
+  ),
+  'many__film_category__film_id' =>
+  array (
+    'name' => 'required|max_length[25]',
+  ),
+);
+    }
+    /** @return array<string,string> */
     public static function messages(): array
     {
         return [];

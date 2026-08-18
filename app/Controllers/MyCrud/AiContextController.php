@@ -10,7 +10,7 @@ use App\Libraries\MyCrud\Config\CrudConfigRepository;
 use App\Libraries\MyCrud\MyCrudVersion;
 use Throwable;
 
-/** Gestisce la generazione della mappa progetto destinata agli agenti IA. */
+/** Handles generation of the project map intended for AI agents. */
 final class AiContextController extends BaseController
 {
     public function index(): string
@@ -18,7 +18,7 @@ final class AiContextController extends BaseController
         helper(['form', 'url']);
 
         return view('mycrud/ai_context', [
-            'title' => 'Contesto IA del progetto',
+            'title' => 'Project AI context',
             'version' => MyCrudVersion::VERSION,
             'tables' => (new CrudConfigRepository())->tables(),
             'result' => null,
@@ -39,7 +39,7 @@ final class AiContextController extends BaseController
                 : $generator->generateCrud($table);
 
             return view('mycrud/ai_context', [
-                'title' => 'Contesto IA del progetto',
+                'title' => 'Project AI context',
                 'version' => MyCrudVersion::VERSION,
                 'tables' => $repository->tables(),
                 'result' => $result,
@@ -47,7 +47,7 @@ final class AiContextController extends BaseController
             ]);
         } catch (Throwable $exception) {
             return view('mycrud/ai_context', [
-                'title' => 'Contesto IA del progetto',
+                'title' => 'Project AI context',
                 'version' => MyCrudVersion::VERSION,
                 'tables' => $repository->tables(),
                 'result' => null,

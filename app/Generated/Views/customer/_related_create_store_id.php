@@ -5,7 +5,7 @@ $relatedCreateOptions = (array) ($relatedCreateOptions ?? []);
 $errors = (array) ($errors ?? []);
 ?>
 <div class="row g-3">
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <label for="related_create_store_id_manager_staff_id" class="form-label"><?= esc('Manager Staff Id') ?></label>
                 <select
                     name="_related[store_id][manager_staff_id]"
@@ -29,7 +29,7 @@ $errors = (array) ($errors ?? []);
                 <?php if (!empty($errors['store_id__related__manager_staff_id'])): ?>
                     <div class="invalid-feedback d-block"><?= esc($errors['store_id__related__manager_staff_id']) ?></div>
                 <?php endif; ?>
-            </div>            <div class="col-md-6">
+            </div>            <div class="col-12 col-md-6">
                 <label for="related_create_store_id_address_id" class="form-label"><?= esc('Address Id') ?></label>
                 <select
                     name="_related[store_id][address_id]"

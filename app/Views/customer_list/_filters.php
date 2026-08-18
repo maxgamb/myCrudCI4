@@ -1,7 +1,7 @@
 <?php
 /*
- * Filtro dinamico del sito.
- * Ogni riga rappresenta una condizione: campo, operatore, valore e AND/OR.
+ * Dynamic site filter.
+ * Each row represents a condition: field, operator, value, and AND/OR.
  * La whitelist reale viene ricontrollata dal Model: i valori del browser non
  * vengono mai usati direttamente come nomi colonna o operatori SQL.
  */
@@ -22,7 +22,7 @@ $activeFilters = array_values(array_filter(
 
     <?php if ($filterDefinitions === []): ?>
         <div class="alert alert-light border mb-3">
-            Nessun campo filtrabile disponibile nella configurazione corrente.
+            No filterable field is available in the current configuration.
         </div>
     <?php endif; ?>
 
@@ -43,7 +43,7 @@ $activeFilters = array_values(array_filter(
                 <i class="bi bi-search"></i> Cerca
             </button>
             <button type="button" id="crudAddFilter" class="btn btn-outline-primary" <?= $filterDefinitions === [] ? 'disabled' : '' ?>>
-                <i class="bi bi-plus-circle"></i> Aggiungi filtro
+                <i class="bi bi-plus-circle"></i> Add filter
             </button>
             <a href="<?= site_url('customer_list') ?>" class="btn btn-outline-secondary js-reset-filters">
                 Azzera
@@ -55,8 +55,8 @@ $activeFilters = array_values(array_filter(
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     /*
-     * Runtime lato sito del filtro dinamico. Costruiamo solo controlli HTML;
-     * l'interpretazione sicura di campo/operatore avviene sempre nel Model.
+     * Site-side runtime for the dynamic filter. We build only HTML controls;
+     * safe field/operator interpretation always happens in the Model.
      */
     const definitions = <?= json_encode($filterDefinitions, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
     const relationOptions = <?= json_encode((array) ($options ?? []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const valueTo = escapeHtml(filter.value_to ?? '');
 
         if (operator === 'is_null' || operator === 'not_null') {
-            return '<div class="form-control bg-body-secondary text-muted">Nessun valore richiesto</div>';
+            return '<div class="form-control bg-body-secondary text-muted">No value required</div>';
         }
 
         if (input === 'relation_ajax') {
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
         row.className = 'row g-2 align-items-end mb-2 js-filter-row';
         row.innerHTML = `
             <div class="col-12 col-md-3">
-                <label class="form-label">Campo</label>
+                <label class="form-label">Field</label>
                 <select class="form-select" data-filter-part="field">
                     ${fields.map(field => `<option value="${escapeHtml(field)}" ${field === selectedField ? 'selected' : ''}>${escapeHtml(definitions[field].label || field)}</option>`).join('')}
                 </select>
@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </select>
             </div>
             <div class="col-12 col-md-4 js-filter-value">
-                <label class="form-label">Valore</label>
+                <label class="form-label">Value</label>
                 ${valueMarkup(selectedField, {...filter, operator: selectedOperator})}
             </div>
             <div class="col-6 col-md-1">
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: {'X-Requested-With': 'XMLHttpRequest'},
                     signal: controller.signal
                 });
-                if (!response.ok) throw new Error('Errore ricerca relazione');
+                if (!response.ok) throw new Error('Relation search error');
                 const payload = await response.json();
                 const rows = Array.isArray(payload.results) ? payload.results : [];
                 rows.forEach(row => {

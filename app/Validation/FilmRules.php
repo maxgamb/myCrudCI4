@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Validation;
 
+/** Regole server-side generate secondo le capability effettive del CRUD. */
 final class FilmRules
 {
+    /** @return array<string,string> */
     public static function createRules(): array
     {
         return array (
@@ -22,7 +24,7 @@ final class FilmRules
   'special_features' => 'permit_empty|max_length[54]',
 );
     }
-
+    /** @return array<string,string> */
     public static function updateRules(int|string $id): array
     {
         $rules = array (
@@ -43,22 +45,37 @@ final class FilmRules
         }
         return $rules;
     }
-
-    /** Regole dei record padre creati nello stesso submit. */
+    /** @return array<string,array<string,string>> */
     public static function relatedCreateRules(): array
     {
         return array (
-  'language_id' => 
+  'language_id' =>
   array (
     'name' => 'required|max_length[20]',
   ),
-  'original_language_id' => 
+  'original_language_id' =>
   array (
     'name' => 'required|max_length[20]',
   ),
 );
     }
 
+    /** @return array<string,array<string,string>> */
+    public static function manyToManyRelatedCreateRules(): array
+    {
+        return array (
+  'many__film_actor__film_id' =>
+  array (
+    'first_name' => 'required|max_length[45]',
+    'last_name' => 'required|max_length[45]',
+  ),
+  'many__film_category__film_id' =>
+  array (
+    'name' => 'required|max_length[25]',
+  ),
+);
+    }
+    /** @return array<string,string> */
     public static function messages(): array
     {
         return [];

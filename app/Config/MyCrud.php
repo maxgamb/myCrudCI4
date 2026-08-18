@@ -16,6 +16,13 @@ class MyCrud extends BaseConfig
      */
     public string $generatedPath = APPPATH;
 
+    /**
+     * Directory persistente per i Service Extension custom.
+     * Non appartiene allo staging Generated/ e può essere cancellato/rigenerato
+     * indipendentemente senza perdere il codice dello sviluppatore.
+     */
+    public string $serviceExtensionPath = APPPATH . 'Services' . DIRECTORY_SEPARATOR . 'Extensions';
+
     /** Percorso effettivo dell'area di staging sicura. */
     public function generatedStagingPath(): string
     {
@@ -34,11 +41,23 @@ class MyCrud extends BaseConfig
      */
     public string $crudConfigPath = APPPATH . 'MyCrudConfig';
 
+    /** Persistent application Dashboard configurations. */
+    public string $dashboardConfigPath = APPPATH . 'MyCrudConfig' . DIRECTORY_SEPARATOR . 'Dashboards';
+
     /** Compatibilità in lettura con le configurazioni JSON della linea 2.7.x. */
     public string $legacyCrudConfigPath = WRITEPATH . 'mycrud';
 
     public string $defaultArchitecture = 'full';
     public bool $safeWrite = true;
+
+    /**
+     * Genera test contract/smoke insieme al CRUD.
+     *
+     * I file nascono in app/Generated/Tests/ e vengono pubblicati dal comando
+     * mycrud:publish sotto ROOTPATH/tests/, separati dal codice applicativo.
+     */
+    public bool $testScaffolding = true;
+
     public int $defaultPerPage = 25;
     public int $maximumPerPage = 100;
     public int $listCountCacheSeconds = 60;
@@ -66,6 +85,83 @@ class MyCrud extends BaseConfig
     public int $benchmarkPerPage = 50;
     public string $defaultLocale = 'it';
     public string $softDeleteField = 'deleted_at';
+
+    /**
+     * Upload file/immagini generati da myCrudCI4.
+     *
+     * Tutte le impostazioni globali degli upload sono raccolte qui, così non
+     * devono essere duplicate nel Builder o nei generatori.
+     *
+     * directory
+     *     Directory fisica in cui vengono salvati i file. Di default tutti gli
+     *     upload finiscono direttamente in writable/uploads/, senza sottocartelle.
+     *
+     * maxSize
+     *     Dimensione massima di ogni singolo file espressa in KB.
+     *     5120 KB = 5 MB.
+     *
+     * imageExtensions
+     *     Estensioni ammesse quando il campo del Builder usa inputType=image.
+     *
+     * fileExtensions
+     *     Estensioni ammesse quando il campo del Builder usa inputType=file.
+     *
+     * Il nome fisico resta: <table>_<id>_<field>_<random>.<ext>
+     */
+    public array $upload = [
+        'directory' => WRITEPATH . 'uploads',
+        'maxSize' => 5120,
+        'imageExtensions' => [
+            'jpg', 'jpeg', 'png', 'webp',
+        ],
+        'fileExtensions' => [
+            'pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'csv',
+        ],
+    ];
+
+    /**
+     * Bootstrap widths offered by Builder > Fields.
+     *
+     * The key is persisted in the CRUD configuration; the value is only the
+     * human-readable Bootstrap class shown by the Builder. Projects may expose
+     * a smaller set (for example 12/8/6/4/3) without changing the generator.
+     *
+     * @var array<int,string>
+     */
+    public array $bootstrapFieldWidths = [
+        12 => 'col-md-12',
+        11 => 'col-md-11',
+        10 => 'col-md-10',
+        9 => 'col-md-9',
+        8 => 'col-md-8',
+        7 => 'col-md-7',
+        6 => 'col-md-6',
+        5 => 'col-md-5',
+        4 => 'col-md-4',
+        3 => 'col-md-3',
+        2 => 'col-md-2',
+        1 => 'col-md-1',
+    ];
+
+    /** Default field width used when a CRUD has no persisted field width yet. */
+    public int $defaultBootstrapFieldWidth = 6;
+
+    /**
+     * Generated relation UI widths (Bootstrap grid units, 1..12).
+     *
+     * These are project-wide defaults evaluated at generation time. They do
+     * not become runtime metadata or dynamic relation resolvers.
+     *
+     * @var array<string,int>
+     */
+    public array $relationPanelWidths = [
+        'manyToMany' => 12,
+        'relatedCreateField' => 6,
+        'manyToManyRelatedCreateField' => 6,
+    ];
+
+    /** Global Related Create offcanvas width in pixels. */
+    public int $relationOffcanvasWidth = 640;
 
     public array $ignoredTables = [
         'migrations', 'sessions', 'cache', 'cache_locks',

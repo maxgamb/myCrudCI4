@@ -11,9 +11,9 @@ use CodeIgniter\CLI\CLI;
 /** Rigenera in staging tutti i CRUD configurati nel progetto. */
 final class MyCrudGenerateAll extends BaseCommand
 {
-    protected $group       = 'myCrudGpt';
+    protected $group       = 'myCrudCI4';
     protected $name        = 'mycrud:generate-all';
-    protected $description = 'Genera tutti i CRUD presenti in app/MyCrudConfig/ usando la loro architettura salvata.';
+    protected $description = 'Generates all CRUDs in app/MyCrudConfig/ using their saved architecture.';
     protected $usage       = 'mycrud:generate-all [--force]';
 
     protected $options = [
@@ -26,11 +26,11 @@ final class MyCrudGenerateAll extends BaseCommand
         $report = $service->generateAll(null, (bool) CLI::getOption('force'));
 
         if ((int) $report['summary']['selected'] === 0) {
-            CLI::write('Nessuna configurazione persistente trovata in app/MyCrudConfig/.', 'yellow');
+            CLI::write('None persistent configuration trovata in app/MyCrudConfig/.', 'yellow');
             return;
         }
 
-        CLI::write('myCrudGpt generate-all ' . $report['version']);
+        CLI::write('myCrudCI4 generate-all ' . $report['version']);
         CLI::newLine();
 
         foreach ($report['tables'] as $table => $row) {
@@ -43,7 +43,7 @@ final class MyCrudGenerateAll extends BaseCommand
                 continue;
             }
 
-            CLI::write('✗ ' . $table . ': ' . ($row['message'] ?? 'errore'), 'red');
+            CLI::write('✗ ' . $table . ': ' . ($row['message'] ?? 'error'), 'red');
         }
 
         CLI::newLine();

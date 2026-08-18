@@ -4,148 +4,356 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Entities\FilmEntity;
+use App\Services\Extensions\FilmServiceExtension;
 use App\Models\FilmModel;
+use App\Validation\FilmRules;
 use RuntimeException;
 
-/** Coordina la logica applicativa senza comporre query SQL. */
+/**
+ * Service applicativo per la risorsa `film`.
+ *
+ * Responsabilità:
+ * - owns write use-cases only: create, update, delete and related creation;
+ * - validates and normalizes application data before persistence;
+ * - orchestrates writes across related Services without composing SQL;
+ * - delegates transactions and persistence to the Model;
+ * - invoca gli hook custom definiti nel ServiceExtension persistente;
+ *
+ * Queries remain the responsibility of FilmModel.
+ */
 final class FilmService
 {
-    private const PASSWORD_FIELDS = array (
-);
-    private const AUTOMATIC_DATE_FIELDS = array (
-);
+    use FilmServiceExtension;
+
     private const DATABASE_MANAGED_FIELDS = array (
   0 => 'last_update',
+);
+    private const NULLABLE_FOREIGN_KEY_FIELDS = array (
+  0 => 'original_language_id',
+);
+    private const NULLABLE_FIELDS = array (
+  0 => 'description',
+  1 => 'release_year',
+  2 => 'original_language_id',
+  3 => 'length',
+  4 => 'rating',
+  5 => 'special_features',
+  6 => 'uploads',
 );
 
     public function __construct(private readonly FilmModel $model = new FilmModel())
     {
     }
 
-    public function find(int|string $id): object
+    /**
+     * Creates the parent resource for relation language_id.
+     *
+     * Delegates the write to LanguageService; this Service only orchestrates the FK assignment.
+     *
+     * @param array<string,mixed> $payload Parent resource payload.
+     * @return int|string Created parent identifier.
+     */
+    private function createLanguageForLanguageId(array $payload): int|string
     {
-        $record = $this->model->getDetail($id);
-        if (!is_object($record)) {
-            throw new RuntimeException('Record non trovato.');
+        return (new LanguageService())->createRelated($payload);
+    }
+
+    /**
+     * Creates the parent resource for relation original_language_id.
+     *
+     * Delegates the write to LanguageService; this Service only orchestrates the FK assignment.
+     *
+     * @param array<string,mixed> $payload Parent resource payload.
+     * @return int|string Created parent identifier.
+     */
+    private function createLanguageForOriginalLanguageId(array $payload): int|string
+    {
+        return (new LanguageService())->createRelated($payload);
+    }
+    /**
+     * Creates a target resource for many-to-many relation many__film_actor__film_id.
+     *
+     * Delegates target persistence to ActorService; pivot persistence remains in the current Model.
+     *
+     * @param array<string,mixed> $payload Target resource payload.
+     * @return int|string Created target identifier.
+     */
+    private function createActorForManyFilmActorFilmId(array $payload): int|string
+    {
+        return (new ActorService())->createRelated($payload);
+    }
+
+    /**
+     * Creates a target resource for many-to-many relation many__film_category__film_id.
+     *
+     * Delegates target persistence to CategoryService; pivot persistence remains in the current Model.
+     *
+     * @param array<string,mixed> $payload Target resource payload.
+     * @return int|string Created target identifier.
+     */
+    private function createCategoryForManyFilmCategoryFilmId(array $payload): int|string
+    {
+        return (new CategoryService())->createRelated($payload);
+    }
+    /** @param array<string,mixed> $data */
+    private function validateCreatePayload(array $data): void
+    {
+        $this->validatePayload($data, FilmRules::createRules(), FilmRules::messages(), 'Create validation failed.');
+    }
+    /** @param array<string,mixed> $data */
+    private function validateUpdatePayload(int|string $id, array $data): void
+    {
+        $this->validatePayload($data, FilmRules::updateRules($id), FilmRules::messages(), 'Update validation failed.');
+    }
+    /**
+     * Runs the generated Rules for this resource.
+     *
+     * @param array<string,mixed> $data
+     * @param array<string,mixed> $rules Generated validation rules.
+     * @param array<string,string|array<string,string>> $messages Generated custom validation messages.
+     * @param string $fallback Error used when the validator exposes no field messages.
+     * @throws RuntimeException When validation fails.
+     */
+    private function validatePayload(array $data, array $rules, array $messages, string $fallback): void
+    {
+        $validation = service('validation');
+        $validation->reset();
+        $validation->setRules($rules, $messages);
+
+        if ($validation->run($data)) {
+            return;
         }
-        return $record;
-    }
 
-    public function listPage(
-        array $filters,
-        int $page,
-        int $perPage,
-        string $sort,
-        string $direction
-    ): array {
-        return $this->model->getListPage($filters, $page, $perPage, $sort, $direction);
-    }
+        $errors = $validation->getErrors();
+        $message = $errors === []
+            ? $fallback
+            : implode(' ', array_values(array_map('strval', $errors)));
 
-    public function exportRows(array $filters, int $limit, int|string|null $after = null): array
-    {
-        return $this->model->getExportRows($filters, $limit, $after);
+        throw new RuntimeException($message);
     }
+    /**
+     * Creates this resource when another generated Service needs it as a parent.
+     *
+     * Validation, normalization and extension hooks remain owned by this Service;
+     * persistence remains owned by the current Model.
+     *
+     * @param array<string,mixed> $data
+     * @return int|string
+     */
+    public function createRelated(array $data): int|string
+    {
+        $data = $this->prepareData($data);
+        $this->validateCreatePayload($data);
+        $data = $this->beforeCreate($data);
+        $id = $this->model->insertRelatedPayload($data);
+        $this->afterCreate($id, $data);
 
-    public function countExportRows(array $filters): int
-    {
-        return $this->model->countExportRows($filters);
+        return $id;
     }
-
-    /** @return list<string> */
-    public function exportFields(): array
-    {
-        return $this->model->exportFields();
-    }
-
-    /** Elenco REST paginato con filtri e ordinamento autorizzati. */
-    public function apiList(array $query, array $filterable, array $sortable): array
-    {
-        return $this->model->apiList($query, $filterable, $sortable);
-    }
-    public function relationOptions(): array
-    {
-        return $this->model->relationOptions();
-    }
-
-    /** Opzioni delle FK interne ai parent creati inline. */
-    public function relatedCreateRelationOptions(): array
-    {
-        return $this->model->relatedCreateRelationOptions();
-    }
-
-    /** @return list<array{id:string,text:string}> */
-    public function searchRelationOptions(string $field, string $query, int $limit = 20): array
-    {
-        return $this->model->searchRelationOptions($field, $query, $limit);
-    }
-
-    /** Restituisce una FK valida con la relativa descrizione. */
-    public function relationOptionById(string $field, int|string $id): ?array
-    {
-        return $this->model->relationOptionById($field, $id);
-    }
-
-    public function loadHasMany(int|string $parentId): array
-    {
-        return $this->model->loadHasMany($parentId);
-    }
-
-    public function create(array $data, array $related = []): int|string
-    {
-        $data = $this->prepareData($data, false);
-        return $this->model->createRecord($data, $related);
-    }
-
-    public function update(int|string $id, array $data): void
-    {
-        $data = $this->prepareData($data, true);
-        // update() applica allowedFields e funziona sia con returnType object
-        // sia con Entity, senza usare il record arricchito dai JOIN.
-        if (!$this->model->update($id, $data)) {
-            throw new RuntimeException(implode(' ', $this->model->errors()) ?: 'Aggiornamento non riuscito.');
+    /**
+     * Creates this resource.
+     *
+     * @param array<string, mixed> $data Main record data.
+     * @param array<string, array<string, mixed>> $related Inline parent records.
+     * @param array<string, list<int|string>> $manyToMany Many-to-many associations.
+     * @param array<string, array<string,mixed>> $manyToManyNew New target records.
+     * @return int|string Created record identifier.
+     */
+    public function create(
+        array $data,
+        array $related = [],
+        array $manyToMany = [],
+        array $manyToManyNew = []
+    ): int|string {
+        $data = $this->prepareData($data);
+        $this->validateCreatePayload($data);
+        $data = $this->beforeCreate($data);
+        $transactional = $related !== [] || $manyToMany !== [] || $manyToManyNew !== [];
+        if ($transactional) {
+            $this->model->beginWriteTransaction();
         }
-    }
 
-    private function prepareData(array $data, bool $isUpdate): array
+        try {
+            if (isset($related['language_id']) && is_array($related['language_id'])) {
+                $data['language_id'] = $this->createLanguageForLanguageId($related['language_id']);
+            }
+            if (isset($related['original_language_id']) && is_array($related['original_language_id'])) {
+                $data['original_language_id'] = $this->createLanguageForOriginalLanguageId($related['original_language_id']);
+            }
+            if (isset($manyToManyNew['many__film_actor__film_id']) && is_array($manyToManyNew['many__film_actor__film_id'])) {
+                $newId = $this->createActorForManyFilmActorFilmId($manyToManyNew['many__film_actor__film_id']);
+                $manyToMany['many__film_actor__film_id'] ??= [];
+                $manyToMany['many__film_actor__film_id'][] = $newId;
+                $manyToMany['many__film_actor__film_id'] = array_values(array_unique(array_map('strval', $manyToMany['many__film_actor__film_id'])));
+            }
+            if (isset($manyToManyNew['many__film_category__film_id']) && is_array($manyToManyNew['many__film_category__film_id'])) {
+                $newId = $this->createCategoryForManyFilmCategoryFilmId($manyToManyNew['many__film_category__film_id']);
+                $manyToMany['many__film_category__film_id'] ??= [];
+                $manyToMany['many__film_category__film_id'][] = $newId;
+                $manyToMany['many__film_category__film_id'] = array_values(array_unique(array_map('strval', $manyToMany['many__film_category__film_id'])));
+            }
+            $id = $this->model->createRecord($data);
+            if (isset($manyToMany['many__film_actor__film_id']) && is_array($manyToMany['many__film_actor__film_id'])) {
+                // Persist this explicit pivot only after the main record has an identifier.
+                $this->model->syncActorIdsForManyFilmActorFilmId($id, $manyToMany['many__film_actor__film_id']);
+            }
+            if (isset($manyToMany['many__film_category__film_id']) && is_array($manyToMany['many__film_category__film_id'])) {
+                // Persist this explicit pivot only after the main record has an identifier.
+                $this->model->syncCategoryIdsForManyFilmCategoryFilmId($id, $manyToMany['many__film_category__film_id']);
+            }
+
+            if ($transactional) {
+                if (!$this->model->writeTransactionStatus()) {
+                    throw new RuntimeException('Related create transaction failed.');
+                }
+                $this->model->commitWriteTransaction();
+            }
+        } catch (\Throwable $e) {
+            if ($transactional) {
+                $this->model->rollbackWriteTransaction();
+            }
+            throw $e;
+        }
+        $this->afterCreate($id, $data);
+
+        return $id;
+    }
+    /**
+     * Updates this resource.
+     *
+     * Many-to-many parameters are generated only when this table actually uses them.
+     *
+     * @param int|string $id Record identifier.
+     * @param array<string, mixed> $data Main record data.
+     * @throws RuntimeException If validation or persistence cannot be completed.
+     */
+    public function update(
+        int|string $id,
+        array $data,
+        array $manyToMany = [],
+        array $manyToManyNew = []
+    ): void {
+        $data = $this->prepareData($data);
+        $this->validateUpdatePayload($id, $data);
+        $data = $this->beforeUpdate($id, $data);
+        $transactional = $manyToMany !== [] || $manyToManyNew !== [];
+        if ($transactional) {
+            $this->model->beginWriteTransaction();
+        }
+
+        try {
+            if (isset($manyToManyNew['many__film_actor__film_id']) && is_array($manyToManyNew['many__film_actor__film_id'])) {
+                $newId = $this->createActorForManyFilmActorFilmId($manyToManyNew['many__film_actor__film_id']);
+                $manyToMany['many__film_actor__film_id'] ??= [];
+                $manyToMany['many__film_actor__film_id'][] = $newId;
+                $manyToMany['many__film_actor__film_id'] = array_values(array_unique(array_map('strval', $manyToMany['many__film_actor__film_id'])));
+            }
+            if (isset($manyToManyNew['many__film_category__film_id']) && is_array($manyToManyNew['many__film_category__film_id'])) {
+                $newId = $this->createCategoryForManyFilmCategoryFilmId($manyToManyNew['many__film_category__film_id']);
+                $manyToMany['many__film_category__film_id'] ??= [];
+                $manyToMany['many__film_category__film_id'][] = $newId;
+                $manyToMany['many__film_category__film_id'] = array_values(array_unique(array_map('strval', $manyToMany['many__film_category__film_id'])));
+            }
+            if (!$this->model->updateRecord($id, $data)) {
+                throw new RuntimeException(implode(' ', $this->model->errors()) ?: 'Update failed.');
+            }
+            if (isset($manyToMany['many__film_actor__film_id']) && is_array($manyToMany['many__film_actor__film_id'])) {
+                // Synchronize this explicit pivot through the current Model.
+                $this->model->syncActorIdsForManyFilmActorFilmId($id, $manyToMany['many__film_actor__film_id']);
+            }
+            if (isset($manyToMany['many__film_category__film_id']) && is_array($manyToMany['many__film_category__film_id'])) {
+                // Synchronize this explicit pivot through the current Model.
+                $this->model->syncCategoryIdsForManyFilmCategoryFilmId($id, $manyToMany['many__film_category__film_id']);
+            }
+            if ($transactional) {
+                if (!$this->model->writeTransactionStatus()) {
+                    throw new RuntimeException('Many-to-many update transaction failed.');
+                }
+                $this->model->commitWriteTransaction();
+            }
+        } catch (\Throwable $e) {
+            if ($transactional) {
+                $this->model->rollbackWriteTransaction();
+            }
+            throw $e;
+        }
+        $this->afterUpdate($id, $data);
+    }
+    /**
+     * Applies a partial REST update using only rules for fields actually received.
+     *
+     * The API boundary already filters writable fields; this Service remains
+     * authoritative for normalization, validation, hooks, and persistence.
+     *
+     * @param int|string $id Record identifier.
+     * @param array<string,mixed> $data Partial application payload.
+     * @throws RuntimeException If validation or persistence fails.
+     */
+    public function patch(int|string $id, array $data): void
     {
+        $data = $this->prepareData($data);
+        $rules = array_intersect_key(FilmRules::updateRules($id), $data);
+        if ($rules !== []) {
+            $this->validatePayload($data, $rules, FilmRules::messages(), 'Patch validation failed.');
+        }
+        $data = $this->beforeUpdate($id, $data);
+        if (!$this->model->updateRecord($id, $data)) {
+            throw new RuntimeException(implode(' ', $this->model->errors()) ?: 'Patch failed.');
+        }
+        $this->afterUpdate($id, $data);
+    }
+    /**
+     * Normalizes only the features that are present in this table's schema.
+     * No query is executed here.
+     *
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    private function prepareData(array $data): array
+    {
+        // Database-managed columns are never accepted from application input.
         foreach (self::DATABASE_MANAGED_FIELDS as $field) {
             unset($data[$field]);
         }
-
-        if (!$isUpdate) {
-            foreach (self::AUTOMATIC_DATE_FIELDS as $field => $format) {
-                if (!isset($data[$field]) || trim((string) $data[$field]) === '') {
-                    $data[$field] = date($format);
-                }
+        // Empty defaulted values are omitted; empty nullable columns become NULL.
+        $nullable = array_fill_keys(self::NULLABLE_FIELDS, true);
+        $defaulted = array_fill_keys([], true);
+        foreach ($data as $field => $value) {
+            if (!is_string($value) || trim($value) !== '') {
+                continue;
+            }
+            if (isset($defaulted[$field])) {
+                unset($data[$field]);
+                continue;
+            }
+            if (isset($nullable[$field])) {
+                $data[$field] = null;
             }
         }
-
-        foreach (self::PASSWORD_FIELDS as $field) {
+        // HTML empty strings for nullable foreign keys are persisted as SQL NULL.
+        foreach (self::NULLABLE_FOREIGN_KEY_FIELDS as $field) {
             if (!array_key_exists($field, $data)) {
                 continue;
             }
-
-            $value = trim((string) $data[$field]);
-            if ($value === '') {
-                if ($isUpdate) {
-                    unset($data[$field]);
-                }
-                continue;
+            $value = $data[$field];
+            if ($value !== null && is_scalar($value) && trim((string) $value) === '') {
+                $data[$field] = null;
             }
-
-            $data[$field] = password_hash($value, PASSWORD_DEFAULT);
         }
-
         return $data;
     }
-
+    /**
+     * Deletes the record according to the Model soft-delete policy.
+     *
+     * @throws RuntimeException If deletion fails.
+     */
     public function delete(int|string $id): void
     {
+        $this->beforeDelete($id);
         if (!$this->model->delete($id)) {
-            throw new RuntimeException('Eliminazione non riuscita.');
+            throw new RuntimeException('Delete failed.');
         }
         $this->model->clearListCountCache();
+        $this->afterDelete($id);
     }
-
 }

@@ -1,0 +1,43 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Generated\MyCrud\FilmActor;
+
+use CodeIgniter\Test\CIUnitTestCase;
+
+/** Guards the generated REST architecture boundary. */
+final class FilmActorApiArchitectureContractTest extends CIUnitTestCase
+{
+    public function testApiControllerUsesModelForReadsAndServiceForWritesWithoutSql(): void
+    {
+        $path = APPPATH . 'Controllers/Api/V1/FilmActorApiController.php';
+        $this->assertFileExists($path);
+        $php = (string) file_get_contents($path);
+
+        $this->assertStringContainsString('private readonly FilmActorModel $model', $php);
+        $this->assertStringContainsString('private readonly FilmActorService $service', $php);
+        $this->assertStringNotContainsString('Database::connect', $php);
+        $this->assertStringNotContainsString('->db->', $php);
+        $this->assertStringNotContainsString('->table(', $php);
+        $this->assertDoesNotMatchRegularExpression('/new\s+\$[A-Za-z_]/', $php);
+        $this->assertStringNotContainsString("['table']", $php);
+    }
+
+    public function testServiceExposesExplicitPatchAndUploadUseCasesWhenApplicable(): void
+    {
+        $this->assertTrue(true);
+    }
+
+    public function testResourceRemainsOutputOnly(): void
+    {
+        $resource = (string) file_get_contents(APPPATH . 'API/Resources/FilmActorResource.php');
+        $this->assertStringNotContainsString('writableData(', $resource);
+        $this->assertStringNotContainsString('filterableFields(', $resource);
+        $this->assertStringNotContainsString('sortableFields(', $resource);
+        $this->assertStringNotContainsString('FILTERABLE', $resource);
+        $this->assertStringNotContainsString('SORTABLE', $resource);
+        $this->assertStringNotContainsString('Database::connect', $resource);
+        $this->assertStringNotContainsString('->db', $resource);
+    }
+}

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Validation;
 
+/** Regole server-side generate secondo le capability effettive del CRUD. */
 final class StoreRules
 {
+    /** @return array<string,string> */
     public static function createRules(): array
     {
         return array (
@@ -13,7 +15,7 @@ final class StoreRules
   'address_id' => 'required|integer|is_not_unique[address.address_id]',
 );
     }
-
+    /** @return array<string,string> */
     public static function updateRules(int|string $id): array
     {
         $rules = array (
@@ -25,12 +27,21 @@ final class StoreRules
         }
         return $rules;
     }
-
-    /** Regole dei record padre creati nello stesso submit. */
+    /** @return array<string,array<string,string>> */
     public static function relatedCreateRules(): array
     {
         return array (
-  'manager_staff_id' => 
+  'address_id' =>
+  array (
+    'address' => 'required|max_length[50]',
+    'address2' => 'permit_empty|max_length[50]',
+    'district' => 'required|max_length[20]',
+    'city_id' => 'required|integer|is_not_unique[city.city_id]',
+    'postal_code' => 'permit_empty|max_length[10]',
+    'phone' => 'required|max_length[20]',
+    'location' => 'required',
+  ),
+  'manager_staff_id' =>
   array (
     'first_name' => 'required|max_length[45]',
     'last_name' => 'required|max_length[45]',
@@ -44,6 +55,13 @@ final class StoreRules
 );
     }
 
+    /** @return array<string,array<string,string>> */
+    public static function manyToManyRelatedCreateRules(): array
+    {
+        return array (
+);
+    }
+    /** @return array<string,string> */
     public static function messages(): array
     {
         return [];

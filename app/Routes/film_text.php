@@ -4,7 +4,7 @@ use CodeIgniter\Router\RouteCollection;
 
 /*
  * Route modulari del CRUD film_text.
- * myCrudGpt genera volutamente un file per tabella: app/Config/Routes.php
+ * myCrudCI4 intentionally generates one file per table: app/Config/Routes.php
  * può caricare app/Routes/*.php senza concentrare tutte le route in un unico file.
  */
 
@@ -13,7 +13,6 @@ $routes->group('film_text', static function (RouteCollection $routes): void {
     $routes->get('/', 'FilmTextController::index');
     $routes->get('export-csv', 'FilmTextController::exportCsv');
     $routes->get('export-word', 'FilmTextController::exportWord');
-    $routes->get('relation-options/(:segment)', 'FilmTextController::relationOptions/$1');
     $routes->get('view/(:segment)', 'FilmTextController::view/$1');
     $routes->get('create', 'FilmTextController::create');
     $routes->post('store', 'FilmTextController::store');
