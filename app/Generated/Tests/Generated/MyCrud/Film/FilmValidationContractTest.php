@@ -18,6 +18,7 @@ final class FilmValidationContractTest extends CIUnitTestCase
     private const FORBIDDEN_RULE_FIELDS = array (
   0 => 'film_id',
   1 => 'last_update',
+  2 => 'uploads',
 );
     private const MANY_TO_MANY_RELATED_CREATE_KEYS = array (
   0 => 'many__film_actor__film_id',

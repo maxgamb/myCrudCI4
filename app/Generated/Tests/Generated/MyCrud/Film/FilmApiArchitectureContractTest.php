@@ -17,7 +17,11 @@ final class FilmApiArchitectureContractTest extends CIUnitTestCase
 
         $this->assertStringContainsString('private readonly FilmModel $model', $php);
         $this->assertStringContainsString('private readonly FilmService $service', $php);
+        $this->assertStringContainsString('CrudUploadManager', $php);
+        $this->assertStringContainsString('private const UPLOAD_FIELDS', $php);
+        $this->assertStringContainsString('public function upload(', $php);
         $this->assertStringContainsString('->patch($id, $data)', $php);
+        $this->assertStringContainsString('->updateUploads($id, $uploadData)', $php);
         $this->assertStringNotContainsString('Database::connect', $php);
         $this->assertStringNotContainsString('->db->', $php);
         $this->assertStringNotContainsString('->table(', $php);
@@ -29,6 +33,7 @@ final class FilmApiArchitectureContractTest extends CIUnitTestCase
     {
         $service = (string) file_get_contents(APPPATH . 'Services/FilmService.php');
         $this->assertStringContainsString('public function patch(', $service);
+        $this->assertStringContainsString('public function updateUploads(', $service);
         $this->assertTrue(true);
     }
 

@@ -16,13 +16,12 @@ final class FilmRules
   'release_year' => 'permit_empty',
   'language_id' => 'required|integer|is_not_unique[language.language_id]',
   'original_language_id' => 'permit_empty|integer|is_not_unique[language.language_id]',
-  'rental_duration' => 'permit_empty|integer',
-  'rental_rate' => 'permit_empty|decimal',
+  'rental_duration' => 'required|integer',
+  'rental_rate' => 'required|decimal',
   'length' => 'permit_empty|integer',
-  'replacement_cost' => 'permit_empty|decimal',
+  'replacement_cost' => 'required|decimal',
   'rating' => 'permit_empty|max_length[5]',
   'special_features' => 'permit_empty|max_length[54]',
-  'uploads' => 'permit_empty|max_length[200]',
 );
     }
     /** @return array<string,string> */
@@ -34,13 +33,12 @@ final class FilmRules
   'release_year' => 'permit_empty',
   'language_id' => 'required|integer|is_not_unique[language.language_id]',
   'original_language_id' => 'permit_empty|integer|is_not_unique[language.language_id]',
-  'rental_duration' => 'permit_empty|integer',
-  'rental_rate' => 'permit_empty|decimal',
+  'rental_duration' => 'required|integer',
+  'rental_rate' => 'required|decimal',
   'length' => 'permit_empty|integer',
-  'replacement_cost' => 'permit_empty|decimal',
+  'replacement_cost' => 'required|decimal',
   'rating' => 'permit_empty|max_length[5]',
   'special_features' => 'permit_empty|max_length[54]',
-  'uploads' => 'permit_empty|max_length[200]',
 );
         foreach ($rules as $field => $rule) {
             $rules[$field] = str_replace('{id}', (string) $id, $rule);

@@ -17,7 +17,7 @@ return array (
   'special_features' => 'Special Features',
   'last_update' => 'Last Update',
   'uploads' => 'Uploads',
-  'filtersSummary' => 'Search filters',
+  'filtersSummary' => 'Filtri di ricerca',
   'actions' => 'Azioni',
   'recordsFound' => 'Record trovati',
   'noRecords' => 'No record trovato.',

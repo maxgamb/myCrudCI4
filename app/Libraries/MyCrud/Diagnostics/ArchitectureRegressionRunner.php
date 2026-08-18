@@ -82,8 +82,12 @@ final class ArchitectureRegressionRunner
 
         if (in_array($architecture, ['standard', 'full'], true)) {
             $expected[] = 'Entities/' . ($class['entity'] ?? '') . '.php';
-            $expected[] = 'Services/' . ($class['service'] ?? '') . '.php';
+
+            if (!empty($config['features']['writable'])) {
+                $expected[] = 'Services/' . ($class['service'] ?? '') . '.php';
+            }
         }
+
         if ($architecture === 'full') {
             $expected[] = 'Controllers/Api/BaseApiController.php';
             $expected[] = 'Controllers/Api/V1/' . ($class['api'] ?? '') . '.php';
@@ -476,14 +480,14 @@ final class ArchitectureRegressionRunner
                 && $beforeUpdatePos !== false
                 && $prepareUpdatePos < $beforeUpdatePos;
             $results[] = new DiagnosticResult(
-                strtoupper($architecture) . ' Service Extension dev36',
+                strtoupper($architecture) . ' Service Extension',
                 $extensionOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
                 $extensionOk
                     ? 'Trait custom Service presente e collegato agli hook CRUD.'
-                    : 'Service Extension o hook dev36 mancanti.'
+                    : 'Service Extension o hook mancanti.'
             );
             $results[] = new DiagnosticResult(
-                strtoupper($architecture) . ' ordine hook Service dev38',
+                strtoupper($architecture) . ' Service hook order',
                 $hookOrderOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
                 $hookOrderOk
                     ? 'prepareData precede beforeCreate/beforeUpdate come contratto degli Extension Point.'
@@ -678,22 +682,33 @@ final class ArchitectureRegressionRunner
                     . ($failedRelatedChecks === [] ? '' : ' Failed: ' . implode(', ', $failedRelatedChecks) . '.'))
         );
 
-        $contextOk = str_contains($controllerContent, 'NAVIGATION_CONTEXT_FIELDS')
-            && str_contains($controllerContent, 'navigationContextFromQuery')
-            && str_contains($controllerContent, 'contextUrl');
-        $results[] = new DiagnosticResult(
-            strtoupper($architecture) . ' foreign-key navigation context',
-            $contextOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
-            $contextOk ? 'Foreign-key context propagated by Controller and redirect.' : 'Foreign-key context support is incomplete.'
-        );
-
-        // Regressione dev28: una FK reale è accettata di default come
-        // Create context. The value is validated by the Controller through
-        // relationOptionById() prima di essere passato al form.
         $foreignKeyFields = array_filter(
             (array) ($config['fields'] ?? []),
             static fn (array $field): bool => !empty($field['foreignKey'])
         );
+
+        if ($foreignKeyFields === []) {
+            $results[] = new DiagnosticResult(
+                strtoupper($architecture) . ' foreign-key navigation context',
+                DiagnosticResult::SKIP,
+                'Not applicable: this resource has no foreign keys.'
+            );
+        } else {
+            $contextOk = str_contains($controllerContent, 'NAVIGATION_CONTEXT_FIELDS')
+                && str_contains($controllerContent, 'navigationContextFromQuery')
+                && str_contains($controllerContent, 'contextUrl');
+            $results[] = new DiagnosticResult(
+                strtoupper($architecture) . ' foreign-key navigation context',
+                $contextOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+                $contextOk
+                    ? 'Foreign-key context propagated by Controller and redirect.'
+                    : 'Foreign-key context support is incomplete.'
+            );
+        }
+
+        // Regressione dev28: una FK reale è accettata di default come
+        // Create context. The value is validated by the Controller through
+        // relationOptionById() prima di essere passato al form.
         $fkCreateContextOk = true;
         foreach ($foreignKeyFields as $field) {
             if (empty($field['relationNavigation']['acceptContext'])) {
@@ -827,13 +842,21 @@ final class ArchitectureRegressionRunner
                 || str_contains($formContent, 'data-trail=')
                 || str_contains($formContent, 'name="_trail"'))
             && (!isset($detailContent) || $detailContent === '' || str_contains($detailContent, 'CrudNavigationTrail'));
-        $results[] = new DiagnosticResult(
-            strtoupper($architecture) . ' navigazione a cascata dev35',
-            $cascadeNavigationOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
-            $cascadeNavigationOk
-                ? 'The multi-level trail is propagated as UI context and parent-return helpers are checked only when applicable.'
-                : 'Cascaded navigation is not fully generated or separated from foreign-key context.'
-        );
+        if ($foreignKeyFields === []) {
+            $results[] = new DiagnosticResult(
+                strtoupper($architecture) . ' cascaded navigation',
+                DiagnosticResult::SKIP,
+                'Not applicable: this resource has no foreign-key parent context.'
+            );
+        } else {
+            $results[] = new DiagnosticResult(
+                strtoupper($architecture) . ' cascaded navigation',
+                $cascadeNavigationOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+                $cascadeNavigationOk
+                    ? 'The multi-level trail is propagated as UI context and parent-return helpers are checked only when applicable.'
+                    : 'Cascaded navigation is not fully generated or separated from foreign-key context.'
+            );
+        }
 
         $exportSafetyOk = str_contains($exporterContent, 'EXPORT_UNFILTERED_LIMIT:CSV')
             && str_contains($exporterContent, 'EXPORT_UNFILTERED_LIMIT:WORD')

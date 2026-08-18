@@ -63,6 +63,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/FilmCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FilmCreateMultipart'
       responses:
         '201':
           description: Created
@@ -159,6 +162,39 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/v1/film/{id}/upload:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+    post:
+      tags: ['Film']
+      operationId: uploadFilm
+      summary: 'Upload/replace files for film record'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FilmUploadMultipart'
+      responses:
+        '200':
+          description: Upload stored and record updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilmResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
         '500':
           $ref: '#/components/responses/InternalError'
 components:
@@ -264,11 +300,7 @@ components:
           type: string
           nullable: true
           maxLength: 54
-        'uploads':
-          type: string
-          nullable: true
-          maxLength: 200
-    FilmUpdate:
+    FilmCreateMultipart:
       type: object
       required:
         - 'title'
@@ -316,6 +348,52 @@ components:
           type: string
           nullable: true
           maxLength: 200
+          format: binary
+          description: 'Binary upload stored by CrudUploadManager; the database persists the generated filename.'
+    FilmUpdate:
+      type: object
+      required:
+        - 'title'
+        - 'language_id'
+      properties:
+        'title':
+          type: string
+          maxLength: 128
+        'description':
+          type: string
+          nullable: true
+          maxLength: 65535
+        'release_year':
+          type: string
+          nullable: true
+        'language_id':
+          type: integer
+          format: int32
+        'original_language_id':
+          type: integer
+          format: int32
+          nullable: true
+        'rental_duration':
+          type: integer
+          format: int32
+        'rental_rate':
+          type: number
+          format: double
+        'length':
+          type: integer
+          format: int32
+          nullable: true
+        'replacement_cost':
+          type: number
+          format: double
+        'rating':
+          type: string
+          nullable: true
+          maxLength: 5
+        'special_features':
+          type: string
+          nullable: true
+          maxLength: 54
     FilmPatch:
       type: object
       properties:
@@ -357,10 +435,15 @@ components:
           type: string
           nullable: true
           maxLength: 54
+    FilmUploadMultipart:
+      type: object
+      properties:
         'uploads':
           type: string
           nullable: true
           maxLength: 200
+          format: binary
+          description: 'Binary upload stored by CrudUploadManager; the database persists the generated filename.'
     FilmResponse:
       type: object
       properties:

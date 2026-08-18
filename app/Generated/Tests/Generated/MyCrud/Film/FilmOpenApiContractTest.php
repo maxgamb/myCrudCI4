@@ -18,6 +18,7 @@ final class FilmOpenApiContractTest extends CIUnitTestCase
   3 => 'updateFilm',
   4 => 'deleteFilm',
   5 => 'patchFilm',
+  6 => 'uploadFilm',
 );
 
     public function testOpenApiFileContainsExpectedOperations(): void
@@ -38,6 +39,8 @@ final class FilmOpenApiContractTest extends CIUnitTestCase
             );
         }
 
+        $this->assertStringContainsString('multipart/form-data:', $yaml);
+        $this->assertStringContainsString('format: binary', $yaml);
         // Web Related Create/Offcanvas transport is intentionally not part of REST.
         $this->assertStringNotContainsString('_related_new', $yaml);
         $this->assertStringNotContainsString('_related:', $yaml);

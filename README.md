@@ -1,10 +1,10 @@
 
 > **Current release candidate:** `2.9.1-RC1`. Feature set is frozen; see `RELEASE_2.9.1_RC1.md`.
-> Current development baseline: **myCrudCI4 2.9.1-dev24-fix11-fix35 — Documentation consolidation + Parent tables sticky-only UX**
+> Current release candidate: **myCrudCI4 2.9.1-RC1**
 
 # myCrudCI4
 
-**Current version: 2.9.1-dev24-fix11-fix35 (Documentation consolidation + Parent tables sticky-only UX)**
+**Current version: 2.9.1-RC1**
 
 myCrudCI4 is a database-driven CRUD generator for CodeIgniter 4.
 
@@ -81,7 +81,7 @@ The database schema remains authoritative for technical facts such as column
 types, primary keys, foreign keys, indexes, nullability, and database-managed timestamps.
 
 
-### Builder navigation UX (fix34)
+### Builder navigation UX
 
 The main Builder keeps **Parent database tables** as a sticky navigation card on desktop.
 The card follows page scrolling but does **not** create its own internal scroll area; the page remains the single scroll container.
@@ -149,7 +149,7 @@ Shield Security, MCP Foundation, and MCP Resource Security contract tests.
 
 ## Technical documentation language
 
-Starting with **2.9.1-dev2**, framework technical documentation is English-first:
+Framework technical documentation is English-first:
 
 - README and `docs/`;
 - generated PHPDoc;
@@ -457,25 +457,25 @@ Then customize individual tables in Builder and regenerate/publish only the affe
 
 ### Generated read/write ownership
 
-From 2.9.1-dev24, Standard/Full generated code follows a strict simple split: reads go directly to Models; writes go through Services. Services no longer contain one-line read pass-through wrappers. Cross-resource writes use explicit generated Service calls, while parent/child/FK reads use explicit generated Model calls. Basic remains Model-only.
+Standard/Full generated code follows a strict simple split: reads go directly to Models; writes go through Services. Services no longer contain one-line read pass-through wrappers. Cross-resource writes use explicit generated Service calls, while parent/child/FK reads use explicit generated Model calls. Basic remains Model-only.
 
-From 2.9.1-dev24-fix1, Service code is also feature-aware: unused relation/M2M parameters, transaction branches, normalization constants, and schema-specific preparation blocks are not generated. Normal Create, Update, and Related Create are all validated by the resource Service using its own generated Rules.
+Service code is feature-aware: unused relation/M2M parameters, transaction branches, normalization constants, and schema-specific preparation blocks are not generated. Normal Create, Update, and Related Create are all validated by the resource Service using its own generated Rules.
 
-## dev24 frozen architecture baseline
+## Frozen architecture baseline
 
-From `2.9.1-dev24-fix11-fix15`, the dev24 architecture is frozen around explicit generated dependencies: related Models and Services are named directly in generated PHP, while `BaseCrudModel` contains only reusable owned-table infrastructure. `mycrud:test-all` includes an architecture boundary guard that rejects dynamic relation resolvers, SQL in Services/API controllers, and input/query policy leaking into API/MCP Resources. See `BASELINE_2.9.1_DEV24_FIX11_FIX15.md`.
+The architecture is frozen around explicit generated dependencies: related Models and Services are named directly in generated PHP, while `BaseCrudModel` contains only reusable owned-table infrastructure. `mycrud:test-all` includes an architecture boundary guard that rejects dynamic relation resolvers, SQL in Services/API controllers, and input/query policy leaking into API/MCP Resources. See `BASELINE_2.9.1_DEV24_FIX11_FIX15.md`.
 
 
-## Safe developer customizations (fix11-fix16)
+## Safe developer customizations
 
 For Standard/Full CRUDs, persistent business customizations belong in `app/Services/Extensions/<Entity>ServiceExtension.php`. The file is create-only and is never overwritten by regeneration. New ServiceExtension files include a disabled/commented `exampleApplyBusinessRule()` helper showing the intended pattern: adapt the helper to real fields and call it explicitly from a `before*`/`after*` hook only when needed.
 
 Do not use the example as a reason to put SQL in the ServiceExtension. Queries stay in the concrete Model. Cross-resource writes must call a concrete generated Service explicitly; do not introduce dynamic Model/Service/table resolvers. `app/Generated/` remains staging and must not be used for persistent manual customizations.
 
-`php spark mycrud:ai-context [table]` now documents this customization workflow together with the frozen dev24 boundaries: `BaseCrudModel` shared infrastructure, explicit/static relation wiring, REST READ/WRITE separation, output-only API/MCP Resources, PATCH/upload Service methods, and the persistent ServiceExtension path.
+`php spark mycrud:ai-context [table]` now documents this customization workflow together with the frozen architecture boundaries: `BaseCrudModel` shared infrastructure, explicit/static relation wiring, REST READ/WRITE separation, output-only API/MCP Resources, PATCH/upload Service methods, and the persistent ServiceExtension path.
 
 
-### Dashboard 2.0 architecture (fix18)
+### Dashboard 2.0 architecture
 
 Dashboard 2.0 is frozen around an object-first runtime boundary: Builder/configuration remains array-based, while generated runtime data uses `DashboardData`, `DashboardWidget`, `Kpi`, `SeriesPoint`, and `RecentRecord` objects through Controller and View. Recent widgets use generation-time concrete Models and relation-aware labels; aggregate widgets use `DashboardQuery`. `php spark mycrud:test-dashboard` protects these boundaries. See `BASELINE_DASHBOARD_2.0_DEV24_FIX11_FIX26.md`.
 php spark mycrud:release-check film customer staff store rental

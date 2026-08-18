@@ -14,6 +14,7 @@ $routes->group('film', static function (RouteCollection $routes): void {
     $routes->get('export-csv', 'FilmController::exportCsv');
     $routes->get('export-word', 'FilmController::exportWord');
     $routes->get('relation-options/(:segment)', 'FilmController::relationOptions/$1');
+    $routes->get('upload/(:segment)/(:segment)', 'FilmController::upload/$1/$2');
     $routes->get('view/(:segment)', 'FilmController::view/$1');
     $routes->get('create', 'FilmController::create');
     $routes->post('store', 'FilmController::store');
@@ -28,4 +29,5 @@ $routes->group('api/v1/film', ['namespace' => 'App\Controllers\Api\V1'], static 
     $routes->put('(:segment)', 'FilmApiController::update/$1');
     $routes->patch('(:segment)', 'FilmApiController::patch/$1');
     $routes->delete('(:segment)', 'FilmApiController::delete/$1');
+    $routes->post('(:segment)/upload', 'FilmApiController::upload/$1');
 });

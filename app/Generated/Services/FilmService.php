@@ -40,6 +40,9 @@ final class FilmService
   5 => 'special_features',
   6 => 'uploads',
 );
+    private const API_UPLOAD_FIELDS = array (
+  0 => 'uploads',
+);
 
     public function __construct(private readonly FilmModel $model = new FilmModel())
     {
@@ -299,6 +302,31 @@ final class FilmService
         $data = $this->beforeUpdate($id, $data);
         if (!$this->model->updateRecord($id, $data)) {
             throw new RuntimeException(implode(' ', $this->model->errors()) ?: 'Patch failed.');
+        }
+        $this->afterUpdate($id, $data);
+    }
+    /**
+     * Persists filenames produced by the validated API upload pipeline.
+     *
+     * Binary validation and storage are owned by CrudUploadManager at the HTTP
+     * boundary. This method accepts only generated upload fields and never runs
+     * the resource's full Update validation rules.
+     *
+     * @param int|string $id Record identifier.
+     * @param array<string,mixed> $data Stored upload filenames keyed by field.
+     * @throws RuntimeException If persistence fails.
+     */
+    public function updateUploads(int|string $id, array $data): void
+    {
+        $allowed = array_fill_keys(self::API_UPLOAD_FIELDS, true);
+        $data = array_intersect_key($data, $allowed);
+        if ($data === []) {
+            return;
+        }
+        $data = $this->prepareData($data);
+        $data = $this->beforeUpdate($id, $data);
+        if (!$this->model->updateRecord($id, $data)) {
+            throw new RuntimeException(implode(' ', $this->model->errors()) ?: 'Upload update failed.');
         }
         $this->afterUpdate($id, $data);
     }

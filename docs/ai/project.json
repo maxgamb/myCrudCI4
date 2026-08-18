@@ -1,7 +1,7 @@
 {
     "formatVersion": 1,
     "generatedBy": "myCrudCI4",
-    "generatorVersion": "2.9.1-dev24-fix11-fix41",
+    "generatorVersion": "2.9.1-RC1",
     "developerGuides": {
         "contributing": "CONTRIBUTING.md",
         "architecture": "docs/development/ARCHITECTURE.md",
@@ -9,7 +9,7 @@
         "addingFeature": "docs/development/ADDING_A_FEATURE.md",
         "featureMatrix": "docs/development/FEATURE_MATRIX.md"
     },
-    "generatedAt": "2026-08-18T13:37:53+00:00",
+    "generatedAt": "2026-08-18T17:44:34+00:00",
     "framework": {
         "name": "CodeIgniter 4",
         "version": "4.7.4",
@@ -123,7 +123,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/actor.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -314,7 +314,8 @@
                         ],
                         "selectorUi": "search-checkbox-badges",
                         "selectorBehavior": "single UI for all N:N relations; local options now, AJAX can reuse the same UI later",
-                        "formLayout": "col-md-6: two N:N relation panels side by side on medium/large screens; full width on mobile"
+                        "formLayout": "project-configurable via Config\\MyCrud::$relationPanelWidths['manyToMany']; full width on mobile",
+                        "relatedCreateOffcanvas": "single project-wide width via Config\\MyCrud::$relationOffcanvasWidth (default 640px) for belongsTo and many-to-many panels"
                     }
                 ]
             },
@@ -360,7 +361,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/actor_info.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -549,7 +550,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/address.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -1005,7 +1006,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/category.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -1164,7 +1165,8 @@
                         ],
                         "selectorUi": "search-checkbox-badges",
                         "selectorBehavior": "single UI for all N:N relations; local options now, AJAX can reuse the same UI later",
-                        "formLayout": "col-md-6: two N:N relation panels side by side on medium/large screens; full width on mobile"
+                        "formLayout": "project-configurable via Config\\MyCrud::$relationPanelWidths['manyToMany']; full width on mobile",
+                        "relatedCreateOffcanvas": "single project-wide width via Config\\MyCrud::$relationOffcanvasWidth (default 640px) for belongsTo and many-to-many panels"
                     }
                 ]
             },
@@ -1212,7 +1214,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/city.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -1491,7 +1493,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/country.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -1682,7 +1684,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/customer.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix38",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -2168,7 +2170,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/customer_list.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -2482,7 +2484,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/film.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix50",
                 "schemaDrift": false
             },
             "components": {
@@ -3075,7 +3077,8 @@
                         ],
                         "selectorUi": "search-checkbox-badges",
                         "selectorBehavior": "single UI for all N:N relations; local options now, AJAX can reuse the same UI later",
-                        "formLayout": "col-md-6: two N:N relation panels side by side on medium/large screens; full width on mobile"
+                        "formLayout": "project-configurable via Config\\MyCrud::$relationPanelWidths['manyToMany']; full width on mobile",
+                        "relatedCreateOffcanvas": "single project-wide width via Config\\MyCrud::$relationOffcanvasWidth (default 640px) for belongsTo and many-to-many panels"
                     },
                     {
                         "key": "many__film_category__film_id",
@@ -3091,7 +3094,8 @@
                         ],
                         "selectorUi": "search-checkbox-badges",
                         "selectorBehavior": "single UI for all N:N relations; local options now, AJAX can reuse the same UI later",
-                        "formLayout": "col-md-6: two N:N relation panels side by side on medium/large screens; full width on mobile"
+                        "formLayout": "project-configurable via Config\\MyCrud::$relationPanelWidths['manyToMany']; full width on mobile",
+                        "relatedCreateOffcanvas": "single project-wide width via Config\\MyCrud::$relationOffcanvasWidth (default 640px) for belongsTo and many-to-many panels"
                     }
                 ]
             },
@@ -3140,7 +3144,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/film_actor.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -3426,7 +3430,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/film_category.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -3709,7 +3713,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/film_list.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -3998,7 +4002,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/film_text.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -4183,7 +4187,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/inventory.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -4523,7 +4527,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/language.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -4751,7 +4755,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/nicer_but_slower_film_list.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -5040,7 +5044,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/payment.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -5483,7 +5487,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/rental.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -5966,7 +5970,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/sales_by_film_category.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -6103,7 +6107,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/sales_by_store.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -6267,7 +6271,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/staff.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -6815,7 +6819,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/staff_list.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -7104,7 +7108,7 @@
             "config": {
                 "saved": true,
                 "path": "app/MyCrudConfig/store.php",
-                "savedVersion": "2.9.1-dev24-fix11-fix26",
+                "savedVersion": "2.9.1-dev24-fix11-fix48",
                 "schemaDrift": false
             },
             "components": {
@@ -7487,15 +7491,15 @@
         "Preserve generated CRUD page structure: Bootstrap breadcrumb + one table-name h1 + small page context; inner card headings are h2.",
         "Relational Create uses a Bootstrap input-group for the standard FK select/actions plus a Bootstrap Offcanvas and a dedicated parent-field partial that overlays the current view without changing its layout, never the full parent create view; the generated parent PK is the only authority for the current record FK.",
         "HasMany scaffolding uses dedicated child partials and contextual parent → child → parent navigation: New child passes the real FK plus a schema-whitelisted _parent_field, and a successful child Create returns to the parent detail; it does not generate recursive inline editing.",
-        "Cascaded Navigation (dev35 STABLE, includes fix1) propagates a navigation-only _trail across parent/child levels, including belongsTo parent links and contextual toolbar flows. Breadcrumb segments prefer descriptive record labels (name/title or composite first_name+last_name when available). The trail is used only for breadcrumbs and return links; it never authorizes writes or determines FK values. Direct FK context remains schema-whitelisted and server-validated.",
-        "Service Extension Points (dev36): writable Standard/Full CRUDs have app/Services/<Entity>Service.php plus app/Services/Extensions/<Entity>ServiceExtension.php. The extension trait lives directly in app/Services/Extensions/ outside staging, is create-only and must never be overwritten; app/Generated/ may be deleted safely without losing it; use its before/after create/update/delete hooks for custom application logic, while SQL remains in the Model.",
-        "Date/Time defaults (dev37): writable temporal fields may define a Create-only initial value (none/today/now/time/custom). old(), context and Edit values take precedence; databaseManaged timestamps remain DB-authoritative and never receive form defaults.",
-        "Relation panels (dev37): hasMany and many-to-many sections in detail views may be Bootstrap-collapse panels with configurable initial open/closed state; keep header, count and actions visible while collapsing only the related table/content.",
-        "Code quality (dev38): generated Controller, Model and Service classes use uniform PHPDoc to document layer responsibilities, array shapes, exceptions, relational side effects and extension points. Comments should explain non-obvious behavior rather than repeat method names.",
-        "Capability-aware generation (dev38 fix1): generated classes expose only operations supported by the resource. SQL VIEWs are read-only with no form helpers, write validation, write Service methods or ServiceExtension; create-only composite-key resources do not expose update/delete; normal writable CRUDs keep all documented ServiceExtension hooks.",
-        "Capability/PHPDoc consistency (dev38 fix2): create-only Controllers import PageNotFoundException when FK context helpers can throw 404; Read + Create resources are documented as such; ServiceExtension contract is prepareData -> beforeCreate/beforeUpdate -> Model persistence -> after hook.",
-        "Service extensions (dev38): app/Services/Extensions/<Entity>ServiceExtension.php is persistent custom code outside app/Generated; its hooks are documented and should orchestrate application logic while SQL remains in the Model.",
-        "Frozen dev24 architecture: concrete generated Models extend BaseCrudModel, but relation targets remain explicit/static in concrete Models and Services. BaseCrudModel owns only reusable current-table infrastructure; never add runtime relation resolvers.",
+        "Cascaded Navigation propagates a navigation-only _trail across parent/child levels, including belongsTo parent links and contextual toolbar flows. Breadcrumb segments prefer descriptive record labels (name/title or composite first_name+last_name when available). The trail is used only for breadcrumbs and return links; it never authorizes writes or determines FK values. Direct FK context remains schema-whitelisted and server-validated.",
+        "Service Extension Points: writable Standard/Full CRUDs have app/Services/<Entity>Service.php plus app/Services/Extensions/<Entity>ServiceExtension.php. The extension trait lives directly in app/Services/Extensions/ outside staging, is create-only and must never be overwritten; app/Generated/ may be deleted safely without losing it; use its before/after create/update/delete hooks for custom application logic, while SQL remains in the Model.",
+        "Date/Time defaults: writable temporal fields may define a Create-only initial value (none/today/now/time/custom). old(), context and Edit values take precedence; databaseManaged timestamps remain DB-authoritative and never receive form defaults.",
+        "Relation panels: hasMany and many-to-many sections in detail views may be Bootstrap-collapse panels with configurable initial open/closed state; keep header, count and actions visible while collapsing only the related table/content.",
+        "Code quality: generated Controller, Model and Service classes use uniform PHPDoc to document layer responsibilities, array shapes, exceptions, relational side effects and extension points. Comments should explain non-obvious behavior rather than repeat method names.",
+        "Capability-aware generation: generated classes expose only operations supported by the resource. SQL VIEWs are read-only with no form helpers, write validation, write Service methods or ServiceExtension; create-only composite-key resources do not expose update/delete; normal writable CRUDs keep all documented ServiceExtension hooks.",
+        "Capability/PHPDoc consistency: create-only Controllers import PageNotFoundException when FK context helpers can throw 404; Read + Create resources are documented as such; ServiceExtension contract is prepareData -> beforeCreate/beforeUpdate -> Model persistence -> after hook.",
+        "Service extensions: app/Services/Extensions/<Entity>ServiceExtension.php is persistent custom code outside app/Generated; its hooks are documented and should orchestrate application logic while SQL remains in the Model.",
+        "Frozen architecture boundary: concrete generated Models extend BaseCrudModel, but relation targets remain explicit/static in concrete Models and Services. BaseCrudModel owns only reusable current-table infrastructure; never add runtime relation resolvers.",
         "Customization workflow: do not patch app/Generated/. For Standard/Full business customization use the persistent ServiceExtension hooks. Keep queries in Models; use explicit concrete Services for cross-resource writes. The generated exampleApplyBusinessRule() remains commented/disabled until the developer explicitly adapts and enables it.",
         "REST boundary: API Controller owns HTTP input/filter/sort policy, READ uses Model, WRITE uses Service, Resource is output-only. PATCH and upload write paths remain explicit Service methods.",
         "Shield boundary: Web CRUD security and REST API security are independent. Web CRUD uses generated session/permission route filters from crudSecurity; REST uses generated token/permission filters from apiSecurity. Do not introduce a runtime security resolver.",

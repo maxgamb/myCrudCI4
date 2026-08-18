@@ -28,13 +28,17 @@ final class FilmRelationalContractTest extends CIUnitTestCase
   1 => 'many__film_category__film_id',
 );
     private const HAS_MANY_KEYS = array (
-  0 => 'inventory__film_id',
+  0 => 'film_actor__film_id',
+  1 => 'film_category__film_id',
+  2 => 'inventory__film_id',
 );
     private const PARENT_MODEL_REFERENCES = array (
   0 => 'LanguageModel',
 );
     private const CHILD_MODEL_REFERENCES = array (
-  0 => 'InventoryModel',
+  0 => 'FilmActorModel',
+  1 => 'FilmCategoryModel',
+  2 => 'InventoryModel',
 );
     private const RELATED_SERVICE_REFERENCES = array (
   0 => 'LanguageService',

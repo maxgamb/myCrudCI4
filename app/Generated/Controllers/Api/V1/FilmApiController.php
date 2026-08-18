@@ -6,6 +6,7 @@ namespace App\Controllers\Api\V1;
 
 use App\API\Resources\FilmResource;
 use App\Controllers\Api\BaseApiController;
+use App\Libraries\Crud\CrudUploadManager;
 use App\Models\FilmModel;
 use App\Services\FilmService;
 use App\Validation\FilmApiRules;
@@ -20,6 +21,14 @@ use Throwable;
  */
 final class FilmApiController extends BaseApiController
 {
+    private const API_TABLE = 'film';
+    private const UPLOAD_FIELDS = array (
+  'uploads' =>
+  array (
+    'type' => 'file',
+    'required' => false,
+  ),
+);
     /** Fields accepted as REST list filters. API query policy belongs to the HTTP boundary. */
     private const FILTERABLE_FIELDS = array (
   0 => 'film_id',
@@ -49,13 +58,14 @@ final class FilmApiController extends BaseApiController
   8 => 'replacement_cost',
   9 => 'rating',
   10 => 'special_features',
-  11 => 'uploads',
 );
 
+    private CrudUploadManager $uploadManager;
     public function __construct(
         private readonly FilmModel $model = new FilmModel(),
         private readonly FilmService $service = new FilmService()
     ) {
+        $this->uploadManager = new CrudUploadManager();
     }
 
     public function index()
@@ -82,8 +92,11 @@ final class FilmApiController extends BaseApiController
     public function create()
     {
         $data = $this->writableData($this->payload());
-
-        if ($data === []) {
+        $uploadErrors = $this->apiUploadErrors(false);
+        if ($uploadErrors !== []) {
+            return $this->error('VALIDATION_ERROR', 'Upload non valido.', 422, $uploadErrors);
+        }
+        if ($data === [] && !$this->hasApiUpload()) {
             return $this->error('EMPTY_PAYLOAD', 'No writable field received.', 422);
         }
         if (!$this->validateData($data, FilmApiRules::createRules(), FilmApiRules::messages())) {
@@ -91,7 +104,10 @@ final class FilmApiController extends BaseApiController
         }
         try {
             $id = $this->service->create($data);
-
+            $uploadData = $this->storeApiUploads($id);
+            if ($uploadData !== []) {
+                $this->service->updateUploads($id, $uploadData);
+            }
             return $this->success(['film_id' => $id], [], [], 201);
         } catch (RuntimeException $e) {
             return $this->error('CREATE_FAILED', $e->getMessage(), 400);
@@ -140,6 +156,43 @@ final class FilmApiController extends BaseApiController
             return $this->internalError($e);
         }
     }
+    /**
+     * Replaces one or more upload fields through multipart/form-data POST.
+     *
+     * Separate endpoint from PUT/PATCH for PHP 8.3 compatibility, where
+     * $_FILES viene popolato automaticamente per multipart POST.
+     */
+    public function upload(int|string $id)
+    {
+        $uploadErrors = $this->apiUploadErrors(true);
+        if ($uploadErrors !== []) {
+            return $this->error('VALIDATION_ERROR', 'Upload non valido.', 422, $uploadErrors);
+        }
+        if (!$this->hasApiUpload()) {
+            return $this->error('EMPTY_UPLOAD', 'No file ricevuto.', 422);
+        }
+
+        try {
+            $this->recordOrFail($id);
+            $oldUploadValues = $this->currentApiUploadValues($id);
+            $uploadData = $this->storeApiUploads($id);
+            if ($uploadData === []) {
+                return $this->error('EMPTY_UPLOAD', 'No file valido ricevuto.', 422);
+            }
+
+            $this->service->updateUploads($id, $uploadData);
+            $this->deleteReplacedApiUploads($oldUploadValues, $uploadData);
+
+            return $this->success(FilmResource::make($this->recordOrFail($id)));
+        } catch (RuntimeException $e) {
+            if ($e->getMessage() === 'Record not found.') {
+                return $this->error('NOT_FOUND', 'Record not found.', 404);
+            }
+            return $this->error('UPLOAD_FAILED', $e->getMessage(), 400);
+        } catch (Throwable $e) {
+            return $this->internalError($e);
+        }
+    }
     public function delete(int|string $id)
     {
         try {
@@ -182,5 +235,68 @@ final class FilmApiController extends BaseApiController
         }
 
         return $record;
+    }
+    /** @return array<string,string> */
+    private function apiUploadErrors(bool $isUpdate): array
+    {
+        return $this->uploadManager->validate(
+            self::UPLOAD_FIELDS,
+            $this->request->getFiles(),
+            $isUpdate
+        );
+    }
+
+    private function hasApiUpload(): bool
+    {
+        foreach (array_keys(self::UPLOAD_FIELDS) as $field) {
+            $file = $this->request->getFile($field);
+            if ($file !== null && $file->getError() !== UPLOAD_ERR_NO_FILE) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** @return array<string,string> */
+    private function storeApiUploads(int|string $id): array
+    {
+        return $this->uploadManager->store(
+            self::API_TABLE,
+            $id,
+            self::UPLOAD_FIELDS,
+            $this->request->getFiles()
+        );
+    }
+
+    /** @return array<string,string> */
+    private function currentApiUploadValues(int|string $id): array
+    {
+        if (self::UPLOAD_FIELDS === []) {
+            return [];
+        }
+
+        $record = $this->recordOrFail($id);
+        $values = [];
+        foreach (array_keys(self::UPLOAD_FIELDS) as $field) {
+            if (is_array($record)) {
+                $values[$field] = (string) ($record[$field] ?? '');
+            } else {
+                $values[$field] = isset($record->{$field}) ? (string) $record->{$field} : '';
+            }
+        }
+
+        return $values;
+    }
+
+    /** @param array<string,string> $old @param array<string,string> $new */
+    private function deleteReplacedApiUploads(array $old, array $new): void
+    {
+        foreach ($new as $field => $filename) {
+            $previous = (string) ($old[$field] ?? '');
+            if ($previous !== '' && $previous !== $filename) {
+                $this->uploadManager->delete($previous);
+            }
+        }
     }
 }

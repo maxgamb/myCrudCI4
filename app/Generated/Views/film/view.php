@@ -106,6 +106,9 @@ $navigationQuery = $navigationParams === [] ? '' : '?' . http_build_query($navig
                             <th class="w-25"><?= esc(lang('Film.film_id')) ?></th>
                             <td><?= esc($row->{'film_id'} ?? '') ?></td>
                         </tr>                        <tr>
+                            <th class="w-25"><?= esc(lang('Film.last_update')) ?></th>
+                            <td><?= esc($row->{'last_update'} ?? '') ?></td>
+                        </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Film.title')) ?></th>
                             <td><?= esc($row->{'title'} ?? '') ?></td>
                         </tr>                        <tr>
@@ -116,10 +119,30 @@ $navigationQuery = $navigationParams === [] ? '' : '?' . http_build_query($navig
                             <td><?= esc($row->{'release_year'} ?? '') ?></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Film.language_id')) ?></th>
-                            <td><?= esc($row->{'language_id__label'} ?? $row->{'language_id'} ?? '') ?></td>
+                            <td><?php
+$parentTargetId = (string) ($row->{'language_id'} ?? '');
+$parentTrail = \App\Libraries\Crud\CrudNavigationTrail::ancestorsForParent((array) ($cascadeTrail ?? []), 'language', $parentTargetId);
+if ($parentTrail === (array) ($cascadeTrail ?? [])) {
+    $parentTrail = \App\Libraries\Crud\CrudNavigationTrail::append($parentTrail, "film", (string) ($row->{'film_id'} ?? ''), trim((string) ($row->{'title'} ?? '')) ?: 'Film' . ' #' . (string) ($row->{'film_id'} ?? ''));
+}
+$parentTrailEncoded = \App\Libraries\Crud\CrudNavigationTrail::encode($parentTrail);
+$parentUrl = site_url('language' . '/view/' . rawurlencode($parentTargetId));
+if ($parentTrailEncoded !== '') $parentUrl .= '?_trail=' . rawurlencode($parentTrailEncoded);
+?>
+<a href="<?= esc($parentUrl) ?>" class="text-decoration-none"><?= esc($row->{'language_id__label'} ?? $row->{'language_id'} ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Film.original_language_id')) ?></th>
-                            <td><?= esc($row->{'original_language_id__label'} ?? $row->{'original_language_id'} ?? '') ?></td>
+                            <td><?php
+$parentTargetId = (string) ($row->{'original_language_id'} ?? '');
+$parentTrail = \App\Libraries\Crud\CrudNavigationTrail::ancestorsForParent((array) ($cascadeTrail ?? []), 'language', $parentTargetId);
+if ($parentTrail === (array) ($cascadeTrail ?? [])) {
+    $parentTrail = \App\Libraries\Crud\CrudNavigationTrail::append($parentTrail, "film", (string) ($row->{'film_id'} ?? ''), trim((string) ($row->{'title'} ?? '')) ?: 'Film' . ' #' . (string) ($row->{'film_id'} ?? ''));
+}
+$parentTrailEncoded = \App\Libraries\Crud\CrudNavigationTrail::encode($parentTrail);
+$parentUrl = site_url('language' . '/view/' . rawurlencode($parentTargetId));
+if ($parentTrailEncoded !== '') $parentUrl .= '?_trail=' . rawurlencode($parentTrailEncoded);
+?>
+<a href="<?= esc($parentUrl) ?>" class="text-decoration-none"><?= esc($row->{'original_language_id__label'} ?? $row->{'original_language_id'} ?? '') ?></a></td>
                         </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Film.rental_duration')) ?></th>
                             <td><?= esc($row->{'rental_duration'} ?? '') ?></td>
@@ -139,11 +162,15 @@ $navigationQuery = $navigationParams === [] ? '' : '?' . http_build_query($navig
                             <th class="w-25"><?= esc(lang('Film.special_features')) ?></th>
                             <td><?= esc($row->{'special_features'} ?? '') ?></td>
                         </tr>                        <tr>
-                            <th class="w-25"><?= esc(lang('Film.last_update')) ?></th>
-                            <td><?= esc($row->{'last_update'} ?? '') ?></td>
-                        </tr>                        <tr>
                             <th class="w-25"><?= esc(lang('Film.uploads')) ?></th>
-                            <td><?= esc($row->{'uploads'} ?? '') ?></td>
+                            <td><?php if (trim((string) ($row->{'uploads'} ?? '')) !== ''): ?>
+    <?php $__uploadUrl = site_url('film' . '/upload/' . rawurlencode((string) ($row->{'film_id'} ?? '')) . '/' . rawurlencode('uploads')); ?>
+    <a href="<?= esc($__uploadUrl) ?>" target="_blank" rel="noopener" class="text-decoration-none">
+        <i class="bi bi-file-earmark-arrow-down me-1" aria-hidden="true"></i><?= esc(basename((string) $row->{'uploads'})) ?>
+    </a>
+<?php else: ?>
+    <span class="text-muted">—</span>
+<?php endif; ?></td>
                         </tr>                        </tbody>
                     </table>
                 </div>
@@ -151,6 +178,8 @@ $navigationQuery = $navigationParams === [] ? '' : '?' . http_build_query($navig
         </div>
 
         <!-- mycrud:start relation-panels -->
+<?= view('film/_children_film_actor__film_id', ['row' => $row, 'children' => $children, 'cascadeTrail' => $cascadeTrail ?? []]) ?>
+<?= view('film/_children_film_category__film_id', ['row' => $row, 'children' => $children, 'cascadeTrail' => $cascadeTrail ?? []]) ?>
 <?= view('film/_children_inventory__film_id', ['row' => $row, 'children' => $children, 'cascadeTrail' => $cascadeTrail ?? []]) ?>
 <?= view('film/_many_many__film_actor__film_id', ['row' => $row, 'children' => $children, 'cascadeTrail' => $cascadeTrail ?? []]) ?>
 <?= view('film/_many_many__film_category__film_id', ['row' => $row, 'children' => $children, 'cascadeTrail' => $cascadeTrail ?? []]) ?>

@@ -53,7 +53,7 @@ film.upload
 myCrudCI4 does not install Shield automatically. Web CRUD session security does not implicitly enable REST token security, and REST token security does not implicitly protect Web CRUD routes.
 
 
-## Architecture boundary (2.9.1-dev24-fix11-fix8)
+## Architecture boundary
 
 Generated Full REST APIs follow the same application boundary as the Web CRUD:
 
@@ -66,6 +66,6 @@ Generated Full REST APIs follow the same application boundary as the Web CRUD:
 Relation ownership remains explicit and static. API code must not resolve Models, Services, or tables dynamically from runtime metadata.
 
 
-## API boundary cleanup (2.9.1-dev24-fix11-fix9)
+## API boundary cleanup
 
 REST Resources are output-only serializers. Filter/sort/write policies live in the ApiController. File/image fields are not accepted as persisted filenames in normal request payloads; generated multipart handling uses CrudUploadManager.

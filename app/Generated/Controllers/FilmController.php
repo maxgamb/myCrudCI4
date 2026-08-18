@@ -10,6 +10,7 @@ use App\Libraries\Crud\CrudListRequest;
 use App\Libraries\Crud\CrudNavigationTrail;
 use App\Libraries\Crud\CrudInputProcessor;
 use App\Libraries\Crud\SubmissionGuard;
+use App\Libraries\Crud\CrudUploadManager;
 use App\Models\FilmModel;
 use App\Services\FilmService;
 use App\Validation\FilmRules;
@@ -70,6 +71,15 @@ final class FilmController extends BaseController
   ),
 );
 
+    /** Upload fields and runtime policies. */
+    private const UPLOAD_FIELDS = array (
+  'uploads' =>
+  array (
+    'type' => 'file',
+    'required' => false,
+  ),
+);
+
     /**
      * Allowed parent contexts for Create started from a hasMany relation.
      * The return table is derived exclusively from the generated schema, never from POST.
@@ -93,6 +103,7 @@ final class FilmController extends BaseController
     private CrudExporter $exporter;
     private CrudInputProcessor $inputProcessor;
     private SubmissionGuard $submissionGuard;
+    private CrudUploadManager $uploadManager;
 
     public function __construct()
     {
@@ -103,6 +114,7 @@ final class FilmController extends BaseController
         $this->exporter = new CrudExporter();
         $this->inputProcessor = new CrudInputProcessor();
         $this->submissionGuard = new SubmissionGuard();
+        $this->uploadManager = new CrudUploadManager();
     }
 
     /**
@@ -178,6 +190,32 @@ final class FilmController extends BaseController
     }
 
     /**
+     * Serves an upload stored under writable/ after verifying
+     * both the authorized field and the record existence.
+     */
+    public function upload(int|string $id, string $field)
+    {
+        if (!array_key_exists($field, self::UPLOAD_FIELDS)) {
+            throw PageNotFoundException::forPageNotFound('Invalid upload field.');
+        }
+
+        $row = $this->findRecordOrFail($id);
+        $filename = basename(trim((string) ($row->{$field} ?? '')));
+        if ($filename === '') {
+            throw PageNotFoundException::forPageNotFound('File not present.');
+        }
+
+        $settings = (array) (config('MyCrud')->upload ?? []);
+        $directory = rtrim((string) ($settings['directory'] ?? (WRITEPATH . 'uploads')), DIRECTORY_SEPARATOR);
+        $path = $directory . DIRECTORY_SEPARATOR . $filename;
+
+        if (!is_file($path)) {
+            throw PageNotFoundException::forPageNotFound('File not found.');
+        }
+
+        return $this->response->download($path, null)->inline();
+    }
+    /**
      * Displays one record and its explicitly configured child relations.
      *
      * @param int|string $id Record identifier.
@@ -247,6 +285,10 @@ final class FilmController extends BaseController
             return redirect()->back()->withInput()->with('error', 'The form has already been submitted or has expired.');
         }
 
+        $uploadErrors = $this->uploadManagerErrors(false);
+        if ($uploadErrors !== []) {
+            return redirect()->back()->withInput()->with('errors', $uploadErrors);
+        }
         $related = $this->relatedCreateDataFromPost();
         $manyToManyNew = $this->manyToManyRelatedCreateDataFromPost();
         $manyToManyNewErrors = $this->validateManyToManyRelatedCreates($manyToManyNew);
@@ -269,7 +311,9 @@ final class FilmController extends BaseController
         $data = $this->formData(false);
         unset($data['film_id']);
         try {
-            $this->service->create($data, $related, $this->manyToManyDataFromPost(), $manyToManyNew);
+            $id = $this->service->create($data, $related, $this->manyToManyDataFromPost(), $manyToManyNew);
+            $uploadData = $this->uploadManager->store('film', $id, self::UPLOAD_FIELDS, $this->request->getFiles());
+            if ($uploadData !== []) { $this->service->update($id, $uploadData); }
         } catch (Throwable $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
@@ -312,6 +356,10 @@ final class FilmController extends BaseController
         if (!$this->submissionGuard->consume('update_' . (string) $id, $this->request->getPost('_submission_token'))) {
             return redirect()->back()->withInput()->with('error', 'The form has already been submitted or has expired.');
         }
+        $uploadErrors = $this->uploadManagerErrors(true);
+        if ($uploadErrors !== []) {
+            return redirect()->back()->withInput()->with('errors', $uploadErrors);
+        }
         if (!$this->validate(FilmRules::updateRules($id), FilmRules::messages())) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
@@ -323,7 +371,10 @@ final class FilmController extends BaseController
         $data = $this->formData(true);
         unset($data['film_id']);
         try {
-            $this->service->update($id, $data, $this->manyToManyDataFromPost(), $manyToManyNew);
+            $oldUploadValues = $this->currentUploadValues($id);
+            $uploadData = $this->uploadManager->store('film', $id, self::UPLOAD_FIELDS, $this->request->getFiles());
+            $this->service->update($id, array_merge($data, $uploadData), $this->manyToManyDataFromPost(), $manyToManyNew);
+            $this->deleteReplacedUploads($oldUploadValues, $uploadData);
         } catch (Throwable $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
@@ -430,6 +481,7 @@ final class FilmController extends BaseController
 ),
             array (
   0 => 'last_update',
+  1 => 'uploads',
 ),
             array (
 ),
@@ -439,6 +491,47 @@ final class FilmController extends BaseController
   0 => 'original_language_id',
 )
         );
+    }
+    /**
+     * Validates uploaded files according to the generated field policies.
+     *
+     * @param bool $isUpdate True when validating an Edit request.
+     * @return array<string,string> Field-scoped validation errors.
+     */
+    private function uploadManagerErrors(bool $isUpdate): array
+    {
+        return $this->uploadManager->validate(self::UPLOAD_FIELDS, $this->request->getFiles(), $isUpdate);
+    }
+
+    /**
+     * Reads currently persisted upload filenames before an Edit replacement.
+     *
+     * @param int|string $id Record identifier.
+     * @return array<string,string> Existing filenames keyed by upload field.
+     */
+    private function currentUploadValues(int|string $id): array
+    {
+        $row = $this->findRecordOrFail($id);
+        $values = [];
+        foreach (array_keys(self::UPLOAD_FIELDS) as $field) {
+            $values[$field] = isset($row->{$field}) ? (string) $row->{$field} : '';
+        }
+        return $values;
+    }
+
+    /**
+     * Deletes files that were replaced successfully by a new upload.
+     *
+     * @param array<string,string> $old Previous filenames.
+     * @param array<string,string> $new Newly stored filenames.
+     */
+    private function deleteReplacedUploads(array $old, array $new): void
+    {
+        foreach ($new as $field => $filename) {
+            if (($old[$field] ?? '') !== '' && ($old[$field] ?? '') !== $filename) {
+                $this->uploadManager->delete($old[$field]);
+            }
+        }
     }
     /** @return array<string,list<string>> */
     private function manyToManyDataFromPost(): array

@@ -22,3 +22,27 @@ Thumbs.db
 *.tmp
 *.bak
 *.swp
+
+# myCrudCI4 development/runtime artifacts
+*.orig
+*.bak
+*.tmp
+*.rej
+
+/app.zip
+/app/Generated.zip
+
+/writable/mycrud.zip
+/writable/mycrud/reports/
+
+# myCrudCI4 development/runtime artifacts
+*.orig
+*.bak
+*.tmp
+*.rej
+
+/app.zip
+/app/Generated.zip
+
+/writable/mycrud.zip
+/writable/mycrud/reports/

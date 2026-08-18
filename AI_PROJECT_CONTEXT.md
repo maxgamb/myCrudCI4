@@ -5,7 +5,7 @@
 ## Project identity
 
 - Framework: CodeIgniter 4
-- Generator: myCrudCI4 2.9.1-dev24-fix11-fix41
+- Generator: myCrudCI4 2.9.1-RC1
 - Configured CRUDs: 23
 - Database tables visible to myCrudCI4: 23
 

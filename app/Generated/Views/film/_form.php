@@ -49,6 +49,11 @@ $submissionToken = $submissionToken ?? '';
                 <?php endif; ?>
 
 <!-- mycrud:start fields -->
+                <div class="col-12 crud-form-section-col">
+                    <details class="w-100 h-100 border rounded p-3 crud-form-section" id="form_section_general" open>
+                        <summary class="fw-semibold">General</summary>
+
+                        <div class="row g-3 mt-1">
                 <div class="col-md-6">
                     <label for="title" class="form-label">
                         <?= esc(lang('Film.title')) ?>
@@ -90,148 +95,112 @@ $submissionToken = $submissionToken ?? '';
                 </div>
 
                 <div class="col-md-6">
-                    <label for="release_year" class="form-label">
-                        <?= esc(lang('Film.release_year')) ?>
+                    <label for="rental_rate" class="form-label">
+                        <?= esc(lang('Film.rental_rate')) ?>
                     </label>
                     <input
-                        type="text"
-                        name="release_year"
-                        id="release_year"
-                        value="<?= esc(old('release_year', $row->{'release_year'} ?? ($context['release_year'] ?? ''))) ?>"
-                        class="form-control <?= isset($errors['release_year']) ? 'is-invalid' : '' ?>"
-                        aria-describedby="release_year-error"
-                        aria-invalid="<?= isset($errors['release_year']) ? 'true' : 'false' ?>"
+                        type="number"
+                        name="rental_rate"
+                        id="rental_rate"
+                        value="<?= esc(old('rental_rate', $row->{'rental_rate'} ?? ($context['rental_rate'] ?? ''))) ?>"
+                        class="form-control <?= isset($errors['rental_rate']) ? 'is-invalid' : '' ?>"
+                        aria-describedby="rental_rate-error"
+                        aria-invalid="<?= isset($errors['rental_rate']) ? 'true' : 'false' ?>"
+                        required
                     >
-                    <?php if (!empty($errors['release_year'])): ?>
-                        <div id="release_year-error" class="invalid-feedback d-block">
-                            <?= esc($errors['release_year']) ?>
+                    <?php if (!empty($errors['rental_rate'])): ?>
+                        <div id="rental_rate-error" class="invalid-feedback d-block">
+                            <?= esc($errors['rental_rate']) ?>
                         </div>
                     <?php endif; ?>
                 </div>
 
                 <div class="col-md-6">
-                    <label for="language_id" class="form-label">
-                        <?= esc(lang('Film.language_id')) ?>
+                    <label for="replacement_cost" class="form-label">
+                        <?= esc(lang('Film.replacement_cost')) ?>
                     </label>
-<div class="input-group crud-relation-input-group">
-                    <select
-                        name="language_id"
-                        id="language_id"
-                        class="form-select <?= isset($errors['language_id']) ? 'is-invalid' : '' ?>"
-                        aria-describedby="language_id-error"
-                        aria-invalid="<?= isset($errors['language_id']) ? 'true' : 'false' ?>"
+                    <input
+                        type="number"
+                        name="replacement_cost"
+                        id="replacement_cost"
+                        value="<?= esc(old('replacement_cost', $row->{'replacement_cost'} ?? ($context['replacement_cost'] ?? ''))) ?>"
+                        class="form-control <?= isset($errors['replacement_cost']) ? 'is-invalid' : '' ?>"
+                        aria-describedby="replacement_cost-error"
+                        aria-invalid="<?= isset($errors['replacement_cost']) ? 'true' : 'false' ?>"
                         required
                     >
-                        <option value="">Seleziona...</option>
-                        <?php foreach (($options['language_id'] ?? []) as $optionValue => $optionLabel): ?>
-                            <option
-                                value="<?= esc($optionValue) ?>"
-                                <?= (string) old('language_id', $row->{'language_id'} ?? ($context['language_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
-                            >
-                                <?= esc($optionLabel) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <?php if ($row === null): ?>
-                        <button
-                            type="button"
-                            class="btn btn-outline-secondary crud-related-create-toggle"
-                            id="related_create_language_id_toggle"
-                            data-bs-toggle="offcanvas"
-                            data-bs-target="#related_create_language_id"
-                            aria-controls="related_create_language_id"
-                            data-related-field="language_id"
-                            data-panel-target="related_create_language_id"
-                            data-state-target="related_create_language_id_state"
-                            title="Create new Language"
-                            aria-label="Create new Language"
-                        >
-                            <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
-                            New
-                        </button>
-                    <?php endif; ?>
-</div>
-                    <?php if (!empty($errors['language_id'])): ?>
-                        <div id="language_id-error" class="invalid-feedback d-block">
-                            <?= esc($errors['language_id']) ?>
+                    <?php if (!empty($errors['replacement_cost'])): ?>
+                        <div id="replacement_cost-error" class="invalid-feedback d-block">
+                            <?= esc($errors['replacement_cost']) ?>
                         </div>
                     <?php endif; ?>
                 </div>
-                <?php if ($row === null): ?>
-                    <?php
-                    $relatedNewState = (array) old('_related_new', []);
-                    $relatedPayloadState = (array) old('_related', []);
-                    $relatedCreateActive = !empty($relatedNewState['language_id']);
-                    ?>
-                    <div class="col-12">
-                        <input
-                            type="hidden"
-                            name="_related_new[language_id]"
-                            id="related_create_language_id_state"
-                            value="<?= $relatedCreateActive ? '1' : '0' ?>"
-                        >
-                        <div
-                            id="related_create_language_id"
-                            class="offcanvas offcanvas-end crud-related-create-panel"
-                            style="--bs-offcanvas-width: min(640px, 100vw);"
-                            tabindex="-1"
-                            aria-labelledby="related_create_language_id_label"
-                            data-related-field="language_id"
-                            data-state-target="related_create_language_id_state"
-                            data-toggle-target="related_create_language_id_toggle"
-                            data-bs-backdrop="static"
-                        >
-                            <div class="offcanvas-header border-bottom">
-                                <div>
-                                    <h2 class="offcanvas-title h5 mb-0" id="related_create_language_id_label">New Language</h2>
-                                    <small class="text-muted">Relation language_id</small>
-                                </div>
-                                <button
-                                    type="button"
-                                    class="btn-close crud-related-create-cancel"
-                                    data-related-field="language_id"
-                                    data-state-target="related_create_language_id_state"
-                                    data-bs-dismiss="offcanvas"
-                                    aria-label="Cancel new Language"
-                                ></button>
-                            </div>
-                            <div class="offcanvas-body">
-                                <div class="alert alert-light border small" role="note">
-                                    Enter the new Language data. The related record and this record will be saved together when the main form is submitted, within the same transaction.
-                                </div>
-                                <?= view('film/_related_create_language_id', [
-                                    'relatedField'        => 'language_id',
-                                    'relatedCreateActive' => $relatedCreateActive,
-                                    'relatedPayloadState' => $relatedPayloadState,
-                                    'relatedCreateOptions' => (array) ($relatedCreateOptions ?? []),
-                                    'errors'              => $errors,
-                                ]) ?>
-                            </div>
-                            <div class="offcanvas-footer border-top p-3 d-flex justify-content-between gap-2">
-                                <button
-                                    type="button"
-                                    class="btn btn-outline-secondary crud-related-create-cancel"
-                                    data-related-field="language_id"
-                                    data-state-target="related_create_language_id_state"
-                                    data-bs-dismiss="offcanvas"
-                                >
-                                    <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
-                                    Cancel
-                                </button>
-                                <button
-                                    type="button"
-                                    class="btn btn-primary crud-related-create-apply"
-                                    data-related-field="language_id"
-                                    data-state-target="related_create_language_id_state"
-                                    data-bs-dismiss="offcanvas"
-                                >
-                                    <i class="bi bi-check2-circle me-1" aria-hidden="true"></i>
-                                    Apply new Language
-                                </button>
-                            </div>
+
+                <div class="col-md-6">
+                    <label for="rating" class="form-label">
+                        <?= esc(lang('Film.rating')) ?>
+                    </label>
+                    <input
+                        type="text"
+                        name="rating"
+                        id="rating"
+                        value="<?= esc(old('rating', $row->{'rating'} ?? ($context['rating'] ?? ''))) ?>"
+                        class="form-control <?= isset($errors['rating']) ? 'is-invalid' : '' ?>"
+                        aria-describedby="rating-error"
+                        aria-invalid="<?= isset($errors['rating']) ? 'true' : 'false' ?>"
+                        maxlength="5"
+                    >
+                    <?php if (!empty($errors['rating'])): ?>
+                        <div id="rating-error" class="invalid-feedback d-block">
+                            <?= esc($errors['rating']) ?>
                         </div>
-                    </div>
-                <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="special_features" class="form-label">
+                        <?= esc(lang('Film.special_features')) ?>
+                    </label>
+                    <input
+                        type="text"
+                        name="special_features"
+                        id="special_features"
+                        value="<?= esc(old('special_features', $row->{'special_features'} ?? ($context['special_features'] ?? ''))) ?>"
+                        class="form-control <?= isset($errors['special_features']) ? 'is-invalid' : '' ?>"
+                        aria-describedby="special_features-error"
+                        aria-invalid="<?= isset($errors['special_features']) ? 'true' : 'false' ?>"
+                        maxlength="54"
+                    >
+                    <?php if (!empty($errors['special_features'])): ?>
+                        <div id="special_features-error" class="invalid-feedback d-block">
+                            <?= esc($errors['special_features']) ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="uploads" class="form-label">
+                        <?= esc(lang('Film.uploads')) ?>
+                    </label>
+                    <input type="file" name="uploads" id="uploads" class="form-control <?= isset($errors['uploads']) ? 'is-invalid' : '' ?>"
+                        aria-describedby="uploads-error"
+                        aria-invalid="<?= isset($errors['uploads']) ? 'true' : 'false' ?>"
+                        maxlength="200">
+                    <?php if (!empty($errors['uploads'])): ?>
+                        <div id="uploads-error" class="invalid-feedback d-block">
+                            <?= esc($errors['uploads']) ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                        </div>
+                    </details>
+                </div>
+                <div class="col-6 crud-form-section-col">
+                    <details class="w-100 h-100 border rounded p-3 crud-form-section" id="form_section_section_mssksdrj_9wvjn" open>
+                        <summary class="fw-semibold">prova</summary>
+
+                        <div class="row g-3 mt-1">
                 <div class="col-md-6">
                     <label for="original_language_id" class="form-label">
                         <?= esc(lang('Film.original_language_id')) ?>
@@ -254,7 +223,19 @@ $submissionToken = $submissionToken ?? '';
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    <?php if ($row === null): ?>
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="original_language_id"
+                            data-base-url="<?= site_url('language/view') ?>"
+                            data-trail="<?= esc(\App\Libraries\Crud\CrudNavigationTrail::encode((array) ($cascadeTrail ?? []))) ?>"
+                            title="Open parent record"
+                            aria-label="Open parent record"
+                        >
+                            <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                        </a>                    <?php if ($row === null): ?>
                         <button
                             type="button"
                             class="btn btn-outline-secondary crud-related-create-toggle"
@@ -366,6 +347,7 @@ $submissionToken = $submissionToken ?? '';
                         class="form-control <?= isset($errors['rental_duration']) ? 'is-invalid' : '' ?>"
                         aria-describedby="rental_duration-error"
                         aria-invalid="<?= isset($errors['rental_duration']) ? 'true' : 'false' ?>"
+                        required
                     >
                     <?php if (!empty($errors['rental_duration'])): ?>
                         <div id="rental_duration-error" class="invalid-feedback d-block">
@@ -375,31 +357,11 @@ $submissionToken = $submissionToken ?? '';
                 </div>
 
                 <div class="col-md-6">
-                    <label for="rental_rate" class="form-label">
-                        <?= esc(lang('Film.rental_rate')) ?>
-                    </label>
-                    <input
-                        type="number"
-                        name="rental_rate"
-                        id="rental_rate"
-                        value="<?= esc(old('rental_rate', $row->{'rental_rate'} ?? ($context['rental_rate'] ?? ''))) ?>"
-                        class="form-control <?= isset($errors['rental_rate']) ? 'is-invalid' : '' ?>"
-                        aria-describedby="rental_rate-error"
-                        aria-invalid="<?= isset($errors['rental_rate']) ? 'true' : 'false' ?>"
-                    >
-                    <?php if (!empty($errors['rental_rate'])): ?>
-                        <div id="rental_rate-error" class="invalid-feedback d-block">
-                            <?= esc($errors['rental_rate']) ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
-
-                <div class="col-md-6">
                     <label for="length" class="form-label">
                         <?= esc(lang('Film.length')) ?>
                     </label>
                     <input
-                        type="number"
+                        type="text"
                         name="length"
                         id="length"
                         value="<?= esc(old('length', $row->{'length'} ?? ($context['length'] ?? ''))) ?>"
@@ -414,89 +376,172 @@ $submissionToken = $submissionToken ?? '';
                     <?php endif; ?>
                 </div>
 
-                <div class="col-md-6">
-                    <label for="replacement_cost" class="form-label">
-                        <?= esc(lang('Film.replacement_cost')) ?>
-                    </label>
-                    <input
-                        type="number"
-                        name="replacement_cost"
-                        id="replacement_cost"
-                        value="<?= esc(old('replacement_cost', $row->{'replacement_cost'} ?? ($context['replacement_cost'] ?? ''))) ?>"
-                        class="form-control <?= isset($errors['replacement_cost']) ? 'is-invalid' : '' ?>"
-                        aria-describedby="replacement_cost-error"
-                        aria-invalid="<?= isset($errors['replacement_cost']) ? 'true' : 'false' ?>"
-                    >
-                    <?php if (!empty($errors['replacement_cost'])): ?>
-                        <div id="replacement_cost-error" class="invalid-feedback d-block">
-                            <?= esc($errors['replacement_cost']) ?>
                         </div>
-                    <?php endif; ?>
+                    </details>
                 </div>
-
+                <div class="col-6 crud-form-section-col">
+                    <details class="w-100 h-100 border rounded p-3 crud-form-section" id="form_section_section_msrobuix_a8whk" open>
+                        <summary class="fw-semibold">Test</summary>
+                        <div class="small text-muted mt-1 mb-2">Descrizione</div>
+                        <div class="row g-3 mt-1">
                 <div class="col-md-6">
-                    <label for="rating" class="form-label">
-                        <?= esc(lang('Film.rating')) ?>
+                    <label for="release_year" class="form-label">
+                        <?= esc(lang('Film.release_year')) ?>
                     </label>
                     <input
                         type="text"
-                        name="rating"
-                        id="rating"
-                        value="<?= esc(old('rating', $row->{'rating'} ?? ($context['rating'] ?? ''))) ?>"
-                        class="form-control <?= isset($errors['rating']) ? 'is-invalid' : '' ?>"
-                        aria-describedby="rating-error"
-                        aria-invalid="<?= isset($errors['rating']) ? 'true' : 'false' ?>"
-                        maxlength="5"
+                        name="release_year"
+                        id="release_year"
+                        value="<?= esc(old('release_year', $row->{'release_year'} ?? ($context['release_year'] ?? ''))) ?>"
+                        class="form-control <?= isset($errors['release_year']) ? 'is-invalid' : '' ?>"
+                        aria-describedby="release_year-error"
+                        aria-invalid="<?= isset($errors['release_year']) ? 'true' : 'false' ?>"
                     >
-                    <?php if (!empty($errors['rating'])): ?>
-                        <div id="rating-error" class="invalid-feedback d-block">
-                            <?= esc($errors['rating']) ?>
+                    <?php if (!empty($errors['release_year'])): ?>
+                        <div id="release_year-error" class="invalid-feedback d-block">
+                            <?= esc($errors['release_year']) ?>
                         </div>
                     <?php endif; ?>
                 </div>
 
                 <div class="col-md-6">
-                    <label for="special_features" class="form-label">
-                        <?= esc(lang('Film.special_features')) ?>
+                    <label for="language_id" class="form-label">
+                        <?= esc(lang('Film.language_id')) ?>
                     </label>
-                    <input
-                        type="text"
-                        name="special_features"
-                        id="special_features"
-                        value="<?= esc(old('special_features', $row->{'special_features'} ?? ($context['special_features'] ?? ''))) ?>"
-                        class="form-control <?= isset($errors['special_features']) ? 'is-invalid' : '' ?>"
-                        aria-describedby="special_features-error"
-                        aria-invalid="<?= isset($errors['special_features']) ? 'true' : 'false' ?>"
-                        maxlength="54"
+<div class="input-group crud-relation-input-group">
+                    <select
+                        name="language_id"
+                        id="language_id"
+                        class="form-select <?= isset($errors['language_id']) ? 'is-invalid' : '' ?>"
+                        aria-describedby="language_id-error"
+                        aria-invalid="<?= isset($errors['language_id']) ? 'true' : 'false' ?>"
+                        required
                     >
-                    <?php if (!empty($errors['special_features'])): ?>
-                        <div id="special_features-error" class="invalid-feedback d-block">
-                            <?= esc($errors['special_features']) ?>
+                        <option value="">Seleziona...</option>
+                        <?php foreach (($options['language_id'] ?? []) as $optionValue => $optionLabel): ?>
+                            <option
+                                value="<?= esc($optionValue) ?>"
+                                <?= (string) old('language_id', $row->{'language_id'} ?? ($context['language_id'] ?? '')) === (string) $optionValue ? 'selected' : '' ?>
+                            >
+                                <?= esc($optionLabel) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn btn-outline-secondary js-relation-parent-link disabled"
+                            data-value-source="language_id"
+                            data-base-url="<?= site_url('language/view') ?>"
+                            data-trail="<?= esc(\App\Libraries\Crud\CrudNavigationTrail::encode((array) ($cascadeTrail ?? []))) ?>"
+                            title="Open parent record"
+                            aria-label="Open parent record"
+                        >
+                            <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                        </a>                    <?php if ($row === null): ?>
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary crud-related-create-toggle"
+                            id="related_create_language_id_toggle"
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#related_create_language_id"
+                            aria-controls="related_create_language_id"
+                            data-related-field="language_id"
+                            data-panel-target="related_create_language_id"
+                            data-state-target="related_create_language_id_state"
+                            title="Create new Language"
+                            aria-label="Create new Language"
+                        >
+                            <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+                            New
+                        </button>
+                    <?php endif; ?>
+</div>
+                    <?php if (!empty($errors['language_id'])): ?>
+                        <div id="language_id-error" class="invalid-feedback d-block">
+                            <?= esc($errors['language_id']) ?>
                         </div>
                     <?php endif; ?>
                 </div>
-
-                <div class="col-md-6">
-                    <label for="uploads" class="form-label">
-                        <?= esc(lang('Film.uploads')) ?>
-                    </label>
-                    <input
-                        type="text"
-                        name="uploads"
-                        id="uploads"
-                        value="<?= esc(old('uploads', $row->{'uploads'} ?? ($context['uploads'] ?? ''))) ?>"
-                        class="form-control <?= isset($errors['uploads']) ? 'is-invalid' : '' ?>"
-                        aria-describedby="uploads-error"
-                        aria-invalid="<?= isset($errors['uploads']) ? 'true' : 'false' ?>"
-                        maxlength="200"
-                    >
-                    <?php if (!empty($errors['uploads'])): ?>
-                        <div id="uploads-error" class="invalid-feedback d-block">
-                            <?= esc($errors['uploads']) ?>
+                <?php if ($row === null): ?>
+                    <?php
+                    $relatedNewState = (array) old('_related_new', []);
+                    $relatedPayloadState = (array) old('_related', []);
+                    $relatedCreateActive = !empty($relatedNewState['language_id']);
+                    ?>
+                    <div class="col-12">
+                        <input
+                            type="hidden"
+                            name="_related_new[language_id]"
+                            id="related_create_language_id_state"
+                            value="<?= $relatedCreateActive ? '1' : '0' ?>"
+                        >
+                        <div
+                            id="related_create_language_id"
+                            class="offcanvas offcanvas-end crud-related-create-panel"
+                            style="--bs-offcanvas-width: min(640px, 100vw);"
+                            tabindex="-1"
+                            aria-labelledby="related_create_language_id_label"
+                            data-related-field="language_id"
+                            data-state-target="related_create_language_id_state"
+                            data-toggle-target="related_create_language_id_toggle"
+                            data-bs-backdrop="static"
+                        >
+                            <div class="offcanvas-header border-bottom">
+                                <div>
+                                    <h2 class="offcanvas-title h5 mb-0" id="related_create_language_id_label">New Language</h2>
+                                    <small class="text-muted">Relation language_id</small>
+                                </div>
+                                <button
+                                    type="button"
+                                    class="btn-close crud-related-create-cancel"
+                                    data-related-field="language_id"
+                                    data-state-target="related_create_language_id_state"
+                                    data-bs-dismiss="offcanvas"
+                                    aria-label="Cancel new Language"
+                                ></button>
+                            </div>
+                            <div class="offcanvas-body">
+                                <div class="alert alert-light border small" role="note">
+                                    Enter the new Language data. The related record and this record will be saved together when the main form is submitted, within the same transaction.
+                                </div>
+                                <?= view('film/_related_create_language_id', [
+                                    'relatedField'        => 'language_id',
+                                    'relatedCreateActive' => $relatedCreateActive,
+                                    'relatedPayloadState' => $relatedPayloadState,
+                                    'relatedCreateOptions' => (array) ($relatedCreateOptions ?? []),
+                                    'errors'              => $errors,
+                                ]) ?>
+                            </div>
+                            <div class="offcanvas-footer border-top p-3 d-flex justify-content-between gap-2">
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary crud-related-create-cancel"
+                                    data-related-field="language_id"
+                                    data-state-target="related_create_language_id_state"
+                                    data-bs-dismiss="offcanvas"
+                                >
+                                    <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-primary crud-related-create-apply"
+                                    data-related-field="language_id"
+                                    data-state-target="related_create_language_id_state"
+                                    data-bs-dismiss="offcanvas"
+                                >
+                                    <i class="bi bi-check2-circle me-1" aria-hidden="true"></i>
+                                    Apply new Language
+                                </button>
+                            </div>
                         </div>
-                    <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+                        </div>
+                    </details>
                 </div>
-
                 <!-- mycrud:start relation-panels -->
                 <?php
                 $m2mCreateEnabled = true;
@@ -504,7 +549,7 @@ $submissionToken = $submissionToken ?? '';
                 $m2mVisible = ($row === null && $m2mCreateEnabled) || ($row !== null && $m2mEditEnabled);
                 ?>
                 <?php if ($m2mVisible): ?>
-                <div class="col-12 col-md-12">
+                <div class="col-12 col-md-6">
                     <!-- mycrud:start many-to-many relation -->
                     <div class="card border-primary-subtle h-100">
                         <div class="card-header"><i class="bi bi-diagram-2 me-1"></i><strong>Actor</strong> <small class="text-muted">N:N</small></div>
@@ -753,7 +798,7 @@ $submissionToken = $submissionToken ?? '';
                 $m2mVisible = ($row === null && $m2mCreateEnabled) || ($row !== null && $m2mEditEnabled);
                 ?>
                 <?php if ($m2mVisible): ?>
-                <div class="col-12 col-md-12">
+                <div class="col-12 col-md-6">
                     <!-- mycrud:start many-to-many relation -->
                     <div class="card border-primary-subtle h-100">
                         <div class="card-header"><i class="bi bi-diagram-2 me-1"></i><strong>Category</strong> <small class="text-muted">N:N</small></div>

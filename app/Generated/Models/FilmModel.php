@@ -165,7 +165,6 @@ final class FilmModel extends BaseCrudModel
   10 => 'rating',
   11 => 'special_features',
   12 => 'last_update',
-  13 => 'uploads',
 );
     protected const COUNT_CACHE_SECONDS = 60;
 
@@ -220,7 +219,6 @@ final class FilmModel extends BaseCrudModel
             'film.rating AS rating',
             'film.special_features AS special_features',
             'film.last_update AS last_update',
-            'film.uploads AS uploads',
             'language__language_id.name AS language_id__label',
             'language__original_language_id.name AS original_language_id__label'
         ]);
@@ -315,7 +313,6 @@ final class FilmModel extends BaseCrudModel
             'film.rating AS rating',
             'film.special_features AS special_features',
             'film.last_update AS last_update',
-            'film.uploads AS uploads',
             'language__language_id.name AS language_id__label',
             'language__original_language_id.name AS original_language_id__label'
         ]);
@@ -843,6 +840,42 @@ final class FilmModel extends BaseCrudModel
         return trim((string) $label);
     }
     /**
+     * HasMany scaffolding delegated to the Model that owns table film_actor.
+     * The current Model only names the relation; it no longer composes child SQL.
+     */
+    public function getFilmActorByFilmId(int|string $parentId, int $limit = 20): array
+    {
+        return (new FilmActorModel())->childrenByForeignKey(
+            'film_id',
+            $parentId,
+            array (
+  0 => 'actor_id',
+  1 => 'film_id',
+  2 => 'last_update',
+),
+            'actor_id',
+            $limit
+        );
+    }
+    /**
+     * HasMany scaffolding delegated to the Model that owns table film_category.
+     * The current Model only names the relation; it no longer composes child SQL.
+     */
+    public function getFilmCategoryByFilmId(int|string $parentId, int $limit = 20): array
+    {
+        return (new FilmCategoryModel())->childrenByForeignKey(
+            'film_id',
+            $parentId,
+            array (
+  0 => 'film_id',
+  1 => 'category_id',
+  2 => 'last_update',
+),
+            'film_id',
+            $limit
+        );
+    }
+    /**
      * HasMany scaffolding delegated to the Model that owns table inventory.
      * The current Model only names the relation; it no longer composes child SQL.
      */
@@ -930,6 +963,10 @@ final class FilmModel extends BaseCrudModel
     public function loadHasMany(int|string $parentId): array
     {
         $result = [];
+        $result['film_actor__film_id'] = $this->getFilmActorByFilmId($parentId, 20);
+
+        $result['film_category__film_id'] = $this->getFilmCategoryByFilmId($parentId, 20);
+
         $result['inventory__film_id'] = $this->getInventoryByFilmId($parentId, 20);
 
         $result['many__film_actor__film_id'] = $this->getActorViaFilmActor($parentId, 20);

@@ -72,7 +72,7 @@ a second configuration model.
 Generated relations use static PHP references known at generation time. Parent/child reads are delegated to the owning related Model. Related writes are delegated to the owning related Service in Standard/Full architectures. Each related Service validates its own payload with its generated `<Resource>Rules::createRules()` before persistence. The originating Controller may pre-validate inline form payloads for field-level UX, but the related Service remains the write-side validation boundary.
 
 
-## Read/write ownership (2.9.1-dev24)
+## Read/write ownership
 
 Generated code no longer routes read operations through one-line Service wrappers. In Standard/Full, Controllers and API endpoints use the generated Model for reads and the generated Service for writes. Read-only MCP tools also use the Model directly. Services remain the validation/orchestration boundary for writes and may call related Services through static generated PHP references.
 
@@ -85,6 +85,6 @@ Related write: Service -> RelatedService -> RelatedModel
 This removes legacy indirection while preserving the existing query-layer rule: Services contain no SQL and no direct database connection.
 
 
-## Feature-aware Services (2.9.1-dev24-fix1)
+## Feature-aware Services
 
 Generated Services contain only the write features used by the current table. A table without Related Create or many-to-many relations receives simple `create(array $data)` and `update($id, array $data)` methods, without unused relation parameters or transaction boilerplate. Each write entry point validates with the resource's own generated Rules. Models without operational many-to-many relations expose `updateRecord()`; `updateRecordWithManyToMany()` is reserved for actual many-to-many synchronization.
