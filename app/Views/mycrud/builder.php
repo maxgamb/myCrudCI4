@@ -981,7 +981,7 @@ ksort($childTables);
                 </div>
 
                 <div class="alert alert-success mt-3 mb-0">
-                    <strong>dev13:</strong>
+                    <strong>Field configuration:</strong>
                     MCP resta locale/STDIO e read-only. Non eredita automaticamente Shield/API.
                     Exposed fields are controlled by <em>MCP visible</em>,
                     independently from <em>API visible</em>.
