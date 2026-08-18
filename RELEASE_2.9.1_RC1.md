@@ -1,43 +1,59 @@
 # myCrudCI4 2.9.1-RC1
 
+Release candidate for myCrudCI4 2.9.1.
+
 ## Status
 
-Release Candidate 1. Feature set frozen.
+Feature set frozen.
 
-The RC readiness matrix is green for the representative CRUDs `film`, `customer`, `staff`, `store`, and `rental`, including generated tests, API/OpenAPI, query layer, Dashboard, Shield contracts, CLI documentation, and Architecture/Builder guards.
+No new functionality is planned between RC1 and 2.9.1 stable.
+Only release-blocking bug fixes, packaging fixes, documentation corrections,
+and regression-test fixes are allowed.
 
-## Baseline
+## Architecture
 
-- Explicit/static relation methods generated at generation time; no metadata-driven runtime relation dispatcher.
-- Model layer owns reads and relation queries.
-- Service layer owns writes and transactional orchestration when the selected architecture enables Services.
-- Basic, Standard, and Full generation paths remain covered by regression commands.
-- Persistent Builder configuration remains the source of customization intent; database/schema facts are reread from the schema.
-- Dashboard object/DTO boundaries and generated runtime are covered by dedicated regression checks.
-- Shield keeps web CRUD and REST API authorization/filter configuration separate.
-- MCP remains read-only and capability-driven.
-- OpenAPI generated contracts are capability-aware, including CRUDs with all API operations disabled.
-- Related Create UI uses one project-wide offcanvas width from `Config\MyCrud::$relationOffcanvasWidth`, default `640` px.
-- M2M form panel width remains separate and can be persisted per relation through `formWidth`.
+- Basic: Model-based web CRUD.
+- Standard: Entity + Model reads + Service writes.
+- Full: Standard architecture + REST API v1 + OpenAPI.
+- Generated relations use explicit/static Model and Service dependencies.
+- Runtime relation resolvers are not part of the architecture.
+- Shared BaseCrudModel infrastructure remains limited to reusable owned-table behavior.
+- SQL VIEW resources are read-only and do not generate write Services.
+- ServiceExtension is the persistent customization point for Standard/Full writable CRUDs.
+- Generated code under app/Generated/ may be regenerated.
 
-## RC policy
+## RC1 validation
 
-From this baseline to 2.9.1 final, accept only release-blocking bug fixes, regression fixes, documentation corrections, and packaging/release corrections. Defer new features and architecture changes.
+Validated against the configured project CRUD set:
 
-## Verification
+- Configured CRUDs: 23
+- generate-all: OK 23
+- generation FAIL: 0
+- schema drift: 0
+- full CRUD regression: 23/23
+- SQL VIEW regression: FAIL 0
+- writable CRUD regression: FAIL 0
 
-Before promoting RC1 to stable, run:
+## RC1 release cleanup
 
-```bash
-php spark mycrud:test-all film
-php spark mycrud:release-check film customer staff store rental
-```
+- Central version set to `2.9.1-RC1`.
+- Active documentation aligned with RC1.
+- AI project context regenerated for RC1.
+- Development ZIP archives removed from version control.
+- Runtime myCrud reports removed from version control.
+- Temporary `.orig`, `.bak`, `.tmp`, and `.rej` artifacts excluded.
+- Regression diagnostics updated so read-only SQL VIEW capabilities are tested correctly.
 
-For a full configured-project refresh when required:
+## Before promotion to 2.9.1 stable
 
-```bash
-php spark mycrud:generate-all --force
-php spark mycrud:publish-all --force
-```
+RC1 must pass:
 
-Then rerun the RC readiness matrix.
+1. clean repository/package export;
+2. installation in a clean CodeIgniter 4 project/environment;
+3. Builder startup;
+4. CRUD generation;
+5. representative Basic, Standard and Full runtime checks;
+6. final regression suite with zero failures;
+7. final documentation/version audit.
+
+If these checks pass, promotion to `2.9.1` must not introduce feature changes.
