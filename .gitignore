@@ -49,3 +49,6 @@ Thumbs.db
 
 # myCrudCI4 generated staging output
 /app/Generated/
+
+# myCrudCI4 generated contract tests
+/app/Tests/Generated/
