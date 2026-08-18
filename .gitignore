@@ -46,3 +46,6 @@ Thumbs.db
 
 /writable/mycrud.zip
 /writable/mycrud/reports/
+
+# myCrudCI4 generated staging output
+/app/Generated/
