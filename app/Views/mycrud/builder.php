@@ -445,6 +445,18 @@ ksort($childTables);
     ?>
 
     <form method="post" id="builderForm">
+        <input
+            type="hidden"
+            name="fieldsConfigJson"
+            id="fieldsConfigJson"
+            value=""
+        >
+        <input
+            type="hidden"
+            name="fieldOrderJson"
+            id="fieldOrderJson"
+            value="<?= esc(json_encode(array_values((array) ($config['order'] ?? [])), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) ?>"
+        >
 <?= csrf_field() ?>
         <input type="hidden" name="table" value="<?= esc($table) ?>">
 
@@ -2208,7 +2220,6 @@ ksort($childTables);
 <?php endforeach; ?>
         </div>
 
-        <div id="orderContainer"></div>
 
         <div class="sticky-bottom bg-light border-top py-3 mt-4 builder-section-anchor" id="builder-generation">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
@@ -2379,28 +2390,151 @@ ksort($childTables);
         refreshSectionSelects();
 
         const sortableElement = document.getElementById('sortableFields');
-        const orderContainer = document.getElementById('orderContainer');
+        const fieldOrderInput = document.getElementById('fieldOrderJson');
 
         function updateOrder() {
-            orderContainer.innerHTML = '';
+            if (!sortableElement || !fieldOrderInput) {
+                return;
+            }
 
-            document.querySelectorAll('.field-block').forEach(function (block) {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'order[]';
-                input.value = block.dataset.field;
-                orderContainer.appendChild(input);
+            const order = Array.from(
+                sortableElement.querySelectorAll(':scope > .field-block')
+            )
+                .map(block => block.dataset.field || '')
+                .filter(Boolean);
+
+            fieldOrderInput.value = JSON.stringify(order);
+        }
+
+        if (sortableElement && fieldOrderInput) {
+            new Sortable(sortableElement, {
+                animation: 150,
+                handle: '.drag-handle',
+                ghostClass: 'border-warning',
+                onEnd: updateOrder
+            });
+
+            updateOrder();
+        }
+
+        const builderForm = document.getElementById('builderForm');
+        const fieldsConfigInput = document.getElementById('fieldsConfigJson');
+
+        /**
+         * Converts names such as:
+         *
+         * fields[title][inputType]
+         * fields[title][attributes][boolean][]
+         *
+         * into token lists compatible with the existing PHP POST structure.
+         */
+        function fieldInputTokens(name) {
+            const tokens = [];
+
+            name.replace(/([^[\]]+)|\[([^\]]*)\]/g, function (_, plain, bracket) {
+                tokens.push(plain !== undefined ? plain : bracket);
+                return '';
+            });
+
+            return tokens;
+        }
+
+        function setNestedFieldValue(root, tokens, value) {
+            let current = root;
+
+            tokens.forEach(function (token, index) {
+                const last = index === tokens.length - 1;
+                const next = tokens[index + 1];
+
+                if (token === '') {
+                    if (!Array.isArray(current)) {
+                        return;
+                    }
+
+                    if (last) {
+                        current.push(value);
+                        return;
+                    }
+
+                    const child = next === '' ? [] : {};
+                    current.push(child);
+                    current = child;
+                    return;
+                }
+
+                if (last) {
+                    if (Object.prototype.hasOwnProperty.call(current, token)) {
+                        if (!Array.isArray(current[token])) {
+                            current[token] = [current[token]];
+                        }
+
+                        current[token].push(value);
+                    } else {
+                        current[token] = value;
+                    }
+
+                    return;
+                }
+
+                if (
+                    !Object.prototype.hasOwnProperty.call(current, token)
+                    || current[token] === null
+                    || typeof current[token] !== 'object'
+                ) {
+                    current[token] = next === '' ? [] : {};
+                }
+
+                current = current[token];
             });
         }
 
-        new Sortable(sortableElement, {
-            animation: 150,
-            handle: '.drag-handle',
-            ghostClass: 'border-warning',
-            onSort: updateOrder
-        });
+        function updateFieldsConfigJson() {
+            if (!builderForm || !fieldsConfigInput) {
+                return;
+            }
 
-        updateOrder();
+            const fields = {};
+            const formData = new FormData(builderForm);
+
+            for (const [name, rawValue] of formData.entries()) {
+                if (typeof name !== 'string' || !name.startsWith('fields[')) {
+                    continue;
+                }
+
+                const tokens = fieldInputTokens(name);
+
+                if (tokens.shift() !== 'fields' || tokens.length === 0) {
+                    continue;
+                }
+
+                const value = typeof rawValue === 'string'
+                    ? rawValue
+                    : rawValue.name;
+
+                setNestedFieldValue(fields, tokens, value);
+            }
+
+            fieldsConfigInput.value = JSON.stringify(fields);
+        }
+
+        if (builderForm) {
+            builderForm.addEventListener('submit', function () {
+                // Always synchronize the drag/drop order immediately before submit.
+                updateOrder();
+
+                // Collapse the potentially thousands of fields[...] variables
+                // into one JSON POST variable.
+                updateFieldsConfigJson();
+
+                // Prevent individual fields[...] controls from being submitted.
+                // They have already been serialized into fieldsConfigJson.
+                builderForm
+                    .querySelectorAll('[name^="fields["]')
+                    .forEach(function (control) {
+                        control.disabled = true;
+                    });
+            });
+        }
 
         document.querySelectorAll('.toggle-field').forEach(function (button) {
             button.addEventListener('click', function () {

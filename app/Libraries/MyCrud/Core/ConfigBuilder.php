@@ -217,6 +217,44 @@ class ConfigBuilder
 
     public function buildFromRequest(array $post): array
     {
+        /*
+         * Large Builder forms can exceed PHP max_input_vars.
+         *
+         * The browser therefore serializes fields[...] into one JSON value.
+         * Rebuild the normal POST structure here so the rest of ConfigBuilder
+         * remains unchanged.
+         */
+        $fieldsConfigJson = trim((string) ($post['fieldsConfigJson'] ?? ''));
+
+        if ($fieldsConfigJson !== '') {
+            if (strlen($fieldsConfigJson) > 2_000_000) {
+                throw new \InvalidArgumentException('Fields configuration payload is too large.');
+            }
+
+            try {
+                $decodedFields = json_decode(
+                    $fieldsConfigJson,
+                    true,
+                    512,
+                    JSON_THROW_ON_ERROR
+                );
+            } catch (\JsonException $e) {
+                throw new \InvalidArgumentException(
+                    'Invalid fields configuration payload.',
+                    0,
+                    $e
+                );
+            }
+
+            if (!is_array($decodedFields)) {
+                throw new \InvalidArgumentException(
+                    'Invalid fields configuration payload.'
+                );
+            }
+
+            $post['fields'] = $decodedFields;
+        }
+
         $table = trim((string) ($post['table'] ?? ''));
 
         if ($table === '') {
@@ -395,9 +433,31 @@ class ConfigBuilder
         unset($field);
 
         $config['architecture'] = $architecture;
-        $config['order'] = array_values(array_filter(
-            (array) ($post['order'] ?? $config['order'])
-        ));
+        $postedOrder = $config['order'];
+
+        $fieldOrderJson = trim((string) ($post['fieldOrderJson'] ?? ''));
+        if ($fieldOrderJson !== '') {
+            $decodedOrder = json_decode($fieldOrderJson, true);
+
+            if (is_array($decodedOrder)) {
+                $postedOrder = $decodedOrder;
+            }
+        } elseif (isset($post['order'])) {
+            // Backward compatibility with older Builder forms.
+            $postedOrder = (array) $post['order'];
+        }
+
+        $config['order'] = array_values(array_unique(array_filter(
+            $postedOrder,
+            static fn (mixed $field): bool =>
+                is_string($field) && isset($config['fields'][$field])
+        )));
+
+        foreach (array_keys($config['fields']) as $fieldName) {
+            if (!in_array($fieldName, $config['order'], true)) {
+                $config['order'][] = $fieldName;
+            }
+        }
         $schemaFeatures = (array) ($config['features'] ?? []);
         $config['features'] = $this->featuresFromPost(
             $post,
