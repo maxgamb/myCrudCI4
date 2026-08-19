@@ -32,6 +32,46 @@ composer install
 
 ---
 
+
+
+
+## Screenshots
+
+### Project Dashboard
+
+Manage configured CRUDs and database resources from a single project overview.
+
+![myCrudCI4 Project Dashboard](docs/images/project-dashboard.png)
+
+### Visual CRUD Builder
+
+Choose the generated architecture and configure relations, forms, API capabilities,
+security, fields, and other application-level behavior.
+
+![myCrudCI4 CRUD Builder](docs/images/crud-builder.png)
+
+### Schema-aware Fields and Relations
+
+Configure field presentation and relation behavior while keeping the database schema
+authoritative for primary keys, foreign keys, indexes, nullability, and column types.
+
+![myCrudCI4 Field and Relation Configuration](docs/images/field-relations.png)
+
+### Dashboard Builder
+
+Build application dashboards using CRUD resources, KPI widgets, aggregates,
+charts, recent records, filters, and responsive layouts.
+
+![myCrudCI4 Dashboard Builder](docs/images/dashboard-builder.png)
+
+
+
+
+
+
+
+
+
 ## 2. Configure the Database
 
 Create or edit the `.env` file in the project root and configure the CodeIgniter 4 database connection.
