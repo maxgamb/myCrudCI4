@@ -1,5 +1,5 @@
 
-> **Current stable release:** `2.9.1`. Feature set is frozen; see `RELEASE_2.9.1_RC1.md`.
+> **Current stable release:** `2.9.1`. See `RELEASE_2.9.1.md`.
 > Current stable release: **myCrudCI4 2.9.1**
 
 # myCrudCI4

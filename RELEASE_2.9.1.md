@@ -6,9 +6,7 @@ Stable release of myCrudCI4 2.9.1.
 
 Stable release.
 
-No new functionality is planned between RC1 and 2.9.1 stable.
-Only release-blocking bug fixes, packaging fixes, documentation corrections,
-and regression-test fixes are allowed.
+Version `2.9.1` completed the release-candidate validation cycle and is the current stable release.
 
 ## Architecture
 
@@ -22,7 +20,7 @@ and regression-test fixes are allowed.
 - ServiceExtension is the persistent customization point for Standard/Full writable CRUDs.
 - Generated code under app/Generated/ may be regenerated.
 
-## RC1 validation
+## Stable validation
 
 Validated against the configured project CRUD set:
 
@@ -34,26 +32,12 @@ Validated against the configured project CRUD set:
 - SQL VIEW regression: FAIL 0
 - writable CRUD regression: FAIL 0
 
-## RC1 release cleanup
+## Release cleanup
 
-- Central version set to `2.9.1-RC1`.
-- Active documentation aligned with RC1.
-- AI project context regenerated for RC1.
+- Central version set to `2.9.1`.
+- Active documentation aligned with the stable release.
+- AI project context regenerated for the stable release.
 - Development ZIP archives removed from version control.
 - Runtime myCrud reports removed from version control.
 - Temporary `.orig`, `.bak`, `.tmp`, and `.rej` artifacts excluded.
 - Regression diagnostics updated so read-only SQL VIEW capabilities are tested correctly.
-
-## Before promotion to 2.9.1 stable
-
-RC1 must pass:
-
-1. clean repository/package export;
-2. installation in a clean CodeIgniter 4 project/environment;
-3. Builder startup;
-4. CRUD generation;
-5. representative Basic, Standard and Full runtime checks;
-6. final regression suite with zero failures;
-7. final documentation/version audit.
-
-If these checks pass, promotion to `2.9.1` must not introduce feature changes.
