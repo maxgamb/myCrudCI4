@@ -52,3 +52,8 @@ Thumbs.db
 
 # myCrudCI4 generated contract tests
 /app/Tests/Generated/
+
+# Local test/build artifacts
+/build/
+/nbproject/
+/patches/
