@@ -12,6 +12,350 @@ It inspects the database schema, stores application-level decisions in persisten
 per-table configuration, generates code in a safe staging area, and provides
 review, publishing, diagnostics, API/OpenAPI, generated tests, and local read-only MCP support.
 
+
+# Installation and Quick Start
+
+## 1. Download myCrudCI4
+
+Clone the stable `v2.9.1` release:
+
+```bash
+git clone --branch v2.9.1 --depth 1 https://github.com/maxgamb/myCrudCI4.git myCrudCI4
+cd myCrudCI4
+```
+
+Install the PHP dependencies:
+
+```bash
+composer install
+```
+
+---
+
+## 2. Configure the Database
+
+Create or edit the `.env` file in the project root and configure the CodeIgniter 4 database connection.
+
+Example:
+
+```ini
+database.default.hostname = localhost
+database.default.database = database_name
+database.default.username = database_user
+database.default.password = database_password
+database.default.DBDriver = MySQLi
+database.default.DBPrefix =
+database.default.port = 3306
+```
+
+For development, also set:
+
+```ini
+CI_ENVIRONMENT = development
+```
+
+---
+
+## 3. Start CodeIgniter
+
+From the project root, run:
+
+```bash
+php spark serve
+```
+
+By default, the application will be available at:
+
+```text
+http://localhost:8080
+```
+
+---
+
+## 4. Open myCrudCI4
+
+Open the main myCrudCI4 interface:
+
+```text
+http://localhost:8080/index.php/mycrud
+```
+
+This is the main entry point for the generator and its development tools.
+
+---
+
+## 5. Quick Global Setup
+
+For the fastest way to configure CRUDs from your existing database schema, open:
+
+```text
+http://localhost:8080/index.php/mycrud/quick
+```
+
+**Quick Global** allows you to select database tables and quickly create the initial CRUD configurations.
+
+Persistent CRUD configurations are stored in:
+
+```text
+app/MyCrudConfig/
+```
+
+This is the recommended starting point when configuring a new project with many database tables.
+
+---
+
+## 6. Customize CRUDs with the Builder
+
+For detailed configuration of individual CRUDs, open:
+
+```text
+http://localhost:8080/index.php/mycrud/builder
+```
+
+The Builder provides fine-grained control over the generated application, including:
+
+- Basic / Standard / Full architecture;
+- field visibility;
+- labels;
+- validation rules;
+- form input types;
+- `belongsTo` relations;
+- `hasMany` relations;
+- many-to-many relations;
+- filters;
+- exports;
+- file and image uploads;
+- form sections;
+- contextual navigation;
+- REST API and OpenAPI generation;
+- Service extension points;
+- other scaffolding options.
+
+Configurations saved through the Builder remain persistent in:
+
+```text
+app/MyCrudConfig/
+```
+
+---
+
+## 7. Generate the CRUDs
+
+After saving the configurations, generate all configured CRUDs with:
+
+```bash
+php spark mycrud:generate-all --force
+```
+
+To generate only one configured table:
+
+```bash
+php spark mycrud:generate table_name --force
+```
+
+Generated files are written to the staging directory:
+
+```text
+app/Generated/
+```
+
+The staging directory contains generated code that has not yet been published to the operational application.
+
+You can inspect the generated code before publishing it.
+
+---
+
+## 8. Create the Application Menu
+
+Open the menu tool:
+
+```text
+http://localhost:8080/index.php/mycrud/tools/menu
+```
+
+Use this tool to create and configure the application menu based on your configured CRUD resources.
+
+---
+
+## 9. Publish the Generated Code
+
+After reviewing the files generated in:
+
+```text
+app/Generated/
+```
+
+you can publish a single CRUD with:
+
+```bash
+php spark mycrud:publish table_name
+```
+
+Or publish all configured CRUDs with:
+
+```bash
+php spark mycrud:publish-all
+```
+
+Publishing moves the generated application components from the staging area into their operational locations under `app/` and, where applicable, the corresponding test locations.
+
+### Manual alternative
+
+You can also manually copy the contents of:
+
+```text
+app/Generated/
+```
+
+into:
+
+```text
+app/
+```
+
+while preserving the generated directory structure.
+
+Using the `mycrud:publish` commands is recommended because they follow the publication workflow provided by myCrudCI4.
+
+---
+
+## 10. Open the Generated CRUD
+
+After publishing, open the generated CRUD using its configured route.
+
+For example:
+
+```text
+http://localhost:8080/country
+```
+
+or, when `index.php` is part of the application URL:
+
+```text
+http://localhost:8080/index.php/country
+```
+
+In general:
+
+```text
+http://localhost:8080/table_name
+```
+
+Replace `table_name` with the name of the generated resource.
+
+---
+
+# Recommended Workflow
+
+The normal myCrudCI4 workflow is:
+
+```text
+1. Clone the stable release
+        ↓
+2. Run composer install
+        ↓
+3. Configure the database in .env
+        ↓
+4. Open /index.php/mycrud
+        ↓
+5. Use Quick Global to create the initial configurations
+        ↓
+6. Use the Builder for detailed customization
+        ↓
+7. Generate the CRUDs
+        ↓
+8. Review app/Generated/
+        ↓
+9. Create/configure the application menu
+        ↓
+10. Publish the generated code
+        ↓
+11. Open /table_name
+```
+
+## Quick Example
+
+```bash
+# Download myCrudCI4
+git clone --branch v2.9.1 --depth 1 https://github.com/maxgamb/myCrudCI4.git myCrudCI4
+cd myCrudCI4
+
+# Install dependencies
+composer install
+
+# Configure .env before continuing
+
+# Start the development server
+php spark serve
+```
+
+Then open:
+
+```text
+Main interface:
+http://localhost:8080/index.php/mycrud
+
+Quick Global:
+http://localhost:8080/index.php/mycrud/quick
+
+Builder:
+http://localhost:8080/index.php/mycrud/builder
+
+Menu Builder:
+http://localhost:8080/index.php/mycrud/tools/menu
+```
+
+After configuring the CRUDs:
+
+```bash
+php spark mycrud:generate-all --force
+```
+
+Review:
+
+```text
+app/Generated/
+```
+
+Then publish:
+
+```bash
+php spark mycrud:publish-all
+```
+
+Finally, open a generated resource:
+
+```text
+http://localhost:8080/table_name
+```
+
+---
+
+# Important: Generated Code and Customizations
+
+`app/Generated/` is a **regenerable staging directory**.
+
+Do not use files inside `app/Generated/` as the permanent location for custom application code, because they may be overwritten during regeneration.
+
+For Standard and Full architectures, persistent Service customizations should use the generated extension points under:
+
+```text
+app/Services/Extensions/<Entity>ServiceExtension.php
+```
+
+These extension files are intended for developer-owned business logic and are kept outside the regenerable `app/Generated/` staging directory.
+
+As a general rule:
+
+```text
+app/Generated/                         → regenerable generated code
+app/MyCrudConfig/                      → persistent CRUD configuration
+app/Services/Extensions/               → persistent developer customizations
+published app/ code                    → operational application code
+```
+
+
+
 ## Recommended workflow
 
 ```text
