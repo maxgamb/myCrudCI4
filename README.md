@@ -807,7 +807,7 @@ Service code is feature-aware: unused relation/M2M parameters, transaction branc
 
 ## Frozen architecture baseline
 
-The architecture is frozen around explicit generated dependencies: related Models and Services are named directly in generated PHP, while `BaseCrudModel` contains only reusable owned-table infrastructure. `mycrud:test-all` includes an architecture boundary guard that rejects dynamic relation resolvers, SQL in Services/API controllers, and input/query policy leaking into API/MCP Resources. See `BASELINE_2.9.1_DEV24_FIX11_FIX15.md`.
+The architecture is frozen around explicit generated dependencies: related Models and Services are named directly in generated PHP, while `BaseCrudModel` contains only reusable owned-table infrastructure. `mycrud:test-all` includes an architecture boundary guard that rejects dynamic relation resolvers, SQL in Services/API controllers, and input/query policy leaking into API/MCP Resources.
 
 
 ## Safe developer customizations
@@ -821,7 +821,7 @@ Do not use the example as a reason to put SQL in the ServiceExtension. Queries s
 
 ### Dashboard 2.0 architecture
 
-Dashboard 2.0 is frozen around an object-first runtime boundary: Builder/configuration remains array-based, while generated runtime data uses `DashboardData`, `DashboardWidget`, `Kpi`, `SeriesPoint`, and `RecentRecord` objects through Controller and View. Recent widgets use generation-time concrete Models and relation-aware labels; aggregate widgets use `DashboardQuery`. `php spark mycrud:test-dashboard` protects these boundaries. See `BASELINE_DASHBOARD_2.0_DEV24_FIX11_FIX26.md`.
+Dashboard 2.0 is frozen around an object-first runtime boundary: Builder/configuration remains array-based, while generated runtime data uses `DashboardData`, `DashboardWidget`, `Kpi`, `SeriesPoint`, and `RecentRecord` objects through Controller and View. Recent widgets use generation-time concrete Models and relation-aware labels; aggregate widgets use `DashboardQuery`. `php spark mycrud:test-dashboard` protects these boundaries.
 php spark mycrud:release-check film customer staff store rental
 
 ### Generated MCP publish synchronization
