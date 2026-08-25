@@ -452,6 +452,12 @@ PHP;
         }
 
         $safeKey = preg_replace('/[^a-zA-Z0-9_]/', '_', $key) ?: 'relation';
+        $relatedTable = trim((string) ($definition['table'] ?? $definition['relatedTable'] ?? ''));
+        if ($relatedTable === '') {
+            $relatedTable = trim((string) ($definition['targetTable'] ?? ''));
+        }
+        $relatedNamespace = $relatedTable !== '' ? $relatedTable : $safeKey;
+        $relatedIdPrefix = preg_replace('/[^a-zA-Z0-9_]/', '_', $relatedNamespace) ?: 'related';
         $panelId = 'many_related_create_' . $safeKey;
         $fieldMarkup = '';
 
@@ -459,7 +465,7 @@ PHP;
             $fieldName = (string) $fieldName;
             $field = (array) $field;
             $type = strtolower((string) ($field['inputType'] ?? 'text'));
-            $inputId = $panelId . '_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $fieldName);
+            $inputId = $relatedIdPrefix . '_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $fieldName);
             $label = htmlspecialchars(Naming::human($fieldName), ENT_QUOTES);
             $required = in_array('required', (array) ($field['attributes']['boolean'] ?? []), true);
             $requiredAttr = $required ? ' required' : '';
@@ -473,7 +479,7 @@ PHP;
                 }
             }
 
-            $oldExpr = "(string) old(" . var_export('_many_related.' . $key . '.' . $fieldName, true) . ", '')";
+            $oldExpr = "(string) old(" . var_export($relatedNamespace . '.' . $fieldName, true) . ", '')";
             $errorKey = $key . '__many_related__' . $fieldName;
             $invalid = "<?= isset(\$errors[" . var_export($errorKey, true) . "]) ? 'is-invalid' : '' ?>";
             $errorHtml = "<?php if (!empty(\$errors[" . var_export($errorKey, true) . "])): ?>"
@@ -481,14 +487,14 @@ PHP;
                 . "<?php endif; ?>";
             $nestedForeignKey = (array) ($field['foreignKey'] ?? []);
 
-            if (!empty($relatedField['spatial']) && strtolower((string) ($field['type'] ?? '')) === 'point') {
+            if (!empty($field['spatial']) && strtolower((string) ($field['type'] ?? '')) === 'point') {
                 $latId = $inputId . '_latitude';
                 $lngId = $inputId . '_longitude';
                 $requiredPoint = $required ? ' required' : '';
                 $control = <<<PHP
                 <input
                     type="hidden"
-                    name="_related[{$name}][{$relatedName}]"
+                    name="{$relatedNamespace}[{$fieldName}]"
                     id="{$inputId}"
                     value="<?= esc({$valueExpr}) ?>"
                     class="crud-related-create-field crud-point-wkt"
@@ -533,7 +539,7 @@ PHP;
                 $control = <<<PHP
 <select
     id="{$inputId}"
-    name="_many_related[{$key}][{$fieldName}]"
+    name="{$relatedNamespace}[{$fieldName}]"
     class="form-select {$invalid} crud-many-related-field"
     data-many-related-field
     disabled{$requiredAttr}{$attrs}
@@ -554,7 +560,7 @@ PHP;
                 $control = <<<PHP
 <textarea
     id="{$inputId}"
-    name="_many_related[{$key}][{$fieldName}]"
+    name="{$relatedNamespace}[{$fieldName}]"
     class="form-control {$invalid} crud-many-related-field"
     data-many-related-field
     disabled{$requiredAttr}{$attrs}
@@ -562,12 +568,12 @@ PHP;
 PHP;
             } elseif ($type === 'checkbox') {
                 $control = <<<PHP
-<input type="hidden" name="_many_related[{$key}][{$fieldName}]" value="0" data-many-related-field disabled>
+<input type="hidden" name="{$relatedNamespace}[{$fieldName}]" value="0" data-many-related-field disabled>
 <div class="form-check">
     <input
         id="{$inputId}"
         type="checkbox"
-        name="_many_related[{$key}][{$fieldName}]"
+        name="{$relatedNamespace}[{$fieldName}]"
         value="1"
         class="form-check-input {$invalid} crud-many-related-field"
         data-many-related-field
@@ -584,7 +590,7 @@ PHP;
 <input
     id="{$inputId}"
     type="{$htmlType}"
-    name="_many_related[{$key}][{$fieldName}]"
+    name="{$relatedNamespace}[{$fieldName}]"
     value="<?= esc({$oldExpr}) ?>"
     class="form-control {$invalid} crud-many-related-field"
     data-many-related-field

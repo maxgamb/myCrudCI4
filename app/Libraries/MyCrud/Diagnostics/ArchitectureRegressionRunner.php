@@ -302,12 +302,31 @@ final class ArchitectureRegressionRunner
 
             $m2mRelatedCreateOk = str_contains($controllerContent, 'manyToManyRelatedCreateDataFromPost')
                 && str_contains($controllerContent, 'validateManyToManyRelatedCreates')
+                && str_contains($controllerContent, 'MANY_TO_MANY_RELATED_CREATE_TABLES')
                 && str_contains($validationContent, 'manyToManyRelatedCreateRules')
                 && str_contains($m2mFormContractContent, 'Create new ')
                 && str_contains($m2mFormContractContent, 'crud-many-related-create-panel')
                 && str_contains($m2mFormContractContent, 'data-bs-toggle="offcanvas"')
                 && str_contains($m2mFormContractContent, 'crud-many-related-create-apply')
+                && !str_contains($m2mFormContractContent, 'name="_many_related[')
+                && !str_contains($m2mFormContractContent, 'id="many_related_create_many__')
                 && !str_contains($m2mFormContractContent, 'data-many-related-toggle');
+
+            foreach ($enabledM2MRelatedCreates as $relation) {
+                $relatedTable = trim((string) ($relation['relatedTable'] ?? ''));
+                if ($relatedTable === '') {
+                    continue;
+                }
+                $relatedCreateFields = array_keys((array) (($relation['relatedCreate']['fields'] ?? [])));
+                foreach ($relatedCreateFields as $relatedCreateField) {
+                    $fieldName = (string) $relatedCreateField;
+                    $expectedName = 'name="' . $relatedTable . '[' . $fieldName . ']"';
+                    $expectedId = 'id="' . $relatedTable . '_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $fieldName) . '"';
+                    $m2mRelatedCreateOk = $m2mRelatedCreateOk
+                        && str_contains($m2mFormContractContent, $expectedName)
+                        && str_contains($m2mFormContractContent, $expectedId);
+                }
+            }
 
             if (in_array($architecture, ['standard', 'full'], true)) {
                 $m2mStaticServicesOk = true;
