@@ -279,7 +279,12 @@ PHP;
             $createRelatedEnabled = !empty($relation['createRelatedEnabled'])
                 && !empty($relation['createRelatedAvailable']);
             $createRelatedMarkup = $createRelatedEnabled
-                ? $this->buildManyToManyRelatedCreateFields((string) $key, (array) ($relation['relatedCreate'] ?? []), $title)
+                ? $this->buildManyToManyRelatedCreateFields(
+                    (string) $key,
+                    (string) ($relation['relatedTable'] ?? ''),
+                    (array) ($relation['relatedCreate'] ?? []),
+                    $title
+                )
                 : '';
             $createRelatedInlineButton = '';
             if ($createRelatedEnabled) {
@@ -442,7 +447,12 @@ PHP;
     }
 
 
-    private function buildManyToManyRelatedCreateFields(string $key, array $definition, string $title): string
+    private function buildManyToManyRelatedCreateFields(
+        string $key,
+        string $relatedTable,
+        array $definition,
+        string $title
+    ): string
     {
         $offcanvasWidth = $this->relationOffcanvasWidth();
         $relatedFieldClass = $this->relationGridClass('manyToManyRelatedCreateField', 6);
@@ -452,12 +462,6 @@ PHP;
         }
 
         $safeKey = preg_replace('/[^a-zA-Z0-9_]/', '_', $key) ?: 'relation';
-        $relatedTable = trim((string) ($definition['table'] ?? $definition['relatedTable'] ?? ''));
-        if ($relatedTable === '') {
-            $relatedTable = trim((string) ($definition['targetTable'] ?? ''));
-        }
-        $relatedNamespace = $relatedTable !== '' ? $relatedTable : $safeKey;
-        $relatedIdPrefix = preg_replace('/[^a-zA-Z0-9_]/', '_', $relatedNamespace) ?: 'related';
         $panelId = 'many_related_create_' . $safeKey;
         $fieldMarkup = '';
 
@@ -465,7 +469,8 @@ PHP;
             $fieldName = (string) $fieldName;
             $field = (array) $field;
             $type = strtolower((string) ($field['inputType'] ?? 'text'));
-            $inputId = $relatedIdPrefix . '_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $fieldName);
+            $safeRelatedTable = preg_replace('/[^a-zA-Z0-9_]/', '_', $relatedTable) ?: 'related';
+            $inputId = $safeRelatedTable . '_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $fieldName);
             $label = htmlspecialchars(Naming::human($fieldName), ENT_QUOTES);
             $required = in_array('required', (array) ($field['attributes']['boolean'] ?? []), true);
             $requiredAttr = $required ? ' required' : '';
@@ -479,7 +484,7 @@ PHP;
                 }
             }
 
-            $oldExpr = "(string) old(" . var_export($relatedNamespace . '.' . $fieldName, true) . ", '')";
+            $oldExpr = "(string) old(" . var_export($relatedTable . '.' . $fieldName, true) . ", '')";
             $errorKey = $key . '__many_related__' . $fieldName;
             $invalid = "<?= isset(\$errors[" . var_export($errorKey, true) . "]) ? 'is-invalid' : '' ?>";
             $errorHtml = "<?php if (!empty(\$errors[" . var_export($errorKey, true) . "])): ?>"
@@ -487,14 +492,14 @@ PHP;
                 . "<?php endif; ?>";
             $nestedForeignKey = (array) ($field['foreignKey'] ?? []);
 
-            if (!empty($field['spatial']) && strtolower((string) ($field['type'] ?? '')) === 'point') {
+            if (!empty($relatedField['spatial']) && strtolower((string) ($field['type'] ?? '')) === 'point') {
                 $latId = $inputId . '_latitude';
                 $lngId = $inputId . '_longitude';
                 $requiredPoint = $required ? ' required' : '';
                 $control = <<<PHP
                 <input
                     type="hidden"
-                    name="{$relatedNamespace}[{$fieldName}]"
+                    name="_related[{$name}][{$relatedName}]"
                     id="{$inputId}"
                     value="<?= esc({$valueExpr}) ?>"
                     class="crud-related-create-field crud-point-wkt"
@@ -539,7 +544,7 @@ PHP;
                 $control = <<<PHP
 <select
     id="{$inputId}"
-    name="{$relatedNamespace}[{$fieldName}]"
+    name="{$relatedTable}[{$fieldName}]"
     class="form-select {$invalid} crud-many-related-field"
     data-many-related-field
     disabled{$requiredAttr}{$attrs}
@@ -560,7 +565,7 @@ PHP;
                 $control = <<<PHP
 <textarea
     id="{$inputId}"
-    name="{$relatedNamespace}[{$fieldName}]"
+    name="{$relatedTable}[{$fieldName}]"
     class="form-control {$invalid} crud-many-related-field"
     data-many-related-field
     disabled{$requiredAttr}{$attrs}
@@ -568,12 +573,12 @@ PHP;
 PHP;
             } elseif ($type === 'checkbox') {
                 $control = <<<PHP
-<input type="hidden" name="{$relatedNamespace}[{$fieldName}]" value="0" data-many-related-field disabled>
+<input type="hidden" name="{$relatedTable}[{$fieldName}]" value="0" data-many-related-field disabled>
 <div class="form-check">
     <input
         id="{$inputId}"
         type="checkbox"
-        name="{$relatedNamespace}[{$fieldName}]"
+        name="{$relatedTable}[{$fieldName}]"
         value="1"
         class="form-check-input {$invalid} crud-many-related-field"
         data-many-related-field
@@ -590,7 +595,7 @@ PHP;
 <input
     id="{$inputId}"
     type="{$htmlType}"
-    name="{$relatedNamespace}[{$fieldName}]"
+    name="{$relatedTable}[{$fieldName}]"
     value="<?= esc({$oldExpr}) ?>"
     class="form-control {$invalid} crud-many-related-field"
     data-many-related-field
@@ -849,6 +854,8 @@ foreach ((array) (\$relatedCreateOptions['{$name}'] ?? []) as \$optionField => \
 >
     <?= view('{$parentTable}/_fields', [
         'row' => null,
+        'formNamespace' => '{$name}',
+        'idNamespace' => '{$name}',
         'errors' => \$relatedErrors,
         'options' => \$parentOptions,
         'context' => [],

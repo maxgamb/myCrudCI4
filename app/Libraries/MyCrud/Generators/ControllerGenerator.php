@@ -185,21 +185,20 @@ final class ControllerGenerator
 
         $manyToManyRelatedCreateFields = [];
         $manyToManyRelatedCreateTables = [];
+
         foreach ($enabledManyToMany as $relationKey => $relation) {
             if (empty($relation['createRelatedEnabled']) || empty($relation['createRelatedAvailable'])) {
                 continue;
             }
+
             $definition = (array) ($relation['relatedCreate'] ?? []);
+
             $manyToManyRelatedCreateFields[(string) $relationKey] = array_values(array_keys(
                 (array) ($definition['fields'] ?? [])
             ));
-            $manyToManyRelatedCreateTables[(string) $relationKey] = trim((string) (
-                $relation['relatedTable']
-                ?? $definition['table']
-                ?? $definition['relatedTable']
-                ?? $definition['targetTable']
-                ?? ''
-            ));
+
+            $manyToManyRelatedCreateTables[(string) $relationKey]
+                = trim((string) ($relation['relatedTable'] ?? ''));
         }
 
         $disabledCode = var_export(array_values(array_unique($disabled)), true);
@@ -219,7 +218,7 @@ final class ControllerGenerator
             $allowedCode = var_export(array_values($allowedFields), true);
             $relatedCreatePostLines[] = <<<PHP
         if (!empty(\$flags['{$relationField}'])) {
-            \$payload = \$this->request->getPost('{$parentTable}');
+            \$payload = \$this->request->getPost('{$relationField}');
             if (is_array(\$payload)) {
                 \$allowed = array_fill_keys({$allowedCode}, true);
                 \$related['{$relationField}'] = array_intersect_key(\$payload, \$allowed);
@@ -1261,8 +1260,10 @@ PHP : '';
             ? "    /** Foreign keys authorized for atomic parent creation within the same form. */\n    private const RELATED_CREATE_FIELDS = {$relatedCreateFieldsCode};\n\n"
             : '';
         $manyToManyRelatedConstCode = $manyToManyRelatedCreateEnabled
-            ? "    /** Fields allowed for inline many-to-many target creation. */\n    private const MANY_TO_MANY_RELATED_CREATE_FIELDS = {$manyToManyRelatedCreateFieldsCode};\n\n"
-                . "    /** Related resource table used as the HTML POST namespace for each M:N relation. */\n    private const MANY_TO_MANY_RELATED_CREATE_TABLES = {$manyToManyRelatedCreateTablesCode};\n\n"
+            ? "    /** Fields allowed for inline many-to-many target creation. */\n"
+                . "    private const MANY_TO_MANY_RELATED_CREATE_FIELDS = {$manyToManyRelatedCreateFieldsCode};\n\n"
+                . "    /** Related resource POST namespace for each many-to-many relation. */\n"
+                . "    private const MANY_TO_MANY_RELATED_CREATE_TABLES = {$manyToManyRelatedCreateTablesCode};\n\n"
             : '';
         $uploadConstCode = $hasUploads
             ? "    /** Upload fields and runtime policies. */\n    private const UPLOAD_FIELDS = {$uploadFieldsCode};\n\n"

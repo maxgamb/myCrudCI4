@@ -309,7 +309,6 @@ final class ArchitectureRegressionRunner
                 && str_contains($m2mFormContractContent, 'data-bs-toggle="offcanvas"')
                 && str_contains($m2mFormContractContent, 'crud-many-related-create-apply')
                 && !str_contains($m2mFormContractContent, 'name="_many_related[')
-                && !str_contains($m2mFormContractContent, 'id="many_related_create_many__')
                 && !str_contains($m2mFormContractContent, 'data-many-related-toggle');
 
             foreach ($enabledM2MRelatedCreates as $relation) {
@@ -611,7 +610,7 @@ final class ArchitectureRegressionRunner
                     && $parentTable !== ''
                     && str_contains($partialContent, "view('" . $parentTable . "/_fields'")
                     && str_contains($partialContent, 'crud-related-create-fieldset')
-                    && str_contains($controllerContent, "getPost('" . $parentTable . "')");
+                    && str_contains($controllerContent, "getPost('" . $relatedField . "')");
             }
             $relatedWriteChecks = [];
             if ($architecture === 'basic') {
