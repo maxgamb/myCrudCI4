@@ -104,6 +104,7 @@ final class ControllerGenerator
         $simpleFilterFields = [];
         $navigationContextFields = [];
         $relatedCreateFields = [];
+        $relatedCreateTables = [];
         $uploadFields = [];
         $timestampsEnabled = !empty($config['features']['timestamps'])
             && isset($config['fields']['created_at'], $config['fields']['updated_at']);
@@ -135,6 +136,7 @@ final class ControllerGenerator
                     && !empty($field['foreignKey']['relatedCreate']['available'])
                 ) {
                     $relatedCreateFields[$name] = array_values(array_keys((array) ($field['foreignKey']['relatedCreate']['fields'] ?? [])));
+                    $relatedCreateTables[$name] = (string) ($field['foreignKey']['relatedCreate']['table'] ?? $field['foreignKey']['parentTable'] ?? '');
                 }
             }
 
@@ -200,6 +202,24 @@ final class ControllerGenerator
         $nullableForeignKeysCode = var_export(array_values(array_unique($nullableForeignKeys)), true);
         $simpleFilterFieldsCode = var_export(array_values(array_unique($simpleFilterFields)), true);
         $navigationContextFieldsCode = var_export(array_values(array_unique($navigationContextFields)), true);
+        $relatedCreatePostLines = [];
+        foreach ($relatedCreateFields as $relationField => $allowedFields) {
+            $parentTable = trim((string) ($relatedCreateTables[$relationField] ?? ''));
+            if ($parentTable === '') {
+                continue;
+            }
+            $allowedCode = var_export(array_values($allowedFields), true);
+            $relatedCreatePostLines[] = <<<PHP
+        if (!empty(\$flags['{$relationField}'])) {
+            \$payload = \$this->request->getPost('{$parentTable}');
+            if (is_array(\$payload)) {
+                \$allowed = array_fill_keys({$allowedCode}, true);
+                \$related['{$relationField}'] = array_intersect_key(\$payload, \$allowed);
+            }
+        }
+PHP;
+        }
+        $relatedCreatePostCode = implode("\n", $relatedCreatePostLines);
         $relatedCreateFieldsCode = var_export($relatedCreateFields, true);
         $manyToManyRelatedCreateFieldsCode = var_export($manyToManyRelatedCreateFields, true);
         $hasRelatedCreate = $relatedCreateFields !== [];
@@ -323,26 +343,26 @@ PHP;
         if ($hasUploads) {
             if ($useService) {
                 $createCode = "            \$id = {$serviceCreateCall};\n"
-                    . "            \$uploadData = \$this->uploadManager->store('{$table}', \$id, self::UPLOAD_FIELDS, \$this->request->getFiles());\n"
+                    . "            \$uploadData = \$this->uploadManager->store('{$table}', \$id, self::UPLOAD_FIELDS, \$this->mainFormFilesFromRequest());\n"
                     . "            if (\$uploadData !== []) { \$this->service->update(\$id, \$uploadData); }";
                 $updateCode = "            \$oldUploadValues = \$this->currentUploadValues(\$id);\n"
-                    . "            \$uploadData = \$this->uploadManager->store('{$table}', \$id, self::UPLOAD_FIELDS, \$this->request->getFiles());\n"
+                    . "            \$uploadData = \$this->uploadManager->store('{$table}', \$id, self::UPLOAD_FIELDS, \$this->mainFormFilesFromRequest());\n"
                     . "            " . str_replace('$data', 'array_merge($data, $uploadData)', $serviceUpdateCall) . ";\n"
                     . "            \$this->deleteReplacedUploads(\$oldUploadValues, \$uploadData);";
             } else {
                 $createCode = "            \$id = {$modelCreateCall};\n"
-                    . "            \$uploadData = \$this->uploadManager->store('{$table}', \$id, self::UPLOAD_FIELDS, \$this->request->getFiles());\n";
+                    . "            \$uploadData = \$this->uploadManager->store('{$table}', \$id, self::UPLOAD_FIELDS, \$this->mainFormFilesFromRequest());\n";
                 if ($hasOperationalManyToManyUpdate) {
                     $createCode .= "            if (\$uploadData !== [] && !\$this->model->updateRecordWithManyToMany(\$id, \$uploadData, [])) { throw new RuntimeException('Salvataggio upload non riuscito.'); }";
                     $uploadUpdateManyCall = str_replace('$data', 'array_merge($data, $uploadData)', $modelUpdateManyCall);
                     $updateCode = "            \$oldUploadValues = \$this->currentUploadValues(\$id);\n"
-                        . "            \$uploadData = \$this->uploadManager->store('{$table}', \$id, self::UPLOAD_FIELDS, \$this->request->getFiles());\n"
+                        . "            \$uploadData = \$this->uploadManager->store('{$table}', \$id, self::UPLOAD_FIELDS, \$this->mainFormFilesFromRequest());\n"
                         . "            if (!{$uploadUpdateManyCall}) { throw new RuntimeException(implode(' ', \$this->model->errors()) ?: 'Update failed.'); }\n"
                         . "            \$this->deleteReplacedUploads(\$oldUploadValues, \$uploadData);";
                 } else {
                     $createCode .= "            if (\$uploadData !== [] && !\$this->model->updateRecord(\$id, \$uploadData)) { throw new RuntimeException('Salvataggio upload non riuscito.'); }";
                     $updateCode = "            \$oldUploadValues = \$this->currentUploadValues(\$id);\n"
-                        . "            \$uploadData = \$this->uploadManager->store('{$table}', \$id, self::UPLOAD_FIELDS, \$this->request->getFiles());\n"
+                        . "            \$uploadData = \$this->uploadManager->store('{$table}', \$id, self::UPLOAD_FIELDS, \$this->mainFormFilesFromRequest());\n"
                         . "            if (!\$this->model->updateRecord(\$id, array_merge(\$data, \$uploadData))) { throw new RuntimeException(implode(' ', \$this->model->errors()) ?: 'Update failed.'); }\n"
                         . "            \$this->deleteReplacedUploads(\$oldUploadValues, \$uploadData);";
                 }
@@ -729,7 +749,8 @@ PHP : '';
         }
 
 {$uploadCreateValidationCode}{$relatedPayloadLine}{$manyToManyRelatedCreatePostCode}        \$createRules = {$rules}::createRules();
-{$relatedCreateRuleRelaxCode}        if (!\$this->validate(\$createRules, {$rules}::messages())) {
+{$relatedCreateRuleRelaxCode}        \$mainPayload = \$this->mainFormDataFromPost();
+        if (!\$this->validateData(\$mainPayload, \$createRules, {$rules}::messages())) {
             return redirect()->back()->withInput()->with('errors', \$this->validator->getErrors());
         }
 
@@ -782,7 +803,8 @@ PHP : '';
         if (!\$this->submissionGuard->consume('update_' . (string) \$id, \$this->request->getPost('_submission_token'))) {
             return redirect()->back()->withInput()->with('error', 'The form has already been submitted or has expired.');
         }
-{$uploadUpdateValidationCode}        if (!\$this->validate({$rules}::updateRules(\$id), {$rules}::messages())) {
+{$uploadUpdateValidationCode}        \$mainPayload = \$this->mainFormDataFromPost();
+        if (!\$this->validateData(\$mainPayload, {$rules}::updateRules(\$id), {$rules}::messages())) {
             return redirect()->back()->withInput()->with('errors', \$this->validator->getErrors());
         }
 {$manyToManyRelatedCreatePostCode}        \$data = \$this->formData(true);
@@ -866,6 +888,13 @@ PHP : '';
 PHP : '';
 
         $formDataHelperCode = $hasForms ? <<<PHP
+    /** @return array<string,mixed> */
+    private function mainFormDataFromPost(): array
+    {
+        \$payload = \$this->request->getPost('{$table}');
+        return is_array(\$payload) ? \$payload : [];
+    }
+
     /**
      * Extracts and sanitizes write payload from the current HTTP request.
      *
@@ -878,7 +907,7 @@ PHP : '';
     private function formData(bool \$isUpdate): array
     {
         return \$this->inputProcessor->process(
-            \$this->request->getPost(),
+            \$this->mainFormDataFromPost(),
             \$isUpdate,
             {$processorAutomaticDates},
             {$disabledCode},
@@ -892,45 +921,53 @@ PHP : '';
 
 PHP : '';
 
-        $uploadHelpersCode = $hasUploads ? <<<'PHP'
+        $uploadHelpersCode = $hasUploads ? <<<PHP
+    /** @return array<string,mixed> */
+    private function mainFormFilesFromRequest(): array
+    {
+        \$files = \$this->request->getFiles();
+        \$payload = \$files['{$table}'] ?? [];
+        return is_array(\$payload) ? \$payload : [];
+    }
+
     /**
      * Validates uploaded files according to the generated field policies.
      *
-     * @param bool $isUpdate True when validating an Edit request.
+     * @param bool \$isUpdate True when validating an Edit request.
      * @return array<string,string> Field-scoped validation errors.
      */
-    private function uploadManagerErrors(bool $isUpdate): array
+    private function uploadManagerErrors(bool \$isUpdate): array
     {
-        return $this->uploadManager->validate(self::UPLOAD_FIELDS, $this->request->getFiles(), $isUpdate);
+        return \$this->uploadManager->validate(self::UPLOAD_FIELDS, \$this->mainFormFilesFromRequest(), \$isUpdate);
     }
 
     /**
      * Reads currently persisted upload filenames before an Edit replacement.
      *
-     * @param int|string $id Record identifier.
+     * @param int|string \$id Record identifier.
      * @return array<string,string> Existing filenames keyed by upload field.
      */
-    private function currentUploadValues(int|string $id): array
+    private function currentUploadValues(int|string \$id): array
     {
-        $row = $this->findRecordOrFail($id);
-        $values = [];
-        foreach (array_keys(self::UPLOAD_FIELDS) as $field) {
-            $values[$field] = isset($row->{$field}) ? (string) $row->{$field} : '';
+        \$row = \$this->findRecordOrFail(\$id);
+        \$values = [];
+        foreach (array_keys(self::UPLOAD_FIELDS) as \$field) {
+            \$values[\$field] = isset(\$row->{\$field}) ? (string) \$row->{\$field} : '';
         }
-        return $values;
+        return \$values;
     }
 
     /**
      * Deletes files that were replaced successfully by a new upload.
      *
-     * @param array<string,string> $old Previous filenames.
-     * @param array<string,string> $new Newly stored filenames.
+     * @param array<string,string> \$old Previous filenames.
+     * @param array<string,string> \$new Newly stored filenames.
      */
-    private function deleteReplacedUploads(array $old, array $new): void
+    private function deleteReplacedUploads(array \$old, array \$new): void
     {
-        foreach ($new as $field => $filename) {
-            if (($old[$field] ?? '') !== '' && ($old[$field] ?? '') !== $filename) {
-                $this->uploadManager->delete($old[$field]);
+        foreach (\$new as \$field => \$filename) {
+            if ((\$old[\$field] ?? '') !== '' && (\$old[\$field] ?? '') !== \$filename) {
+                \$this->uploadManager->delete(\$old[\$field]);
             }
         }
     }
@@ -1024,18 +1061,10 @@ PHP : '';
     private function relatedCreateDataFromPost(): array
     {
         \$flags = \$this->request->getPost('_related_new');
-        \$payload = \$this->request->getPost('_related');
         \$flags = is_array(\$flags) ? \$flags : [];
-        \$payload = is_array(\$payload) ? \$payload : [];
         \$related = [];
 
-        foreach (self::RELATED_CREATE_FIELDS as \$field => \$allowedFields) {
-            if (empty(\$flags[\$field]) || !isset(\$payload[\$field]) || !is_array(\$payload[\$field])) {
-                continue;
-            }
-            \$allowed = array_fill_keys((array) \$allowedFields, true);
-            \$related[\$field] = array_intersect_key(\$payload[\$field], \$allowed);
-        }
+{$relatedCreatePostCode}
 
         return \$related;
     }

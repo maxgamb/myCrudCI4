@@ -64,6 +64,7 @@ final class ViewGenerator
         $writable = !empty($config['features']['writable']);
         if ($createAllowed || $writable) {
             $formViews = $this->forms->generate($config);
+            $files['_fields.php'] = $this->writeGenerated("Generated/Views/{$table}/_fields.php", $formViews['fields'], $force);
             $files['_form.php'] = $this->writeGenerated("Generated/Views/{$table}/_form.php", $formViews['form'], $force);
             foreach ((array) ($formViews['relatedPartials'] ?? []) as $partialName => $partialContent) {
                 $files[$partialName] = $this->writeGenerated("Generated/Views/{$table}/{$partialName}", $partialContent, $force);

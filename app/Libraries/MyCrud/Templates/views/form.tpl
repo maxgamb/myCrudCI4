@@ -196,6 +196,9 @@ document.addEventListener('DOMContentLoaded', function () {
         panel.querySelectorAll('.crud-related-create-field').forEach(function (input) {
             input.disabled = !active;
         });
+        panel.querySelectorAll('.crud-related-create-fieldset').forEach(function (fieldset) {
+            fieldset.disabled = !active;
+        });
 
         // If a new parent is created, the original foreign key may be empty:
         // the value will be set server-side with the newly generated primary key. Suspend

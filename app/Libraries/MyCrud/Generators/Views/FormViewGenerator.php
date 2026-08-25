@@ -6,15 +6,17 @@ use App\Libraries\MyCrud\Core\Naming;
 
 final class FormViewGenerator extends AbstractViewGenerator
 {
-    /** @return array{form:string,create:string,edit:string,relatedPartials:array<string,string>} */
+    /** @return array{form:string,fields:string,create:string,edit:string,relatedPartials:array<string,string>} */
     public function generate(array $config): array
     {
         $table = (string) $config['table'];
+        $fields = $this->buildFields($config);
 
         return [
+            'fields' => $fields,
             'form' => $this->templates->render('views/form.tpl', [
                 'table'  => $table,
-                'fields' => $this->buildFields($config),
+                'fields' => "<?= view('{$table}/_fields', get_defined_vars()) ?>",
             ]),
             'create' => $this->templates->render('views/create.tpl', [
                 'table'     => $table,
@@ -33,7 +35,8 @@ final class FormViewGenerator extends AbstractViewGenerator
 
     private function buildFields(array $config): string
     {
-        $output = '';
+        $table = (string) ($config['table'] ?? '');
+        $output = "<?php \$embeddedRelatedCreate = !empty(\$embeddedRelatedCreate); ?>\n";
         $fieldGroups = [];
         $manageTimestamps = !empty($config['features']['timestamps'])
             && isset($config['fields']['created_at'], $config['fields']['updated_at']);
@@ -86,17 +89,19 @@ final class FormViewGenerator extends AbstractViewGenerator
             $label = $this->labelExpression($field, $name);
             $rowValue = $this->objectProperty('row', $name);
             $initialCreateValue = $this->initialCreateValueExpression($field, $type);
+            $oldKey = $table . '.' . $name;
+            $htmlName = $table . '[' . $name . ']';
             $value = match ($type) {
-                'password', 'file', 'image' => "old('{$name}', '')",
-                'datetime-local' => "old('{$name}', isset({$rowValue}) ? str_replace(' ', 'T', substr((string) {$rowValue}, 0, 16)) : (\$context['{$name}'] ?? {$initialCreateValue}))",
-                default => "old('{$name}', {$rowValue} ?? (\$context['{$name}'] ?? {$initialCreateValue}))",
+                'password', 'file', 'image' => "old('{$oldKey}', '')",
+                'datetime-local' => "old('{$oldKey}', isset({$rowValue}) ? str_replace(' ', 'T', substr((string) {$rowValue}, 0, 16)) : (\$context['{$name}'] ?? {$initialCreateValue}))",
+                default => "old('{$oldKey}', {$rowValue} ?? (\$context['{$name}'] ?? {$initialCreateValue}))",
             };
             $errorId = $name . '-error';
             $relationMode = strtolower((string) ($field['relationMode'] ?? ''));
             if (!empty($field['foreignKey']) && $relationMode === 'ajax') {
-                $control = $this->buildAjaxRelationControl($config, $field, $name, $value, $errorId);
+                $control = $this->buildAjaxRelationControl($config, $field, $name, $htmlName, $value, $errorId);
             } else {
-                $control = $this->buildControl($type, $name, $value, $attributes, $errorId);
+                $control = $this->buildControl($type, $htmlName, $name, $value, $attributes, $errorId);
             }
 
             $relatedCreatePanel = '';
@@ -114,7 +119,10 @@ final class FormViewGenerator extends AbstractViewGenerator
                 }
                 if (!empty($field['relationCreate']['enabled'])) {
                     $field['_ownerTable'] = (string) ($config['table'] ?? '');
-                    $relatedCreatePanel = $this->buildRelatedCreatePanel($field, $name);
+                    $panelMarkup = $this->buildRelatedCreatePanel($field, $name);
+                    if ($panelMarkup !== '') {
+                        $relatedCreatePanel = "<?php if (empty(\$embeddedRelatedCreate)): ?>\n" . $panelMarkup . "\n<?php endif; ?>";
+                    }
                 }
             }
             $wrapper = $type === 'hidden' ? 'd-none' : "col-md-{$width}";
@@ -180,7 +188,11 @@ PHP;
 
         $relationMarkup = $this->buildManyToManyControls($config);
         if ($relationMarkup !== '') {
-            $output .= "                <!-- mycrud:start relation-panels -->\n" . $relationMarkup . "                <!-- mycrud:end relation-panels -->\n";
+            $output .= "<?php if (empty(\$embeddedRelatedCreate)): ?>\n"
+                . "                <!-- mycrud:start relation-panels -->\n"
+                . $relationMarkup
+                . "                <!-- mycrud:end relation-panels -->\n"
+                . "<?php endif; ?>\n";
         }
 
         return $output;
@@ -795,150 +807,75 @@ PHP;
 
     private function buildRelatedCreatePartial(string $name, array $definition): string
     {
-        $relatedFieldClass = $this->relationGridClass('relatedCreateField', 6);
-        $panelId = 'related_create_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $name);
-        $rows = '';
-        foreach ((array) ($definition['fields'] ?? []) as $relatedName => $relatedField) {
-            $relatedName = (string) $relatedName;
-            $relatedField = (array) $relatedField;
-            $type = strtolower((string) ($relatedField['inputType'] ?? 'text'));
-            $label = var_export(Naming::human($relatedName), true);
-            $inputId = $panelId . '_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $relatedName);
-            $errorKey = $name . '__related__' . $relatedName;
-            $required = in_array('required', (array) ($relatedField['attributes']['boolean'] ?? []), true);
-            $values = (array) ($relatedField['attributes']['values'] ?? []);
-            $requiredAttr = $required ? ' required' : '';
-            $valueAttrs = '';
-            foreach (['maxlength', 'minlength', 'min', 'max', 'step', 'pattern', 'placeholder'] as $attributeName) {
-                $attributeValue = trim((string) ($values[$attributeName] ?? ''));
-                if ($attributeValue !== '') {
-                    $valueAttrs .= ' ' . $attributeName . '="' . htmlspecialchars($attributeValue, ENT_QUOTES) . '"';
-                }
-            }
-            $valueExpr = "(string) ((\$relatedPayloadState[" . var_export($name, true) . "][" . var_export($relatedName, true) . "] ?? ''))";
-            $invalid = "<?= isset(\$errors[" . var_export($errorKey, true) . "]) ? 'is-invalid' : '' ?>";
-            $nestedForeignKey = (array) ($relatedField['foreignKey'] ?? []);
-
-            if ($nestedForeignKey !== []) {
-                $optionExpr = "(array) (\$relatedCreateOptions[" . var_export($name, true) . "][" . var_export($relatedName, true) . "] ?? [])";
-                $control = <<<PHP
-                <select
-                    name="_related[{$name}][{$relatedName}]"
-                    id="{$inputId}"
-                    class="form-select {$invalid} crud-related-create-field"
-                    data-related-field="{$name}"
-                    <?= \$relatedCreateActive ? '' : 'disabled' ?>
-                    {$requiredAttr}{$valueAttrs}
-                >
-                    <option value="">Seleziona...</option>
-                    <?php foreach ({$optionExpr} as \$relatedOption): ?>
-                        <?php
-                        \$relatedOptionId = (string) (\$relatedOption['id'] ?? '');
-                        \$relatedOptionText = (string) (\$relatedOption['text'] ?? \$relatedOptionId);
-                        ?>
-                        <option value="<?= esc(\$relatedOptionId) ?>" <?= {$valueExpr} === \$relatedOptionId ? 'selected' : '' ?>>
-                            <?= esc(\$relatedOptionText) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-PHP;
-            } elseif ($type === 'textarea') {
-                $control = <<<PHP
-                <textarea
-                    name="_related[{$name}][{$relatedName}]"
-                    id="{$inputId}"
-                    class="form-control {$invalid} crud-related-create-field"
-                    data-related-field="{$name}"
-                    <?= \$relatedCreateActive ? '' : 'disabled' ?>
-                    {$requiredAttr}{$valueAttrs}
-                ><?= esc({$valueExpr}) ?></textarea>
-PHP;
-            } elseif ($type === 'checkbox') {
-                $control = <<<PHP
-                <input
-                    type="hidden"
-                    name="_related[{$name}][{$relatedName}]"
-                    value="0"
-                    class="crud-related-create-field"
-                    data-related-field="{$name}"
-                    <?= \$relatedCreateActive ? '' : 'disabled' ?>
-                >
-                <div class="form-check">
-                    <input
-                        type="checkbox"
-                        name="_related[{$name}][{$relatedName}]"
-                        id="{$inputId}"
-                        value="1"
-                        class="form-check-input crud-related-create-field"
-                        data-related-field="{$name}"
-                        <?= \$relatedCreateActive ? '' : 'disabled' ?>
-                        <?= !empty(\$relatedPayloadState['{$name}']['{$relatedName}']) ? 'checked' : '' ?>
-                    >
-                </div>
-PHP;
-            } else {
-                $htmlType = in_array($type, ['text', 'number', 'email', 'password', 'date', 'datetime-local', 'time', 'url', 'tel'], true)
-                    ? $type
-                    : 'text';
-                $control = <<<PHP
-                <input
-                    type="{$htmlType}"
-                    name="_related[{$name}][{$relatedName}]"
-                    id="{$inputId}"
-                    value="<?= esc({$valueExpr}) ?>"
-                    class="form-control {$invalid} crud-related-create-field"
-                    data-related-field="{$name}"
-                    <?= \$relatedCreateActive ? '' : 'disabled' ?>
-                    {$requiredAttr}{$valueAttrs}
-                >
-PHP;
-            }
-
-            $rows .= <<<PHP
-            <div class="{$relatedFieldClass}">
-                <label for="{$inputId}" class="form-label"><?= esc({$label}) ?></label>
-{$control}\n                <?php if (!empty(\$errors['{$errorKey}'])): ?>
-                    <div class="invalid-feedback d-block"><?= esc(\$errors['{$errorKey}']) ?></div>
-                <?php endif; ?>
-            </div>
-PHP;
+        $parentTable = trim((string) ($definition['table'] ?? ''));
+        if ($parentTable === '') {
+            return '';
         }
+
+        $errorPrefix = $name . '__related__';
 
         return <<<PHP
 <?php
 \$relatedCreateActive = !empty(\$relatedCreateActive);
-\$relatedPayloadState = (array) (\$relatedPayloadState ?? []);
-\$relatedCreateOptions = (array) (\$relatedCreateOptions ?? []);
 \$errors = (array) (\$errors ?? []);
+\$relatedErrors = [];
+foreach (\$errors as \$errorField => \$message) {
+    \$errorField = (string) \$errorField;
+    if (!str_starts_with(\$errorField, '{$errorPrefix}')) {
+        continue;
+    }
+    \$relatedErrors[substr(\$errorField, strlen('{$errorPrefix}'))] = (string) \$message;
+}
+\$parentOptions = (array) ((\$relatedCreateOptions['{$name}'] ?? []));
 ?>
-<div class="row g-3">
-{$rows}</div>
+<fieldset
+    class="crud-related-create-fieldset"
+    data-related-field="{$name}"
+    <?= \$relatedCreateActive ? '' : 'disabled' ?>
+>
+    <?= view('{$parentTable}/_fields', [
+        'row' => null,
+        'errors' => \$relatedErrors,
+        'options' => \$parentOptions,
+        'context' => [],
+        'contextLabels' => [],
+        'navigationContext' => [],
+        'parentContext' => [],
+        'cascadeTrail' => [],
+        'relatedCreateOptions' => [],
+        'manyToManyOptions' => [],
+        'manyToManyRelatedCreateOptions' => [],
+        'manyToManySelected' => [],
+        'embeddedRelatedCreate' => true,
+    ]) ?>
+</fieldset>
 PHP;
     }
 
-    private function buildAjaxRelationControl(array $config, array $field, string $name, string $value, string $errorId): string
+    private function buildAjaxRelationControl(array $config, array $field, string $name, string $htmlName, string $value, string $errorId): string
     {
         $table = (string) ($config['table'] ?? '');
         $relation = (array) ($field['foreignKey'] ?? []);
         $alias = (string) ($relation['alias'] ?? '');
         $rowAlias = $alias !== '' ? $this->objectProperty('row', $alias) : '';
+        $oldLabelKey = $table . '.' . $name . '__label';
         $labelValue = $alias !== ''
-            ? "old('{$name}__label', {$rowAlias} ?? (\$contextLabels['{$name}'] ?? ''))"
-            : "old('{$name}__label', \$contextLabels['{$name}'] ?? '')";
+            ? "old('{$oldLabelKey}', {$rowAlias} ?? (\$contextLabels['{$name}'] ?? ''))"
+            : "old('{$oldLabelKey}', \$contextLabels['{$name}'] ?? '')";
         $invalid = "<?= isset(\$errors['{$name}']) ? 'is-invalid' : '' ?>";
         $minChars = max(0, min(10, (int) (config('MyCrud')->relationAjaxMinimumChars ?? 2)));
 
         return <<<PHP
                     <input
                         type="hidden"
-                        name="{$name}"
+                        name="{$htmlName}"
                         id="{$name}"
                         value="<?= esc({$value}) ?>"
                         class="crud-relation-value"
                     >
                     <input
                         type="search"
-                        name="{$name}__label"
+                        name="{$table}[{$name}__label]"
                         id="{$name}_search"
                         value="<?= esc({$labelValue}) ?>"
                         class="form-control {$invalid} crud-relation-search"
@@ -1053,10 +990,10 @@ PHP;
         };
     }
 
-    private function buildControl(string $type, string $name, string $value, string $attributes, string $errorId): string
+    private function buildControl(string $type, string $htmlName, string $idName, string $value, string $attributes, string $errorId): string
     {
-        $invalid = "<?= isset(\$errors['{$name}']) ? 'is-invalid' : '' ?>";
-        $attributeLine = "\n                        aria-describedby=\"{$errorId}\"\n                        aria-invalid=\"<?= isset(\$errors['{$name}']) ? 'true' : 'false' ?>\"";
+        $invalid = "<?= isset(\$errors['{$idName}']) ? 'is-invalid' : '' ?>";
+        $attributeLine = "\n                        aria-describedby=\"{$errorId}\"\n                        aria-invalid=\"<?= isset(\$errors['{$idName}']) ? 'true' : 'false' ?>\"";
         if ($attributes !== '') {
             $attributeLine .= "\n                        {$attributes}";
         }
@@ -1064,19 +1001,19 @@ PHP;
         return match ($type) {
             'textarea' => <<<PHP
                     <textarea
-                        name="{$name}"
-                        id="{$name}"
+                        name="{$htmlName}"
+                        id="{$idName}"
                         class="form-control {$invalid}"{$attributeLine}
                     ><?= esc({$value}) ?></textarea>
 PHP,
             'select' => <<<PHP
                     <select
-                        name="{$name}"
-                        id="{$name}"
+                        name="{$htmlName}"
+                        id="{$idName}"
                         class="form-select {$invalid}"{$attributeLine}
                     >
                         <option value="">Seleziona...</option>
-                        <?php foreach ((\$options['{$name}'] ?? []) as \$optionValue => \$optionLabel): ?>
+                        <?php foreach ((\$options['{$idName}'] ?? []) as \$optionValue => \$optionLabel): ?>
                             <option
                                 value="<?= esc(\$optionValue) ?>"
                                 <?= (string) {$value} === (string) \$optionValue ? 'selected' : '' ?>
@@ -1087,13 +1024,13 @@ PHP,
                     </select>
 PHP,
             'checkbox' => <<<PHP
-                    <input type="hidden" name="{$name}" value="0">
+                    <input type="hidden" name="{$htmlName}" value="0">
 
                     <div class="form-check mt-2">
                         <input
                             type="checkbox"
-                            name="{$name}"
-                            id="{$name}"
+                            name="{$htmlName}"
+                            id="{$idName}"
                             value="1"
                             class="form-check-input {$invalid}"
                             <?= {$value} ? 'checked' : '' ?>{$attributeLine}
@@ -1101,19 +1038,19 @@ PHP,
                     </div>
 PHP,
             'file' => <<<PHP
-                    <input type="file" name="{$name}" id="{$name}" class="form-control {$invalid}"{$attributeLine}>
+                    <input type="file" name="{$htmlName}" id="{$idName}" class="form-control {$invalid}"{$attributeLine}>
 PHP,
             'image' => <<<PHP
-                    <input type="file" name="{$name}" id="{$name}" accept="image/*" class="form-control {$invalid}"{$attributeLine}>
+                    <input type="file" name="{$htmlName}" id="{$idName}" accept="image/*" class="form-control {$invalid}"{$attributeLine}>
 PHP,
             'hidden' => <<<PHP
-                    <input type="hidden" name="{$name}" id="{$name}" value="<?= esc({$value}) ?>">
+                    <input type="hidden" name="{$htmlName}" id="{$idName}" value="<?= esc({$value}) ?>">
 PHP,
             default => <<<PHP
                     <input
                         type="{$type}"
-                        name="{$name}"
-                        id="{$name}"
+                        name="{$htmlName}"
+                        id="{$idName}"
                         value="<?= esc({$value}) ?>"
                         class="form-control {$invalid}"{$attributeLine}
                     >

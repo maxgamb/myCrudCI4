@@ -287,16 +287,27 @@ final class ArchitectureRegressionRunner
 
         if ($enabledM2MRelatedCreates !== []) {
             $m2mFormPath = $root . 'Views' . DIRECTORY_SEPARATOR . $table . DIRECTORY_SEPARATOR . '_form.php';
-            $m2mFormContent = is_file($m2mFormPath) ? (string) file_get_contents($m2mFormPath) : '';
+            $m2mFieldsPath = $root . 'Views' . DIRECTORY_SEPARATOR . $table . DIRECTORY_SEPARATOR . '_fields.php';
+
+            $m2mFormContent = is_file($m2mFormPath)
+                ? (string) file_get_contents($m2mFormPath)
+                : '';
+
+            $m2mFieldsContent = is_file($m2mFieldsPath)
+                ? (string) file_get_contents($m2mFieldsPath)
+                : '';
+
+            // _form.php owns the form shell; _fields.php owns the generated controls.
+            $m2mFormContractContent = $m2mFormContent . "\n" . $m2mFieldsContent;
 
             $m2mRelatedCreateOk = str_contains($controllerContent, 'manyToManyRelatedCreateDataFromPost')
                 && str_contains($controllerContent, 'validateManyToManyRelatedCreates')
                 && str_contains($validationContent, 'manyToManyRelatedCreateRules')
-                && str_contains($m2mFormContent, 'Create new ')
-                && str_contains($m2mFormContent, 'crud-many-related-create-panel')
-                && str_contains($m2mFormContent, 'data-bs-toggle="offcanvas"')
-                && str_contains($m2mFormContent, 'crud-many-related-create-apply')
-                && !str_contains($m2mFormContent, 'data-many-related-toggle');
+                && str_contains($m2mFormContractContent, 'Create new ')
+                && str_contains($m2mFormContractContent, 'crud-many-related-create-panel')
+                && str_contains($m2mFormContractContent, 'data-bs-toggle="offcanvas"')
+                && str_contains($m2mFormContractContent, 'crud-many-related-create-apply')
+                && !str_contains($m2mFormContractContent, 'data-many-related-toggle');
 
             if (in_array($architecture, ['standard', 'full'], true)) {
                 $m2mStaticServicesOk = true;
@@ -562,8 +573,11 @@ final class ArchitectureRegressionRunner
         $relatedCreateOk = true;
         if ($enabledRelatedCreates !== []) {
             $formPath = $root . 'Views' . DIRECTORY_SEPARATOR . $table . DIRECTORY_SEPARATOR . '_form.php';
+            $fieldsPath = $root . 'Views' . DIRECTORY_SEPARATOR . $table . DIRECTORY_SEPARATOR . '_fields.php';
             $rulesPath = $root . 'Validation' . DIRECTORY_SEPARATOR . ($class['rules'] ?? '') . '.php';
             $formContent = is_file($formPath) ? (string) file_get_contents($formPath) : '';
+            $fieldsContent = is_file($fieldsPath) ? (string) file_get_contents($fieldsPath) : '';
+            $formContractContent = $formContent . "\n" . $fieldsContent;
             $rulesContent = is_file($rulesPath) ? (string) file_get_contents($rulesPath) : '';
             $relatedPartialOk = true;
             foreach ($enabledRelatedCreates as $relatedField) {
@@ -571,9 +585,14 @@ final class ArchitectureRegressionRunner
                 $partialPath = $root . 'Views' . DIRECTORY_SEPARATOR . $table . DIRECTORY_SEPARATOR
                     . '_related_create_' . $safeRelatedField . '.php';
                 $partialContent = is_file($partialPath) ? (string) file_get_contents($partialPath) : '';
+                $relatedFieldConfig = (array) ($config['fields'][$relatedField] ?? []);
+                $parentTable = trim((string) ($relatedFieldConfig['foreignKey']['parentTable'] ?? ''));
                 $relatedPartialOk = $relatedPartialOk
                     && $partialContent !== ''
-                    && str_contains($partialContent, '_related[' . $relatedField . ']');
+                    && $parentTable !== ''
+                    && str_contains($partialContent, "view('" . $parentTable . "/_fields'")
+                    && str_contains($partialContent, 'crud-related-create-fieldset')
+                    && str_contains($controllerContent, "getPost('" . $parentTable . "')");
             }
             $relatedWriteChecks = [];
             if ($architecture === 'basic') {
@@ -656,11 +675,11 @@ final class ArchitectureRegressionRunner
                 && str_contains($controllerContent, 'relatedCreateDataFromPost')
                 && str_contains($controllerContent, 'validateRelatedCreates')
                 && str_contains($rulesContent, 'relatedCreateRules')
-                && str_contains($formContent, '_related_new[')
-                && str_contains($formContent, 'data-bs-toggle="offcanvas"')
-                && str_contains($formContent, 'crud-related-create-apply')
-                && str_contains($formContent, 'crud-relation-input-group')
-                && str_contains($formContent, 'bi-plus-circle')
+                && str_contains($formContractContent, '_related_new[')
+                && str_contains($formContractContent, 'data-bs-toggle="offcanvas"')
+                && str_contains($formContractContent, 'crud-related-create-apply')
+                && str_contains($formContractContent, 'crud-relation-input-group')
+                && str_contains($formContractContent, 'bi-plus-circle')
                 && $relatedPartialOk;
         }
         $failedRelatedChecks = [];
