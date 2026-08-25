@@ -826,7 +826,15 @@ foreach (\$errors as \$errorField => \$message) {
     }
     \$relatedErrors[substr(\$errorField, strlen('{$errorPrefix}'))] = (string) \$message;
 }
-\$parentOptions = (array) ((\$relatedCreateOptions['{$name}'] ?? []));
+\$parentOptions = [];
+foreach ((array) (\$relatedCreateOptions['{$name}'] ?? []) as \$optionField => \$optionRows) {
+    foreach ((array) \$optionRows as \$optionRow) {
+        if (!is_array(\$optionRow)) { continue; }
+        \$optionId = (string) (\$optionRow['id'] ?? '');
+        if (\$optionId === '') { continue; }
+        \$parentOptions[(string) \$optionField][\$optionId] = (string) (\$optionRow['text'] ?? \$optionId);
+    }
+}
 ?>
 <fieldset
     class="crud-related-create-fieldset"
