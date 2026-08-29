@@ -6,7 +6,7 @@ use App\Libraries\MyCrud\Core\Naming;
 
 final class FormViewGenerator extends AbstractViewGenerator
 {
-    /** @return array{form:string,fields:string,create:string,edit:string,relatedPartials:array<string,string>} */
+    /** @return array{form:string,fields:string,create:string,edit:string,manyToManyPartials:array<string,string>} */
     public function generate(array $config): array
     {
         $table = (string) $config['table'];
@@ -29,14 +29,21 @@ final class FormViewGenerator extends AbstractViewGenerator
                 'route'       => $table,
                 'primary_key' => (string) $config['primaryKey'],
             ]),
-            'relatedPartials' => $this->buildRelatedCreatePartials($config),
+            'manyToManyPartials' => $this->buildManyToManyFormPartials($config),
         ];
     }
 
     private function buildFields(array $config): string
     {
         $table = (string) ($config['table'] ?? '');
-        $output = "<?php \$embeddedRelatedCreate = !empty(\$embeddedRelatedCreate); ?>\n";
+        $output = "<?php\n"
+            . "// Standalone + embedded field-view contract.\n"
+            . "// Normal CRUD: namespace defaults to the owner table (e.g. staff[first_name]).\n"
+            . "// Embedded related create: caller supplies relation/resource namespaces.\n"
+            . "\$embeddedRelatedCreate = !empty(\$embeddedRelatedCreate);\n"
+            . "\$formNamespace = (string) (\$formNamespace ?? " . var_export($table, true) . ");\n"
+            . "\$idNamespace = (string) (\$idNamespace ?? \$formNamespace);\n"
+            . "?>\n";
         $fieldGroups = [];
         $manageTimestamps = !empty($config['features']['timestamps'])
             && isset($config['fields']['created_at'], $config['fields']['updated_at']);
@@ -89,24 +96,26 @@ final class FormViewGenerator extends AbstractViewGenerator
             $label = $this->labelExpression($field, $name);
             $rowValue = $this->objectProperty('row', $name);
             $initialCreateValue = $this->initialCreateValueExpression($field, $type);
-            $oldKey = $table . '.' . $name;
-            $htmlName = $table . '[' . $name . ']';
+            $safeFieldName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $name) ?: $name;
+            $oldKey = "\$formNamespace . " . var_export('.' . $name, true);
+            $htmlName = "<?= esc(\$formNamespace) ?>[{$name}]";
+            $idName = "<?= esc(\$embeddedRelatedCreate ? \$idNamespace . '_{$safeFieldName}' : '{$safeFieldName}') ?>";
             $value = match ($type) {
-                'password', 'file', 'image' => "old('{$oldKey}', '')",
-                'datetime-local' => "old('{$oldKey}', isset({$rowValue}) ? str_replace(' ', 'T', substr((string) {$rowValue}, 0, 16)) : (\$context['{$name}'] ?? {$initialCreateValue}))",
-                default => "old('{$oldKey}', {$rowValue} ?? (\$context['{$name}'] ?? {$initialCreateValue}))",
+                'password', 'file', 'image' => "old({$oldKey}, '')",
+                'datetime-local' => "old({$oldKey}, isset({$rowValue}) ? str_replace(' ', 'T', substr((string) {$rowValue}, 0, 16)) : (\$context['{$name}'] ?? {$initialCreateValue}))",
+                default => "old({$oldKey}, {$rowValue} ?? (\$context['{$name}'] ?? {$initialCreateValue}))",
             };
-            $errorId = $name . '-error';
+            $errorId = "<?= esc(\$embeddedRelatedCreate ? \$idNamespace . '_{$safeFieldName}_error' : '{$safeFieldName}-error') ?>";
             $relationMode = strtolower((string) ($field['relationMode'] ?? ''));
             if (!empty($field['foreignKey']) && $relationMode === 'ajax') {
-                $control = $this->buildAjaxRelationControl($config, $field, $name, $htmlName, $value, $errorId);
+                $control = $this->buildAjaxRelationControl($config, $field, $name, $htmlName, $idName, $value, $errorId);
             } else {
-                $control = $this->buildControl($type, $htmlName, $name, $value, $attributes, $errorId);
+                $control = $this->buildControl($type, $htmlName, $idName, $name, $value, $attributes, $errorId);
             }
 
             $relatedCreatePanel = '';
             if (!empty($field['foreignKey'])) {
-                $relationActions = $this->buildRelationNavigation($field, $name, $value);
+                $relationActions = $this->buildRelationNavigation($field, $name, $idName, $value);
                 if ($relationActions !== '') {
                     if ($relationMode === 'ajax') {
                         // La select AJAX mantiene la propria struttura (hidden + search + risultati):
@@ -130,7 +139,7 @@ final class FormViewGenerator extends AbstractViewGenerator
             $labelHtml = $type === 'hidden'
                 ? ''
                 : <<<PHP
-                    <label for="{$name}" class="form-label">
+                    <label for="{$idName}" class="form-label">
                         <?= esc({$label}) ?>
                     </label>
 
@@ -157,7 +166,10 @@ PHP;
             // Full backward compatibility with previous configurations: without
             // sections all normalized fields belong to General, but
             // the container is not shown and the legacy markup is preserved.
-            $output = implode('', $fieldGroups[''] ?? []);
+            //
+            // IMPORTANT: append to $output instead of replacing it, because
+            // $output already contains the standalone/embedded namespace contract.
+            $output .= implode('', $fieldGroups[''] ?? []);
         } else {
             $output .= $this->buildFormSection(
                 '',
@@ -186,7 +198,7 @@ PHP;
             }
         }
 
-        $relationMarkup = $this->buildManyToManyControls($config);
+        $relationMarkup = $this->buildManyToManyPartialIncludes($config);
         if ($relationMarkup !== '') {
             $output .= "<?php if (empty(\$embeddedRelatedCreate)): ?>\n"
                 . "                <!-- mycrud:start relation-panels -->\n"
@@ -262,9 +274,10 @@ PHP;
         return max(320, (int) (config('MyCrud')->relationOffcanvasWidth ?? 640));
     }
 
-    private function buildManyToManyControls(array $config): string
+    /** @return array<string,string> */
+    private function buildManyToManyFormPartials(array $config): array
     {
-        $html = '';
+        $partials = [];
         $offcanvasWidth = $this->relationOffcanvasWidth();
         foreach ((array) ($config['relationsConfig']['manyToMany'] ?? []) as $key => $relation) {
             if (empty($relation['enabled']) || (empty($relation['createEnabled']) && empty($relation['editEnabled']))) {
@@ -304,7 +317,8 @@ PHP;
                                 </button>
 PHP;
             }
-            $html .= <<<PHP
+            $partialName = '_many_form_' . ($safeKey ?: 'relation') . '.php';
+            $partials[$partialName] = <<<PHP
                 <?php
                 \$m2mCreateEnabled = {$createEnabled};
                 \$m2mEditEnabled = {$editEnabled};
@@ -443,7 +457,30 @@ PHP;
 
 PHP;
         }
-        return $html;
+        return $partials;
+    }
+
+    /**
+     * The owner _fields.php remains small: each M:N form relation lives in its
+     * own partial, while target field markup is still owned by target/_fields.php.
+     */
+    private function buildManyToManyPartialIncludes(array $config): string
+    {
+        $table = (string) ($config['table'] ?? '');
+        $output = '';
+
+        foreach ((array) ($config['relationsConfig']['manyToMany'] ?? []) as $key => $relation) {
+            if (empty($relation['enabled']) || (empty($relation['createEnabled']) && empty($relation['editEnabled']))) {
+                continue;
+            }
+
+            $safeKey = preg_replace('/[^a-zA-Z0-9_]/', '_', (string) $key) ?: 'relation';
+            $viewPath = $table . '/_many_form_' . $safeKey;
+            $output .= "<!-- mycrud:many-to-many form {$safeKey} -->\n"
+                . "<?= view(" . var_export($viewPath, true) . ", get_defined_vars()) ?>\n";
+        }
+
+        return $output;
     }
 
 
@@ -455,169 +492,44 @@ PHP;
     ): string
     {
         $offcanvasWidth = $this->relationOffcanvasWidth();
-        $relatedFieldClass = $this->relationGridClass('manyToManyRelatedCreateField', 6);
         $fields = (array) ($definition['fields'] ?? []);
-        if ($fields === []) {
+        $relatedTable = trim($relatedTable);
+        if ($fields === [] || $relatedTable === '') {
             return '';
         }
 
         $safeKey = preg_replace('/[^a-zA-Z0-9_]/', '_', $key) ?: 'relation';
         $panelId = 'many_related_create_' . $safeKey;
-        $fieldMarkup = '';
-
-        foreach ($fields as $fieldName => $field) {
-            $fieldName = (string) $fieldName;
-            $field = (array) $field;
-            $type = strtolower((string) ($field['inputType'] ?? 'text'));
-            $safeRelatedTable = preg_replace('/[^a-zA-Z0-9_]/', '_', $relatedTable) ?: 'related';
-            $inputId = $safeRelatedTable . '_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $fieldName);
-            $label = htmlspecialchars(Naming::human($fieldName), ENT_QUOTES);
-            $required = in_array('required', (array) ($field['attributes']['boolean'] ?? []), true);
-            $requiredAttr = $required ? ' required' : '';
-            $values = (array) ($field['attributes']['values'] ?? []);
-            $attrs = '';
-
-            foreach (['maxlength', 'minlength', 'min', 'max', 'step', 'pattern'] as $attributeName) {
-                $attributeValue = trim((string) ($values[$attributeName] ?? ''));
-                if ($attributeValue !== '') {
-                    $attrs .= ' ' . $attributeName . '="' . htmlspecialchars($attributeValue, ENT_QUOTES) . '"';
-                }
-            }
-
-            $oldExpr = "(string) old(" . var_export($relatedTable . '.' . $fieldName, true) . ", '')";
-            $errorKey = $key . '__many_related__' . $fieldName;
-            $invalid = "<?= isset(\$errors[" . var_export($errorKey, true) . "]) ? 'is-invalid' : '' ?>";
-            $errorHtml = "<?php if (!empty(\$errors[" . var_export($errorKey, true) . "])): ?>"
-                . "<div class=\"invalid-feedback d-block\"><?= esc(\$errors[" . var_export($errorKey, true) . "]) ?></div>"
-                . "<?php endif; ?>";
-            $nestedForeignKey = (array) ($field['foreignKey'] ?? []);
-
-            if (!empty($relatedField['spatial']) && strtolower((string) ($field['type'] ?? '')) === 'point') {
-                $latId = $inputId . '_latitude';
-                $lngId = $inputId . '_longitude';
-                $requiredPoint = $required ? ' required' : '';
-                $control = <<<PHP
-                <input
-                    type="hidden"
-                    name="_related[{$name}][{$relatedName}]"
-                    id="{$inputId}"
-                    value="<?= esc({$valueExpr}) ?>"
-                    class="crud-related-create-field crud-point-wkt"
-                    data-related-field="{$name}"
-                    <?= \$relatedCreateActive ? '' : 'disabled' ?>
-                >
-                <div class="row g-2 crud-point-editor" data-wkt-target="{$inputId}">
-                    <div class="col-6">
-                        <label for="{$latId}" class="form-label small text-muted">Latitude</label>
-                        <input type="number" id="{$latId}" class="form-control crud-point-latitude"
-                            min="-90" max="90" step="any" placeholder="41.9028"{$requiredPoint}
-                            <?= \$relatedCreateActive ? '' : 'disabled' ?>>
-                    </div>
-                    <div class="col-6">
-                        <label for="{$lngId}" class="form-label small text-muted">Longitude</label>
-                        <input type="number" id="{$lngId}" class="form-control crud-point-longitude"
-                            min="-180" max="180" step="any" placeholder="12.4964"{$requiredPoint}
-                            <?= \$relatedCreateActive ? '' : 'disabled' ?>>
-                    </div>
-                </div>
-                <div class="form-text">Coordinates are converted automatically to POINT(longitude latitude).</div>
-                <script>
-                (() => {
-                    const hidden = document.getElementById('{$inputId}');
-                    const lat = document.getElementById('{$latId}');
-                    const lng = document.getElementById('{$lngId}');
-                    if (!hidden || !lat || !lng) return;
-                    const match = String(hidden.value || '').trim().match(/^POINT\s*\(\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*\)$/i);
-                    if (match) { lng.value = match[1]; lat.value = match[2]; }
-                    const sync = () => {
-                        const latitude = Number(lat.value), longitude = Number(lng.value);
-                        hidden.value = lat.value !== '' && lng.value !== '' && Number.isFinite(latitude) && Number.isFinite(longitude)
-                            && latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180
-                            ? `POINT(\${longitude} \${latitude})` : '';
-                    };
-                    lat.addEventListener('input', sync); lng.addEventListener('input', sync); sync();
-                })();
-                </script>
-PHP;
-            } elseif ($nestedForeignKey !== []) {
-                $optionExpr = "(array) ((\$manyToManyRelatedCreateOptions ?? [])[" . var_export($key, true) . "][" . var_export($fieldName, true) . "] ?? [])";
-                $control = <<<PHP
-<select
-    id="{$inputId}"
-    name="{$relatedTable}[{$fieldName}]"
-    class="form-select {$invalid} crud-many-related-field"
-    data-many-related-field
-    disabled{$requiredAttr}{$attrs}
->
-    <option value="">Select...</option>
-    <?php foreach ({$optionExpr} as \$relatedOption): ?>
-        <?php
-        \$relatedOptionId = (string) (\$relatedOption['id'] ?? '');
-        \$relatedOptionText = (string) (\$relatedOption['text'] ?? \$relatedOptionId);
-        ?>
-        <option value="<?= esc(\$relatedOptionId) ?>" <?= {$oldExpr} === \$relatedOptionId ? 'selected' : '' ?>>
-            <?= esc(\$relatedOptionText) ?>
-        </option>
-    <?php endforeach; ?>
-</select>
-PHP;
-            } elseif ($type === 'textarea') {
-                $control = <<<PHP
-<textarea
-    id="{$inputId}"
-    name="{$relatedTable}[{$fieldName}]"
-    class="form-control {$invalid} crud-many-related-field"
-    data-many-related-field
-    disabled{$requiredAttr}{$attrs}
-><?= esc({$oldExpr}) ?></textarea>
-PHP;
-            } elseif ($type === 'checkbox') {
-                $control = <<<PHP
-<input type="hidden" name="{$relatedTable}[{$fieldName}]" value="0" data-many-related-field disabled>
-<div class="form-check">
-    <input
-        id="{$inputId}"
-        type="checkbox"
-        name="{$relatedTable}[{$fieldName}]"
-        value="1"
-        class="form-check-input {$invalid} crud-many-related-field"
-        data-many-related-field
-        disabled
-        <?= {$oldExpr} === '1' ? 'checked' : '' ?>
-    >
-</div>
-PHP;
-            } else {
-                $htmlType = in_array($type, ['text', 'email', 'url', 'number', 'date', 'datetime-local', 'time'], true)
-                    ? $type
-                    : 'text';
-                $control = <<<PHP
-<input
-    id="{$inputId}"
-    type="{$htmlType}"
-    name="{$relatedTable}[{$fieldName}]"
-    value="<?= esc({$oldExpr}) ?>"
-    class="form-control {$invalid} crud-many-related-field"
-    data-many-related-field
-    disabled{$requiredAttr}{$attrs}
->
-PHP;
-            }
-
-            $fieldMarkup .= <<<PHP
-<div class="{$relatedFieldClass}">
-    <label class="form-label" for="{$inputId}">{$label}</label>
-    {$control}
-    {$errorHtml}
-</div>
-
-PHP;
-        }
+        $errorPrefix = $key . '__many_related__';
 
         return <<<PHP
                                 <?php
                                 \$manyCreateRelatedState = (array) old('_many_new', []);
                                 \$manyCreateRelatedActive = !empty(\$manyCreateRelatedState['{$key}']);
+
+                                \$manyRelatedErrors = [];
+                                foreach ((array) (\$errors ?? []) as \$errorField => \$message) {
+                                    \$errorField = (string) \$errorField;
+                                    if (!str_starts_with(\$errorField, '{$errorPrefix}')) {
+                                        continue;
+                                    }
+                                    \$manyRelatedErrors[substr(\$errorField, strlen('{$errorPrefix}'))] = (string) \$message;
+                                }
+
+                                \$manyRelatedOptions = [];
+                                foreach ((array) ((\$manyToManyRelatedCreateOptions ?? [])['{$key}'] ?? []) as \$optionField => \$optionRows) {
+                                    foreach ((array) \$optionRows as \$optionRow) {
+                                        if (!is_array(\$optionRow)) {
+                                            continue;
+                                        }
+                                        \$optionId = (string) (\$optionRow['id'] ?? '');
+                                        if (\$optionId === '') {
+                                            continue;
+                                        }
+                                        \$manyRelatedOptions[(string) \$optionField][\$optionId]
+                                            = (string) (\$optionRow['text'] ?? \$optionId);
+                                    }
+                                }
                                 ?>
                                 <div class="mt-2 d-flex flex-wrap align-items-center gap-2">
                                     <input
@@ -666,13 +578,52 @@ PHP;
                                             aria-label="Cancel new {$title}"
                                         ></button>
                                     </div>
+
                                     <div class="offcanvas-body">
                                         <div class="alert alert-light border small" role="note">
                                             Enter the new {$title} data. It will be created with the main record and automatically added to this selection when the main form is submitted.
                                         </div>
-                                        <div class="row g-3" data-many-related-fields>
-{$fieldMarkup}                                        </div>
+
+                                        <fieldset
+                                            class="border-0 p-0 m-0"
+                                            data-many-related-field
+                                            <?= \$manyCreateRelatedActive ? '' : 'disabled' ?>
+                                        >
+                                            <!-- Reuse target CRUD fields; relation UI remains in this M:N partial. -->
+                                            <div class="row g-3" data-many-related-fields>
+                                                <?= view('{$relatedTable}/_fields', [
+                                                    'row' => null,
+                                                    'formNamespace' => '{$relatedTable}',
+                                                    'idNamespace' => '{$relatedTable}',
+                                                    'errors' => \$manyRelatedErrors,
+                                                    'options' => \$manyRelatedOptions,
+                                                    'context' => [],
+                                                    'contextLabels' => [],
+                                                    'navigationContext' => [],
+                                                    'parentContext' => [],
+                                                    'cascadeTrail' => [],
+                                                    'relatedCreateOptions' => [],
+                                                    'manyToManyOptions' => [],
+                                                    'manyToManyRelatedCreateOptions' => [],
+                                                    'manyToManySelected' => [],
+                                                    'embeddedRelatedCreate' => true,
+                                                ]) ?>
+                                            </div>
+                                        </fieldset>
+
+                                        <script>
+                                        (() => {
+                                            const panel = document.getElementById('{$panelId}');
+                                            if (!panel) return;
+                                            panel.querySelectorAll(
+                                                '[data-many-related-fields] input, ' +
+                                                '[data-many-related-fields] select, ' +
+                                                '[data-many-related-fields] textarea'
+                                            ).forEach((input) => input.setAttribute('data-many-related-field', ''));
+                                        })();
+                                        </script>
                                     </div>
+
                                     <div class="offcanvas-footer border-top p-3 d-flex justify-content-between gap-2">
                                         <button
                                             type="button"
@@ -696,13 +647,13 @@ PHP;
 PHP;
     }
 
-
     /**
-     * Relational Create shell. Parent content lives in a dedicated partial
-     * of the current CRUD (`_related_create_<fk>.php`). The interface
-     * usa un Bootstrap Offcanvas sovrapposto: la vista/form principale resta
-     * remains visually unchanged and the full parent Create view is never loaded
-     * (no breadcrumbs, toolbar, submit button, or nested forms).
+     * Relational Create shell.
+     *
+     * The parent CRUD owns its field markup, labels and input configuration.
+     * This owner form only prepares relation-specific runtime data and renders
+     * parent/_fields.php directly inside the offcanvas; no intermediate
+     * _related_create_<fk>.php wrapper is generated.
      */
     private function buildRelatedCreatePanel(array $field, string $name): string
     {
@@ -711,27 +662,63 @@ PHP;
             return '';
         }
 
-        $parentTable = (string) ($definition['table'] ?? $field['foreignKey']['parentTable'] ?? 'related record');
+        $parentTable = trim((string) ($definition['table'] ?? $field['foreignKey']['parentTable'] ?? ''));
+        if ($parentTable === '') {
+            return '';
+        }
+
         $panelId = 'related_create_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $name);
-        $partial = '_related_create_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $name);
         $title = htmlspecialchars(Naming::human($parentTable), ENT_QUOTES);
-        $currentTable = htmlspecialchars((string) ($field['_ownerTable'] ?? ''), ENT_QUOTES);
         $offcanvasWidth = $this->relationOffcanvasWidth();
+        $errorPrefix = $name . '__related__';
 
         return <<<PHP
+                <!-- mycrud:start related-create {$name} -> {$parentTable} -->
                 <?php if (\$row === null): ?>
                     <?php
+                    // Relation state belongs to the owner form.
                     \$relatedNewState = (array) old('_related_new', []);
-                    \$relatedPayloadState = (array) old('_related', []);
                     \$relatedCreateActive = !empty(\$relatedNewState['{$name}']);
+
+                    // Adapt validation errors back to the field names expected by
+                    // {$parentTable}/_fields.php (for example "name" instead of
+                    // "{$errorPrefix}name").
+                    \$relatedFieldErrors = [];
+                    foreach ((array) (\$errors ?? []) as \$errorField => \$message) {
+                        \$errorField = (string) \$errorField;
+                        if (!str_starts_with(\$errorField, '{$errorPrefix}')) {
+                            continue;
+                        }
+                        \$relatedFieldErrors[substr(\$errorField, strlen('{$errorPrefix}'))] = (string) \$message;
+                    }
+
+                    // Convert relation option rows to the id => label maps consumed
+                    // by the reusable target _fields.php select controls.
+                    \$relatedFieldOptions = [];
+                    foreach ((array) ((\$relatedCreateOptions ?? [])['{$name}'] ?? []) as \$optionField => \$optionRows) {
+                        foreach ((array) \$optionRows as \$optionRow) {
+                            if (!is_array(\$optionRow)) {
+                                continue;
+                            }
+                            \$optionId = (string) (\$optionRow['id'] ?? '');
+                            if (\$optionId === '') {
+                                continue;
+                            }
+                            \$relatedFieldOptions[(string) \$optionField][\$optionId]
+                                = (string) (\$optionRow['text'] ?? \$optionId);
+                        }
+                    }
                     ?>
                     <div class="col-12">
+                        <!-- Hidden state: tells the Controller to create this parent inline. -->
                         <input
                             type="hidden"
                             name="_related_new[{$name}]"
                             id="{$panelId}_state"
                             value="<?= \$relatedCreateActive ? '1' : '0' ?>"
                         >
+
+                        <!-- Bootstrap offcanvas containing the target CRUD fields. -->
                         <div
                             id="{$panelId}"
                             class="offcanvas offcanvas-end crud-related-create-panel"
@@ -757,18 +744,38 @@ PHP;
                                     aria-label="Cancel new {$title}"
                                 ></button>
                             </div>
+
                             <div class="offcanvas-body">
                                 <div class="alert alert-light border small" role="note">
                                     Enter the new {$title} data. The related record and this record will be saved together when the main form is submitted, within the same transaction.
                                 </div>
-                                <?= view('{$currentTable}/{$partial}', [
-                                    'relatedField'        => '{$name}',
-                                    'relatedCreateActive' => \$relatedCreateActive,
-                                    'relatedPayloadState' => \$relatedPayloadState,
-                                    'relatedCreateOptions' => (array) (\$relatedCreateOptions ?? []),
-                                    'errors'              => \$errors,
-                                ]) ?>
+
+                                <!-- Reuse the target CRUD field view: no field markup is duplicated here. -->
+                                <fieldset
+                                    class="crud-related-create-fieldset border-0 p-0 m-0"
+                                    data-related-field="{$name}"
+                                    <?= \$relatedCreateActive ? '' : 'disabled' ?>
+                                >
+                                    <?= view('{$parentTable}/_fields', [
+                                        'row' => null,
+                                        'formNamespace' => '{$name}',
+                                        'idNamespace' => '{$name}',
+                                        'errors' => \$relatedFieldErrors,
+                                        'options' => \$relatedFieldOptions,
+                                        'context' => [],
+                                        'contextLabels' => [],
+                                        'navigationContext' => [],
+                                        'parentContext' => [],
+                                        'cascadeTrail' => [],
+                                        'relatedCreateOptions' => [],
+                                        'manyToManyOptions' => [],
+                                        'manyToManyRelatedCreateOptions' => [],
+                                        'manyToManySelected' => [],
+                                        'embeddedRelatedCreate' => true,
+                                    ]) ?>
+                                </fieldset>
                             </div>
+
                             <div class="offcanvas-footer border-top p-3 d-flex justify-content-between gap-2">
                                 <button
                                     type="button"
@@ -794,86 +801,11 @@ PHP;
                         </div>
                     </div>
                 <?php endif; ?>
+                <!-- mycrud:end related-create {$name} -->
 PHP;
     }
 
-    /** @return array<string,string> */
-    private function buildRelatedCreatePartials(array $config): array
-    {
-        $partials = [];
-        foreach ($this->orderedFields($config) as $name) {
-            $field = (array) ($config['fields'][$name] ?? []);
-            if (empty($field['foreignKey']) || empty($field['relationCreate']['enabled'])) {
-                continue;
-            }
-            $definition = (array) ($field['foreignKey']['relatedCreate'] ?? []);
-            if (empty($definition['available']) || (array) ($definition['fields'] ?? []) === []) {
-                continue;
-            }
-            $safe = preg_replace('/[^a-zA-Z0-9_]/', '_', (string) $name);
-            $partials['_related_create_' . $safe . '.php'] = $this->buildRelatedCreatePartial((string) $name, $definition);
-        }
-        return $partials;
-    }
-
-    private function buildRelatedCreatePartial(string $name, array $definition): string
-    {
-        $parentTable = trim((string) ($definition['table'] ?? ''));
-        if ($parentTable === '') {
-            return '';
-        }
-
-        $errorPrefix = $name . '__related__';
-
-        return <<<PHP
-<?php
-\$relatedCreateActive = !empty(\$relatedCreateActive);
-\$errors = (array) (\$errors ?? []);
-\$relatedErrors = [];
-foreach (\$errors as \$errorField => \$message) {
-    \$errorField = (string) \$errorField;
-    if (!str_starts_with(\$errorField, '{$errorPrefix}')) {
-        continue;
-    }
-    \$relatedErrors[substr(\$errorField, strlen('{$errorPrefix}'))] = (string) \$message;
-}
-\$parentOptions = [];
-foreach ((array) (\$relatedCreateOptions['{$name}'] ?? []) as \$optionField => \$optionRows) {
-    foreach ((array) \$optionRows as \$optionRow) {
-        if (!is_array(\$optionRow)) { continue; }
-        \$optionId = (string) (\$optionRow['id'] ?? '');
-        if (\$optionId === '') { continue; }
-        \$parentOptions[(string) \$optionField][\$optionId] = (string) (\$optionRow['text'] ?? \$optionId);
-    }
-}
-?>
-<fieldset
-    class="crud-related-create-fieldset"
-    data-related-field="{$name}"
-    <?= \$relatedCreateActive ? '' : 'disabled' ?>
->
-    <?= view('{$parentTable}/_fields', [
-        'row' => null,
-        'formNamespace' => '{$name}',
-        'idNamespace' => '{$name}',
-        'errors' => \$relatedErrors,
-        'options' => \$parentOptions,
-        'context' => [],
-        'contextLabels' => [],
-        'navigationContext' => [],
-        'parentContext' => [],
-        'cascadeTrail' => [],
-        'relatedCreateOptions' => [],
-        'manyToManyOptions' => [],
-        'manyToManyRelatedCreateOptions' => [],
-        'manyToManySelected' => [],
-        'embeddedRelatedCreate' => true,
-    ]) ?>
-</fieldset>
-PHP;
-    }
-
-    private function buildAjaxRelationControl(array $config, array $field, string $name, string $htmlName, string $value, string $errorId): string
+    private function buildAjaxRelationControl(array $config, array $field, string $name, string $htmlName, string $idName, string $value, string $errorId): string
     {
         $table = (string) ($config['table'] ?? '');
         $relation = (array) ($field['foreignKey'] ?? []);
@@ -890,25 +822,25 @@ PHP;
                     <input
                         type="hidden"
                         name="{$htmlName}"
-                        id="{$name}"
+                        id="{$idName}"
                         value="<?= esc({$value}) ?>"
                         class="crud-relation-value"
                     >
                     <input
                         type="search"
                         name="{$table}[{$name}__label]"
-                        id="{$name}_search"
+                        id="{$idName}_search"
                         value="<?= esc({$labelValue}) ?>"
                         class="form-control {$invalid} crud-relation-search"
                         data-url="<?= site_url('{$table}/relation-options/{$name}') ?>"
-                        data-value-target="{$name}"
-                        data-results-target="{$name}_results"
+                        data-value-target="{$idName}"
+                        data-results-target="{$idName}_results"
                         data-min-chars="{$minChars}"
                         autocomplete="off"
                         aria-describedby="{$errorId}"
                     >
                     <select
-                        id="{$name}_results"
+                        id="{$idName}_results"
                         class="form-select mt-2 d-none crud-relation-results"
                         size="5"
                         aria-label="Search results"
@@ -916,7 +848,7 @@ PHP;
 PHP;
     }
 
-    private function buildRelationNavigation(array $field, string $name, string $value): string
+    private function buildRelationNavigation(array $field, string $name, string $idName, string $value): string
     {
         $relation = (array) ($field['foreignKey'] ?? []);
         $navigation = (array) ($field['relationNavigation'] ?? []);
@@ -936,7 +868,7 @@ PHP;
                             target="_blank"
                             rel="noopener"
                             class="btn btn-outline-secondary js-relation-parent-link disabled"
-                            data-value-source="{$name}"
+                            data-value-source="{$idName}"
                             data-base-url="<?= site_url('{$parentTable}/view') ?>"
                             data-trail="<?= esc(\App\Libraries\Crud\CrudNavigationTrail::encode((array) (\$cascadeTrail ?? []))) ?>"
                             title="Open parent record"
@@ -966,7 +898,10 @@ PHP;
             $panelId = 'related_create_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $name);
             $title = htmlspecialchars(Naming::human($parentTable), ENT_QUOTES);
             $actions .= <<<PHP
-                    <?php if (\$row === null): ?>
+                    <?php if (\$row === null && empty(\$embeddedRelatedCreate)): ?>
+                        <!-- Nested Related Create is intentionally terminal:
+                             embedded _fields.php keeps the FK control/navigation,
+                             but does not open another Related Create offcanvas. -->
                         <button
                             type="button"
                             class="btn btn-outline-secondary crud-related-create-toggle"
@@ -1011,10 +946,10 @@ PHP;
         };
     }
 
-    private function buildControl(string $type, string $htmlName, string $idName, string $value, string $attributes, string $errorId): string
+    private function buildControl(string $type, string $htmlName, string $idName, string $fieldName, string $value, string $attributes, string $errorId): string
     {
-        $invalid = "<?= isset(\$errors['{$idName}']) ? 'is-invalid' : '' ?>";
-        $attributeLine = "\n                        aria-describedby=\"{$errorId}\"\n                        aria-invalid=\"<?= isset(\$errors['{$idName}']) ? 'true' : 'false' ?>\"";
+        $invalid = "<?= isset(\$errors['{$fieldName}']) ? 'is-invalid' : '' ?>";
+        $attributeLine = "\n                        aria-describedby=\"{$errorId}\"\n                        aria-invalid=\"<?= isset(\$errors['{$fieldName}']) ? 'true' : 'false' ?>\"";
         if ($attributes !== '') {
             $attributeLine .= "\n                        {$attributes}";
         }
@@ -1034,7 +969,7 @@ PHP,
                         class="form-select {$invalid}"{$attributeLine}
                     >
                         <option value="">Seleziona...</option>
-                        <?php foreach ((\$options['{$idName}'] ?? []) as \$optionValue => \$optionLabel): ?>
+                        <?php foreach ((\$options['{$fieldName}'] ?? []) as \$optionValue => \$optionLabel): ?>
                             <option
                                 value="<?= esc(\$optionValue) ?>"
                                 <?= (string) {$value} === (string) \$optionValue ? 'selected' : '' ?>

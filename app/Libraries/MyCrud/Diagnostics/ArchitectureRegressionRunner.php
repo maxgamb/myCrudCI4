@@ -297,8 +297,27 @@ final class ArchitectureRegressionRunner
                 ? (string) file_get_contents($m2mFieldsPath)
                 : '';
 
-            // _form.php owns the form shell; _fields.php owns the generated controls.
+            // _form.php owns the form shell; _fields.php includes one generated
+            // _many_form_<relation>.php partial for each M:N relation. Those
+            // partials own the M:N picker/offcanvas UI and reuse target/_fields.php.
             $m2mFormContractContent = $m2mFormContent . "\n" . $m2mFieldsContent;
+            $m2mPartialContents = [];
+
+            foreach ($enabledM2MRelatedCreates as $relationKey => $relation) {
+                $safeRelationKey = preg_replace('/[^a-zA-Z0-9_]/', '_', (string) $relationKey) ?: 'relation';
+                $partialPath = $root . 'Views' . DIRECTORY_SEPARATOR . $table . DIRECTORY_SEPARATOR
+                    . '_many_form_' . $safeRelationKey . '.php';
+
+                $partialContent = is_file($partialPath)
+                    ? (string) file_get_contents($partialPath)
+                    : '';
+
+                $m2mPartialContents[(string) $relationKey] = $partialContent;
+                $m2mFormContractContent .= "\n" . $partialContent;
+
+                $m2mFormContractContent .= "\n"
+                    . "view('" . $table . "/_many_form_" . $safeRelationKey . "'";
+            }
 
             $m2mRelatedCreateOk = str_contains($controllerContent, 'manyToManyRelatedCreateDataFromPost')
                 && str_contains($controllerContent, 'validateManyToManyRelatedCreates')
@@ -311,20 +330,35 @@ final class ArchitectureRegressionRunner
                 && !str_contains($m2mFormContractContent, 'name="_many_related[')
                 && !str_contains($m2mFormContractContent, 'data-many-related-toggle');
 
-            foreach ($enabledM2MRelatedCreates as $relation) {
+            foreach ($enabledM2MRelatedCreates as $relationKey => $relation) {
                 $relatedTable = trim((string) ($relation['relatedTable'] ?? ''));
                 if ($relatedTable === '') {
                     continue;
                 }
-                $relatedCreateFields = array_keys((array) (($relation['relatedCreate']['fields'] ?? [])));
-                foreach ($relatedCreateFields as $relatedCreateField) {
-                    $fieldName = (string) $relatedCreateField;
-                    $expectedName = 'name="' . $relatedTable . '[' . $fieldName . ']"';
-                    $expectedId = 'id="' . $relatedTable . '_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $fieldName) . '"';
-                    $m2mRelatedCreateOk = $m2mRelatedCreateOk
-                        && str_contains($m2mFormContractContent, $expectedName)
-                        && str_contains($m2mFormContractContent, $expectedId);
-                }
+
+                $safeRelationKey = preg_replace('/[^a-zA-Z0-9_]/', '_', (string) $relationKey) ?: 'relation';
+                $partialContent = (string) ($m2mPartialContents[(string) $relationKey] ?? '');
+
+                // Owner _fields.php delegates the whole M:N form block to its
+                // relation partial; that partial in turn reuses target/_fields.php.
+                $m2mRelatedCreateOk = $m2mRelatedCreateOk
+                    && str_contains(
+                        $m2mFieldsContent,
+                        "view('" . $table . "/_many_form_" . $safeRelationKey . "'"
+                    )
+                    && $partialContent !== ''
+                    && str_contains(
+                        $partialContent,
+                        "view('" . $relatedTable . "/_fields'"
+                    )
+                    && str_contains(
+                        $partialContent,
+                        "'formNamespace' => '" . $relatedTable . "'"
+                    )
+                    && str_contains(
+                        $partialContent,
+                        "'idNamespace' => '" . $relatedTable . "'"
+                    );
             }
 
             if (in_array($architecture, ['standard', 'full'], true)) {
@@ -596,20 +630,64 @@ final class ArchitectureRegressionRunner
             $formContent = is_file($formPath) ? (string) file_get_contents($formPath) : '';
             $fieldsContent = is_file($fieldsPath) ? (string) file_get_contents($fieldsPath) : '';
             $formContractContent = $formContent . "\n" . $fieldsContent;
+
+            // Reusable _fields.php must be safe both as the normal CRUD field view
+            // and when embedded by belongsTo/M:N related-create forms. Keep this
+            // check structural: the contract matters, not the exact formatting
+            // chosen by FormViewGenerator.
+            $fieldNamespaceContractOk = preg_match(
+                '/\$embeddedRelatedCreate\s*=\s*!empty\(\$embeddedRelatedCreate\)\s*;/',
+                $fieldsContent
+            ) === 1
+                && preg_match(
+                    '/\$formNamespace\s*=\s*\(string\)\s*\(\$formNamespace\s*\?\?\s*[^)]+\)\s*;/',
+                    $fieldsContent
+                ) === 1
+                && preg_match(
+                    '/\$idNamespace\s*=\s*\(string\)\s*\(\$idNamespace\s*\?\?\s*\$formNamespace\)\s*;/',
+                    $fieldsContent
+                ) === 1;
+            $results[] = new DiagnosticResult(
+                strtoupper($architecture) . ' reusable field namespace contract',
+                $fieldNamespaceContractOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+                $fieldNamespaceContractOk
+                    ? '_fields.php initializes its standalone/embedded namespaces before rendering controls.'
+                    : '_fields.php uses reusable form/id namespaces without initializing the field-view contract.'
+            );
+            // Embedded related-create field views are terminal. A reused target
+            // _fields.php may keep its FK selector and normal navigation link, but
+            // must not expose another Related Create toggle/offcanvas.
+            $embeddedTerminalContractOk = str_contains(
+                $fieldsContent,
+                '$row === null && empty($embeddedRelatedCreate)'
+            );
+            $results[] = new DiagnosticResult(
+                strtoupper($architecture) . ' embedded related create terminal',
+                $embeddedTerminalContractOk ? DiagnosticResult::PASS : DiagnosticResult::FAIL,
+                $embeddedTerminalContractOk
+                    ? 'Embedded _fields.php suppresses nested Related Create toggles while keeping normal FK controls.'
+                    : 'Embedded _fields.php can still expose a nested Related Create toggle.'
+            );
+
             $rulesContent = is_file($rulesPath) ? (string) file_get_contents($rulesPath) : '';
             $relatedPartialOk = true;
             foreach ($enabledRelatedCreates as $relatedField) {
-                $safeRelatedField = preg_replace('/[^a-zA-Z0-9_]/', '_', $relatedField);
-                $partialPath = $root . 'Views' . DIRECTORY_SEPARATOR . $table . DIRECTORY_SEPARATOR
-                    . '_related_create_' . $safeRelatedField . '.php';
-                $partialContent = is_file($partialPath) ? (string) file_get_contents($partialPath) : '';
                 $relatedFieldConfig = (array) ($config['fields'][$relatedField] ?? []);
                 $parentTable = trim((string) ($relatedFieldConfig['foreignKey']['parentTable'] ?? ''));
+                $safeRelatedField = preg_replace('/[^a-zA-Z0-9_]/', '_', $relatedField);
+                $legacyPartialPath = $root . 'Views' . DIRECTORY_SEPARATOR . $table . DIRECTORY_SEPARATOR
+                    . '_related_create_' . $safeRelatedField . '.php';
+
+                // belongsTo Related Create is rendered directly from owner _fields.php.
+                // No intermediate _related_create_<fk>.php wrapper should survive.
                 $relatedPartialOk = $relatedPartialOk
-                    && $partialContent !== ''
                     && $parentTable !== ''
-                    && str_contains($partialContent, "view('" . $parentTable . "/_fields'")
-                    && str_contains($partialContent, 'crud-related-create-fieldset')
+                    && !is_file($legacyPartialPath)
+                    && str_contains($fieldsContent, "view('" . $parentTable . "/_fields'")
+                    && str_contains($fieldsContent, "'formNamespace' => '" . $relatedField . "'")
+                    && str_contains($fieldsContent, "'idNamespace' => '" . $relatedField . "'")
+                    && str_contains($fieldsContent, 'crud-related-create-fieldset')
+                    && str_contains($fieldsContent, 'mycrud:start related-create ' . $relatedField)
                     && str_contains($controllerContent, "getPost('" . $relatedField . "')");
             }
             $relatedWriteChecks = [];
@@ -804,10 +882,24 @@ final class ArchitectureRegressionRunner
         // false failures for root tables such as country and for pure M:N tables.
         $hasApplicableHasMany = false;
         $hasManyNewOk = true;
+        $enabledPivotTables = [];
+        foreach ((array) ($config['relationsConfig']['manyToMany'] ?? []) as $manyRelation) {
+            if (empty($manyRelation['enabled'])) {
+                continue;
+            }
+            $pivotTable = trim((string) ($manyRelation['pivotTable'] ?? ''));
+            if ($pivotTable !== '') {
+                $enabledPivotTables[$pivotTable] = true;
+            }
+        }
         if (!empty($config['features']['recordDetail']) && is_file($detailViewPath)) {
             $detailContent = (string) file_get_contents($detailViewPath);
             foreach ((array) ($config['relationsConfig']['hasMany'] ?? []) as $relationKey => $relation) {
                 if (empty($relation['enabled'])) {
+                    continue;
+                }
+                $childTableForPanel = trim((string) ($relation['childTable'] ?? ''));
+                if ($childTableForPanel !== '' && isset($enabledPivotTables[$childTableForPanel])) {
                     continue;
                 }
                 $hasApplicableHasMany = true;

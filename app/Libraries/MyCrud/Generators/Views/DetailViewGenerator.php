@@ -116,8 +116,15 @@ PHP;
     public function generateHasManyPartials(array $config): array
     {
         $partials = [];
+        $pivotTables = $this->enabledManyToManyPivotTables($config);
+
         foreach ((array) ($config['relationsConfig']['hasMany'] ?? []) as $key => $relation) {
             if (empty($relation['enabled'])) {
+                continue;
+            }
+
+            $childTable = trim((string) ($relation['childTable'] ?? ''));
+            if ($childTable !== '' && isset($pivotTables[$childTable])) {
                 continue;
             }
 
@@ -128,6 +135,27 @@ PHP;
         }
 
         return $partials;
+    }
+
+    /**
+     * @return array<string,true>
+     */
+    private function enabledManyToManyPivotTables(array $config): array
+    {
+        $pivotTables = [];
+
+        foreach ((array) ($config['relationsConfig']['manyToMany'] ?? []) as $relation) {
+            if (empty($relation['enabled'])) {
+                continue;
+            }
+
+            $pivotTable = trim((string) ($relation['pivotTable'] ?? ''));
+            if ($pivotTable !== '') {
+                $pivotTables[$pivotTable] = true;
+            }
+        }
+
+        return $pivotTables;
     }
 
     /** @return array<string, string> filename => content */
@@ -240,13 +268,25 @@ PHP;
     {
         $table = (string) ($config['table'] ?? '');
         $output = '';
+        $pivotTables = $this->enabledManyToManyPivotTables($config);
+
         foreach ((array) ($config['relationsConfig']['hasMany'] ?? []) as $key => $relation) {
             if (empty($relation['enabled'])) {
                 continue;
             }
+
+            $childTable = trim((string) ($relation['childTable'] ?? ''));
+            if ($childTable !== '' && isset($pivotTables[$childTable])) {
+                continue;
+            }
+
             $safeKey = preg_replace('/[^A-Za-z0-9_]/', '_', (string) $key) ?: 'relation';
             $viewPath = $table . '/_children_' . $safeKey;
-            $output .= "<?= view(" . var_export($viewPath, true) . ", ['row' => \$row, 'children' => \$children, 'cascadeTrail' => \$cascadeTrail ?? []]) ?>\n";
+
+            $output .= "<?= view("
+                . var_export($viewPath, true)
+                . ", ['row' => \$row, 'children' => \$children, 'cascadeTrail' => \$cascadeTrail ?? []]) ?>
+";
         }
 
         return $output;
@@ -255,6 +295,7 @@ PHP;
     private function buildHasManyPanels(array $config): string
     {
         $output = '';
+        $pivotTables = $this->enabledManyToManyPivotTables($config);
 
         // A child table may reference the same parent multiple times through foreign keys
         // diverse (es. film.language_id e film.original_language_id). In quel
@@ -265,12 +306,20 @@ PHP;
                 continue;
             }
 
-            $childTable = (string) $relation['childTable'];
+            $childTable = trim((string) $relation['childTable']);
+            if ($childTable !== '' && isset($pivotTables[$childTable])) {
+                continue;
+            }
             $childTableOccurrences[$childTable] = ($childTableOccurrences[$childTable] ?? 0) + 1;
         }
 
         foreach ($config['relationsConfig']['hasMany'] ?? [] as $key => $relation) {
             if (empty($relation['enabled'])) {
+                continue;
+            }
+
+            $childTable = trim((string) ($relation['childTable'] ?? ''));
+            if ($childTable !== '' && isset($pivotTables[$childTable])) {
                 continue;
             }
 

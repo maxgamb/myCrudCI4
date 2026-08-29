@@ -125,9 +125,20 @@ final class CrudPublishService
             $summary[$status]++;
         }
 
+        $expectedRelativePaths = array_keys((array) ($expected['files'] ?? []));
+
         $this->synchronizeStaleMcpArtifacts(
             $table,
-            array_keys((array) ($expected['files'] ?? [])),
+            $expectedRelativePaths,
+            $dryRun,
+            $rows,
+            $summary
+        );
+
+        $this->synchronizeStaleViewPartials(
+            $table,
+            $expectedRelativePaths,
+            $force,
             $dryRun,
             $rows,
             $summary
@@ -206,6 +217,99 @@ final class CrudPublishService
                 'reason' => 'stale_managed_mcp_artifact',
             ];
             $summary['removed']++;
+        }
+    }
+
+    /**
+     * Removes stale dynamic View partials owned by this CRUD.
+     *
+     * Only generator-owned filename families are managed; unknown/custom
+     * View files are deliberately preserved.
+     *
+     * @param list<string> $expectedRelativePaths
+     * @param array<string,array<string,mixed>> $rows
+     * @param array<string,int> $summary
+     */
+    private function synchronizeStaleViewPartials(
+        string $table,
+        array $expectedRelativePaths,
+        bool $force,
+        bool $dryRun,
+        array &$rows,
+        array &$summary
+    ): void {
+        $expected = array_fill_keys(array_map(
+            fn (string $path): string => $this->normalizeRelativePath($path),
+            $expectedRelativePaths
+        ), true);
+
+        $directory = rtrim(APPPATH, DIRECTORY_SEPARATOR)
+            . DIRECTORY_SEPARATOR
+            . 'Views'
+            . DIRECTORY_SEPARATOR
+            . $table;
+
+        if (!is_dir($directory)) {
+            return;
+        }
+
+        $patterns = [
+            '_children_*.php',
+            '_many_many__*.php',
+            '_many_form_*.php',
+            '_related_create_*.php',
+        ];
+
+        foreach ($patterns as $pattern) {
+            $matches = glob($directory . DIRECTORY_SEPARATOR . $pattern);
+            if ($matches === false) {
+                continue;
+            }
+
+            foreach ($matches as $target) {
+                if (!is_file($target)) {
+                    continue;
+                }
+
+                $relative = $this->normalizeRelativePath(
+                    'Views/' . $table . '/' . basename($target)
+                );
+
+                if (isset($expected[$relative])) {
+                    continue;
+                }
+
+                // Operational View partials may have been customized after publish.
+                // SAFE publish preserves them; explicit --force authorizes removal.
+                if (!$force) {
+                    continue;
+                }
+
+                if ($dryRun) {
+                    $rows[$relative] = [
+                        'status' => 'would_remove',
+                        'source' => '',
+                        'target' => $target,
+                        'reason' => 'stale_generated_view_partial',
+                    ];
+                    $summary['would_remove']++;
+                    continue;
+                }
+
+                if (!unlink($target)) {
+                    throw new RuntimeException(
+                        'Unable to remove stale generated View partial: ' . $target
+                    );
+                }
+
+                $rows[$relative] = [
+                    'status' => 'removed',
+                    'source' => '',
+                    'target' => $target,
+                    'reason' => 'stale_generated_view_partial',
+                ];
+                $summary['removed']++;
+            }
         }
     }
 
