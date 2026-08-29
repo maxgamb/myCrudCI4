@@ -78,8 +78,8 @@ Generated code no longer routes read operations through one-line Service wrapper
 
 ```text
 Read:  Controller/API/MCP -> Model
-Write: Controller/API -> Service -> Model
-Related write: Service -> RelatedService -> RelatedModel
+Write: Controller/API -> Service -> Entity -> Model
+Related write: Service -> RelatedService -> RelatedEntity -> RelatedModel
 ```
 
 This removes legacy indirection while preserving the existing query-layer rule: Services contain no SQL and no direct database connection.
@@ -87,4 +87,18 @@ This removes legacy indirection while preserving the existing query-layer rule: 
 
 ## Feature-aware Services
 
-Generated Services contain only the write features used by the current table. A table without Related Create or many-to-many relations receives simple `create(array $data)` and `update($id, array $data)` methods, without unused relation parameters or transaction boilerplate. Each write entry point validates with the resource's own generated Rules. Models without operational many-to-many relations expose `updateRecord()`; `updateRecordWithManyToMany()` is reserved for actual many-to-many synchronization.
+Generated Services contain only the write features used by the current table. A table without Related Create or many-to-many relations receives simple `create(array $data)` and `update($id, array $data)` methods, without unused relation parameters or transaction boilerplate. Each write entry point prepares and validates with the resource's own generated Rules, runs the pre-write hook, constructs the generated Entity with `fromArray()`, and passes that Entity to the Model. `fromArray()` does not validate. Models without operational many-to-many relations expose `updateRecord()`; `updateRecordWithManyToMany()` is reserved for actual many-to-many synchronization.
+
+
+## Application customization lifecycle
+
+Use `--force` freely while the CRUD baseline is still being designed in staging. After review and publish, application development begins. Persistent business rules should prefer Service Extensions when they must survive regeneration. Direct customizations to published generated files are normal application code, but future `--force` publish/regeneration must then be reviewed with diff/Git before overwriting them.
+
+```text
+Schema → Configure → Generate → Test → Review → Publish
+                                      ↓
+                           Application development
+                           ├─ ServiceExtension business logic
+                           ├─ Entity record-local behavior
+                           └─ other reviewed customizations
+```

@@ -127,7 +127,7 @@
                     <span class="badge text-bg-dark fs-6 mb-2">
                         <?= esc($version ?? '') ?>
                     </span>
-                    <div class="small text-muted">2.9.0 · STABLE</div>
+                    <div class="small text-muted">2.9.1 · STABLE</div>
                 </div>
             </div>
 
@@ -182,6 +182,8 @@
                         <div class="docs-nav-title">Getting started</div>
                         <a class="nav-link" href="#quick-start">Quick start</a>
                         <a class="nav-link" href="#architecture">Architecture</a>
+                        <a class="nav-link" href="#entity-flow">Entity flow</a>
+                        <a class="nav-link" href="#business-logic-flow">Business Logic</a>
                         <a class="nav-link" href="#paths">Paths</a>
 
                         <div class="docs-nav-title">Builder</div>
@@ -190,6 +192,7 @@
                         <a class="nav-link" href="#builder-fields-reference">Fields reference</a>
                         <a class="nav-link" href="#form-sections">Form Sections</a>
                         <a class="nav-link" href="#relations">Relations</a>
+                        <a class="nav-link" href="#reusable-views">Reusable views</a>
                         <a class="nav-link" href="#relation-layer-reference">Pivot layers</a>
                         <a class="nav-link" href="#uploads">Upload</a>
                         <a class="nav-link" href="#extensions">Extension Points</a>
@@ -319,9 +322,287 @@ php spark mycrud:test-generated film</code></pre>
                         </table>
                     </div>
 
-                    <div class="alert alert-info mb-0">
-                        <strong>Principle:</strong> Controllers, API, and MCP must not contain DB queries.
-                        Logic flows through the generated Service and Model.
+                    <div class="alert alert-info mb-3">
+                        <strong>Principle:</strong> Controllers and API endpoints must not contain DB queries.
+                        In Standard/Full writes the application boundary is
+                        <code>Controller → Service (prepare/validate/hooks) → Entity → Model → Database</code>.
+                    </div>
+                    <div class="docs-path mb-2">Standard / Full WRITE → Service → Entity::fromArray($data) → Model</div>
+                    <p class="small text-muted mb-0">
+                        <code>Entity::fromArray($data)</code> constructs an Entity from data already prepared and validated
+                        by the Service; it is not a validator. Entity owns one-record casts, dates, accessors/mutators and
+                        record-local behavior. SQL, transactions and cross-resource orchestration remain outside the Entity.
+                    </p>
+                </div>
+            </section>
+
+            <section id="entity-flow" class="card shadow-sm mb-4 docs-section">
+                <div class="card-header">
+                    <h2 class="h5 mb-0"><i class="bi bi-boxes me-2"></i>Entity flow</h2>
+                </div>
+                <div class="card-body">
+                    <p>
+                        In <strong>Standard</strong> and <strong>Full</strong>, Entity is the record boundary between
+                        business/application logic and persistence. The Service prepares and validates the payload;
+                        the Entity represents one record; the Model persists it.
+                    </p>
+
+                    <h3 class="h6">Create / Update flow</h3>
+                    <pre class="docs-code mb-3"><code>HTTP Request
+    ↓
+Controller / API Controller
+    ↓
+Service
+    ├─ prepareData()
+    ├─ generated validation
+    ├─ beforeCreate() / beforeUpdate()
+    ↓
+Entity::fromArray($data)
+    ↓
+Entity
+    ├─ casts
+    ├─ dates
+    ├─ datamap
+    ├─ accessors / mutators
+    └─ record-local behavior
+    ↓
+Model
+    ↓
+Database
+    ↓
+afterCreate() / afterUpdate()</code></pre>
+
+                    <div class="alert alert-info">
+                        <strong>Important:</strong>
+                        <code>Entity::fromArray($data)</code> constructs the Entity from already prepared data.
+                        It does <strong>not</strong> validate the payload.
+                    </div>
+
+                    <h3 class="h6">Read flow</h3>
+                    <pre class="docs-code mb-3"><code>Normal Model record read
+    ↓
+Model returnType = Entity
+    ↓
+Entity
+    ↓
+Controller / Service / Dashboard</code></pre>
+
+                    <p class="mb-2">
+                        Entity hydration is intentionally not forced on every query result.
+                    </p>
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Use case</th>
+                                    <th>Preferred result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Normal single-record Model read</td><td><code>Entity</code></td></tr>
+                                <tr><td>Standard/Full create/update persistence</td><td><code>Entity</code></td></tr>
+                                <tr><td>List / JOIN / projection</td><td><code>object</code></td></tr>
+                                <tr><td>Export</td><td><code>array</code></td></tr>
+                                <tr><td>Low-level explicit relation payload</td><td><code>array</code> where appropriate</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="alert alert-light border mt-3 mb-0">
+                        <strong>Boundary rule:</strong>
+                        Entity owns behavior local to one record. SQL, transactions, multi-table workflows and
+                        cross-resource orchestration belong to Model/Service, not to Entity.
+                    </div>
+                </div>
+            </section>
+
+            <section id="business-logic-flow" class="card shadow-sm mb-4 docs-section">
+                <div class="card-header">
+                    <h2 class="h5 mb-0"><i class="bi bi-diagram-2 me-2"></i>Business Logic flow</h2>
+                </div>
+                <div class="card-body">
+                    <p>
+                        myCrudCI4 generates the application structure; project-specific business rules are then added
+                        to the generated application without moving SQL into Controllers or turning Entity into an
+                        orchestration layer.
+                    </p>
+
+                    <div class="docs-path mb-3">
+                        HTTP boundary → Service → Entity → Model → Database
+                    </div>
+
+                    <h3 class="h6">Responsibility map</h3>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-sm align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Layer</th>
+                                    <th>Owns</th>
+                                    <th>Must not own</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>Controller / API</th>
+                                    <td>HTTP input/output, redirects, status codes, request context</td>
+                                    <td>SQL, business transactions, cross-resource workflow logic</td>
+                                </tr>
+                                <tr>
+                                    <th>Service</th>
+                                    <td>Preparation, validation, application rules, transactions, orchestration</td>
+                                    <td>Presentation HTML, direct HTTP response handling</td>
+                                </tr>
+                                <tr>
+                                    <th>ServiceExtension</th>
+                                    <td>Persistent project-specific hooks and business customizations</td>
+                                    <td>Dynamic table/service resolution, presentation logic</td>
+                                </tr>
+                                <tr>
+                                    <th>Entity</th>
+                                    <td>One-record typing, dates, accessors/mutators, local derived behavior/invariants</td>
+                                    <td>SQL, transactions, multi-table workflows, external service orchestration</td>
+                                </tr>
+                                <tr>
+                                    <th>Model</th>
+                                    <td>Database access, query builders, persistence, explicit generated relations</td>
+                                    <td>HTTP concerns and UI behavior</td>
+                                </tr>
+                                <tr>
+                                    <th>View</th>
+                                    <td>Presentation and reuse of generated UI partials</td>
+                                    <td>Business decisions and database access</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="h6">Normal generated write</h3>
+                    <pre class="docs-code mb-3"><code>Controller
+    ↓
+Service
+    ├─ prepareData()
+    ├─ validate()
+    ├─ beforeCreate() / beforeUpdate()
+    ↓
+Entity::fromArray($data)
+    ↓
+Model persistence
+    ↓
+afterCreate() / afterUpdate()
+    ↓
+Controller response</code></pre>
+
+                    <p class="small text-muted">
+                        Validation remains in the Service. <code>Entity::fromArray()</code> is a construction boundary,
+                        not a validation engine.
+                    </p>
+
+                    <h3 class="h6 mt-4">Project-specific rule in ServiceExtension</h3>
+                    <pre class="docs-code mb-3"><code>Generated Service
+    ↓
+prepareData()
+    ↓
+generated validation
+    ↓
+ServiceExtension::beforeCreate($data)
+    ├─ apply project-specific rule
+    └─ return normalized/adjusted $data
+    ↓
+Entity::fromArray($data)
+    ↓
+Model
+    ↓
+ServiceExtension::afterCreate(...)</code></pre>
+
+                    <div class="alert alert-success">
+                        <strong>Preferred regeneration-safe customization:</strong>
+                        use the generated concrete <code>ServiceExtension</code> hooks for business rules that fit the
+                        lifecycle of one CRUD. Extension files are persistent and are not overwritten by normal regeneration.
+                    </div>
+
+                    <h3 class="h6">Cross-resource business workflow</h3>
+                    <p>
+                        When a use case touches several resources, the workflow belongs in an explicit Service.
+                        The Service calls concrete Services/Models generated for those resources; it must not discover them
+                        dynamically from table names or runtime metadata.
+                    </p>
+
+                    <pre class="docs-code mb-3"><code>ReservationWorkflowService
+    ├─ ReservationService
+    │     ↓
+    │  ReservationEntity → ReservationModel
+    ├─ AccountService
+    │     ↓
+    │  AccountEntity → AccountModel
+    └─ PaymentService
+          ↓
+       PaymentEntity → PaymentModel
+
+        one explicit transaction / workflow boundary</code></pre>
+
+                    <div class="alert alert-warning">
+                        <strong>Rule:</strong>
+                        a database FK describes structural relationships, but it does not by itself define the complete
+                        business workflow. Multi-step rules such as reservation → account → payment must be expressed
+                        explicitly in application Services.
+                    </div>
+
+                    <h3 class="h6">What belongs in Entity?</h3>
+                    <div class="row g-3 mb-3">
+                        <div class="col-12 col-lg-6">
+                            <div class="docs-feature">
+                                <strong>Good Entity responsibilities</strong>
+                                <ul class="small mb-0 mt-2">
+                                    <li>cast record values</li>
+                                    <li>normalize a local value through a mutator</li>
+                                    <li>format/derive a value from fields of the same record</li>
+                                    <li>calculate a local property such as nights from arrival/departure</li>
+                                    <li>enforce a record-local invariant when appropriate</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <div class="docs-feature">
+                                <strong>Keep out of Entity</strong>
+                                <ul class="small mb-0 mt-2">
+                                    <li>database queries</li>
+                                    <li>transactions</li>
+                                    <li>availability lookup</li>
+                                    <li>payment/account updates</li>
+                                    <li>cross-resource pricing workflows</li>
+                                    <li>HTTP request/session handling</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="h6">AI-assisted customization</h3>
+                    <pre class="docs-code mb-3"><code>DB schema
+    +
+app/MyCrudConfig/
+    +
+generated CRUD code
+    +
+AI_PROJECT_CONTEXT.md
+    ↓
+AI / developer
+    ↓
+choose the correct layer
+    ├─ record-local behavior → Entity
+    ├─ DB query → Model
+    ├─ business workflow → Service
+    ├─ regeneration-safe CRUD hook → ServiceExtension
+    └─ presentation → View</code></pre>
+
+                    <p class="mb-2">
+                        The generated AI context is intended to make these boundaries explicit so an AI can extend the
+                        application without coupling myCrudCI4 to a specific legacy project.
+                    </p>
+
+                    <div class="alert alert-light border mb-0">
+                        <strong>Regeneration lifecycle:</strong>
+                        <code>--force</code> is normal during scaffolding. After generated application files contain
+                        project-specific changes, review diffs before destructive regeneration and use Git as the safety net.
                     </div>
                 </div>
             </section>
@@ -634,37 +915,177 @@ php spark mycrud:test-generated film</code></pre>
                     <h2 class="h5 mb-0"><i class="bi bi-diagram-3 me-2"></i>Relations</h2>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm align-middle mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Type</th>
-                                    <th>Support</th>
-                                </tr>
-                            </thead>
+                    <p>
+                        Relations are derived from the database schema and then configured explicitly in Builder.
+                        Relation targets remain explicit and static at generation-time: generated Models and Services
+                        call concrete related Models/Services and do not use runtime table/class resolvers.
+                    </p>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-sm align-middle">
+                            <thead><tr><th>Type</th><th>Generated behavior</th><th>Write owner</th></tr></thead>
                             <tbody>
-                                <tr>
-                                    <th>belongsTo / FK</th>
-                                    <td>Select, AJAX, label, parent link, context URL, Relational Create</td>
-                                </tr>
-                                <tr>
-                                    <th>hasMany</th>
-                                    <td>Child preview, count, limit, collapsible panel</td>
-                                </tr>
-                                <tr>
-                                    <th>N:N</th>
-                                    <td>Pure pivot, existing-record selection, Create/Edit synchronization, inline related create</td>
-                                </tr>
-                                <tr>
-                                    <th>Cascaded Navigation</th>
-                                    <td>Multi-level trail for breadcrumbs and contextual return</td>
-                                </tr>
-                                <tr>
-                                    <th>SQL VIEW</th>
-                                    <td>Conservative read-only scaffolding</td>
-                                </tr>
+                                <tr><th>belongsTo / FK</th><td>Select/AJAX, label/template, parent link, URL context, Relational Create</td><td>Current Service; Related Create delegates explicitly to parent Service</td></tr>
+                                <tr><th>hasMany</th><td>Child panel, count, limit, detail/View all, contextual New child, parent return</td><td>Child CRUD / child Service</td></tr>
+                                <tr><th>N:N</th><td>Target selection, attach/detach/sync, Create/Edit synchronization, related create</td><td>Current Service + explicit generated pivot/target operations</td></tr>
+                                <tr><th>Cascaded Navigation</th><td>Multi-level breadcrumb trail and contextual return links</td><td>Navigation only; never authorizes writes or supplies trusted FK values</td></tr>
+                                <tr><th>SQL VIEW</th><td>Conservative read-only relation/navigation scaffolding</td><td>No relational writes</td></tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <h3 class="h6">belongsTo / foreign key</h3>
+                    <p>
+                        A foreign-key field stores the real database FK while the UI can show a readable parent label.
+                        The standard control can load all options or use AJAX according to configuration. Parent navigation
+                        and display labels never change the stored FK name.
+                    </p>
+                    <div class="docs-path mb-3">child.foreign_key → parent.primary_key · stored value = FK · displayed value = configured label/template</div>
+
+                    <h3 class="h6">Relational Create (belongsTo)</h3>
+                    <p>
+                        With <strong>Select or create new</strong>, the normal FK selector remains available and a Bootstrap
+                        Offcanvas can create a parent without leaving the current form. The Offcanvas reuses the parent's
+                        dedicated field partial, not the full parent Create page.
+                    </p>
+                    <div class="docs-path mb-2">Current Service → concrete ParentService → ParentEntity → ParentModel → generated parent PK → current FK</div>
+                    <ul class="small">
+                        <li>Parent and current record participate in the generated transactional workflow.</li>
+                        <li>The generated parent PK is imposed server-side as the current record FK.</li>
+                        <li>A browser-supplied parent FK is never the authority for the newly created parent.</li>
+                        <li>DB-managed parent fields are excluded from the inline payload.</li>
+                        <li>Embedded Related Create is terminal: it does not recursively embed another full create workflow.</li>
+                    </ul>
+
+                    <h3 class="h6 mt-4">hasMany</h3>
+                    <p>
+                        hasMany represents children visible from a parent detail page. It can expose preview, count,
+                        configured columns, View, View all and contextual New child actions.
+                    </p>
+                    <div class="docs-path mb-2">Parent detail → child partial → child CRUD with validated FK context → successful Create → parent detail</div>
+                    <p class="small text-muted">
+                        Contextual Create passes the real FK plus schema-whitelisted parent context; the server validates it
+                        again. hasMany does not generate recursive inline child editing.
+                    </p>
+
+                    <h3 class="h6 mt-4">many-to-many / N:N</h3>
+                    <p>
+                        N:N is the semantic relation between the current record and target records through a pivot.
+                        Create/Edit can synchronize selected target IDs with pivot rows and Related Create can create
+                        a new target through its concrete generated Service.
+                    </p>
+                    <div class="docs-path mb-2">Current record ↔ pivot table ↔ related records</div>
+                    <ul class="small">
+                        <li>Target and pivot methods are decided at generation-time; no dynamic resolver is introduced.</li>
+                        <li>Create/Edit supports synchronization of selected related records.</li>
+                        <li>Related Create uses the concrete related Service before adding the new target to the relation.</li>
+                        <li>If an enabled N:N already represents a pure pivot semantically, duplicate technical hasMany detail output for that pivot is suppressed.</li>
+                        <li>The N:N form UI lives in the dedicated <code>_many_form_&lt;relation&gt;.php</code> partial.</li>
+                    </ul>
+
+                    <h3 class="h6 mt-4">Entity boundary in relational writes</h3>
+                    <div class="docs-path mb-2">Service prepare/validate/hooks → Entity::fromArray($data) → Model persistence</div>
+                    <p class="small text-muted">
+                        Standard/Full normal record writes use the generated Entity before Model persistence.
+                        <code>fromArray()</code> constructs the Entity but does not validate it. Low-level explicit relation
+                        payload helpers may remain array-based; list/export/join projections may remain object/array.
+                    </p>
+
+                    <h3 class="h6 mt-4">Cascaded Navigation</h3>
+                    <p>
+                        A navigation-only <code>_trail</code> can propagate across parent/child levels so breadcrumbs and
+                        return links preserve the user's path. Labels prefer descriptive record values when available.
+                    </p>
+                    <div class="alert alert-warning mb-0">
+                        <strong>Security boundary:</strong> the trail is presentation/context only. It never authorizes a
+                        write and never determines an FK value. FK context remains schema-whitelisted and server-validated.
+                    </div>
+                </div>
+            </section>
+
+            <section id="reusable-views" class="card shadow-sm mb-4 docs-section">
+                <div class="card-header">
+                    <h2 class="h5 mb-0"><i class="bi bi-window-stack me-2"></i>Reusable generated views</h2>
+                </div>
+                <div class="card-body">
+                    <p>
+                        Generated views are split into reusable partials so the same field and relation UI can be rendered
+                        in standalone CRUD pages and in embedded relational workflows without duplicating HTML.
+                    </p>
+
+                    <h3 class="h6">Main form reuse</h3>
+                    <pre class="docs-code mb-3"><code>Create / Edit page
+    ↓
+form.php
+    ↓
+_fields.php
+    ↓
+generated field controls</code></pre>
+
+                    <p>
+                        <code>_fields.php</code> is the reusable field body of the CRUD form. It can be rendered by the
+                        normal Create/Edit page and also embedded inside Related Create.
+                    </p>
+
+                    <h3 class="h6">belongsTo Related Create</h3>
+                    <pre class="docs-code mb-3"><code>Current CRUD form
+    ↓
+belongsTo selector
+    ↓
+Related Create Offcanvas
+    ↓
+Target CRUD _fields.php
+    ↓
+Target Service
+    ↓
+Target Entity
+    ↓
+Target Model</code></pre>
+
+                    <div class="alert alert-info">
+                        The Offcanvas does not duplicate the target form markup and does not render the complete target
+                        Create page. It reuses the target CRUD's generated field partial.
+                    </div>
+
+                    <h3 class="h6">Many-to-many form reuse</h3>
+                    <pre class="docs-code mb-3"><code>Current Create / Edit form
+    ↓
+_many_form_&lt;relation&gt;.php
+    ├─ select existing related records
+    └─ Related Create
+          ↓
+       Target _fields.php
+          ↓
+       Target Service → Target Entity → Target Model</code></pre>
+
+                    <p>
+                        The N:N relation keeps its own relation-specific partial
+                        <code>_many_form_&lt;relation&gt;.php</code>, while creation of a new target record reuses the
+                        target CRUD's <code>_fields.php</code>.
+                    </p>
+
+                    <h3 class="h6">Detail / hasMany reuse</h3>
+                    <pre class="docs-code mb-3"><code>Parent detail page
+    ↓
+generated relation partial
+    ↓
+child preview / count / actions
+    ↓
+Child CRUD routes and views</code></pre>
+
+                    <p class="mb-2">
+                        When a pure pivot is already represented by an enabled semantic N:N relation, the duplicate
+                        technical hasMany detail partial is suppressed to avoid presenting the same relation twice.
+                    </p>
+
+                    <div class="docs-path mb-3">
+                        Standalone and embedded rendering share generated partials; relation behavior remains explicit
+                        and static at generation-time.
+                    </div>
+
+                    <div class="alert alert-warning mb-0">
+                        <strong>Embedding rule:</strong>
+                        Related Create is terminal. An embedded target <code>_fields.php</code> does not recursively
+                        embed another complete Related Create workflow, preventing nested Offcanvas chains and circular UI.
                     </div>
                 </div>
             </section>
@@ -1032,11 +1453,11 @@ list_film_inventory_by_film_id</code></pre>
     ↓
 McpTool
     ↓
-Service
-    ↓
 Model
     ↓
-Database</code></pre>
+MCP Resource
+    ↓
+Result</code></pre>
 
                     <div class="row g-3 mt-1">
                         <div class="col-12 col-lg-6">
@@ -1107,7 +1528,7 @@ Database</code></pre>
 
             <section id="release" class="card shadow-sm mb-4 docs-section">
                 <div class="card-header">
-                    <h2 class="h5 mb-0"><i class="bi bi-flag me-2"></i>myCrudCI4 2.9.0 STABLE</h2>
+                    <h2 class="h5 mb-0"><i class="bi bi-flag me-2"></i>myCrudCI4 2.9.1 STABLE</h2>
                 </div>
                 <div class="card-body">
                     <div class="alert alert-success">
@@ -1118,7 +1539,7 @@ Database</code></pre>
                     <div class="table-responsive">
                         <table class="table table-sm align-middle mb-3">
                             <tbody>
-                                <tr><th>Workflow</th><td>Builder → Config → Quick/CLI → Generateste → Diff → Publish → Test</td><td><span class="badge text-bg-success">STABLE</span></td></tr>
+                                <tr><th>Workflow</th><td>Builder → Config → Quick/CLI → Generate → Diff → Publish → Test</td><td><span class="badge text-bg-success">STABLE</span></td></tr>
                                 <tr><th>CRUD</th><td>Basic / Standard / Full</td><td><span class="badge text-bg-success">STABLE</span></td></tr>
                                 <tr><th>API</th><td>Capabilities, OpenAPI, multipart upload</td><td><span class="badge text-bg-success">STABLE</span></td></tr>
                                 <tr><th>Security</th><td>Optional Shield protection for Web CRUD and REST API</td><td><span class="badge text-bg-success">STABLE</span></td></tr>

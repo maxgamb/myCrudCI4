@@ -23,7 +23,9 @@ class EntityGenerator
             $cast = match (true) {
                 $type === 'bool' || $type === 'boolean' || preg_match('/^tinyint\(1\)/', $columnType) === 1 => 'boolean',
                 preg_match('/tinyint|smallint|mediumint|int|bigint/', $type) === 1 => 'integer',
-                preg_match('/decimal|float|double|numeric/', $type) === 1 => 'float',
+                preg_match('/float|double/', $type) === 1 => 'float',
+                // DECIMAL/NUMERIC stay as DB strings: exact monetary values must not
+                // be silently converted to binary floating point.
                 default => null,
             };
 
@@ -38,6 +40,8 @@ class EntityGenerator
         $content = <<<PHP
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
@@ -49,6 +53,19 @@ class {$class} extends Entity
     protected \$dates = {$datesCode};
 
     protected \$casts = {$castsCode};
+
+    /**
+     * Creates one domain record from already prepared application data.
+     *
+     * HTTP normalization, validation and cross-resource business logic belong
+     * to the Service; the Entity owns record-local typing and behavior.
+     *
+     * @param array<string,mixed> \$data
+     */
+    public static function fromArray(array \$data): self
+    {
+        return new self(\$data);
+    }
 }
 
 PHP;

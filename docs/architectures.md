@@ -27,6 +27,14 @@ Standard includes everything in Basic plus:
 - Service
 - persistent Service Extension Point
 
+For writes, the generated flow is:
+
+```text
+Controller → Service → Entity → Model → Database
+```
+
+The Service prepares and validates the payload before constructing the Entity with `Entity::fromArray()`. The factory creates the Entity; it does not validate the payload. The Entity represents one record and owns casts/dates plus optional record-local behavior. The Service remains responsible for business orchestration and transactions.
+
 The Service Extension file is create-only and is not overwritten by regeneration.
 
 ## Full

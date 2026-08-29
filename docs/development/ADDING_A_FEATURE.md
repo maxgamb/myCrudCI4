@@ -12,6 +12,7 @@ Schema fact?       → DbSchema / policy
 Developer choice?  → ConfigBuilder + persisted config merge
 Query?             → Model
 Write use-case?     → Service (Standard/Full)
+Record-local behavior? → Entity (Standard/Full)
 HTTP/UI?            → Controller/View
 REST input?         → ApiController / API rules
 REST output?        → Resource
@@ -27,7 +28,8 @@ AI guidance?        → ai-context
 | Builder/config | Is there a developer decision to persist? |
 | Schema merge | Can schema drift invalidate the choice? |
 | Model | Are new queries/persistence methods required? |
-| Service | Is there a write use-case or cross-resource orchestration? |
+| Service | Is there a write use-case, validation, transaction or cross-resource orchestration? |
+| Entity | Is there record-local casting, date handling, accessor/mutator or behavior? |
 | Web | Does Create/Edit/View/Index change? |
 | REST | Is the capability exposed? JSON or multipart? PUT/PATCH semantics? |
 | OpenAPI | Does the public contract match implementation? |
@@ -60,3 +62,8 @@ Do not rely only on PASS counts. Inspect the generated Model/Service/Controller/
 
 ## 8. Update developer and AI contracts
 If the architecture or customization workflow changes, update `docs/development/`, regression guards and `mycrud:ai-context` in the same change.
+
+
+## Entity 2.0 check
+
+For Standard/Full write changes, preserve the order `prepare/validate → pre-hook → Entity::fromArray() → Model persistence → post-hook`. `fromArray()` constructs the Entity and must not be treated as generated validation. Keep SQL, transactions and cross-resource orchestration out of Entities.

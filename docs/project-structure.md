@@ -64,3 +64,18 @@ mycrud:* CLI prefix
 ```
 
 This avoids an unnecessary breaking rename.
+
+
+## Standard/Full application layers
+
+Published Standard/Full CRUDs use these responsibilities:
+
+```text
+Controller/API Controller  HTTP boundary
+Service                    validation, transactions, business orchestration
+Entity                     one record, casts/dates, record-local behavior
+Model                      queries and persistence
+Service Extension          persistent regeneration-safe custom business hooks
+```
+
+Generated staging remains under `app/Generated/`; persistent Service Extensions live outside staging under `app/Services/Extensions/`.

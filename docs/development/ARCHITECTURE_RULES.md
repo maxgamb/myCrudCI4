@@ -21,3 +21,8 @@ These rules are the development contract for myCrudCI4.
 ## AR-015 — Dashboard static read wiring
 
 Dashboard aggregate/statistical reads belong to `DashboardQuery`. Record-shaped Recent widgets reuse concrete CRUD Models chosen at generation-time and normalize Entity/object/array results through Dashboard DTOs before rendering. Do not generate `new $modelClass()` or a runtime Model resolver when Dashboard configuration already identifies the Model.
+
+- **AR-016 — Entity construction is not validation.** In Standard/Full writes, Services validate and prepare payloads before constructing the generated Entity with `fromArray()`; the factory does not replace validation.
+- **AR-017 — Entity scope.** Entity behavior is record-local: casts, dates, accessors, mutators and local invariants. SQL, transactions and cross-resource orchestration belong outside the Entity.
+- **AR-018 — Exact decimals.** Database `DECIMAL`/`NUMERIC` values must not be automatically cast to PHP `float`; exact financial/domain decimals must remain representable without binary floating-point coercion.
+- **AR-019 — Regeneration lifecycle.** `--force` is a scaffolding tool. Once published application files have been customized, overwriting them requires explicit review/diff; persistent Service Extensions remain the preferred regeneration-safe business customization point.

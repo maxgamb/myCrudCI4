@@ -27,9 +27,26 @@ protected function afterDelete(int|string $id): void
 
 ## Recommended separation
 
-- Query composition belongs in the Model.
-- Application orchestration belongs in the Service.
-- Custom behavior that must survive regeneration belongs in the Service Extension.
+- HTTP input/output belongs in the Controller/API Controller.
+- Application validation, transactions and orchestration belong in the Service.
+- Record-local casts, dates, accessors/mutators and behavior belong in the Entity.
+- Query composition and persistence belong in the Model.
+- Custom business behavior that must survive regeneration belongs in the Service Extension.
 - Generated files should remain reproducible from schema + configuration.
+
+`Entity::fromArray()` is intentionally small: it constructs an Entity from a prepared array. It is **not** a validation method. Generated Service validation runs before Entity construction.
+
+For Standard/Full writes the normal order is:
+
+```text
+prepareData
+→ validation
+→ beforeCreate/beforeUpdate
+→ Entity::fromArray
+→ Model persistence
+→ afterCreate/afterUpdate
+```
+
+Use Entity methods only for behavior intrinsic to one record. If an operation coordinates multiple Models/resources, changes availability, creates payments, opens a transaction or applies a workflow transition, it belongs in a Service/Service Extension.
 
 This separation allows repeated regeneration without forcing custom business logic into generator templates.

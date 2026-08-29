@@ -51,13 +51,13 @@ STANDARD/FULL WEB READ
 Controller → Model → Database
 
 STANDARD/FULL WEB WRITE
-Controller → Service → Model → Database
+Controller → Service → Entity → Model → Database
 
 REST READ
 ApiController → Model → Resource → JSON
 
 REST WRITE
-ApiController → Service → Model → Database
+ApiController → Service → Entity → Model → Database
 
 MCP READ
 MCP Tool → Model → MCP Resource
@@ -71,6 +71,11 @@ Owns HTTP request/response, view data, redirects and HTTP-level context. It must
 
 ### Service
 Owns write use-cases, application validation/normalization, transactions, extension hooks and explicit cross-resource write orchestration. It must not compose SQL or call `Database::connect()`.
+
+For Standard/Full persistence, the Service prepares and validates the payload, runs the pre-write hook, then creates the generated Entity with `Entity::fromArray()`. `fromArray()` is a construction boundary, **not a validation boundary**.
+
+### Entity
+Represents one application record. It owns CI4 casts/dates and may contain accessors, mutators, normalization or behavior intrinsic to that record. It must not query the database, open transactions or orchestrate other resources. Generated `DECIMAL`/`NUMERIC` fields are not forced to PHP `float`, preserving exact decimal values for domains such as money.
 
 ### Model
 Owns queries and persistence. Concrete Models declare schema-known relational query methods explicitly.
@@ -91,6 +96,8 @@ BelongsTo, HasMany and many-to-many behavior must remain feature-aware. Generate
 ## Generated vs persistent code
 
 `app/Generated/` is disposable staging. Generator-owned operational files can be republished. Developer-owned persistent extension points and configuration must survive complete staging deletion.
+
+During scaffolding, repeated generation with `--force` is expected. After published application code has been intentionally customized, destructive regeneration/publishing must be reviewed first. Git is the final safety net for application-level changes.
 
 ## Architecture changes
 

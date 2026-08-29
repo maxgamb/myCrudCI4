@@ -97,3 +97,10 @@ php spark mycrud:test-all film
 ```
 
 The exact test commands you can run depend on the database table and project configuration.
+
+
+## After publishing: application development
+
+In Standard/Full CRUDs, writes flow through `Controller/API → Service → Entity → Model`. The Service validates before constructing the Entity; `Entity::fromArray()` is not a validator. Put multi-record workflows and transactions in Services or persistent Service Extensions, record-local behavior in Entities, and SQL/query logic in Models.
+
+`--force` is appropriate while scaffolding is replaceable. Once published files contain intentional application customizations, review `mycrud:diff`, use Git, and overwrite only deliberately. Service Extensions are create-only and are the preferred location for business rules that must survive regeneration.

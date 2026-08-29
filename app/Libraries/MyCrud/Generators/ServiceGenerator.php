@@ -17,6 +17,8 @@ final class ServiceGenerator
         $table = (string) $config['table'];
         $class = (string) $config['classes']['service'];
         $modelClass = (string) $config['classes']['model'];
+        $entityClass = (string) $config['classes']['entity'];
+        $useEntity = !empty($config['features']['entity']);
         $rulesClass = (string) $config['classes']['rules'];
         $apiEnabled = !empty($config['features']['api']);
         $apiCaps = (array) ($config['apiCapabilities'] ?? []);
@@ -378,7 +380,9 @@ PHP;
 
         $createRelatedCall = $relatedCreateInlineCalls;
         $createM2MRelatedCall = $manyToManyRelatedInlineCalls;
-        $createModelCall = "\$this->model->createRecord(\$data)";
+        $createModelCall = $useEntity
+            ? "\$this->model->createRecord({$entityClass}::fromArray(\$data))"
+            : "\$this->model->createRecord(\$data)";
         $createTransactionalExpressionParts = [];
         if ($hasRelatedCreate) {
             $createTransactionalExpressionParts[] = '$related !== []';
@@ -448,7 +452,9 @@ PHP : '';
         }
         $updateSignature = implode(",\n        ", $updateParams);
         $updateM2MRelatedCall = $manyToManyRelatedCreateEnabled ? $manyToManyRelatedInlineCalls : '';
-        $updateModelCall = "\$this->model->updateRecord(\$id, \$data)";
+        $updateModelCall = $useEntity
+            ? "\$this->model->updateRecord(\$id, {$entityClass}::fromArray(\$data))"
+            : "\$this->model->updateRecord(\$id, \$data)";
 
         $updateTransactionalExpression = $manyToManyRelatedCreateEnabled ? '$manyToMany !== [] || $manyToManyNew !== []' : '$manyToMany !== []';
 
@@ -525,7 +531,7 @@ PHP : '';
         if (\$rules !== []) {
             \$this->validatePayload(\$data, \$rules, {$rulesClass}::messages(), 'Patch validation failed.');
         }
-{$beforeUpdateHook}        if (!\$this->model->updateRecord(\$id, \$data)) {
+{$beforeUpdateHook}        if (!{$updateModelCall}) {
             throw new RuntimeException(implode(' ', \$this->model->errors()) ?: 'Patch failed.');
         }
 {$afterUpdateHook}    }
@@ -552,7 +558,7 @@ PHP : '';
             return;
         }
         \$data = {$prepareUpdateCall};
-{$beforeUpdateHook}        if (!\$this->model->updateRecord(\$id, \$data)) {
+{$beforeUpdateHook}        if (!{$updateModelCall}) {
             throw new RuntimeException(implode(' ', \$this->model->errors()) ?: 'Upload update failed.');
         }
 {$afterUpdateHook}    }
@@ -715,6 +721,7 @@ PHP : '';
         $needsRuntimeException = $createAllowed || $writable || $softDeleteEnabled;
         $runtimeUse = $needsRuntimeException ? "use RuntimeException;\n" : '';
         $modelUse = "use App\\Models\\{$modelClass};\n";
+        $entityUse = $useEntity ? "use App\\Entities\\{$entityClass};\n" : '';
         $rulesUse = $createAllowed ? "use App\\Validation\\{$rulesClass};\n" : '';
 
         if ($isView) {
@@ -804,7 +811,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-{$extensionUse}{$modelUse}{$rulesUse}{$runtimeUse}
+{$extensionUse}{$entityUse}{$modelUse}{$rulesUse}{$runtimeUse}
 {$classDoc}
 final class {$class}
 {

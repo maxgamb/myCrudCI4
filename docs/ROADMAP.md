@@ -4,7 +4,7 @@
 
 The 2.9 stable baseline completed the Builder/config workflow, safe staging, API/OpenAPI capabilities, multipart upload, optional Shield integration, generated contract tests, local read-only MCP, Form Sections, and consolidated documentation.
 
-## 2.9.1 current consolidation baseline
+## 2.9.1 stable consolidation baseline
 
 The current dev24/fix line focuses on stability and explicit generated architecture rather than adding runtime abstraction.
 
@@ -19,6 +19,10 @@ Completed/consolidated areas:
 - independent Shield Web CRUD (`session`) and REST API (`tokens`) security;
 - output-only REST Resources/OpenAPI boundary;
 - local read-only MCP boundary.
+
+## Entity 2.0 consolidation
+
+The post-2.9.1 line makes the Standard/Full write boundary explicit: Services prepare and validate, generated Entities are constructed with `fromArray()`, and Models persist typed Entities. Entity factories do not validate. Entity scope remains record-local, while transactions and cross-resource business workflows remain Service responsibilities. `DECIMAL`/`NUMERIC` fields are not automatically coerced to PHP `float`.
 
 ## Next development priorities
 

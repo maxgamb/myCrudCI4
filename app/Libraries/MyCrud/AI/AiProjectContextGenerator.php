@@ -175,6 +175,9 @@ final class AiProjectContextGenerator
                 'fullApiWrite' => 'API Controller -> Service -> Model',
                 'modelBase' => 'Concrete generated Models extend App\Models\BaseCrudModel; relation targets remain explicit in concrete Models.',
                 'mcpRead' => 'MCP Tool -> Model -> MCP Resource',
+                'entity' => 'Standard/Full write payloads become an Entity after Service preparation/hooks and before Model persistence; list/export/projection queries may remain object/array.',
+                'entityFactory' => 'Entity::fromArray($data) constructs the Entity from already prepared data; it does not validate the payload. Generated validation remains a Service responsibility.',
+                'regeneration' => 'During scaffolding, regeneration with --force is expected. After operational application code has been customized, destructive regeneration must not be used indiscriminately: inspect differences and preserve project-specific behavior.',
             ],
             'database' => [
                 'tables' => $dbTables,
@@ -402,7 +405,14 @@ final class AiProjectContextGenerator
 
         return [
             'generatedCodePolicy' => 'Do not patch app/Generated/ as a customization strategy; regenerate from configuration instead.',
-            'operationalCodePolicy' => 'Inspect app/ before editing because publish may overwrite generated operational files.',
+            'operationalCodePolicy' => 'Published app/ files are normal application code. Inspect them before editing or republishing; destructive regeneration may overwrite customized operational files.',
+            'entityPolicy' => $standardOrFull
+                ? 'Entity represents one record: casts, dates, accessors/mutators and record-local behavior. Service prepares/validates input and owns transactions/cross-resource business logic; Entity never queries the database.'
+                : 'Basic does not require an Entity write boundary.',
+            'entityFactoryPolicy' => $standardOrFull
+                ? 'Entity::fromArray($data) constructs the Entity from already prepared data; it does not validate the payload. Generated validation remains a Service responsibility.'
+                : null,
+            'regenerationPolicy' => 'During scaffolding, regeneration with --force is expected. After operational application code has been customized, review differences before destructive regeneration and preserve project-specific behavior.',
             'serviceExtensionAvailable' => $standardOrFull,
             'serviceExtension' => $standardOrFull
                 ? 'app/Services/Extensions/' . $class . 'ServiceExtension.php'
@@ -411,7 +421,7 @@ final class AiProjectContextGenerator
                 ? 'Persistent create-only customization point. Use before/after CRUD hooks for application rules and side effects; never put SQL here.'
                 : 'Basic has no persistent ServiceExtension. Prefer Builder/generator configuration; move to Standard/Full when durable business hooks are required.',
             'hookOrder' => $standardOrFull
-                ? 'prepareData -> beforeCreate/beforeUpdate -> Model persistence -> afterCreate/afterUpdate'
+                ? 'prepareData -> validation -> beforeCreate/beforeUpdate -> Entity -> Model persistence -> afterCreate/afterUpdate'
                 : null,
             'queryOwner' => $class . 'Model',
             'relationPolicy' => 'When the related resource is known at generation-time, call the concrete Model/Service explicitly. Never introduce runtime class/table resolvers.',
@@ -434,6 +444,9 @@ final class AiProjectContextGenerator
         ];
 
         if (in_array($architecture, ['standard', 'full'], true)) {
+            $guidance[] = 'Use ' . $class . 'Entity for one-record typing, dates, accessors/mutators and record-local behavior. It must not query the database or orchestrate other resources.';
+            $guidance[] = $class . 'Entity::fromArray($data) constructs the Entity from already prepared data; it does not validate the payload. Generated validation remains a Service responsibility.';
+            $guidance[] = 'Write flow: Service prepareData/validation/hooks -> Entity -> Model persistence. List, export and joined projection queries may continue to return object/array.';
             $guidance[] = 'Put generated business orchestration in ' . $class . 'Service. Put developer custom Service logic in app/Services/Extensions/' . $class . 'ServiceExtension.php; that file is created directly outside app/Generated/, is create-only, and must never be overwritten.';
             $guidance[] = 'Available Service extension hooks are beforeCreate/afterCreate, beforeUpdate/afterUpdate and beforeDelete/afterDelete. Keep SQL/query composition in the Model.';
             $guidance[] = 'The generated ServiceExtension contains a disabled/commented customization example named exampleApplyBusinessRule(). Uncomment, rename/adapt and call it explicitly from a hook only when needed; example helpers must not execute automatically.';
@@ -459,6 +472,10 @@ final class AiProjectContextGenerator
             'Never rename database fields (hotel_id must not become hotelId).',
             'Never singularize table-derived class names (clienti -> ClientiController).',
             'Respect Basic/Standard/Full responsibilities.',
+            'Entity boundary: in Standard/Full writes, the Service prepares and validates application data, applies before hooks, then creates the generated Entity before Model persistence. Entity owns one-record casts/dates/accessors/mutators/record-local behavior only; no SQL, transactions or cross-resource orchestration.',
+            'Entity factory: Entity::fromArray($data) constructs an Entity from already prepared data; it does not validate the payload. Generated validation remains a Service responsibility.',
+            'Do not force Entity hydration for list/export/join projections: optimized query results may remain object/array.',
+            'Regeneration lifecycle: during scaffolding, regeneration with --force is expected. After operational application code has been customized, do not use destructive regeneration indiscriminately; inspect differences and preserve project-specific behavior.',
             'Do not move generated runtime dependencies under App\\Libraries\\MyCrud.',
             'Do not introduce React, Vue, HTMX or other frontend frameworks unless explicitly requested.',
             'Do not modify the database automatically.',
@@ -526,6 +543,7 @@ final class AiProjectContextGenerator
             '- **MCP READ:** `MCP Tool -> Model -> MCP Resource`',
             '- **Dashboard aggregate:** `DashboardController -> DashboardService -> DashboardQuery -> DB`',
             '- **Dashboard recent records:** `DashboardController -> DashboardService -> concrete Model -> Entity/object -> Dashboard DTO -> View`',
+            '- **Standard/Full WRITE record boundary:** `Controller -> Service (prepare/validate/hooks) -> Entity -> Model -> Database`',
             '',
             '## Non-negotiable project conventions',
             '',
@@ -542,6 +560,8 @@ final class AiProjectContextGenerator
             '- Do not introduce another frontend framework unless explicitly requested.',
             '- `app/MyCrudConfig/` stores developer decisions; the live database remains authoritative for physical schema.',
             '- `app/Generated/` is staging. Do not assume staged files are the operational application.',
+            '- `Entity::fromArray($data)` constructs an Entity from already prepared data; it does not validate the payload. Generated validation remains a Service responsibility.',
+            '- During scaffolding, regeneration with `--force` is expected. After operational application code has been customized, do not use destructive regeneration indiscriminately: inspect differences and preserve project-specific behavior.',
             '',
             '## Generated CRUD view structure',
             '',
@@ -559,10 +579,13 @@ final class AiProjectContextGenerator
             '',
             '1. Configure behavior in Builder/myCrud config when the change belongs to generated scaffolding.',
             '2. Never treat `app/Generated/` as a place for persistent manual edits.',
-            '3. In Standard/Full, put persistent business rules and side effects in `app/Services/Extensions/<Entity>ServiceExtension.php`.',
-            '4. Call custom helper methods explicitly from `beforeCreate`, `afterCreate`, `beforeUpdate`, `afterUpdate`, `beforeDelete` or `afterDelete`.',
-            '5. Keep SQL/query composition in the concrete Model. For cross-resource writes call a concrete generated Service explicitly; do not resolve Model/Service/table names dynamically.',
-            '6. The generated ServiceExtension contains a commented/disabled `exampleApplyBusinessRule()` example; uncomment, rename/adapt it to real fields before calling it.',
+            '3. During scaffolding, regeneration with `--force` is expected. After operational application code has been customized, inspect differences before destructive regeneration and preserve project-specific behavior.',
+            '4. In Standard/Full, use the Entity for one-record casts, dates, accessors/mutators and record-local behavior; never put SQL, transactions or cross-resource orchestration in it.',
+            '5. `Entity::fromArray($data)` constructs the Entity from already prepared data; it does not validate the payload. Generated validation remains a Service responsibility.',
+            '6. In Standard/Full, put persistent business rules and side effects in `app/Services/Extensions/<Entity>ServiceExtension.php`.',
+            '7. Call custom helper methods explicitly from `beforeCreate`, `afterCreate`, `beforeUpdate`, `afterUpdate`, `beforeDelete` or `afterDelete`.',
+            '8. Keep SQL/query composition in the concrete Model. For cross-resource writes call a concrete generated Service explicitly; do not resolve Model/Service/table names dynamically.',
+            '9. The generated ServiceExtension contains a commented/disabled `exampleApplyBusinessRule()` example; uncomment, rename/adapt it to real fields before calling it.',
             '',
             'Example:',
             '',
@@ -746,6 +769,11 @@ final class AiProjectContextGenerator
         if ($customization !== []) {
             $lines = array_merge($lines, ['', '## Safe customization', '']);
             $lines[] = '- Generated staging policy: ' . (string) ($customization['generatedCodePolicy'] ?? '');
+            $lines[] = '- Operational code policy: ' . (string) ($customization['operationalCodePolicy'] ?? '');
+            $lines[] = '- Regeneration policy: ' . (string) ($customization['regenerationPolicy'] ?? '');
+            if (!empty($customization['entityFactoryPolicy'])) {
+                $lines[] = '- Entity factory: ' . (string) $customization['entityFactoryPolicy'];
+            }
             $lines[] = '- Query owner: `' . $this->md((string) ($customization['queryOwner'] ?? '')) . '`.';
             $lines[] = '- Relation rule: ' . (string) ($customization['relationPolicy'] ?? '');
             if (!empty($customization['serviceExtensionAvailable'])) {

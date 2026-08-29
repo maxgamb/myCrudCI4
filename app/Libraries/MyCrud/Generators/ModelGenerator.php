@@ -705,8 +705,11 @@ PHP : '';
         $modelCreateNeedsRelated = !$serviceEnabled && $hasRelatedCreates;
         $modelCreateNeedsManyToMany = !$serviceEnabled && ($manyToManyCreateEnabled || $hasManyToManyRelatedCreates);
         $modelCreateNeedsManyToManyNew = !$serviceEnabled && $hasManyToManyRelatedCreates;
-        $modelCreateParams = ["array \$data"];
-        $modelCreateDocParams = "     * @param array<string,mixed> \$data\n";
+        $modelCreateDataType = $useEntity ? $entity : 'array';
+        $modelCreateParams = ["{$modelCreateDataType} \$data"];
+        $modelCreateDocParams = $useEntity
+            ? "     * @param {$entity} \$data Prepared domain record.\n"
+            : "     * @param array<string,mixed> \$data Sanitized write payload.\n";
         if ($modelCreateNeedsRelated) {
             $modelCreateParams[] = "array \$related = []";
             $modelCreateDocParams .= "     * @param array<string,array<string,mixed>> \$related\n";
@@ -960,22 +963,26 @@ PHP : '';
 
 PHP;
         } elseif ($writable) {
-            $updateRecordCode = <<<'PHP'
+            $updateDataType = $useEntity ? $entity : 'array';
+            $updateDataDoc = $useEntity
+                ? $entity . ' $data Prepared domain record.'
+                : 'array<string,mixed> $data Sanitized write payload.';
+            $updateRecordCode = <<<PHP
     /**
      * Updates only this Model's own table.
      *
      * Cross-resource and pivot orchestration is owned by the generated Service.
      *
-     * @param int|string $id Record identifier.
-     * @param array<string,mixed> $data Sanitized write payload.
+     * @param int|string \$id Record identifier.
+     * @param {$updateDataDoc}
      * @return bool True when the update succeeds.
      */
-    public function updateRecord(int|string $id, array $data): bool
+    public function updateRecord(int|string \$id, {$updateDataType} \$data): bool
     {
-        if (!$this->update($id, $data)) {
+        if (!\$this->update(\$id, \$data)) {
             return false;
         }
-        $this->clearListCountCache();
+        \$this->clearListCountCache();
         return true;
     }
 

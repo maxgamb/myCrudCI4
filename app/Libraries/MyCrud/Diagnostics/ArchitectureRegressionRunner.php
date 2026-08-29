@@ -170,6 +170,8 @@ final class ArchitectureRegressionRunner
         $baseModelContent = is_file($baseModelPath) ? (string) file_get_contents($baseModelPath) : '';
         $servicePath = $root . 'Services' . DIRECTORY_SEPARATOR . ($class['service'] ?? '') . '.php';
         $serviceContent = is_file($servicePath) ? (string) file_get_contents($servicePath) : '';
+        $entityPath = $root . 'Entities' . DIRECTORY_SEPARATOR . ($class['entity'] ?? '') . '.php';
+        $entityContent = is_file($entityPath) ? (string) file_get_contents($entityPath) : '';
         $validationPath = $root . 'Validation' . DIRECTORY_SEPARATOR . ($class['rules'] ?? '') . '.php';
         $validationContent = is_file($validationPath) ? (string) file_get_contents($validationPath) : '';
 
@@ -199,6 +201,16 @@ final class ArchitectureRegressionRunner
                 && !str_contains($serviceContent, 'resolveModel(')
                 && !str_contains($serviceContent, 'createRelatedViaServices')
                 && !str_contains($serviceContent, 'createManyToManyRelatedViaServices');
+            $entityClass = (string) ($class['entity'] ?? '');
+            $architectureGuardChecks['Entity has explicit prepared-data factory'] = $entityClass !== ''
+                && str_contains($entityContent, 'public static function fromArray(array $data): self')
+                && str_contains($entityContent, 'return new self($data);');
+            $architectureGuardChecks['Service uses Entity write boundary'] = $entityClass !== ''
+                && str_contains($serviceContent, 'use App\\Entities\\' . $entityClass . ';')
+                && str_contains($serviceContent, $entityClass . '::fromArray($data)');
+            $architectureGuardChecks['Model write boundary accepts Entity'] = $entityClass !== ''
+                && str_contains($modelContent, 'use App\\Entities\\' . $entityClass . ';')
+                && str_contains($modelContent, $entityClass . ' $data');
         }
 
         if ($architecture === 'full') {
