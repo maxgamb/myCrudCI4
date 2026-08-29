@@ -323,6 +323,13 @@ final class CrudPublishService
             'Mcp/Tools/' . $resource . 'Tools.php',
             'Mcp/Tools/' . $resource . 'RelationTools.php',
             'Mcp/Resources/' . $resource . 'McpResource.php',
+
+            // MCP PHPUnit contracts are generator-owned artifacts too.
+            // When MCP is disabled for a CRUD, TestScaffoldGenerator stops
+            // generating them, so publish must remove any previously
+            // published copies from ROOTPATH/tests/.
+            'Tests/Generated/MyCrud/' . $resource . '/' . $resource . 'McpFoundationContractTest.php',
+            'Tests/Generated/MyCrud/' . $resource . '/' . $resource . 'McpResourceSecurityContractTest.php',
         ];
     }
 

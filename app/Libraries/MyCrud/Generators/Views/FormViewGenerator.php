@@ -263,12 +263,6 @@ PHP;
         $widths = (array) (config('MyCrud')->relationPanelWidths ?? []);
         return max(1, min(12, (int) ($widths[$key] ?? $fallback)));
     }
-
-    private function relationGridClass(string $key, int $fallback): string
-    {
-        return 'col-12 col-md-' . $this->configuredRelationWidth($key, $fallback);
-    }
-
     private function relationOffcanvasWidth(): int
     {
         return max(320, (int) (config('MyCrud')->relationOffcanvasWidth ?? 640));

@@ -28,8 +28,6 @@ final class GeneratedUiConfigurabilityTest extends TestCase
         self::assertStringContainsString('relationPanelWidths', $config);
         self::assertStringContainsString("relation['formWidth']", $generator);
         self::assertStringContainsString("configuredRelationWidth('manyToMany', 12)", $generator);
-        self::assertStringContainsString("relationGridClass('relatedCreateField', 6)", $generator);
-        self::assertStringContainsString("relationGridClass('manyToManyRelatedCreateField', 6)", $generator);
     }
 
     public function testManyToManyPrimaryActionsShareOneInputGroupAndBuilderWidth(): void
