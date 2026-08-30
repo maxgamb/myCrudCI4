@@ -54,7 +54,7 @@ only constructs the Entity. Required fields, formats and generated application v
 
 ## Example
 
-A reservation method that calculates nights from check-in/check-out can be record-local Entity behavior. An operation that cancels a reservation and also changes room availability, account state or payments is a Service workflow and normally belongs in the Service/Service Extension transaction boundary.
+A method that derives a duration from two fields of the same record can be record-local Entity behavior. An operation that changes the primary resource and also updates related resources is a Service workflow and normally belongs in the Service/Service Extension transaction boundary.
 
 ## Exact decimal values
 
@@ -72,3 +72,7 @@ Database schema
 ```
 
 During scaffolding, replaceable staging may be regenerated with `--force`. After intentional customization of published application files, treat them as application code: review diffs and Git history before destructive overwrite. Prefer Service Extensions for business logic that must remain regeneration-safe.
+
+## Structural domain analysis
+
+Before interpreting a new business requirement, `Tools > Domain Analyzer` can classify the current DB objects and expose structural root candidates from PK/FK topology and table shape. This is supporting evidence only: the analyzer must not infer business operations from the schema alone. See [`domain-analyzer.md`](domain-analyzer.md).

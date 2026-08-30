@@ -363,7 +363,7 @@ At runtime the generated Dashboard accepts:
 Dates are validated server-side. If both are supplied in reverse order, the
 generated Controller swaps them.
 
-The global period combines with the widget-local filter from dev7.
+The global period combines with the widget-local filter configured for each widget.
 
 
 ### Compact Dashboard widget configuration

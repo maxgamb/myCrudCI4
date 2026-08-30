@@ -153,8 +153,8 @@ final class RelationResolver
         // we need to know BOTH foreign keys of the bridge table.
         //
         // Esempio film:
-        //   relationsFor('film') vede film_actor.film_id -> film
-        //   ma non vede film_actor.actor_id -> actor.
+        //   relationsFor('resource_a') sees resource_link.resource_a_id -> resource_a
+        //   but it does not see resource_link.resource_b_id -> resource_b.
         //
         // Le FK complete della candidata pivot sono gia disponibili in
         // getTableInfo($pivot)['foreignKeys'], caricato dal resolver tra le
@@ -206,7 +206,7 @@ final class RelationResolver
 
             // Classic pivot: one foreign key to the current table and one to
             // il target. I self many-to-many richiedono una semantica esplicita
-            // e restano fuori dallo scaffolding automatico di dev34.
+            // and remain outside automatic many-to-many scaffolding.
             if (count($ownIndexes) !== 1) {
                 continue;
             }

@@ -1111,11 +1111,23 @@ final class __ENTITY__RelationalContractTest extends CIUnitTestCase
             foreach (self::MANY_TO_MANY_RELATED_CREATE_KEYS as $key) {
                 self::assertArrayHasKey($key, $rules, 'Missing M2M Related Create rules for: ' . $key);
             }
-            self::assertStringNotContainsString(
-                'manyToManyRelatedCreateRelationOptions',
-                $model,
-                'Legacy generic M2M Related Create relation-options adapter found.'
-            );
+            // The generated Model may override the BaseCrudModel default when
+            // an inline-created M:N target contains nested foreign keys. The
+            // override is valid as long as its dependencies are statically
+            // wired; the legacy problem was runtime class/table resolution,
+            // not the public contract name itself.
+            if (str_contains($model, 'function manyToManyRelatedCreateRelationOptions(')) {
+                self::assertStringNotContainsString(
+                    'new $modelClass',
+                    $model,
+                    'Dynamic Model resolution found in M2M Related Create options.'
+                );
+                self::assertStringNotContainsString(
+                    'Database::connect(',
+                    $model,
+                    'Direct database resolver found in M2M Related Create options.'
+                );
+            }
 
             if (self::SERVICE_ENABLED) {
                 $servicePath = APPPATH . 'Services/__SERVICE__.php';

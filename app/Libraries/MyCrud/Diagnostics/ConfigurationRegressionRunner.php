@@ -175,7 +175,7 @@ final class ConfigurationRegressionRunner
             ));
 
             /*
-             * Regressione dev2: una saved configuration può riferirsi a un
+             * Regression guard: a saved configuration may refer to a
              * field or hasMany relation no longer present in the DB. These
              * chiavi devono essere ignorate e non reintrodotte nel config finale.
              */

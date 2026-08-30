@@ -144,7 +144,7 @@ class ConfigBuilder
                 'defaultLabel' => $this->labels->resolve($name),
                 'languageKey' => $languageFile . '.' . $name,
                 'width' => $this->defaultFieldWidth(),
-                // dev40: a single logical section per field. Empty string = General.
+                // A field belongs to a single logical section. Empty string = General.
                 'section' => '',
                 'attributes' => $this->inferAttributes($column),
                 'ui' => $this->inferUi(
@@ -189,7 +189,7 @@ class ConfigBuilder
             'architecture' => $architecture,
             'fields' => $fields,
             'order' => array_keys($fields),
-            // dev40 Form Sections v2: no section is mandatory.
+            // Form Sections: no section is mandatory.
             // Unassigned fields are rendered under "General".
             'formSections' => [],
             'relations' => $relations,
@@ -359,7 +359,7 @@ class ConfigBuilder
                 }
             }
 
-            // dev37: initial Create value for writable temporal fields.
+            // Initial Create value for writable temporal fields.
             // È una comodità UI, non sostituisce i DEFAULT/ON UPDATE del DB.
             $temporalType = strtolower((string) ($field['type'] ?? ''));
             $temporalInput = strtolower((string) ($field['inputType'] ?? ''));
@@ -386,7 +386,7 @@ class ConfigBuilder
                 foreach (['searchable', 'sortable', 'visibleIndex', 'visibleForm', 'visibleView', 'sensitive', 'exportable', 'apiVisible', 'mcpVisible'] as $flag) {
                     $field['ui'][$flag] = in_array($flag, $postedUi, true);
                 }
-                // Dal dev22 le scelte di visibilita del Builder sono marcate
+                // Builder visibility choices are explicitly marked
                 // esplicitamente. In assenza del marker le vecchie config non
                 // possono reintrodurre i limiti automatici delle versioni precedenti.
                 $field['uiVisibilityCustomized'] = true;
@@ -394,7 +394,7 @@ class ConfigBuilder
         }
         unset($field);
 
-        // dev40 Form Sections v2.
+        // Form Sections.
         // The section contains presentation metadata only; fields keep
         // il riferimento tramite fields.<name>.section. In questo modo non esistono
         // two field lists to synchronize.
@@ -562,7 +562,7 @@ class ConfigBuilder
         foreach ($saved['fields'] as $fieldName => $savedField) {
             $savedField = array_intersect_key((array) $savedField, $fieldCustomizationKeys);
 
-            // Prima del dev22 visibleIndex/visibleView potevano essere false
+            // Legacy visibleIndex/visibleView values may be false
             // per effetto dei limiti automatici del generatore (es. prime 10
             // colonne). Se il Builder non ha marcato una scelta esplicita,
             // lasciamo prevalere i nuovi default completi derivati dallo schema.
@@ -571,7 +571,7 @@ class ConfigBuilder
                 unset($savedField['ui']['visibleIndex'], $savedField['ui']['visibleView']);
             }
 
-            // dev39-fix3: nelle prime config Upload, file/image venivano trattati
+            // Legacy Upload configurations could treat file/image fields
             // come dati binari anche quando la colonna DB contiene soltanto il
             // filename VARCHAR. La coppia visibleIndex=false + visibleView=false
             // era quindi salvata automaticamente dal Builder. In quel caso
@@ -586,7 +586,7 @@ class ConfigBuilder
                 unset($savedField['ui']['visibleIndex'], $savedField['ui']['visibleView']);
             }
 
-            // Migrazione dev28: nelle config precedenti la Quick salvava
+            // Configuration migration: older Quick snapshots could store
             // acceptContext=false anche quando non era una scelta del Builder.
             // Se la navigazione non è marcata come personalizzata, lasciamo
             // allow the new schema-driven default to prevail (foreign key accepted in Create).
@@ -595,7 +595,7 @@ class ConfigBuilder
                 unset($savedField['relationNavigation']['acceptContext']);
             }
 
-            // fix11-fix1 migration: old snapshots stored relationCreate.enabled=false
+            // Configuration migration: old snapshots stored relationCreate.enabled=false
             // even when the developer had never made a Builder choice. Do not let that
             // technical default hide a safe Related Create action introduced by Quick.
             if (empty($savedField['relationCreateCustomized'])) {
@@ -613,7 +613,7 @@ class ConfigBuilder
 
         /*
          * hasMany contiene sia scelte UI sia metadati tecnici derivati dallo
-         * schema. Dal dev22 le colonne sono sempre schema-authoritative e
+         * schema. Columns are schema-authoritative and
          * complete: no numeric limit and no legacy list can
          * remove them. The developer remains free to reduce the table in
          * codice generato o tramite future scelte esplicite del Builder.
@@ -826,14 +826,14 @@ class ConfigBuilder
                 $field['ui']['apiVisible'] = true;
             }
 
-            // dev13: MCP ha una superficie dati indipendente dalla REST API.
+            // MCP has a data surface independent from the REST API.
             // Legacy configurations inherit apiVisible, except sensitive fields.
             if (!array_key_exists('mcpVisible', $field['ui'])) {
                 $field['ui']['mcpVisible'] = !empty($field['ui']['apiVisible'])
                     && empty($field['ui']['sensitive']);
             }
 
-            // dev32: a SQL VIEW is read-only scaffolding. Even a
+            // A SQL VIEW is read-only scaffolding. Even a
             // saved configuration cannot reactivate form fields or
             // Relational Create sulla VIEW. Lo sviluppatore resta libero di
             // estendere manualmente i file generati se conosce la VIEW.
@@ -1504,7 +1504,7 @@ class ConfigBuilder
                 'displayField' => $relation['displayField'],
                 'limit' => 20,
                 'showCount' => true,
-                // Scaffolding dev33: le azioni restano configurabili e non
+                // hasMany scaffolding actions remain configurable and are not
                 // vengono imposte al progetto applicativo.
                 'showCreateButton' => !empty($relation['childCreateAllowed']),
                 'showViewAllButton' => true,
@@ -1553,7 +1553,7 @@ class ConfigBuilder
                 'relatedRecordDetail' => !empty($relation['relatedRecordDetail']),
                 'columns' => (array) ($relation['relatedColumns'] ?? []),
                 'columnTypes' => (array) ($relation['relatedColumnTypes'] ?? []),
-                // Scaffolding dev34: i metodi attach/detach/sync vengono sempre
+                // Many-to-many attach/detach/sync methods are generated
                 // generati come punti di estensione, senza imporre una UI di editing.
                 'scaffoldMutators' => true,
             ];

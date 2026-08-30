@@ -136,7 +136,7 @@ final class ModelGenerator
             $filterDefinitions[$primaryKey] = ['type' => 'primary', 'operators' => ['eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'between']];
         }
 
-        // dev19: every generated Model exposes a small, safe query surface for
+        // Every generated Model exposes a small, safe query surface for
         // other generated resources. This keeps a query on the Model that owns
         // the queried table instead of duplicating cross-table SQL in consumers.
         $resourceFieldsCode = var_export(array_values(array_keys($fieldTypes)), true);

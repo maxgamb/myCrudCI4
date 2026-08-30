@@ -54,7 +54,12 @@ final class MyCrudQueryLayerCheck extends BaseCommand
         $tableView = $root . 'Views/' . $config['table'] . '/_table.php';
         $filtersView = $root . 'Views/' . $config['table'] . '/_filters.php';
 
-        foreach ([$controller, $model, $route, $service, $index, $tableView, $filtersView] as $file) {
+        $required = [$controller, $model, $route, $index, $tableView, $filtersView];
+        if (empty($config['isView'])) {
+            $required[] = $service;
+        }
+
+        foreach ($required as $file) {
             $this->assertFile($file);
             $this->assertLint($file);
             $this->assertNoPlaceholders($file);
@@ -63,11 +68,15 @@ final class MyCrudQueryLayerCheck extends BaseCommand
         $controllerCode = (string) file_get_contents($controller);
         $modelCode = (string) file_get_contents($model);
         $routeCode = (string) file_get_contents($route);
-        $serviceCode = (string) file_get_contents($service);
+        $serviceCode = is_file($service) ? (string) file_get_contents($service) : '';
         $indexCode = (string) file_get_contents($index);
 
         $this->assertNoDatabaseCalls($controllerCode, 'Controller');
-        $this->assertNoDatabaseCalls($serviceCode, 'Service');
+        if (empty($config['isView'])) {
+            $this->assertNoDatabaseCalls($serviceCode, 'Service');
+        } elseif (is_file($service)) {
+            throw new RuntimeException('SQL VIEW non deve generare un Service write-only: ' . $service);
+        }
         $this->assertContains($modelCode, 'function getListPage(', 'getListPage() mancante nel Model.');
         $this->assertContains($modelCode, 'function getExportRows(', 'getExportRows() mancante nel Model.');
         $this->assertContains($controllerCode, 'function exportCsv(', 'exportCsv() mancante nel Controller.');
@@ -77,6 +86,31 @@ final class MyCrudQueryLayerCheck extends BaseCommand
         $this->assertContains($indexCode, 'X-Requested-With', 'Caricamento AJAX mancante nella view.');
         $this->assertNotContains($routeCode, "post('datatable'", 'È ancora presente la rotta DataTables.');
         $this->assertNotContains($modelCode, 'function datatable(', 'È ancora presente datatable() nel Model.');
+
+        if (!empty($config['isView'])) {
+            foreach ([
+                "get('create'",
+                "post('create'",
+                "get('edit/",
+                "post('edit/",
+                "post('delete/",
+                "post('restore/",
+                "post('force-delete/",
+            ] as $writeRoute) {
+                $this->assertNotContains(
+                    $routeCode,
+                    $writeRoute,
+                    'SQL VIEW espone una rotta di scrittura non consentita: ' . $writeRoute
+                );
+            }
+            foreach (['function create(', 'function edit(', 'function delete(', 'function restore(', 'function forceDelete('] as $writeMethod) {
+                $this->assertNotContains(
+                    $controllerCode,
+                    $writeMethod,
+                    'SQL VIEW espone un metodo web di scrittura non consentito: ' . $writeMethod
+                );
+            }
+        }
     }
 
     private function assertNoDatabaseCalls(string $code, string $layer): void

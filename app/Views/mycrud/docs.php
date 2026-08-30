@@ -1,5 +1,15 @@
 <?= $this->extend('layouts/default_crud') ?>
 <?= $this->section('content') ?>
+<?php
+$displayVersion = trim((string) ($version ?? ''));
+$versionUpper = strtoupper($displayVersion);
+$releaseStatus = str_contains($versionUpper, '-RC')
+    ? 'RELEASE CANDIDATE'
+    : (str_contains($versionUpper, '-DEV') ? 'DEVELOPMENT' : 'STABLE');
+$releaseBadge = $releaseStatus === 'STABLE'
+    ? 'success'
+    : ($releaseStatus === 'RELEASE CANDIDATE' ? 'warning' : 'secondary');
+?>
 
 <style>
     .mycrud-docs {
@@ -125,9 +135,9 @@
 
                 <div class="text-end">
                     <span class="badge text-bg-dark fs-6 mb-2">
-                        <?= esc($version ?? '') ?>
+                        <?= esc($displayVersion) ?>
                     </span>
-                    <div class="small text-muted">2.9.1 · STABLE</div>
+                    <div class="small text-muted"><?= esc($releaseStatus) ?></div>
                 </div>
             </div>
 
@@ -527,23 +537,23 @@ ServiceExtension::afterCreate(...)</code></pre>
                         dynamically from table names or runtime metadata.
                     </p>
 
-                    <pre class="docs-code mb-3"><code>ReservationWorkflowService
-    ├─ ReservationService
+                    <pre class="docs-code mb-3"><code>PrimaryWorkflowService
+    ├─ PrimaryResourceService
     │     ↓
-    │  ReservationEntity → ReservationModel
-    ├─ AccountService
+    │  PrimaryResourceEntity → PrimaryResourceModel
+    ├─ RelatedResourceService
     │     ↓
-    │  AccountEntity → AccountModel
-    └─ PaymentService
+    │  RelatedResourceEntity → RelatedResourceModel
+    └─ AuditResourceService
           ↓
-       PaymentEntity → PaymentModel
+       AuditResourceEntity → AuditResourceModel
 
         one explicit transaction / workflow boundary</code></pre>
 
                     <div class="alert alert-warning">
                         <strong>Rule:</strong>
                         a database FK describes structural relationships, but it does not by itself define the complete
-                        business workflow. Multi-step rules such as reservation → account → payment must be expressed
+                        business workflow. Multi-step rules that change a primary resource and related resources must be expressed
                         explicitly in application Services.
                     </div>
 
@@ -556,7 +566,7 @@ ServiceExtension::afterCreate(...)</code></pre>
                                     <li>cast record values</li>
                                     <li>normalize a local value through a mutator</li>
                                     <li>format/derive a value from fields of the same record</li>
-                                    <li>calculate a local property such as nights from arrival/departure</li>
+                                    <li>calculate a local property from fields of the same record</li>
                                     <li>enforce a record-local invariant when appropriate</li>
                                 </ul>
                             </div>
@@ -567,9 +577,9 @@ ServiceExtension::afterCreate(...)</code></pre>
                                 <ul class="small mb-0 mt-2">
                                     <li>database queries</li>
                                     <li>transactions</li>
-                                    <li>availability lookup</li>
-                                    <li>payment/account updates</li>
-                                    <li>cross-resource pricing workflows</li>
+                                    <li>cross-resource lookup</li>
+                                    <li>updates to related resources</li>
+                                    <li>cross-resource business workflows</li>
                                     <li>HTTP request/session handling</li>
                                 </ul>
                             </div>
@@ -1528,12 +1538,12 @@ Result</code></pre>
 
             <section id="release" class="card shadow-sm mb-4 docs-section">
                 <div class="card-header">
-                    <h2 class="h5 mb-0"><i class="bi bi-flag me-2"></i>myCrudCI4 2.9.1 STABLE</h2>
+                    <h2 class="h5 mb-0"><i class="bi bi-flag me-2"></i>myCrudCI4 <?= esc($displayVersion) ?> · <?= esc($releaseStatus) ?></h2>
                 </div>
                 <div class="card-body">
-                    <div class="alert alert-success">
-                        <strong>Status:</strong> stable release of the 2.9 line.
-                        The consolidation phase is complete.
+                    <div class="alert alert-<?= esc($releaseBadge) ?>">
+                        <strong>Status:</strong> <?= esc($releaseStatus) ?>.
+                        Release status is derived from the authoritative generator version.
                     </div>
 
                     <div class="table-responsive">

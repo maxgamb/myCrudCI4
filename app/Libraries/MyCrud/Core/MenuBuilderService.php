@@ -9,7 +9,7 @@ use App\Libraries\MyCrud\Schema\DbSchema;
 /**
  * Prepares and validates Menu Builder configuration.
  *
- * Dalla 2.8.0-dev7 il generatore NON prova più a decidere automaticamente
+ * The generator does NOT try to decide automatically
  * come organizzare il menu. Foreign key e nomi DB descrivono lo schema
  * tecnico, non necessariamente la navigazione dell'applicazione.
  *

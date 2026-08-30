@@ -34,7 +34,7 @@ final class MyCrudReleaseCheck extends BaseCommand
 
         if ($tables === []) {
             CLI::error('Specify at least one real table.');
-            CLI::write('Example: php spark mycrud:release-check film customer staff store rental', 'yellow');
+            CLI::write('Example: php spark mycrud:release-check users orders products', 'yellow');
 
             return EXIT_ERROR;
         }
@@ -229,9 +229,30 @@ final class MyCrudReleaseCheck extends BaseCommand
     private function failureSummary(string $output): string
     {
         $lines = preg_split('/\R/', trim($output)) ?: [];
+
+        // mycrud:test-all reports individual failed diagnostics with the ✗
+        // symbol before printing the aggregate PASS/WARN/FAIL line. Surface
+        // those names first so the RC summary remains actionable.
+        $diagnosticFailures = [];
+        foreach ($lines as $line) {
+            $line = trim((string) $line);
+            if (str_starts_with($line, '✗ ')) {
+                $diagnosticFailures[] = substr($line, strlen('✗ '));
+                if (count($diagnosticFailures) >= 3) {
+                    break;
+                }
+            }
+        }
+        if ($diagnosticFailures !== []) {
+            return implode(' | ', $diagnosticFailures);
+        }
+
         foreach ($lines as $line) {
             $line = trim((string) $line);
             if (preg_match('/^(Error|Failure|ParseError|Fatal error|PHP Fatal error|[0-9]+\))[: ]/i', $line) === 1) {
+                return $line;
+            }
+            if (str_starts_with($line, 'Verifica fallita:') || str_starts_with($line, 'Verifica API fallita:')) {
                 return $line;
             }
         }

@@ -1905,7 +1905,7 @@ ksort($childTables);
                                         <?php endforeach; ?>
                                     </select>
                                     <div class="form-text">
-                                        Text displayed instead of the foreign-key value, for example 5 → “Hotel Ateneo”.
+                                        Text displayed instead of the foreign-key value, for example 5 → “Premium category”.
                                     </div>
                                 </div>
 

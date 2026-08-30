@@ -150,7 +150,7 @@ final class ArchitectureRegressionRunner
             );
         }
 
-        // Regressioni UI/runtime consolidate nella dev24.
+        // Consolidated UI/runtime regression guards.
         $indexPath = $root . 'Views' . DIRECTORY_SEPARATOR . $table . DIRECTORY_SEPARATOR . 'index.php';
         $controllerPath = $root . 'Controllers' . DIRECTORY_SEPARATOR . ($class['controller'] ?? '') . '.php';
         $exporterPath = $root . 'Libraries' . DIRECTORY_SEPARATOR . 'Crud' . DIRECTORY_SEPARATOR . 'CrudExporter.php';
@@ -176,7 +176,7 @@ final class ArchitectureRegressionRunner
         $validationContent = is_file($validationPath) ? (string) file_get_contents($validationPath) : '';
 
 
-        // dev24 fix15: one consolidated architecture guard protects the
+        // One consolidated architecture guard protects the
         // boundaries established by the generated static architecture. The
         // generator already knows relation targets at generation-time, so
         // generated code must not re-introduce runtime class/table resolvers.
@@ -205,12 +205,20 @@ final class ArchitectureRegressionRunner
             $architectureGuardChecks['Entity has explicit prepared-data factory'] = $entityClass !== ''
                 && str_contains($entityContent, 'public static function fromArray(array $data): self')
                 && str_contains($entityContent, 'return new self($data);');
-            $architectureGuardChecks['Service uses Entity write boundary'] = $entityClass !== ''
-                && str_contains($serviceContent, 'use App\\Entities\\' . $entityClass . ';')
-                && str_contains($serviceContent, $entityClass . '::fromArray($data)');
-            $architectureGuardChecks['Model write boundary accepts Entity'] = $entityClass !== ''
-                && str_contains($modelContent, 'use App\\Entities\\' . $entityClass . ';')
-                && str_contains($modelContent, $entityClass . ' $data');
+
+            // Entity/Model write-boundary contracts apply only to writable
+            // resources. SQL VIEWs are intentionally read-only: Standard/Full
+            // may still generate an Entity for typed read results, but there is
+            // no Service write path and the Model must not be required to accept
+            // an Entity for persistence.
+            if (!empty($config['features']['writable'])) {
+                $architectureGuardChecks['Service uses Entity write boundary'] = $entityClass !== ''
+                    && str_contains($serviceContent, 'use App\\Entities\\' . $entityClass . ';')
+                    && str_contains($serviceContent, $entityClass . '::fromArray($data)');
+                $architectureGuardChecks['Model write boundary accepts Entity'] = $entityClass !== ''
+                    && str_contains($modelContent, 'use App\\Entities\\' . $entityClass . ';')
+                    && str_contains($modelContent, $entityClass . ' $data');
+            }
         }
 
         if ($architecture === 'full') {
@@ -406,7 +414,7 @@ final class ArchitectureRegressionRunner
             );
         }
 
-        // dev22: relational read ownership must remain delegated to the Model
+        // Relational read ownership must remain delegated to the Model
         // that owns the queried table. This keeps generated Models small and
         // prevents parent/child query duplication from returning in later changes.
         $relationalOwnershipOk = true;
@@ -454,7 +462,7 @@ final class ArchitectureRegressionRunner
             );
         }
 
-        // Dev38 fix2: PHP può passare il lint anche quando una classe non importata
+        // Runtime namespace guard: PHP can pass lint even when an unimported class
         // viene risolta nel namespace corrente e fallisce solo a runtime.
         $usesPageNotFound = str_contains($controllerContent, 'PageNotFoundException::');
         $importsPageNotFound = str_contains(
@@ -833,7 +841,7 @@ final class ArchitectureRegressionRunner
             );
         }
 
-        // Regressione dev28: una FK reale è accettata di default come
+        // A real foreign key is accepted by default as
         // Create context. The value is validated by the Controller through
         // relationOptionById() prima di essere passato al form.
         $fkCreateContextOk = true;
@@ -859,7 +867,7 @@ final class ArchitectureRegressionRunner
         );
 
 
-        // Regressione dev29: l'alias visibile è legato alla FK del record
+        // The visible relation alias is tied to the record foreign key
         // (campo__label), mentre il JOIN resta isolato in un metodo del Model.
         $relationAliasOk = true;
         foreach ((array) ($config['relations']['belongsTo'] ?? []) as $fieldName => $relation) {
@@ -1019,7 +1027,7 @@ final class ArchitectureRegressionRunner
                 : 'Exports may lose quick filters from the current URL.'
         );
 
-        // Regressione dev25: CHAR(n) è una lunghezza massima DB e non deve
+        // CHAR(n) is a database maximum length and must not
         // diventare automaticamente exact_length[n].
         $validationResolver = new DatabaseValidationResolver();
         $charRules = $validationResolver->rulesFor([
@@ -1055,7 +1063,7 @@ final class ArchitectureRegressionRunner
                 : 'Regressione: CHAR(n) sta generando exact_length[n].'
         );
 
-        // Regressione dev27: DEFAULT CURRENT_TIMESTAMP + ON UPDATE CURRENT_TIMESTAMP
+        // DEFAULT CURRENT_TIMESTAMP + ON UPDATE CURRENT_TIMESTAMP
         // è una responsabilità del database, non del form o della validazione.
         $automaticTimestamp = [
             'name' => 'last_update',

@@ -3,6 +3,7 @@ namespace App\Controllers\MyCrud;
 
 use App\Controllers\BaseController;
 use App\Libraries\MyCrud\Core\MenuBuilderService;
+use App\Libraries\MyCrud\Analysis\DomainAnalyzer;
 use App\Libraries\MyCrud\Config\MenuConfigRepository;
 use App\Libraries\MyCrud\Core\Naming;
 use App\Libraries\MyCrud\Schema\DbSchema;
@@ -104,6 +105,18 @@ class ToolsController extends BaseController
             'title' => 'Menu generated',
             'type' => $menu['type'],
             'files' => $files,
+        ]);
+    }
+
+    /**
+     * Shows a deterministic resource/domain map inferred from DB structure.
+     * No CRUD configuration or source file is modified.
+     */
+    public function domain(): string
+    {
+        return view('mycrud/domain_analyzer', [
+            'title' => 'Domain Analyzer',
+            'analysis' => (new DomainAnalyzer())->analyze(),
         ]);
     }
 

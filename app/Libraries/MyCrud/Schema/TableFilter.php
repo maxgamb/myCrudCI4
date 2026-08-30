@@ -12,7 +12,7 @@ final class TableFilter
 
         // information_schema include esplicitamente sia BASE TABLE sia VIEW.
         // Non dipendiamo dal comportamento specifico di listTables() rispetto
-        // alle viste, così dev32 può mostrarle e configurarle in modo affidabile.
+        // for views, so the Builder can show and configure them reliably.
         $rows = $db->query(
             "SELECT TABLE_NAME AS tableName
              FROM information_schema.TABLES

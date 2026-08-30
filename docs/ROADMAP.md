@@ -6,7 +6,7 @@ The 2.9 stable baseline completed the Builder/config workflow, safe staging, API
 
 ## 2.9.1 stable consolidation baseline
 
-The current dev24/fix line focuses on stability and explicit generated architecture rather than adding runtime abstraction.
+The 2.9.1 consolidation focused on stability and explicit generated architecture rather than adding runtime abstraction.
 
 Completed/consolidated areas:
 

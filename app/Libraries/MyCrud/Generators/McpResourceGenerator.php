@@ -7,7 +7,7 @@ namespace App\Libraries\MyCrud\Generators;
 /**
  * Proiezione MCP indipendente dalla REST Resource.
  *
- * dev13 separa definitivamente la superficie dati MCP da apiVisible.
+ * The MCP data surface is independent from apiVisible.
  */
 final class McpResourceGenerator
 {

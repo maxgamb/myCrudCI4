@@ -7,7 +7,7 @@ namespace App\Libraries\MyCrud\Generators;
 /**
  * Generates the per-table MCP contract.
  *
- * dev10 = foundation:
+ * Foundation:
  * - manifest schema-driven;
  * - no direct database access;
  * - no write tool;
@@ -178,7 +178,7 @@ final class McpFoundationGenerator
 
 This directory contains generated MCP foundation manifests.
 
-dev11 generates **read-only CRUD tools** (`list_*`, `get_*`) when enabled.
+Generated MCP resources expose **read-only CRUD tools** (`list_*`, `get_*`) when enabled.
 
 Principles:
 
@@ -189,7 +189,7 @@ Principles:
 - `mcp/sdk` is optional until MCP runtime is enabled.
 - The manifest targets MCP protocol `2026-07-28`.
 - Write tools are still disabled.
-- Relation-aware tools are introduced in dev12.
+- Relation-aware read tools are available when enabled by the generated contract.
 
 Published manifests live under:
 

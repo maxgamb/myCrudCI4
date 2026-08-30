@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Libraries\MyCrud\AI;
 
+use App\Libraries\MyCrud\Analysis\DomainAnalyzer;
 use App\Libraries\MyCrud\Config\CrudConfigRepository;
 use App\Libraries\MyCrud\Core\CrudConfigurationService;
 use App\Libraries\MyCrud\Core\Naming;
@@ -26,15 +27,18 @@ final class AiProjectContextGenerator
     private BaseConnection $db;
     private CrudConfigRepository $repository;
     private CrudConfigurationService $configuration;
+    private DomainAnalyzer $domainAnalyzer;
 
     public function __construct(
         ?BaseConnection $db = null,
         ?CrudConfigRepository $repository = null,
         ?CrudConfigurationService $configuration = null,
+        ?DomainAnalyzer $domainAnalyzer = null,
     ) {
         $this->db = $db ?? Database::connect();
         $this->repository = $repository ?? new CrudConfigRepository();
         $this->configuration = $configuration ?? new CrudConfigurationService();
+        $this->domainAnalyzer = $domainAnalyzer ?? new DomainAnalyzer($this->db);
     }
 
     /**
@@ -123,8 +127,10 @@ final class AiProjectContextGenerator
             static fn (string $table): bool => !isset($configuredLookup[$table])
         ));
 
+        $domain = $this->domainContextSnapshot();
+
         return [
-            'formatVersion' => 1,
+            'formatVersion' => 2,
             'generatedBy' => 'myCrudCI4',
             'generatorVersion' => MyCrudVersion::VERSION,
             'developerGuides' => [
@@ -184,6 +190,7 @@ final class AiProjectContextGenerator
                 'configuredTables' => $configured,
                 'unconfiguredTables' => $unconfigured,
             ],
+            'domainAnalysis' => $domain,
             'crud' => $crud,
             'agentRules' => $this->agentRules(),
         ];
@@ -331,8 +338,53 @@ final class AiProjectContextGenerator
                 'hasMany' => $hasMany,
                 'manyToMany' => $manyToMany,
             ],
+            'domainAnalysis' => $this->domainResourceSnapshot($table),
             'developmentGuidance' => $this->guidanceFor($architecture, $class),
             'customization' => $this->customizationFor($architecture, $class),
+        ];
+    }
+
+
+    /** @return array<string,mixed> */
+    private function domainContextSnapshot(): array
+    {
+        $analysis = $this->domainAnalyzer->analyze();
+        $resources = [];
+        foreach ((array) ($analysis['resources'] ?? []) as $table => $resource) {
+            $resources[(string) $table] = $this->compactDomainResource((array) $resource);
+        }
+
+        return [
+            'source' => 'database_schema',
+            'businessTruth' => false,
+            'rule' => 'Never invent a business operation from this structural map alone. Combine it with an explicit user/domain requirement and ask for confirmation before implementation.',
+            'summary' => (array) ($analysis['summary'] ?? []),
+            'rootCandidates' => array_values((array) ($analysis['rootCandidates'] ?? [])),
+            'resources' => $resources,
+        ];
+    }
+
+    /** @return array<string,mixed>|null */
+    private function domainResourceSnapshot(string $table): ?array
+    {
+        $analysis = $this->domainAnalyzer->analyze();
+        $resource = (array) ($analysis['resources'][$table] ?? []);
+        return $resource === [] ? null : $this->compactDomainResource($resource);
+    }
+
+    /** @param array<string,mixed> $resource @return array<string,mixed> */
+    private function compactDomainResource(array $resource): array
+    {
+        return [
+            'classification' => (string) ($resource['classification'] ?? ''),
+            'classificationLabel' => (string) ($resource['classificationLabel'] ?? ''),
+            'confidence' => (string) ($resource['confidence'] ?? 'low'),
+            'structuralRootCandidate' => (bool) ($resource['rootCandidate'] ?? false),
+            'rootScore' => (int) ($resource['rootScore'] ?? 0),
+            'parents' => array_values(array_map('strval', (array) ($resource['parents'] ?? []))),
+            'children' => array_values(array_map('strval', (array) ($resource['children'] ?? []))),
+            'lifecycleFields' => array_values(array_map('strval', (array) ($resource['lifecycleFields'] ?? []))),
+            'evidence' => array_values(array_map('strval', (array) ($resource['evidence'] ?? []))),
         ];
     }
 
@@ -469,7 +521,7 @@ final class AiProjectContextGenerator
             'When modifying myCrudCI4 itself, read CONTRIBUTING.md and docs/development/ARCHITECTURE.md plus ARCHITECTURE_RULES.md before changing generators.',
             'For a new generator feature, follow docs/development/ADDING_A_FEATURE.md and evaluate the feature impact matrix.',
             'When working on a CRUD, also read docs/ai/crud/<table>.md.',
-            'Never rename database fields (hotel_id must not become hotelId).',
+            'Never rename database fields (category_id must not become categoryId).',
             'Never singularize table-derived class names (clienti -> ClientiController).',
             'Respect Basic/Standard/Full responsibilities.',
             'Entity boundary: in Standard/Full writes, the Service prepares and validates application data, applies before hooks, then creates the generated Entity before Model persistence. Entity owns one-record casts/dates/accessors/mutators/record-local behavior only; no SQL, transactions or cross-resource orchestration.',
@@ -481,6 +533,10 @@ final class AiProjectContextGenerator
             'Do not modify the database automatically.',
             'Treat SQL VIEW objects as read-only developer scaffolding: keep list/filter/sort/export and GET-only API capabilities, hide write-only Builder controls, generate no create/edit/delete/soft-delete or relational writes, and do not infer underlying indexes, foreign keys or VIEW updatability.',
             'Do not infer business meaning from field names when it is not explicitly configured.',
+            'Domain Analyzer output is structural evidence only. Its classifications and root candidates are not business truth and do not identify the primary resource of a use-case by themselves.',
+            'When the user describes an application operation: identify the resource whose state/result is primarily changed, identify requirement-derived rules and secondary resources, inspect existing Model/Service/Entity, then propose the business method on the primary Service.',
+            'Use Entity only for record-local behavior/invariants, Model for queries/persistence, and explicit concrete Services for cross-resource writes.',
+            'Never invent a business operation from the database schema or Domain Analyzer alone. Separate schema facts, requirement-derived interpretation and missing domain information; request user confirmation before implementing a newly inferred business operation.',
             'Treat app/Generated/ as staging and app/ as the operational application.',
             'Preserve generated CRUD page structure: Bootstrap breadcrumb + one table-name h1 + small page context; inner card headings are h2.',
             'Relational Create uses a Bootstrap input-group for the standard FK select/actions plus a Bootstrap Offcanvas and a dedicated parent-field partial that overlays the current view without changing its layout, never the full parent create view; the generated parent PK is the only authority for the current record FK.',
@@ -547,7 +603,7 @@ final class AiProjectContextGenerator
             '',
             '## Non-negotiable project conventions',
             '',
-            '- Preserve database field names exactly. `hotel_id` stays `hotel_id`; do not convert it to `hotelId`.',
+            '- Preserve database field names exactly. `category_id` stays `category_id`; do not convert it to `categoryId`.',
             '- Do not singularize class names derived from tables. `clienti` maps to `ClientiController`, `ClientiModel`, etc.',
             '- Operational runtime helpers belong to `App\\Libraries\\Crud`, not `App\\Libraries\\MyCrud`.',
             '- CRUD routes are modular under `app/Routes/<table>.php`.',
@@ -611,6 +667,14 @@ final class AiProjectContextGenerator
             '- Architecture invariants: `docs/development/ARCHITECTURE_RULES.md`',
             '- New-feature workflow: `docs/development/ADDING_A_FEATURE.md`',
             '- Feature impact matrix: `docs/development/FEATURE_MATRIX.md`',
+            '',
+            '## Structural domain map',
+            '',
+            '`docs/ai/project.json` contains `domainAnalysis`, generated deterministically from the database schema by Tools > Domain Analyzer.',
+            '',
+            '**Important:** Master, Transactional, Dependent, Lookup and Pivot are structural hypotheses. A structural root candidate is not automatically the primary resource of a business use-case.',
+            '',
+            'When the user describes an application operation: identify the primary state/result change; derive rules from the requirement; identify secondary resources; inspect existing Model/Service/Entity; propose a method on the primary Service; use Entity for local behavior, Model for queries/persistence and concrete Services for cross-resource writes; never invent a business operation from the schema alone; ask for confirmation before implementation.',
             '',
             '## CRUD map',
             '',
