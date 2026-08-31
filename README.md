@@ -1,7 +1,7 @@
 # myCrudCI4
 
-> **Current stable release:** `2.9.2`
-> **Stable tag:** `v2.9.2`
+> **Current stable release:** `2.9.3`
+> **Stable tag:** `v2.9.3`
 
 myCrudCI4 is a **database-driven application scaffolding system for CodeIgniter 4**.
 
@@ -279,7 +279,7 @@ The release regression matrix protects this distinction.
 ## 1. Clone the stable release
 
 ```bash
-git clone --branch v2.9.2 --depth 1 https://github.com/maxgamb/myCrudCI4.git myCrudCI4
+git clone --branch v2.9.3 --depth 1 https://github.com/maxgamb/myCrudCI4.git myCrudCI4
 cd myCrudCI4
 ```
 
@@ -683,11 +683,12 @@ Resources should expose only operations supported by their actual schema and con
 
 ---
 
-# What is new in 2.9.2
+# What is new in 2.9.3
 
-Version 2.9.2 consolidates the architecture and development tooling around:
+Version 2.9.3 consolidates the 2.9.x architecture and includes:
 
 - Domain Analyzer;
+- Domain Analyzer available from the Tools navigation and public route;
 - structural roles: Master / Transactional / Dependent / Lookup / Pivot;
 - Potential Structural Roots;
 - schema-aware commented Domain development guidance;
@@ -799,14 +800,14 @@ Application-facing labels and validation messages remain localizable through Cod
 Stable release:
 
 ```text
-myCrudCI4 2.9.2
-tag: v2.9.2
+myCrudCI4 2.9.3
+tag: v2.9.3
 ```
 
 Clone the stable tag:
 
 ```bash
-git clone --branch v2.9.2 --depth 1 https://github.com/maxgamb/myCrudCI4.git myCrudCI4
+git clone --branch v2.9.3 --depth 1 https://github.com/maxgamb/myCrudCI4.git myCrudCI4
 ```
 
 Stable releases are intended to remain frozen. New development should start from a new development version rather than rewriting an already published release tag.
