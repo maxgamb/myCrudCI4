@@ -124,13 +124,35 @@ user requirement
 
 The database supplies the resource map; the application requirement supplies the use-case meaning.
 
-## Development Guidance preview
+## Development Guidance and generated comments
 
 The resource cards also translate the structural analysis into development guidance for a programmer working without AI.
 The guidance combines **Structural Role + Structural Root + relations + lifecycle fields** and suggests the responsibility of Entity, Service, Model and Controller.
 
-The nested **Commented code examples** preview shows schema-aware but business-neutral PHP examples adapted to `master`, `transactional`, `dependent`, `lookup`, `pivot` and `view` resources. For root-capable roles, the preview also branches on **Potential structural root YES/NO**: a root candidate may be shown as a possible use-case entry point and coordinator of related Services, while a non-root example is deliberately kept local. When available, examples use real table names, FK columns, parent/child relations, related Service names, meaningful fields and lifecycle fields. They remain fully commented guidance and do not define required MyCrud APIs or infer business semantics from those names.
+The nested **Commented code examples** preview and the generated PHP comments use the same `DomainGuidanceBuilder`. Examples are schema-aware but business-neutral and are adapted to `master`, `transactional`, `dependent`, `lookup`, `pivot` and `view` resources. For root-capable roles, the preview also branches on **Potential structural root YES/NO**: a root candidate may be shown as a possible use-case entry point and coordinator of related Services, while a non-root example is deliberately kept local. When available, examples use real table names, FK columns, parent/child relations, related Service names, meaningful fields and lifecycle fields. They remain fully commented guidance and do not define required MyCrud APIs or infer business semantics from those names.
 
-This phase is intentionally read-only: it does not insert markers, placeholders or business methods into generated PHP files. Domain Analyzer continues to describe *how* a programmer could extend the generated architecture without claiming to know *which* business operation the application needs.
+The generator now writes these examples into generated PHP as **comments only**. It still does not insert markers, placeholders or executable business methods. Domain Analyzer continues to describe *how* a programmer could extend the generated architecture without claiming to know *which* business operation the application needs.
 
 A Structural Root remains a structural candidate, not a DDD Aggregate Root and not an automatic business-use-case owner. `rootScore` is evidence for the preview, not authorization to invent orchestration.
+
+## State fields vs lifecycle/event signals
+
+Domain Analyzer distinguishes structural lifecycle/event signals from explicit state fields.
+Temporal columns such as `payment_date`, `rental_date`, `return_date`, `closed_at` or similar
+may support transactional classification, but they do not by themselves define a state machine.
+
+Only explicit state-shaped columns (for example `status`, `state`, `stato`, `stage`, `phase`
+and names containing those tokens) may drive the commented `transition()` example.
+If no explicit state field exists, generated guidance states that lifecycle semantics must come
+from an application requirement and does not invent a transition API.
+
+## API boundary guidance
+
+Full-architecture resource API controllers receive a compact schema-aware Domain guidance block.
+It is intentionally smaller than the web Controller/Service guidance:
+
+- reads point to the concrete generated Model;
+- writes point to the concrete generated Service only when the resource is writable;
+- SQL VIEW API controllers are explicitly read-only;
+- `BaseApiController` remains generic and receives no resource-specific Domain block;
+- business rules, SQL and cross-resource persistence remain outside the API Controller.

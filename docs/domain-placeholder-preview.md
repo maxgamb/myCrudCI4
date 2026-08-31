@@ -18,7 +18,7 @@ The guidance is collapsed by default to keep the analyzer readable. It describes
 
 The nested **Commented code examples** action shows **schema-aware, business-neutral PHP examples** tailored to the **structural role and structural-root candidacy** of the resource.
 
-The examples are read-only and are not written to application files. When the schema provides enough evidence, the preview uses the real table name, generated class stem, FK columns, parent/child tables, related Service names, meaningful columns and detected lifecycle fields. It no longer invents generic columns merely to make an example compile.
+The same examples are also emitted as **comments only** inside the generated Entity, Model, Service and Controller files when those layers exist. ServiceExtension files receive the same schema-aware guidance when they are created. No executable business method is added automatically. When the schema provides enough evidence, the preview uses the real table name, generated class stem, FK columns, parent/child tables, related Service names, meaningful columns and detected lifecycle fields. It no longer invents generic columns merely to make an example compile.
 
 For example, a dependent resource may show its real `child_table.parent_fk -> parent_table.parent_pk` relation, while a two-FK pivot may show its two real FK columns. A transactional example uses a real detected lifecycle field when one exists; if none exists, the preview explicitly refuses to invent a `status` field.
 
@@ -44,6 +44,15 @@ Structural classification selects the base example, while **Potential structural
 - **Pivot** — relationship behavior only when generated many-to-many support is not sufficient;
 - **View** — read-only Model/query extension.
 
-A later write feature, if introduced, must still define regeneration safety explicitly. Developer-owned business code must never be silently overwritten by regeneration.
+Generated comments may be regenerated together with generator-owned files. Developer-owned executable business code remains protected: custom ServiceExtension files are create-only and are never silently overwritten by regeneration.
 
 The root score is displayed as evidence, but no score invents a business operation. The application requirement remains authoritative.
+
+## Transactional guidance is conservative
+
+A date/time/event column is not treated as a business state. The preview may show it under
+`Lifecycle/event signals`, but a `transition()` example is emitted only when the analyzer finds
+an explicit state-shaped column such as `status`, `state`, `stato`, `stage` or `phase`.
+
+The preview also includes a compact `ApiController` boundary example. Full generated API resource
+controllers receive the same block; the shared `BaseApiController` does not.

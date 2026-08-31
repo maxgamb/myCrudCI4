@@ -42,434 +42,20 @@ $classBase = static function (string $table): string {
     return implode('', array_map(static fn (string $part): string => ucfirst(strtolower($part)), $parts));
 };
 
-$relationDetailsFor = static function (string $table) use ($relations): array {
-    $outgoing = [];
-    $incoming = [];
+$guidanceBuilder = new \App\Libraries\MyCrud\Analysis\DomainGuidanceBuilder();
 
-    foreach ($relations as $relation) {
-        if ((string) ($relation['childTable'] ?? '') === $table) {
-            $outgoing[] = $relation;
-        }
-        if ((string) ($relation['parentTable'] ?? '') === $table) {
-            $incoming[] = $relation;
-        }
+$commentedCodePreview = static function (array $resource) use ($guidanceBuilder, $analysis): array {
+    $table = (string) ($resource['table'] ?? '');
+    if ($table === '') {
+        return [];
     }
 
-    return [
-        'outgoing' => $outgoing,
-        'incoming' => $incoming,
-    ];
-};
-
-$commentedCodePreview = static function (array $resource) use (
-    $isPotentialRoot,
-    $potentialRootScore,
-    $classBase,
-    $relationDetailsFor
-): array {
-    $table = (string) ($resource['table'] ?? 'resource');
-    $classification = (string) ($resource['classification'] ?? 'unknown');
-    $role = strtoupper($classification);
-    $isRoot = $isPotentialRoot($resource);
-    $rootScore = $potentialRootScore($resource);
-    $root = $isRoot ? 'YES (' . $rootScore . '/20)' : 'NO';
-    $parents = implode(', ', (array) ($resource['parents'] ?? [])) ?: 'none';
-    $children = implode(', ', (array) ($resource['children'] ?? [])) ?: 'none';
-    $lifecycleFields = array_values((array) ($resource['lifecycleFields'] ?? []));
-    $lifecycle = implode(', ', $lifecycleFields) ?: 'none';
-    $meaningfulFields = array_values((array) ($resource['meaningfulColumns'] ?? []));
-
-    $class = $classBase($table);
-    $relationDetails = $relationDetailsFor($table);
-    $outgoing = (array) ($relationDetails['outgoing'] ?? []);
-    $incoming = (array) ($relationDetails['incoming'] ?? []);
-    $firstParentRelation = $outgoing[0] ?? null;
-    $firstChildRelation = $incoming[0] ?? null;
-
-    $sampleField = (string) ($meaningfulFields[0] ?? '');
-    $stateField = (string) ($lifecycleFields[0] ?? '');
-    $parentFk = is_array($firstParentRelation) ? (string) ($firstParentRelation['childColumn'] ?? '') : '';
-    $parentTable = is_array($firstParentRelation) ? (string) ($firstParentRelation['parentTable'] ?? '') : '';
-
-    $fieldSuffix = static fn (string $field): string => $field === '' ? '' : $classBase($field);
-    $fieldVariable = static fn (string $field): string => $field === '' ? 'value' : lcfirst($classBase($field));
-
-    $schemaLines = [
-        "// PHP types: {$class}Entity | {$class}Model | {$class}Service | {$class}Controller",
-    ];
-
-    foreach ($outgoing as $relation) {
-        $childTable = (string) ($relation['childTable'] ?? '');
-        $childColumn = (string) ($relation['childColumn'] ?? '');
-        $parentTableName = (string) ($relation['parentTable'] ?? '');
-        $parentColumn = (string) ($relation['parentColumn'] ?? '');
-        $relatedService = $classBase($parentTableName) . 'Service';
-        $schemaLines[] = "// FK OUT: {$childTable}.{$childColumn} -> {$parentTableName}.{$parentColumn} | {$relatedService}";
-    }
-
-    foreach ($incoming as $relation) {
-        $childTableName = (string) ($relation['childTable'] ?? '');
-        $childColumn = (string) ($relation['childColumn'] ?? '');
-        $parentTableName = (string) ($relation['parentTable'] ?? '');
-        $parentColumn = (string) ($relation['parentColumn'] ?? '');
-        $relatedService = $classBase($childTableName) . 'Service';
-        $schemaLines[] = "// FK IN : {$childTableName}.{$childColumn} -> {$parentTableName}.{$parentColumn} | {$relatedService}";
-    }
-
-    if ($outgoing === [] && $incoming === []) {
-        $schemaLines[] = '// FK context: no relations detected for this resource.';
-    }
-
-    $header = "// ========================================================================\n"
-        . "// MYCRUD DOMAIN DEVELOPMENT EXAMPLE\n"
-        . "// ========================================================================\n"
-        . "// Resource: {$table}\n"
-        . "// Structural role: {$role}\n"
-        . "// Structural root: {$root}\n"
-        . "// Parents: {$parents}\n"
-        . "// Children: {$children}\n"
-        . "// Lifecycle: {$lifecycle}\n"
-        . implode("\n", $schemaLines) . "\n"
-        . "//\n"
-        . "// Schema-aware example only. The names above come from the real database.\n"
-        . "// Their presence does NOT imply a business rule or an operation.\n"
-        . "// Copy/adapt only the parts required by the application requirement.\n"
-        . "// Domain Analyzer does not infer business semantics from table/field names.\n"
-        . ($isRoot
-            ? "// Root guidance: candidate entry point for use-cases centered on this resource.\n"
-            : "// Root guidance: keep responsibility local unless the requirement says otherwise.\n")
-        . "// ========================================================================\n";
-
-    $localFieldEntityExample = $sampleField !== ''
-        ? "/*\n"
-            . " * Example: syntax for a record-local rule using a real field.\n"
-            . " * The field {$table}.{$sampleField} is used only to make the example concrete.\n"
-            . " *\n"
-            . " * public function hasLocalValue(): bool\n"
-            . " * {\n"
-            . " *     return array_key_exists('{$sampleField}', \$this->attributes);\n"
-            . " * }\n"
-            . " *\n"
-            . " * Do not infer a business rule merely because this column exists.\n"
-            . " */"
-        : "/*\n"
-            . " * No safe record-local field example is emitted for this resource.\n"
-            . " * Add Entity behavior only when the application defines a real local rule.\n"
-            . " */";
-
-    if ($parentFk !== '') {
-        $parentMethod = 'findBy' . $fieldSuffix($parentFk);
-        $parentVar = $fieldVariable($parentFk);
-        $relationModelExample = "/*\n"
-            . " * Example: real FK-scoped query.\n"
-            . " * Relation: {$table}.{$parentFk} -> {$parentTable}."
-            . (string) ($firstParentRelation['parentColumn'] ?? '') . "\n"
-            . " *\n"
-            . " * public function {$parentMethod}(int|string $" . $parentVar . "): array\n"
-            . " * {\n"
-            . " *     return \$this\n"
-            . " *         ->where('{$parentFk}', $" . $parentVar . ")\n"
-            . " *         ->findAll();\n"
-            . " * }\n"
-            . " */";
-    } elseif ($stateField !== '') {
-        $stateMethod = 'findBy' . $fieldSuffix($stateField);
-        $stateVar = $fieldVariable($stateField);
-        $relationModelExample = "/*\n"
-            . " * Example: query using detected lifecycle field {$table}.{$stateField}.\n"
-            . " *\n"
-            . " * public function {$stateMethod}(string $" . $stateVar . "): array\n"
-            . " * {\n"
-            . " *     return \$this->where('{$stateField}', $" . $stateVar . ")->findAll();\n"
-            . " * }\n"
-            . " */";
-    } elseif ($sampleField !== '') {
-        $sampleMethod = 'findBy' . $fieldSuffix($sampleField);
-        $sampleVar = $fieldVariable($sampleField);
-        $relationModelExample = "/*\n"
-            . " * Example: query syntax using real field {$table}.{$sampleField}.\n"
-            . " * Add this only if the application really searches by this field.\n"
-            . " *\n"
-            . " * public function {$sampleMethod}(mixed $" . $sampleVar . "): array\n"
-            . " * {\n"
-            . " *     return \$this->where('{$sampleField}', $" . $sampleVar . ")->findAll();\n"
-            . " * }\n"
-            . " */";
-    } else {
-        $relationModelExample = "/*\n"
-            . " * No schema-backed filter example is emitted here.\n"
-            . " * Add a Model method only for a real resource-specific read requirement.\n"
-            . " */";
-    }
-
-    $childServiceNames = array_values(array_unique(array_map(
-        static fn (array $relation): string => $classBase((string) ($relation['childTable'] ?? '')) . 'Service',
-        $incoming
-    )));
-    $childServiceText = $childServiceNames !== []
-        ? implode(', ', $childServiceNames)
-        : 'none detected';
-
-    $examples = match ($classification) {
-        'master' => [
-            'entity' => $localFieldEntityExample,
-            'service' => $isRoot
-                ? "/*\n"
-                    . " * Example: operation centered on potential structural root `{$table}`.\n"
-                    . " * Detected child Services: {$childServiceText}.\n"
-                    . " *\n"
-                    . " * public function performAction(int|string \$id, array \$data = []): void\n"
-                    . " * {\n"
-                    . " *     \$record = \$this->model->find(\$id);\n"
-                    . " *     if (\$record === null) {\n"
-                    . " *         throw new \\RuntimeException('{$table} record not found.');\n"
-                    . " *     }\n"
-                    . " *\n"
-                    . " *     // `{$table}` is structurally a possible use-case entry point.\n"
-                    . " *     // Coordinate one of the detected child Services only if the\n"
-                    . " *     // approved business requirement actually crosses that relation.\n"
-                    . " *     // Never write directly to another resource Model from here.\n"
-                    . " *\n"
-                    . " *     \$this->update(\$id, \$data);\n"
-                    . " * }\n"
-                    . " */"
-                : "/*\n"
-                    . " * Example: local operation on `{$table}`.\n"
-                    . " *\n"
-                    . " * public function performAction(int|string \$id, array \$data = []): void\n"
-                    . " * {\n"
-                    . " *     \$record = \$this->model->find(\$id);\n"
-                    . " *     if (\$record === null) {\n"
-                    . " *         throw new \\RuntimeException('{$table} record not found.');\n"
-                    . " *     }\n"
-                    . " *\n"
-                    . " *     // Keep the rule local: `{$table}` is not a structural-root candidate.\n"
-                    . " *     \$this->update(\$id, \$data);\n"
-                    . " * }\n"
-                    . " */",
-            'model' => $relationModelExample,
-            'controller' => "/*\n"
-                . " * Example: thin HTTP action for {$class}Service.\n"
-                . " *\n"
-                . " * public function performAction(int|string \$id)\n"
-                . " * {\n"
-                . " *     \$this->service->performAction(\$id, (array) \$this->request->getPost());\n"
-                . " *     return redirect()->back();\n"
-                . " * }\n"
-                . " *\n"
-                . " * Cross-resource orchestration, if required, remains in {$class}Service.\n"
-                . " */",
-        ],
-        'transactional' => [
-            'entity' => $stateField !== ''
-                ? "/*\n"
-                    . " * Example: transition eligibility using detected lifecycle field `{$table}.{$stateField}`.\n"
-                    . " *\n"
-                    . " * public function canTransitionTo(string \$nextState): bool\n"
-                    . " * {\n"
-                    . " *     \$currentState = (string) (\$this->attributes['{$stateField}'] ?? '');\n"
-                    . " *     // Replace this with the real application transition rule.\n"
-                    . " *     return \$currentState !== '' && \$nextState !== '';\n"
-                    . " * }\n"
-                    . " */"
-                : $localFieldEntityExample,
-            'service' => $stateField !== ''
-                ? "/*\n"
-                    . " * Example: state operation using real lifecycle field `{$stateField}`.\n"
-                    . ($isRoot ? " * `{$table}` is also a potential structural root.\n" : " * `{$table}` is not a structural-root candidate.\n")
-                    . " * Detected child Services: {$childServiceText}.\n"
-                    . " *\n"
-                    . " * public function transition(int|string \$id, string \$nextState): void\n"
-                    . " * {\n"
-                    . " *     \$record = \$this->model->find(\$id);\n"
-                    . " *     if (\$record === null) {\n"
-                    . " *         throw new \\RuntimeException('{$table} record not found.');\n"
-                    . " *     }\n"
-                    . " *\n"
-                    . ($isRoot
-                        ? " *     // Coordinate detected dependent Services only when the approved\n *     // use-case requires atomic writes across those real relations.\n"
-                        : " *     // Keep this transition local unless the application explicitly\n *     // assigns broader process coordination to this resource.\n")
-                    . " *     \$this->update(\$id, ['{$stateField}' => \$nextState]);\n"
-                    . " * }\n"
-                    . " */"
-                : "/*\n"
-                    . " * This table is structurally transactional, but no concrete lifecycle\n"
-                    . " * field was detected. Do not invent a `status` column or transition API.\n"
-                    . " * Add an operation only from an explicit application requirement.\n"
-                    . " */",
-            'model' => $relationModelExample,
-            'controller' => $stateField !== ''
-                ? "/*\n"
-                    . " * Example: thin HTTP action using real field `{$stateField}`.\n"
-                    . " *\n"
-                    . " * public function transition(int|string \$id)\n"
-                    . " * {\n"
-                    . " *     \$nextState = (string) \$this->request->getPost('{$stateField}');\n"
-                    . " *     \$this->service->transition(\$id, \$nextState);\n"
-                    . " *     return redirect()->back();\n"
-                    . " * }\n"
-                    . " */"
-                : "/*\n * No lifecycle-specific Controller action is suggested because no real lifecycle field was detected.\n */",
-        ],
-        'dependent' => [
-            'entity' => $parentFk !== ''
-                ? "/*\n"
-                    . " * Example: local presence check for real parent FK `{$table}.{$parentFk}`.\n"
-                    . " *\n"
-                    . " * public function hasParentReference(): bool\n"
-                    . " * {\n"
-                    . " *     return !empty(\$this->attributes['{$parentFk}']);\n"
-                    . " * }\n"
-                    . " *\n"
-                    . " * Cross-resource rules remain in the Service.\n"
-                    . " */"
-                : $localFieldEntityExample,
-            'service' => $parentFk !== ''
-                ? "/*\n"
-                    . " * Example: operation scoped by real parent relation\n"
-                    . " * {$table}.{$parentFk} -> {$parentTable}."
-                    . (string) ($firstParentRelation['parentColumn'] ?? '') . ".\n"
-                    . " *\n"
-                    . " * public function createFor{$classBase($parentTable)}(int|string \$parentId, array \$data): int|string\n"
-                    . " * {\n"
-                    . " *     // Verify the {$parentTable} resource through its concrete Service\n"
-                    . " *     // if the application defines a cross-resource rule.\n"
-                    . " *     \$data['{$parentFk}'] = \$parentId;\n"
-                    . " *     return \$this->create(\$data);\n"
-                    . " * }\n"
-                    . " */"
-                : "/*\n * No concrete parent FK was detected; no createForParent example is emitted.\n */",
-            'model' => $relationModelExample,
-            'controller' => $parentFk !== ''
-                ? "/*\n"
-                    . " * Example: preserve real parent context `{$parentTable}` at the HTTP boundary.\n"
-                    . " *\n"
-                    . " * public function createFor{$classBase($parentTable)}(int|string \$parentId)\n"
-                    . " * {\n"
-                    . " *     \$data = (array) \$this->request->getPost();\n"
-                    . " *     \$this->service->createFor{$classBase($parentTable)}(\$parentId, \$data);\n"
-                    . " *     return redirect()->back();\n"
-                    . " * }\n"
-                    . " */"
-                : "/*\n * Keep custom HTTP actions minimal; no concrete parent-scoped action is suggested.\n */",
-        ],
-        'lookup' => [
-            'entity' => $sampleField !== ''
-                ? "/*\n"
-                    . " * Example: display representation using real field `{$table}.{$sampleField}`.\n"
-                    . " *\n"
-                    . " * public function displayValue(): string\n"
-                    . " * {\n"
-                    . " *     return trim((string) (\$this->attributes['{$sampleField}'] ?? ''));\n"
-                    . " * }\n"
-                    . " *\n"
-                    . " * Add this only if this field is really the application's display value.\n"
-                    . " */"
-                : "/*\n * Lookup Entity behavior is normally unnecessary for this resource.\n */",
-            'service' => "/*\n"
-                . " * Example: explicit reference-data operation on `{$table}`.\n"
-                . " * Ordinary generated CRUD is normally sufficient.\n"
-                . " *\n"
-                . " * public function changeReferenceData(int|string \$id, array \$data): void\n"
-                . " * {\n"
-                . " *     \$this->update(\$id, \$data);\n"
-                . " * }\n"
-                . " */",
-            'model' => $relationModelExample,
-            'controller' => "/*\n"
-                . " * Usually no custom {$class}Controller action is required for lookup maintenance.\n"
-                . " */",
-        ],
-        'pivot' => (static function () use ($outgoing, $table, $classBase): array {
-            $left = $outgoing[0] ?? null;
-            $right = $outgoing[1] ?? null;
-            if (!is_array($left) || !is_array($right)) {
-                return [
-                    'entity' => "/*\n * Pivot detected, but two concrete FK sides are not available.\n */",
-                    'service' => "/*\n * Prefer generated relation APIs; no invented left_id/right_id fields are emitted.\n */",
-                    'model' => "/*\n * Add a relation query only when a real FK side is available.\n */",
-                    'controller' => "/*\n * No custom relation action is suggested without two concrete FK sides.\n */",
-                ];
-            }
-
-            $leftFk = (string) ($left['childColumn'] ?? '');
-            $rightFk = (string) ($right['childColumn'] ?? '');
-            $leftTable = (string) ($left['parentTable'] ?? '');
-            $rightTable = (string) ($right['parentTable'] ?? '');
-            $leftVar = lcfirst($classBase($leftFk));
-            $rightVar = lcfirst($classBase($rightFk));
-            $leftMethod = 'findBy' . $classBase($leftFk);
-
-            return [
-                'entity' => "/*\n"
-                    . " * Example: both real pivot sides are present.\n"
-                    . " * {$table}.{$leftFk} -> {$leftTable}; {$table}.{$rightFk} -> {$rightTable}.\n"
-                    . " *\n"
-                    . " * public function hasBothSides(): bool\n"
-                    . " * {\n"
-                    . " *     return !empty(\$this->attributes['{$leftFk}'])\n"
-                    . " *         && !empty(\$this->attributes['{$rightFk}']);\n"
-                    . " * }\n"
-                    . " */",
-                'service' => "/*\n"
-                    . " * Example: explicit relation operation using the real pivot FKs.\n"
-                    . " * Prefer generated many-to-many APIs when they already cover the use-case.\n"
-                    . " *\n"
-                    . " * public function link(int|string $" . $leftVar . ", int|string $" . $rightVar . "): int|string\n"
-                    . " * {\n"
-                    . " *     return \$this->create([\n"
-                    . " *         '{$leftFk}' => $" . $leftVar . ",\n"
-                    . " *         '{$rightFk}' => $" . $rightVar . ",\n"
-                    . " *     ]);\n"
-                    . " * }\n"
-                    . " */",
-                'model' => "/*\n"
-                    . " * Example: real pivot-side query.\n"
-                    . " *\n"
-                    . " * public function {$leftMethod}(int|string $" . $leftVar . "): array\n"
-                    . " * {\n"
-                    . " *     return \$this->where('{$leftFk}', $" . $leftVar . ")->findAll();\n"
-                    . " * }\n"
-                    . " */",
-                'controller' => "/*\n"
-                    . " * Example: expose a custom relation action only when needed.\n"
-                    . " *\n"
-                    . " * public function link()\n"
-                    . " * {\n"
-                    . " *     $" . $leftVar . " = (string) \$this->request->getPost('{$leftFk}');\n"
-                    . " *     $" . $rightVar . " = (string) \$this->request->getPost('{$rightFk}');\n"
-                    . " *     \$this->service->link($" . $leftVar . ", $" . $rightVar . ");\n"
-                    . " *     return redirect()->back();\n"
-                    . " * }\n"
-                    . " */",
-            ];
-        })(),
-        'view' => [
-            'model' => $relationModelExample,
-        ],
-        default => [
-            'entity' => $localFieldEntityExample,
-            'service' => "/*\n"
-                . " * Example: business operation on `{$table}`.\n"
-                . " *\n"
-                . " * public function performAction(int|string \$id, array \$data = []): void\n"
-                . " * {\n"
-                . " *     \$this->update(\$id, \$data);\n"
-                . " * }\n"
-                . " */",
-            'model' => $relationModelExample,
-            'controller' => "/*\n"
-                . " * Example: thin HTTP action backed by {$class}Service.\n"
-                . " */",
-        ],
-    };
-
-    return array_map(
-        static fn (string $example): string => $header . "\n" . $example . "\n",
-        $examples
+    $guidance = $guidanceBuilder->fromAnalysis($analysis, $table);
+    return array_intersect_key(
+        $guidance,
+        array_flip(['entity', 'service', 'model', 'controller', 'apiController'])
     );
 };
-
 
 $developmentGuidance = static function (array $resource) use ($isPotentialRoot): array {
     $role = (string) ($resource['classification'] ?? '');
@@ -487,11 +73,11 @@ $developmentGuidance = static function (array $resource) use ($isPotentialRoot):
             'caution' => 'Do not turn ordinary master-data maintenance into unnecessary workflows.',
         ],
         'transactional' => [
-            'focus' => 'Lifecycle, state transitions, business operations and transaction boundaries.',
-            'entity' => 'Local state checks, invariants and transition eligibility.',
-            'service' => 'Own approved business use-cases, state transitions, transactions and cross-resource orchestration.',
-            'model' => 'Queries by lifecycle/state, history and relation-aware transactional searches.',
-            'caution' => 'Lifecycle fields are structural evidence only; do not infer an operation from their names alone.',
+            'focus' => 'Lifecycle/events, approved business operations and transaction boundaries.',
+            'entity' => 'Local checks and invariants; transition eligibility only when an explicit state field exists.',
+            'service' => 'Own approved business use-cases, transactions and cross-resource orchestration. Add state transitions only for explicit state semantics.',
+            'model' => 'Queries by lifecycle/event fields, history and relation-aware transactional searches.',
+            'caution' => 'Date/time lifecycle signals do not define a state machine. Do not infer transitions from temporal column names.',
         ],
         'dependent' => [
             'focus' => 'Contextual resource whose meaning is strongly tied to parent resources.',
@@ -540,7 +126,7 @@ $developmentGuidance = static function (array $resource) use ($isPotentialRoot):
         ? 'Consider related resources when the use-case crosses these relations; writes to other resources should use their concrete Services.'
         : 'No FK-based cross-resource guidance is available.';
     $base['lifecycle'] = $lifecycle !== []
-        ? 'Detected lifecycle/event fields: ' . implode(', ', $lifecycle) . '.'
+        ? 'Detected lifecycle/event signals: ' . implode(', ', $lifecycle) . '. Temporal fields do not imply state transitions.'
         : 'No explicit lifecycle/event fields detected.';
 
     return $base;
@@ -703,7 +289,7 @@ $developmentGuidance = static function (array $resource) use ($isPotentialRoot):
                         <div class="small"><span class="text-muted">Child resources:</span> <?= esc(implode(', ', (array) $resource['children'])) ?></div>
                     <?php endif; ?>
                     <?php if ((array) $resource['lifecycleFields'] !== []): ?>
-                        <div class="small"><span class="text-muted">Lifecycle fields:</span> <?= esc(implode(', ', (array) $resource['lifecycleFields'])) ?></div>
+                        <div class="small"><span class="text-muted">Lifecycle/event signals:</span> <?= esc(implode(', ', (array) $resource['lifecycleFields'])) ?></div>
                     <?php endif; ?>
 
                     <?php
@@ -757,7 +343,7 @@ $developmentGuidance = static function (array $resource) use ($isPotentialRoot):
 
                         <div class="collapse mt-3" id="<?= esc($previewId) ?>">
                             <div class="alert alert-info small py-2 mb-3">
-                                These are anonymous, commented PHP examples showing how a developer could extend the resource. They are not written to disk and do not define required MyCrud APIs.
+                                These schema-aware PHP examples are also emitted as comments in the generated layers when those files exist. They do not define required MyCrud APIs and do not add executable business logic.
                             </div>
                             <?php foreach ($preview as $area => $code): ?>
                                 <div class="mb-3">
@@ -769,6 +355,7 @@ $developmentGuidance = static function (array $resource) use ($isPotentialRoot):
                                             'service' => $classBase((string) $resource['table']) . 'Service.php',
                                             'model' => $classBase((string) $resource['table']) . 'Model.php',
                                             'controller' => $classBase((string) $resource['table']) . 'Controller.php',
+                                            'apiController' => $classBase((string) $resource['table']) . 'ApiController.php',
                                             default => $classBase((string) $resource['table']) . '.php',
                                         };
                                         ?>

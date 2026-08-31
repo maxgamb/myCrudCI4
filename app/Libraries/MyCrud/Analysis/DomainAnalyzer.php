@@ -203,6 +203,7 @@ final class DomainAnalyzer
         $distinctParents = count($parentTables);
 
         $lifecycle = $this->lifecycleColumns($columnNames);
+        $stateFields = $this->stateColumns($columnNames);
         $technical = array_values(array_intersect($columnNames, self::TECHNICAL_COLUMNS));
         $nonStructural = array_values(array_diff($columnNames, $pkColumns, $fkColumns, $technical));
         $meaningfulCount = count($nonStructural);
@@ -443,11 +444,39 @@ final class DomainAnalyzer
             'outgoingCount' => count($outgoing),
             'incomingCount' => count($incoming),
             'lifecycleFields' => $lifecycle,
+            'stateFields' => $stateFields,
             'meaningfulColumns' => $nonStructural,
             'rowEstimate' => (int) ($info['rowEstimate'] ?? 0),
             'evidence' => $evidence,
             'scores' => $scores,
         ];
+    }
+
+    /**
+     * Explicit state-like columns only.
+     *
+     * Temporal/event columns such as payment_date, rental_date or return_date
+     * are lifecycle signals but do not define a state transition by themselves.
+     *
+     * @param list<string> $columnNames
+     * @return list<string>
+     */
+    private function stateColumns(array $columnNames): array
+    {
+        $matches = [];
+
+        foreach ($columnNames as $column) {
+            if (
+                preg_match(
+                    '/(^|_)(status|state|stato|stage|phase|fase)(_|$)/i',
+                    $column
+                ) === 1
+            ) {
+                $matches[] = $column;
+            }
+        }
+
+        return array_values(array_unique($matches));
     }
 
     /** @param list<string> $columnNames */
@@ -461,7 +490,9 @@ final class DomainAnalyzer
             }
 
             /*
-             * Lifecycle means state transition / event time, not every column
+             * Lifecycle means structural state/event evidence, not every column.
+             * State-capable fields are separated by stateColumns(); temporal
+             * fields remain event/lifecycle signals only.
              * containing a domain word. Examples that DO match:
              *   rental_date, return_date, payment_date, closed_at, status
              * Examples that DO NOT match:
