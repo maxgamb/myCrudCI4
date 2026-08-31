@@ -12,7 +12,7 @@ namespace App\Libraries\MyCrud;
  */
 final class MyCrudVersion
 {
-    public const VERSION = '2.9.2';
+    public const VERSION = '2.9.3-dev1';
 
     private function __construct()
     {

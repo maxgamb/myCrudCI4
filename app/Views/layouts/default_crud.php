@@ -131,6 +131,15 @@
                         <li>
                             <a
                                 class="dropdown-item"
+                                href="<?= site_url('mycrud/tools/domain') ?>"
+                            >
+                                <i class="bi bi-bezier2"></i>
+                                Domain Analyzer
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                class="dropdown-item"
                                 href="<?= site_url('mycrud/tools/schema') ?>"
                             >
                                 <i class="bi bi-diagram-3"></i>
